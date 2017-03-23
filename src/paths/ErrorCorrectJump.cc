@@ -556,11 +556,11 @@ void SaveAlignments( const String & fn,
   for (size_t ia = 0; ia < n_aligns; ia++) {
     
     // Convert the first_look_aligns into a look_align
-    look_align align;
-    first_aligns[ia].convert_to_look_align(align, queries, ref, K_lookup_tab);
-    if (FLIP) align.rc1 = false;
+    look_align align ;
+    first_aligns[ia].convert_to_look_align(align , queries, ref, K_lookup_tab);
+    if (FLIP) align .rc1 = false;
     
-    os_la << align;
+    os_la << align ;
   }
 
   os_la.close();

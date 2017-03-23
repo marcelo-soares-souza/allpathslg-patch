@@ -39,7 +39,7 @@ int main( int argc, char *argv[] )
   CommandArgument_Bool_OrDefault_Doc(UNIQUE_ONLY, False,
     "If True, only use uniqely place reads." );
   CommandArgument_String_OrDefault_Doc(ALIGNS_IN, "",
-    "Use this set of alignments rather than align internally.");
+    "Use this set of alignments rather than align  internally.");
   EndCommandArguments;
 
   // Set up directories.

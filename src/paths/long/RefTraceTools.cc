@@ -101,7 +101,7 @@ void EdgePlacements::Twiddle(const int max_twiddle )
                     int e1 = vedata[i1].third.first, e2 = vedata[i2].third.first;
                     cout << "\ninconsistent alignments of edges " << e1
                          << " and " << e2 << "?\n\n";
-                    const align &a1 = aligns[i1], &a2 = aligns[i2];
+                    const allpathslg::align  &a1 = aligns[i1], &a2 = aligns[i2];
                     int gg = vedata[i1].first.first;
                     PRINT2( a1.pos2( ), a1.Pos2( ) );
                     PrintVisualAlignment( True, cout, hbp.EdgeObject(e1),
@@ -162,7 +162,7 @@ void EdgePlacements::TwiddleSmart()
     for ( int i = 0; i < vedata.isize( ); i++ ) {    
         int  e = vedata[i].third.first;
         int err = vedata[i].third.second;
-        const align& a = aligns[i];
+        const allpathslg::align & a = aligns[i];
         int g = vedata[i].first.first;
         int head_err = 0, tail_err = 0;
         {
@@ -310,7 +310,7 @@ basevector EdgePlacements::BestSeq(const vec<int>& best_path, const vec<int>& ei
     return basevector(best_bpath.begin()+left_trim, best_bpath.end()-right_trim); 
 }
 
-int EdgePlacements::CorrelatePositionsAlways( const align& a, const int x1 ) const
+int EdgePlacements::CorrelatePositionsAlways( const allpathslg::align & a, const int x1 ) const
 {    int pos1 = a.pos1( ), pos2 = a.pos2( );
      if ( x1 < pos1 ) return 0; // off the end, shouldn't happen
      if ( x1 == pos1 ) return pos2;
@@ -331,7 +331,7 @@ void GraphZ::BuildGraph(const int verbosity, ostream& out)
 {
      const vec< quad< triple<int,int,int>, triple<int,int,int>, 
           pair<int,int>, pair<int,int> > >& vedata = edge_placements.vedata;
-     const vec<align>& aligns = edge_placements.aligns;
+     const vec<allpathslg::align >& aligns = edge_placements.aligns;
 
      for ( int i = 0; i < vedata.isize( ); i++ )
      {    edges.push( verts.size( ), verts.size( ) + 1, vedata[i].third );
@@ -744,7 +744,7 @@ void GraphZ::FindShortestPathBetween( const int this_source, const int this_sink
           int eid = Z.EdgeObjectIndexByIndexFrom( v, best_edge );
           if ( eid < edges.isize( ) )
           {    int gg = verts[v].first;
-               const align& a = edge_placements.aligns[eid];
+               const allpathslg::align & a = edge_placements.aligns[eid];
                int edge_id = edges[eid].third.first;
                int p1 = a.pos1( ), p2 = a.pos2( );
                const basevector& E = hbp.EdgeObject(edge_id);

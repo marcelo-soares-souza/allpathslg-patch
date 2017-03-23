@@ -360,7 +360,7 @@ void CombinePairs( vecbasevector& reads, vecqualvector& quals,
      String& report );
 
 // Error correct each read using the reads that are aligned to it.  We do this by
-// forming the pile of reads that align to a given read, and scoring each of its
+// forming the pile of reads that align  to a given read, and scoring each of its
 // consecutive columns.  At present polymorphism is incorrectly handled.
 
 void CorrectErrors( const vecbasevector& reads, const vecqualvector& quals,

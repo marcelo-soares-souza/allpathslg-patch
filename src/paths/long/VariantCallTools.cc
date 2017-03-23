@@ -109,7 +109,7 @@ void FindSimilar(const basevector& selected, const vec<basevector>& edges,
 // middle 90% of these offsets to define initial bounds on the offset.  Then we
 // traverse the remaining offsets.  We ignore offsets for which there is another
 // offset at the same position on b1 that are within the 90% bounds.  All other
-// offsets are put into a pile called 'extras'.  At first we align, ignoring the
+// offsets are put into a pile called 'extras'.  At first we align , ignoring the
 // extras.  Then we ask if use of any of the extras might possibly have improved
 // the alignment (using a test that is not really airtight).  If so we extend the 
 // offset bounds and try again.
@@ -117,7 +117,7 @@ void FindSimilar(const basevector& selected, const vec<basevector>& edges,
 // Note that the kmer lookup is parallelized.
 
 void RestrictedAlign( const basevector& b1, const basevector& b2, 
-     const int offset, const int bandwidth, align& a )
+     const int offset, const int bandwidth, allpathslg::align & a )
 {
      // Control.
 
@@ -135,7 +135,7 @@ void RestrictedAlign( const basevector& b1, const basevector& b2,
          int K = 501; //max( 60, min( smallest/100, 501 ) );
          alignment al;
          SmithWatAffineSuper( b1, b2, al, K, false, false );
-         a=align(al);
+         a=align (al);
          return;
      }
 #endif
@@ -211,7 +211,7 @@ void RestrictedAlign( const basevector& b1, const basevector& b2,
 
      // Align.
 
-     align a2;
+     align  a2;
      if (verbose) cout << Date( ) << ": alignment starting" << endl;
      int nerrors;
      int err = SmithWatAffineBanded( b1, b2, -offset2, bandwidth2, a2, nerrors );
@@ -290,7 +290,7 @@ void RestrictedAlign( const basevector& b1, const basevector& b2,
      a = a2;
 }
 
-int CorrelatePositionsRangeChecked( const align& a, const int x1 )
+int CorrelatePositionsRangeChecked( const allpathslg::align & a, const int x1 )
 {    
      int pos1 = a.pos1( ), pos2 = a.pos2( );
      if ( x1 < pos1 || x1 > a.Pos1()) return -1; // off the end, shouldn't happen
@@ -328,7 +328,7 @@ void DumpGraph(const String filename, const GraphT& shb) {
 // Generate insertion edits of unaligned head/tail source sequence
 // if head_ins/tail_ins are set. We don't want to call those variants near the
 // begin or end of the chromosome or chromosome segments.
-void GetEditsFromAlign(const basevector& s, const basevector& t, const align& a, 
+void GetEditsFromAlign(const basevector& s, const basevector& t, const allpathslg::align & a, 
         vec<triple<int,int,String>>* edits, vec<pair<String,String>>* change = NULL, 
         char prev_char_s = 'X', char prev_char_t = 'X', bool head_ins = false,
         bool tail_ins = true)
@@ -407,7 +407,7 @@ struct SubEdgeLoc {
 // Given the variants and callers, find the multiple placement of the caller
 // edges and genome location (gid, pos) of the alternative placement.
 void FindVariantFriends(const vec<VariantCallGroup>& vcall_groups, 
-        const vec<vec<align>>& all_aligns, const HyperBasevector& hbp,
+        const vec<vec<allpathslg::align >>& all_aligns, const HyperBasevector& hbp,
         const vec<pair<int,Bool>>& hbp_to_hb,
         map<Variant, vec<pair<int,int>>> *p_var_friending)
 {
@@ -562,11 +562,11 @@ void EdgesOnRef::UnrollAll(const int verbosity, const int iLoBound, const int iH
 
         int new_edge0 = -1;
         double best_match_rate = 0.0;
-        align a;
+        allpathslg::align  a;
         vec<pair<double,int>> alt_edges;
         for (int i = 0; i < hb_.FromSize(to_right[tail_edge0]); i++) {
             int eid = hb_.EdgeObjectIndexByIndexFrom(to_right[tail_edge0], i);
-            align ai;
+            align  ai;
             int Bandwidth = max(1, (int)hb_.EdgeObject(eid).size()/2);
             RestrictedAlign(hb_.EdgeObject(eid), gplus_, tail_edge_end,
                     Bandwidth, ai );
@@ -596,7 +596,7 @@ void EdgesOnRef::UnrollAll(const int verbosity, const int iLoBound, const int iH
            ) break;
 
         if (verbosity >= 2) {
-            cout << "align at " << a.pos1() << "," << a.Pos1() << " to " << a.pos2() << "," << a.Pos2() << endl;
+            cout << "align  at " << a.pos1() << "," << a.Pos1() << " to " << a.pos2() << "," << a.Pos2() << endl;
             if ( a.pos2() - a.pos1()+ MinOverlap < (int)gplus_.size() )
             PrintVisualAlignment(True, cout, hb_.EdgeObject(new_edge0), gplus_, a);
         }
@@ -630,11 +630,11 @@ void EdgesOnRef::UnrollAll(const int verbosity, const int iLoBound, const int iH
 
         int new_edge0 = -1; 
         double best_match_rate = 0.0;
-        align a;
+        allpathslg::align  a;
         vec<pair<double,int>> alt_edges;
         for (int i = 0; i < hb_.ToSize(to_left[head_edge0]); i++) {
             int eid = hb_.EdgeObjectIndexByIndexTo(to_left[head_edge0], i);
-            align ai;
+            align  ai;
             int Bandwidth = max(1, (int)hb_.EdgeObject(eid).size()/2);
             int start_prev = start0 - hb_.EdgeLengthKmers(eid);
             RestrictedAlign(hb_.EdgeObject(eid), gplus_, start_prev, Bandwidth, ai);
@@ -661,7 +661,7 @@ void EdgesOnRef::UnrollAll(const int verbosity, const int iLoBound, const int iH
             || a.pos2() < iLoBound || a.Pos2() < iLoBound
            ) break;
         if (verbosity >= 2) {
-            cout << "align at " << a.pos1() << "," << a.Pos1() << " to " << a.pos2() << "," << a.Pos2() << endl;
+            cout << "align  at " << a.pos1() << "," << a.Pos1() << " to " << a.pos2() << "," << a.Pos2() << endl;
             PrintVisualAlignment(True, cout, hb_.EdgeObject(new_edge0), gplus_, a);
         }
         if(   dRequiredAlignedFractionForExtension * hb_.EdgeObject(new_edge0).size() > a.Pos1()-a.pos1()
@@ -1380,7 +1380,7 @@ void EdgesOnRef::AddConnections(int front_edge, int back_edge, const vec<pair<in
 // Also report the alignment of these edges, which are used to find friend
 // locations.
 void EdgesOnRef::CallVariantsGroupedWithProb(int gid, vec<VariantCallGroup> *p_groups, 
-        vec<align>* p_edge_aligns, int verbosity) 
+        vec<allpathslg::align >* p_edge_aligns, int verbosity) 
 {
     if (verbosity >=1) cout << Date() << ": Start calling variants" << endl;
     // identify anchoring edges from bubble graph
@@ -1403,7 +1403,7 @@ void EdgesOnRef::CallVariantsGroupedWithProb(int gid, vec<VariantCallGroup> *p_g
 
     // to be calculated 
     vec<VariantCallGroup> all_groups(ngroups);
-    vec<align>   align_all_edges(nedges);
+    vec<allpathslg::align >   align_all_edges(nedges);
     for (size_t i = 0; i < anchoring_edges.size(); i++) {
         int e = anchoring_edges[i];
         const vec<int>& path = bubble_graph_edge_path_[e];
@@ -1419,7 +1419,7 @@ void EdgesOnRef::CallVariantsGroupedWithProb(int gid, vec<VariantCallGroup> *p_g
                 edge_seq.size() - trim_start - trim_end);
         int path_offset = GetStart(path.front()) + trim_start;
 
-        align a;
+        allpathslg::align  a;
         int bandwidth = max(1, (int)edge_seq.size() /2 );
 
         RestrictedAlign( edge_seq, gplus_, path_offset, bandwidth, a );
@@ -1531,10 +1531,10 @@ void EdgesOnRef::CallVariantsGroupedWithProb(int gid, vec<VariantCallGroup> *p_g
 
             /*
             int score = SmithWatAffine(branch_base, cell_ref, al, true, true);
-            align a = align(al);
+            align  a = align (al);
             */
 
-            align a;
+            allpathslg::align  a;
             int n1 = branch_base.size( ), n2 = cell_ref.size( );
             int offset = (-n1+n2)/2;
             int bandwidth = Max( offset + n1, n2 - offset );
@@ -1555,10 +1555,10 @@ void EdgesOnRef::CallVariantsGroupedWithProb(int gid, vec<VariantCallGroup> *p_g
             if ( !left_ok || !right_ok )
             {    alignment al;
                  SmithWatAffine(branch_base, cell_ref, al, true, true);
-                 a = align(al);    }
+                 a = align (al);    }
 
             if (verbosity >= 2) {
-                cout << "align branch"  << j << " [" <<  a.pos1() << "," << a.Pos1() 
+                cout << "align  branch"  << j << " [" <<  a.pos1() << "," << a.Pos1() 
                     << ") aligns to [" << a.pos2() << "," << a.Pos2() << ") " << endl;
                 cout << "path0= ";
                 path0.Println(cout);
@@ -1649,7 +1649,7 @@ void EdgesOnRef::MakeBubbleGraph(int verbosity)
     if (verbosity >=1)
         cout << Date() << ": Make bubble graph" << endl;
     vec<vec<int>> single_edges;
-    vec<align> single_edges_aligns;
+    vec<allpathslg::align > single_edges_aligns;
     FindAnchoringEdges(single_edges);
     AlignAnchoringEdges(single_edges, single_edges_aligns, verbosity);
     if (verbosity >=2)
@@ -1939,7 +1939,7 @@ void EdgesOnRef::FindAnchoringEdges(vec<vec<int>>& single_edges) const
 // Remove short edges. Also remove edges that cannot be anchored in reference,
 // which are probably due to large insertions.
 void EdgesOnRef::AlignAnchoringEdges(vec<vec<int>>& single_edges,
-        vec<align>& single_edge_aligns, int verbosity) 
+        vec<allpathslg::align >& single_edge_aligns, int verbosity) 
 {
     vec<int> to_right2; dg_.ToRight(to_right2);
     vec<int> to_left2; dg_.ToLeft(to_left2);
@@ -1971,7 +1971,7 @@ void EdgesOnRef::AlignAnchoringEdges(vec<vec<int>>& single_edges,
             // make the alignment
             basevector edge_trimmed(edge.begin()+trim_left, 
                     edge.end() - trim_right);
-            align a;
+            allpathslg::align  a;
 
             int bandwidth = max(1, (int)edge_trimmed.size() /2 );
             int path_offset = GetStart(path.front()) + trim_left;
@@ -1990,7 +1990,7 @@ void EdgesOnRef::AlignAnchoringEdges(vec<vec<int>>& single_edges,
                     a.Pos2() - a.pos2() < MinAlignedBase ){
                 todel[i] = True;
                 if (verbosity >=2) {
-                    cout << "    Unable to align anchoring edge " << i << "to reference: "
+                    cout << "    Unable to align  anchoring edge " << i << "to reference: "
                         << " alignment= " << " [" <<  a.pos1() << "," << a.Pos1() << ") to [" 
                         << a.pos2() << "," << a.Pos2() << ") " << endl;
                     cout << "   path0= ";

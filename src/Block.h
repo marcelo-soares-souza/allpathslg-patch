@@ -18,7 +18,7 @@
 /*
  * Class block
  *
- * It captures the information of an aligning block from one align: this
+ * It captures the information of an aligning block from one align : this
  * is a gapless aligning span, identified uniquely by start on read1,
  * start on read2, and length.
  */
@@ -87,7 +87,7 @@ private:
  * BlocksOverlap
  * 
  * Returns the amount of overlap between blocks. An example: say that
- * read1 and read2 are chimp reads, and that they align the same human
+ * read1 and read2 are chimp reads, and that they align  the same human
  * chromosme as per blocks left and right. This means that the two
  * intervals on human are I1= [left.begin2_, left.begin2_ + len_], and
  * I2 = [right.begin2_, right.begin2_ + len_]. BlocksOverlap returns

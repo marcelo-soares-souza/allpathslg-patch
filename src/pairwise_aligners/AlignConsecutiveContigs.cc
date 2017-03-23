@@ -26,7 +26,7 @@ bool AlignConsecutiveContigs( const int super_id,
 			      float MAX_ERROR_RATE )
 {
   // Consts (could be turned into extra args).
-  int max_stretch = 6;   // used to chop relevant portion of contigs for align
+  int max_stretch = 6;   // used to chop relevant portion of contigs for align 
   int min_cglen = 2000;  // min size of chopped portion
   
   // Log stream.
@@ -102,7 +102,7 @@ bool AlignConsecutiveContigs( const int super_id,
       << ", " << mtig2.size( )
       << "): " << flush;
   
-  align al;
+  align  al;
   int Rc = 0;
   int base_bandwidth = 100;
   int t1_bandwidth = mtig1.size( ) / 2;
@@ -121,7 +121,7 @@ bool AlignConsecutiveContigs( const int super_id,
   //  parameters. This second stage tends to find short overlaps
   //  missed by the first stage.
   if ( overlap < 10 ) {
-    out << " align not found. Trying again:";
+    out << " align  not found. Trying again:";
     overlap = AlignTwoBasevectors( mtig1, mtig2, al, 0, 10000000, 1.0,
 				   0, Rc, 8, 24, 2, 1, qual1, qual2,
 				   10000000.0, 10000, devnull, False, 1000,
@@ -142,12 +142,12 @@ bool AlignConsecutiveContigs( const int super_id,
   
   // No alignment found.
   if ( overlap < 0 ) {
-    out << " no align found.\n";
+    out << " no align  found.\n";
     return false;
   }
   
   // Print alignment and return.
-  out << " found align! len=" << al.Pos1( ) - al.pos1( )
+  out << " found align ! len=" << al.Pos1( ) - al.pos1( )
       << ", n_errors=" << ToString( al.Errors( contig1, contig2 ) )
       << "\n"
       << " on1: " << al.pos1( ) << "-" << al.Pos1( ) << "_" << len1 << "\n"

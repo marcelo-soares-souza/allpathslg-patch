@@ -46,7 +46,7 @@ namespace {  // anonymous namespace for local functions
 
     // Local data structure to store the mapping of the founder reads to candidate assemblies
     struct AlignRange {
-        align a;
+        allpathslg::align  a;
         int pos1, Pos1; // positin on the read
         int pos2, Pos2; // position on the assembly
         int n_errors;   // total number of errors
@@ -135,7 +135,7 @@ namespace {  // anonymous namespace for local functions
     // to be included in the alignment.
     AlignRange SWFAlign( const basevector& s, const basevector& t) 
     {
-        align a;
+        allpathslg::align  a;
         SmithWatFreeSym( s, t, a, false, false, 1, 1, 0 );
         int error = a.Errors( s, t );
         float error_rate = error * 1.0 / ( a.Pos1() - a.pos1() );
@@ -146,7 +146,7 @@ namespace {  // anonymous namespace for local functions
     // Banded Smith-Waterman alignment 
     AlignRange SWAlign( const basevector& s, const basevector& t) 
     {
-        align a;
+        allpathslg::align  a;
         int error = 0;
         int extra = s.size() / 10;
         int off_ub = 0 + extra;
@@ -168,7 +168,7 @@ namespace {  // anonymous namespace for local functions
             locs[j] = j;  } 
         SortSync(kmers, locs);  }
 
-    // Banded Smith-Waterman alignment assisted by kmer align ( for offset and bandwidth calculation )
+    // Banded Smith-Waterman alignment assisted by kmer align  ( for offset and bandwidth calculation )
     AlignRange KmerAlign( const int K, const basevector& s, const basevector t, 
                           const vec<basevector>& kmers, const vec<int> & locs )
     {
@@ -183,7 +183,7 @@ namespace {  // anonymous namespace for local functions
                 ++it;
             }
         }
-        AlignRange result0 = { align(), 0, 0, 0, 0, 100, 100.0 };
+        AlignRange result0 = { align (), 0, 0, 0, 0, 100, 100.0 };
         if ( offsets.empty() ) return result0;
         vec< pair<int,int> > offsets2;
         LargestOffsetCluster( offsets, offsets2, 200, 0.2 );
@@ -193,7 +193,7 @@ namespace {  // anonymous namespace for local functions
             int off_l = offsets2.front().first;
             int off = ( off_u + off_l ) / 2;
             int bandwidth = ( off_u - off_l ) / 2;
-            align a;
+            allpathslg::align  a;
             int error;
             SmithWatBandedA( s, t, off, bandwidth, a, error, 0, 1, 1 );
             float error_rate = error * 1.0 / ( a.Pos1() - a.pos1() );
@@ -311,7 +311,7 @@ namespace {  // anonymous namespace for local functions
             out << i << " " << ar << endl;
             if ( ar.error_rate > 0.1 ) continue;
             n_good_reads++;
-            const align& a = ar.a;
+            const allpathslg::align & a = ar.a;
             int p1 = a.pos1( ), p2 = a.pos2( );
             for ( int j = 0; j < a.Nblocks( ); j++ ) {    
                 if ( a.Gaps(j) > 0 ) {    

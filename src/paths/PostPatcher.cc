@@ -737,7 +737,7 @@ int main( int argc, char *argv[] )
 	   bvec c1 = tigsa[t1].ToBasevector(&c1_amb);
 	   bvec c2 = tigsa[t2].ToBasevector(&c2_amb);
 
-	   align a;
+	   allpathslg::align  a;
 	   int rc;
 	   int overlap = AlignTwoBasevectors(c1, c2, a, min_overlap, max_overlap, 0.05, NULL, rc);
 

@@ -18,8 +18,8 @@
 /*
  * Class block_align
  *
- * It makes easier to deal with the aligning portions of a given align
- * (blocks). Each align is broken into its gapless units (block), with the
+ * It makes easier to deal with the aligning portions of a given align 
+ * (blocks). Each align  is broken into its gapless units (block), with the
  * option of saving also mutation rates (on a per block basis).
  *
  * Constructor and SetFromAlign are passed an alignment, and a vector of
@@ -32,11 +32,11 @@ public:
 
   block_align( ) { }
   
-  block_align( const align *al, const vec<int> *mut = 0 );
+  block_align( const allpathslg::align  *al, const vec<int> *mut = 0 );
   
   block_align( const look_align_plus *hit );
   
-  void SetFromAlign( const align *al, const vec<int> *mut = 0 );
+  void SetFromAlign( const allpathslg::align  *al, const vec<int> *mut = 0 );
   
   void SetFromLookAlign( const look_align_plus *hit );
   
@@ -47,7 +47,7 @@ public:
   
 private:
   
-  void Setup( const align *al, const vec<int> *mut = 0 );
+  void Setup( const allpathslg::align  *al, const vec<int> *mut = 0 );
   
   
 private:

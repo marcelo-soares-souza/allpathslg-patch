@@ -16,12 +16,12 @@ class align_plus {
 
      public:
 
-     align a;
+     allpathslg::align  a;
      int RC;
      int id1, id2;
 
      align_plus( ) { }
-     align_plus( const align& a_arg,
+     align_plus( const allpathslg::align & a_arg,
 		 int RC_arg,
 		 int id1_arg,
 		 int id2_arg ) 
@@ -31,7 +31,7 @@ class align_plus {
 	 id2(id2_arg)
      { }
 
-     void SetFrom( const align& ax, int RCx, int id1x, int id2x ) 
+     void SetFrom( const allpathslg::align & ax, int RCx, int id1x, int id2x ) 
      {    a = ax;
           RC = RCx;
           id1 = id1x;

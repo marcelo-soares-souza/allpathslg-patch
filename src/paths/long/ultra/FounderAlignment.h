@@ -22,7 +22,7 @@
 #include "paths/long/ultra/MultipleAligner.h"
 #include <cstddef>
 
-typedef vec<align> VecAlign;
+typedef vec<allpathslg::align > VecAlign;
 
 void AlignFriendsToFounder(
         // the reads

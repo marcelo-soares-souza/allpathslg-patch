@@ -9,7 +9,7 @@
 
 #include "lookup/AlignCollector.h"
 
-// Use this align to test read for ambiguity
+// Use this align  to test read for ambiguity
 void AmbiguousAlignCollector::Insert(const look_align & la) {
   int i = la.query_id;
 
@@ -179,7 +179,7 @@ void BestNextBestAlignCollector::Insert(const look_align & la) {
 
   // alignment as good as current second best; if it's worth saving, add it and bail out
   // (note that here and only here we can add duplicate alignments as
-  // second best hits). Note that we always keep best align(s) (because they may
+  // second best hits). Note that we always keep best align (s) (because they may
   // become second best if we find a better one), but we do not bother storing
   // second best ones if best is still above maxErr threshold!
   if ( e == second_best_[q] && ( best_[q] <= maxErrs_ || best_[q] == second_best_[q] ) ) {
@@ -284,7 +284,7 @@ void BestAlignCollector::Insert(const look_align & la) {
   if ( e == best_[q] ) {
     // it's another "best" alignment; save it if needed, update second_best and bail out.
 
-    if ( e <= maxErrs_ ) { // if we are already storing the best align:
+    if ( e <= maxErrs_ ) { // if we are already storing the best align :
       // we never allow a duplication of the *best* alignment we keep as long as there is only one;
       if ( la == aligns_[q][0] ) return;
 
@@ -313,7 +313,7 @@ void BestAlignCollector::Insert(const look_align & la) {
   if ( best_[q] <= maxErrs_ ) aligns_[q].clear(); // erase old best aligns if we were keeping any
   best_[q] = e; // reset new best
 
-  if ( e <= maxErrs_ ) aligns_[q].push_back(la); // save the new best align if it's time to save at all
+  if ( e <= maxErrs_ ) aligns_[q].push_back(la); // save the new best align  if it's time to save at all
 
   ++betterBest_;
 }

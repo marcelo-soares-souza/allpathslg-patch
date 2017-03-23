@@ -35,7 +35,7 @@ void RemoveRepetitiveEdges(vec<VariantCallGroup>& groups,
             //if (path0.size() != 1) continue;
             if (edge_len > maxq) continue;
 
-            const align& a = group.GetAlign(i);
+            const allpathslg::align & a = group.GetAlign(i);
             pair<int,int> trims = group.GetTrim(i);
             int estart = start + a.pos2( ) - trims.first;
             int estop = start + a.Pos2( ) + trims.second;

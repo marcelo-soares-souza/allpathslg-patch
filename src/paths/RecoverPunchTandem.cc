@@ -21,7 +21,7 @@
 #include "paths/AssemblyCleanupTools.h"
 #include "paths/AssemblyEdit.h"
 
-int SmithWatFreeSymPenalize( const basevector& b1, const basevector& b2, align& a )
+int SmithWatFreeSymPenalize( const basevector& b1, const basevector& b2, allpathslg::align & a )
 {    alignment al;
      int best_loc, errs;
      if ( b1.size( ) <= b2.size( ) )
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
                          String nrepeat;
                          while(1)
                          {    basevector b( left + nrepeat + right );
-                              align a;
+                              allpathslg::align  a;
                               int e = SmithWatFreeSymPenalize( b, lr_patch, a );
                               if (VERBOSE) PRINT3( b, lr_patch, e );
                               if ( errs.nonempty( ) && e > errs.back( ) ) break;

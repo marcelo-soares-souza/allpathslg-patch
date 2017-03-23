@@ -66,7 +66,7 @@ void PushBoundaries( basevector b1, basevector b2,
      {    swap( left1, left2 );
           swap( right1, right2 );    }    }
 
-void DecomposeAlign( const align& a, const basevector& b1, const basevector& b2,
+void DecomposeAlign( const allpathslg::align & a, const basevector& b1, const basevector& b2,
      vec< pair<int,int> >& P1, vec< pair<int,int> >& P2 )
 {
      int n1 = b1.size( ), n2 = b2.size( );

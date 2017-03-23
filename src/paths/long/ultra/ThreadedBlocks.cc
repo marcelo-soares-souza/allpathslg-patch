@@ -74,7 +74,7 @@ void FindEdits( const vec<basevector>& threads, const basevector& t,
           if ( threads[i].size( ) > 0 && t.size( ) == 0 )
                edits[0].push( INSERTION, threads[i].ToString( ) );
           if ( threads[i].size( ) == 0 || t.size( ) == 0 ) continue;
-          align a;
+          allpathslg::align  a;
 
           /*
           int errors;
@@ -467,7 +467,7 @@ void threaded_blocks::ThreadConsensus( const int g, const Scorer& scorer,
                {    const basevector& gt = gap_truth[0];
                     out << "truth     = " << gt.ToString( ) << "\n\n";    
                     if ( t.size( ) > 0 && gt.size( ) > 0 )
-                    {    align a;
+                    {    allpathslg::align  a;
 
                          // Print the scores.
 

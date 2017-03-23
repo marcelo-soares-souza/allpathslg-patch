@@ -59,7 +59,7 @@ unsigned int SmithWatAffineParallel2(
 
 unsigned int SmithWatAffineBanded( const basevector& S, const basevector& T,
                              int offset, int bandwidth,
-			     align& a, int& nerrors,
+			     allpathslg::align & a, int& nerrors,
                              const int mismatch_penalty = 3,
                              const int gap_open_penalty = 12,
                              const int gap_extend_penalty = 1);

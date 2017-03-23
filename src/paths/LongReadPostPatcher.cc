@@ -64,7 +64,7 @@ void PrintGenomicPlacements( ostream& out, basevector b, const int L,
 // BestGoodFirst: calculate the longest left part of an alignment that has a
 // substitution rate <= a given bound.
 
-double BestGoodFirst( const align& a, const basevector& b1, 
+double BestGoodFirst( const allpathslg::align & a, const basevector& b1, 
      const basevector& b2, const double max_err )
 {    int p1 = a.pos1( ), p2 = a.pos2( ), errs = 0, best_len = 0;
      for ( int j = 0; j < a.Nblocks( ); j++ ) 
@@ -361,7 +361,7 @@ int main(int argc, char *argv[]){
 		places.push( gid, s, Glocs[n][z].second );    
 	      }    
 	    }
-	    align a;
+	    allpathslg::align  a;
 	    int errors;
 	    vec<Bool> checked( places.size( ), False );
 	    for ( int q = 0; q < places.isize( ); q++ ){    
@@ -398,7 +398,7 @@ int main(int argc, char *argv[]){
 	      adata.push( a, gid, a.pos2( ), a.Pos2( ), errors2, 
 			  pass == 1 );    
 		 
-	      // Mark places that are effectively checked by this align.
+	      // Mark places that are effectively checked by this align .
 	      // It might save time to switch to a binary search of 
 	      // "places".
 		 
@@ -462,7 +462,7 @@ int main(int argc, char *argv[]){
 	vec< triple<int,int,int> > aligns;
 	GetLocalAligns(r, T, Tlocs, L, flank, max_errs, aligns, out, SHOW_ALIGNS, True );
 	Sort(aligns);
-	vec<align> aligns_a( aligns.size( ) );
+	vec<allpathslg::align > aligns_a( aligns.size( ) );
 	GetGlobalAligns( r, T, aligns, bandwidth_div, aligns_a, 1, 1, 1 );
 	   
 	// Filter out bad alignments.
@@ -470,7 +470,7 @@ int main(int argc, char *argv[]){
 	double max_error_rate_remove = 0.37;
 	vec<Bool> to_remove( aligns.size( ), False );
 	for ( int i = 0; i < aligns_a.isize( ); i++ ){    
-	  const align& a = aligns_a[i];
+	  const allpathslg::align & a = aligns_a[i];
 	  int u = aligns[i].first;
 	  int errs = ActualErrors( T[u], r, a, 1, 1 );
 	  double err_rate = double(errs) / double( a.extent1( ) );
@@ -487,7 +487,7 @@ int main(int argc, char *argv[]){
 	// case they belong in the same group.
 	   
 	vec< vec< triple<int,int,int> > > alignsx;
-	vec<align> alignsx_a;
+	vec<allpathslg::align > alignsx_a;
 	for ( int i = 0; i < aligns.isize( ); i++ ){    
 	  int j, l, u = aligns[i].first;
 	  vec< triple<int,int,int> > xxx;
@@ -501,7 +501,7 @@ int main(int argc, char *argv[]){
 	    int offset = xxx[k].third;
 	    int predicted_overlap = IntervalOverlap( 0, T[u].isize( ), offset, offset + r.isize( ) );
 	    int bandwidth = predicted_overlap / bandwidth_div;
-	    align a;
+	    allpathslg::align  a;
 	    int errors;
 	    SmithWatBandedA(T[u], r, offset, bandwidth, a, errors, 0, 1, 1);
 	    vec<ho_interval> perfs1, perfs2;
@@ -551,7 +551,7 @@ int main(int argc, char *argv[]){
 	// Print alignments.
 	   
 	for ( int i = 0; i < NN; i++ )
-	  {    const align& a = alignsx_a[i];
+	  {    const allpathslg::align & a = alignsx_a[i];
 	    int t = tot[i];
 	    out << "contig " << tot[i] << ", pos1 = " << a.pos1( ) << "-" 
 		<< a.Pos1( ) << " of " << T[t].size( ) << ", pos2 = "
@@ -567,7 +567,7 @@ int main(int argc, char *argv[]){
 	    int s = to_super[t1];
 	    if ( to_super[t2] != s ) continue;
 	    if ( to_super_pos[t2] != to_super_pos[t1] + 1 ) continue;
-	    const align &a1 = alignsx_a[i1], &a2 = alignsx_a[i2];
+	    const allpathslg::align  &a1 = alignsx_a[i1], &a2 = alignsx_a[i2];
 	    if ( a1.Pos1( ) != T[t1].isize( ) ) continue;
 	    if ( a2.pos1( ) != 0 || a1.pos2( ) != 0 ) continue;
 	    if ( a2.Pos2( ) != R[z].isize( ) ) continue;
@@ -595,7 +595,7 @@ int main(int argc, char *argv[]){
 	    const double max_err = 0.05;
 	    basevector rrc(r);
 	    rrc.ReverseComplement( );
-	    align a1rc(a1);
+	    align  a1rc(a1);
 	    a1rc.ReverseThis( T[t1].size( ), r.size( ) );
 	    int best_len1 = BestGoodFirst( a1rc, Trc[t1], rrc, max_err );
 	    int best_len2 = BestGoodFirst( a2, T[t2], r, max_err );

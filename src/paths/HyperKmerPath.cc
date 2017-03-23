@@ -313,7 +313,7 @@ void HyperKmerPath::PrintSummaryPlus( ostream& out,
                               if ( p.GapFree( ) && p2.GapFree( ) )
                               {    basevector b = kbb->ToSequence(p).Seq(0);
                                    basevector b2 = kbb->ToSequence(p2).Seq(0);
-                                   align a;
+                                   allpathslg::align  a;
                                    int offset = 0, bandwidth = 20, errors;
                                    SmithWatBandedA( b, b2, offset,
                                         bandwidth, a, errors );

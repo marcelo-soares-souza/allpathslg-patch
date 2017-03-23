@@ -225,8 +225,8 @@ void PatcherCottageCore( basevector L, basevector R, const int sep,
                     if ( (int) i < nreads ) quals_new[i].resize(0);    }    }
 
           // Chimera detection, V3.  For each trimmed read C, find all untrimmed
-          // reads X that align to the left end of C, and all untrimmed reads that
-          // align to the right end of C.  Suppose that:
+          // reads X that align  to the left end of C, and all untrimmed reads that
+          // align  to the right end of C.  Suppose that:
           // 1. There are no reads that extend reads in X to the right and 
           //    reads in Y to the left, except C.
           // 2. There are reads that extend X to the right, which would reach

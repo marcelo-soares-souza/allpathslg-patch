@@ -2065,7 +2065,7 @@ int main(int argc, char *argv[])
                          uniseq s1 = g.Closure(j1), s2 = g.Closure(j2);
                          s1.TrimEnds(1,1), s2.TrimEnds(1,1);
                          basevector U1 = s1.Bases( ), U2 = s2.Bases( );
-                         align a;
+                         allpathslg::align  a;
                          const int bandwidth = 1000;
                          int errors;
                          SmithWatFreeSym( U1, U2, a, True, True, 1, 1 );

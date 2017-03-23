@@ -79,11 +79,11 @@ class alignment : public packalign {
      {    packalign::Set( pos1, pos2, gaps, lengths, nblocks );
           errors_ = errors;    }
 
-     void Set( const align& al )
+     void Set( const allpathslg::align &al )
      {    packalign::Set( al.pos1( ), al.pos2( ), al.Gaps( ), al.Lengths( ),
                al.Nblocks( ) );    }
 
-     void Set( const align& al, int errors )
+     void Set( const allpathslg::align &al, int errors )
      {    packalign::Set( al.pos1( ), al.pos2( ), al.Gaps( ), al.Lengths( ),
                al.Nblocks( ) );
           errors_ = errors;    }
@@ -136,7 +136,7 @@ class alignment : public packalign {
 template<class BASEVEC> int ActualErrors(const BASEVEC& rd1, 
      const BASEVEC& rd2, const alignment& a, int mismatch_penalty = 1, 
      int gap_penalty = 2)
-{    return ActualErrors( rd1, rd2, align(packalign(a)), mismatch_penalty,
+{    return ActualErrors( rd1, rd2, allpathslg::align (packalign(a)), mismatch_penalty,
           gap_penalty );    }
 
 const int Uninitialized = 1111111111;
@@ -208,7 +208,7 @@ class alignment_plus {
 
      void SetToSwapOf( const alignment_plus& x, int rd1length, int rd2length );
 
-     void SetToSwapOf( const align& x, int id1, int id2, Bool rc2,
+     void SetToSwapOf( const allpathslg::align &x, int id1, int id2, Bool rc2,
           float s, int rd1length, int rd2length );
 
      friend Bool operator<( const alignment_plus& p1, const alignment_plus& p2 )
@@ -323,7 +323,7 @@ int TransitiveOffset( const alignment_plus& ap1, const alignment_plus& ap2,
      int rd1length, int rd2length, int rd3length );
 
 // Return an appropriate value for bandwidth, assuming that you have an alignment
-// between two reads, but want to align them again using a banded Smith-Waterman.
+// between two reads, but want to align  them again using a banded Smith-Waterman.
 
 int Bandwidth( alignment& a );
 
@@ -332,14 +332,14 @@ int Bandwidth( alignment& a );
 // of errors is not adjusted.
 
 void TrimAlignmentFront( alignment& a, int n );
-void TrimAlignmentFront( align& a, int n );
+void TrimAlignmentFront( allpathslg::align & a, int n );
 
-// Change a given align a, trimming it so that Pos1 is decremented by n,
+// Change a given align  a, trimming it so that Pos1 is decremented by n,
 // or slightly more (in case the trimming would terminate in a gap).
 
-void TrimAlignmentBack( align& a, int n );
+void TrimAlignmentBack( allpathslg::align & a, int n );
 
-int MaxPerfectMatch( Bool rd1_is_rc, const align& a, const basevector& rd1,
+int MaxPerfectMatch( Bool rd1_is_rc, const allpathslg::align &a, const basevector& rd1,
      const basevector& rd2 );
 
 #endif

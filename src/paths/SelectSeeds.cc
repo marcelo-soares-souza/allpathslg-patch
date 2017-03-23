@@ -10,7 +10,7 @@
  *
  * Select seed unipaths.  A seed is a unipath that will eventually be used to
  * create a localized assembly, by finding nearby unipaths (nearby on the
- * unipath link graph) and the reads that align to those unipaths.  The reads
+ * unipath link graph) and the reads that align  to those unipaths.  The reads
  * and unipaths that get pulled in are called the "cloud" that is created by
  * the seed.
  *
@@ -22,7 +22,7 @@
  * -- Spacing: If seed unipaths appear to be less than SEED_DIST apart on the
  *    unipath graph, they are pruned out.
  * -- Orientation: If a reference genome is supplied, and if USE_TRUTH=True,
- *    unipaths that align in RC to the reference are screened out.
+ *    unipaths that align  in RC to the reference are screened out.
  *
  * Seed unipaths are stored in a vec<int> and are written to the file seeds.ids
  * in SUBDIR.  This file is loaded by LocalizeReadsLG.

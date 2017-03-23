@@ -78,7 +78,7 @@ void CorrectPatch( const basevector& LEFT, const basevector& RIGHT,
 
      vec< pair<int,int> > start_stop;
      vec< pair<int64_t,int64_t> > id1_id2;
-     vec< pair<align,align> > aligns;
+     vec< pair<allpathslg::align ,allpathslg::align > > aligns;
      for ( int i1 = 0; i1 < fw_hits.isize( ); i1++ )
      for ( int i2 = 0; i2 < rc_hits.isize( ); i2++ )
      {    int64_t id1 = fw_hits[i1].second, id2 = rc_hits[i2].second;
@@ -87,7 +87,7 @@ void CorrectPatch( const basevector& LEFT, const basevector& RIGHT,
           if ( stop < start ) continue;
           start_stop.push( start, stop );
           id1_id2.push( id1, id2 );
-          align a1, a2;
+          allpathslg::align  a1, a2;
           int errors;
           SmithWatBandedA( 
                fbases[id1], epatch, -start, bandwidth, a1, errors, 0, 1, 1 );
@@ -106,7 +106,7 @@ void CorrectPatch( const basevector& LEFT, const basevector& RIGHT,
      for ( int z = 0; z < aligns.isize( ); z++ )
      {    int start = start_stop[z].first, stop = start_stop[z].second;
           int64_t id1 = id1_id2[z].first, id2 = id1_id2[z].second;
-          const align &a1 = aligns[z].first, &a2 = aligns[z].second;
+          const allpathslg::align  &a1 = aligns[z].first, &a2 = aligns[z].second;
           if (verbose)
           {    out << "\n";
                PRINT4_TO( out, start, stop, id1, id2 );
@@ -243,7 +243,7 @@ void CorrectPatch( const basevector& LEFT, const basevector& RIGHT,
                     {    b.SetToSubOf( epatch, stop2, stop1 - stop2 );
                          s2 = Cat( s2, b );    }
                     s.SetToSubOf( epatch, start, stop - start );
-                    align a;
+                    allpathslg::align  a;
                     int e1, e2, e12;
                     if ( s.size( ) > 0 && s1.size( ) > 0 )
                          e1 = SmithWatFreeSym( s, s1, a, True, True, 1, 1 );

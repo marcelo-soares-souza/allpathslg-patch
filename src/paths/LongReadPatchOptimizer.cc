@@ -419,7 +419,7 @@ void deletions_find(const BaseVec & bv,
     }
 
     if (time) *time -= WallClockTime();
-    // ---- align bv_sub_orig to bvs_sub
+    // ---- align  bv_sub_orig to bvs_sub
     const int dist_orig = dist_base_vecs_SW(bv_sub_orig, bvs_sub);
     if (time) *time += WallClockTime();
       
@@ -430,7 +430,7 @@ void deletions_find(const BaseVec & bv,
       bv_sub_mod.set(nb_rad + jb, bv_sub_orig[1 + nb_rad + jb]);
     }
 
-    // ---- align bv_sub_mod to bvs_sub
+    // ---- align  bv_sub_mod to bvs_sub
     if (time) *time -= WallClockTime();
     const int d_dist = dist_base_vecs_SW(bv_sub_mod, bvs_sub) - dist_orig;
     if (time) *time += WallClockTime();
@@ -480,7 +480,7 @@ void insertions_find(const BaseVec & bv,
       bvs_sub[ibv].SetToSubOf(bvs[ibv], jb0, jb1 - jb0 + 1);
     }
 
-    // ---- align bv_sub_orig to bvs_sub
+    // ---- align  bv_sub_orig to bvs_sub
     if (time) *time -= WallClockTime();
     const int dist_orig = dist_base_vecs_SW(bv_sub_orig, bvs_sub);
     if (time) *time += WallClockTime();
@@ -555,7 +555,7 @@ void substitutions_find(const BaseVec & bv,
       bvs_sub[ibv].SetToSubOf(bvs[ibv], jb0, jb1 - jb0 + 1);
     }
 
-    // ---- align bv_sub_orig to bvs_sub
+    // ---- align  bv_sub_orig to bvs_sub
     if (time) *time -= WallClockTime();
     int dist_orig = dist_base_vecs_SW(bv_sub_orig, bvs_sub);
     

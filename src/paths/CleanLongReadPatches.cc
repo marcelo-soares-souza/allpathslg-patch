@@ -34,7 +34,7 @@ This is the "target", denoted t.
 2. By Smith-Waterman, we shall mean the Smith-Waterman alignment algorithm with 
 mismatch penalty = 2, gap base penalty = 3.
 
-3. Let L = 12.  Seeding on L-mers, align the unipaths to t.  This is complicated 
+3. Let L = 12.  Seeding on L-mers, align  the unipaths to t.  This is complicated 
 because we need to allow the same unipath to go in more than one place.  To take the 
 most extreme case, the unipath might be a homopolymer, with a long series of
 staggered placements.  At the same time it would be better not to have multiple 

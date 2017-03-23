@@ -47,7 +47,7 @@ void AlignToGenome( const int LG,
                for ( int z = 0; z < Glocs[n].isize( ); z++ )
                {    int gid = Glocs[n][z].first;
                     places.push( gid, s, Glocs[n][z].second );    }    }
-          align a;
+          allpathslg::align  a;
           int errors;
           vec<Bool> checked( places.size( ), False );
           for ( int q = 0; q < places.isize( ); q++ )
@@ -80,7 +80,7 @@ void AlignToGenome( const int LG,
                if ( a.pos1( ) > 0 || a.Pos1( ) < r.isize( ) ) continue;
                adata.push( a, gid, a.pos2( ), a.Pos2( ), errors2, 
                     pass == 1 );    
-                // Mark places that are effectively checked by this align.
+                // Mark places that are effectively checked by this align .
                // It might save time to switch to a binary search of 
                // "places".
                 vec<ho_interval> perfs1, perfs2;
@@ -122,7 +122,7 @@ void AlignToGenome( const int LG,
 	  // Compute "true" read length.
 	  if (COMPUTE_TRUE_READ_LENGTH)
           {    vec<int> errs_at_pos( b.isize( ), 0 );
-               const align& a = adata[i].a;
+               const allpathslg::align & a = adata[i].a;
                int p1 = a.pos1( ), p2 = a.pos2( );
                for ( int j = 0; j < a.Nblocks( ); j++ ) 
                {    if ( a.Gaps(j) > 0 )  

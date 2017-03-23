@@ -97,7 +97,7 @@ void CRefMerger::Setup( const vecbvec &in_contigs,
   for (int cid=0; cid<(int)in_contigs.size( ); cid++) {
     const vec<int> &indexes = align_indexes[cid];
 
-    // Pick winner partial align (if there are any partial aligns).
+    // Pick winner partial align  (if there are any partial aligns).
     vec< pair<int,int> > len2idx;
     for (int ii=0; ii<indexes.isize( ); ii++) {
       const look_align &al = in_aligns[ indexes[ii] ];
@@ -333,7 +333,7 @@ bool CRefMerger::MergeContigs( const int idx1, const int idx2 )
   int offset = this->PosOn1( al2.a.pos2( ), al1.a );
   int band = Max( 1, overlap / swband_ratio_ );
   
-  align al;
+  align  al;
   int dummy;
   const bvec &b1 = contigs_[al1.query_id];
   const bvec &b2 = contigs_[al2.query_id];
@@ -367,11 +367,11 @@ bool CRefMerger::MergeContigs( const int idx1, const int idx2 )
   orig_ids_[al2.query_id].clear( );
 
   // Merge al1 and al2 onto al1, reset al2 by setting its query length to 0.
-  align nAl1;
+  align  nAl1;
   int nOff = - ( al1.a.pos2( ) - al1.a.pos1( ) );
   int nBand = 0;
   for (int ii=0; ii<2; ii++) {
-    const align &al = ( ii == 0 ? al1.a : al2.a );
+    const allpathslg::align  &al = ( ii == 0 ? al1.a : al2.a );
     for (int jj=0; jj<al.Nblocks( ); jj++)
       nBand += Abs( al.Gaps( jj ) );
   }
@@ -430,11 +430,11 @@ void CRefMerger::CompactifyData( const int min_clen )
  * PosOn1
  * private
  *
- * NB: there is a PosOn1 member method for class align, but it returns
+ * NB: there is a PosOn1 member method for class align , but it returns
  * an error if pos2 corresponds to a gap. Here, if pos2 corresponds to
  * a gap, we slide off the gap, until the first base on 1.
  */
-int CRefMerger::PosOn1( int pos2, const align &al ) const
+int CRefMerger::PosOn1( int pos2, const allpathslg::align  &al ) const
 {
   if ( pos2 < al.pos2( ) || pos2 > al.Pos2( ) ) return -1;
   
@@ -465,11 +465,11 @@ int CRefMerger::PosOn1( int pos2, const align &al ) const
  * private
  *
  * NB (same as PosOn1): there is a PosOn2 member method for class
- * align, but it returns an error if pos1 corresponds to a gap. Here,
+ * align , but it returns an error if pos1 corresponds to a gap. Here,
  * if pos1 corresponds to a gap, we slide off the gap, until the first
  * base on 2.
  */
-int CRefMerger::PosOn2( int pos1, const align &al ) const
+int CRefMerger::PosOn2( int pos1, const allpathslg::align  &al ) const
 {
   if ( pos1 < al.pos1( ) || pos1 > al.Pos1( ) ) return -1;
   
@@ -501,7 +501,7 @@ int CRefMerger::PosOn2( int pos1, const align &al ) const
  */
 bool CRefMerger::IsPerfect( const bvec &b1,
 			    const bvec &b2,
-			    const align &al ) const
+			    const allpathslg::align  &al ) const
 {
   return al.Errors( b1, b2 ) < 1;
 }
@@ -539,7 +539,7 @@ bool CRefMerger::IsValid( const int idx, ostream *log ) const
 	     << ": query_length is " << al.query_length
 	     << ", but contig_[" << qid
 	     << "] has length " << contigs_[qid].size( )
-	     << " (improperly deleted align?)\n";
+	     << " (improperly deleted align ?)\n";
       return false;
     }
     return true;
@@ -556,7 +556,7 @@ bool CRefMerger::IsValid( const int idx, ostream *log ) const
 	   << "\n";
   }
   
-  // Invalid align.
+  // Invalid align .
   int pos1 = al.a.pos1( );
   if ( pos1 < 0 || pos1 > (int)al.query_length ) {
     is_valid = false;
@@ -606,7 +606,7 @@ bool CRefMerger::IsValid( const int idx, ostream *log ) const
  * BriefAlignInfo
  * private
  */
-String CRefMerger::BriefAlignInfo( const align &al ) const
+String CRefMerger::BriefAlignInfo( const allpathslg::align  &al ) const
 {
   String str_al
     = "[p1, " + ToString( al.pos1( ) ) + "]  "

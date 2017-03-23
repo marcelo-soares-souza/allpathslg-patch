@@ -35,7 +35,7 @@ class makealigns_method
   
   virtual Bool MutmersToAlign( const vec<mutmer>& mm, int k,
 			      const basevector& rd1, const basevector& rd2, 
-			       vec<align>& aligns, vec<int>& errors, int& aligns_length, 
+			       vec<allpathslg::align >& aligns, vec<int>& errors, int& aligns_length, 
 			       int min_mutmer, ostream* log ) = 0;
 };
 
@@ -52,7 +52,7 @@ class makealigns_orig_method : public makealigns_method
 
   Bool MutmersToAlign( const vec<mutmer>& mm, int k,
 		       const basevector& rd1, const basevector& rd2, 
-		       vec<align>& aligns, vec<int>& errors, int& aligns_length, 
+		       vec<allpathslg::align >& aligns, vec<int>& errors, int& aligns_length, 
 		       int min_mutmer, ostream* log );
 
   void SetMaxBadness( float max_badness )    { max_badness_ = max_badness; }
@@ -91,7 +91,7 @@ class makealigns_alt_method : public makealigns_method
  public:
   Bool MutmersToAlign( const vec<mutmer>& mm, int k,
 		       const basevector& rd1, const basevector& rd2, 
-		       vec<align>& aligns, vec<int>& errors, int& aligns_length, 
+		       vec<allpathslg::align >& aligns, vec<int>& errors, int& aligns_length, 
 		       int min_mutmer, ostream* log );
   
   void SetMaxErrs( int max_errs )     { max_errs_ = max_errs; }
@@ -110,7 +110,7 @@ class makealigns_perfect_method : public makealigns_method
  public:
   Bool MutmersToAlign( const vec<mutmer>& mm, int k,
 		       const basevector& rd1, const basevector& rd2, 
-		       vec<align>& aligns, vec<int>& errors, int& aligns_length, 
+		       vec<allpathslg::align >& aligns, vec<int>& errors, int& aligns_length, 
 		       int min_mutmer, ostream* log );
 };
 
@@ -133,7 +133,7 @@ class makealigns_sw_gap_method : public makealigns_method
 
   Bool MutmersToAlign( const vec<mutmer>& mm, int k,
 		       const basevector& rd1, const basevector& rd2, 
-		       vec<align>& aligns, vec<int>& errors, int& aligns_length, 
+		       vec<allpathslg::align >& aligns, vec<int>& errors, int& aligns_length, 
 		       int min_mutmer, ostream* log );
 
   void SetMaxErrs( int max_errs )           { max_errs_ = max_errs; }

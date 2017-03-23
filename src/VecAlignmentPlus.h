@@ -76,8 +76,8 @@ public:
   // Set the alignment in all_aligns[ align_id ].
   void SetPlainAlignment( int align_id, alignment &plain_al );
   
-  // Set the align in all_aligns[ align_id ] (beware: align != alignment).
-  void SetPlainAlign( int align_id, align &plain_al );
+  // Set the align  in all_aligns[ align_id ] (beware: align  != alignment).
+  void SetPlainAlign( int align_id, allpathslg::align  &plain_al );
 
   // Kill aligns that fail the RequireProper test (return killed count).
   int KillImproperAligns( );
@@ -93,7 +93,7 @@ private:
 private:
   /*
    * Convention: call all_al the hypothetical vector with all the
-   * alignments, sorted by rd_id1 ("all" means that if rd1<rd2 align,
+   * alignments, sorted by rd_id1 ("all" means that if rd1<rd2 align ,
    * then all_al contains two alignments, the one for rd1-rd2, and the
    * one for rd2-rd1).
    *
@@ -118,7 +118,7 @@ private:
 
 // BuildAlignsIndex: from all_aligns generate file aligns.index.  Then the
 // AlignsIndexReader (below) can random-access this file to rapidly
-// determine which reads a given read is known to align to.
+// determine which reads a given read is known to align  to.
 
 void BuildAlignsIndex( const String& run_dir,
 		       const vec_alignment_plus& all_aligns,
@@ -141,7 +141,7 @@ public:
     // compiler-supplied destructor is OK
     // copying OK if mFR can be copied (which it currently can't be)
 
-    // return as "to" all the read ids which read id1 is known to align to
+    // return as "to" all the read ids which read id1 is known to align  to
     void readIndex( int id1, vec<int>& to ) const;
 
 private:

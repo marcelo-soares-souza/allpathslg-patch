@@ -2277,7 +2277,7 @@ int main( int argc, char *argv[] )
 		  " SCAFFOLDS_IN=initial_scaffolds"
 		  " FORCE=True",
 		
-		  "Remove reads that align portion of contigs with CN greater than ploidy" );
+		  "Remove reads that align  portion of contigs with CN greater than ploidy" );
     
     make.AddCpRule( sub_dir + "/scaffold_reads_filtered.qltoutlet",
 		    sub_dir + "/scaffold_reads.qltoutlet");

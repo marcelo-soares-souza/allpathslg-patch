@@ -74,7 +74,7 @@ void CAltFasta::SetOstringstream( ostream &log )
  * CAltFasta
  * EvalAlternatives
  *
- * A wrapper around several functions from David. The idea is to align
+ * A wrapper around several functions from David. The idea is to align 
  * the reads belonging to the range [begin_, end_) on the contig cid_
  * on each possible alternative, and choose which alternatives are the
  * ones with better alignment scores.

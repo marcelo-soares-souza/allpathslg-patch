@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // SearchFastb2Core: Given fastb files F1 and F2, find all sequences in F1 that 
-// align perfectly from end to end to a sequence in F2.  Ignores sequences of 
+// align  perfectly from end to end to a sequence in F2.  Ignores sequences of 
 // length < K.  Parallelized.
 //
 // The allowed values of K are hardwired, but other values could easily be added.

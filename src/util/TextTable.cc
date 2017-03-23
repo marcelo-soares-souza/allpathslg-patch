@@ -51,14 +51,14 @@ void TextTable::Print( ostream& out, int padding, const string& alignments, cons
         }
         else {
             for ( size_t j = 0; j < lines[i].first.size(); ++j ) {
-                char align = 'l';
-                if ( j < alignments.size() ) align = alignments[j];
-                if ( align == 'l' ) {
+                char align  = 'l';
+                if ( j < alignments.size() ) align  = alignments[j];
+                if ( align  == 'l' ) {
                     out << lines[i].first[j];
                     if ( j < lines[i].first.size()-1 || !ragged_right )		// don't pad out the last col if ragged_right
                 	out << string( widths[j] - lines[i].first[j].size(), ' ' );
                 }
-                else if ( align == 'r' ) {
+                else if ( align  == 'r' ) {
                     out << string( widths[j] - lines[i].first[j].size(), ' ' ) << lines[i].first[j] ;
                 }
                 if ( j < lines[i].first.size() -1 &&  padding > 0 )

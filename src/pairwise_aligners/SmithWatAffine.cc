@@ -37,7 +37,7 @@ const int Infinity = 100000000;
 // Unmatched ends in source read are not penalized
 // Unmatched ends in target read are optionally penalized
 unsigned int SmithWatAffineBandedCore( const basevector& S, const basevector& T,
-			     align* a, int offset, int bandwidth,
+			     align * a, int offset, int bandwidth,
                              bool penalize_left_gap, bool penalize_right_gap,
                              const int mismatch_penalty,
                              const int gap_open_penalty,
@@ -226,12 +226,12 @@ unsigned int SmithWatAffineBandedCore( const basevector& S, const basevector& T,
      {   pos1 += gaps(0);
          gaps(0) = 0;    }
 
-     *a = align( pos1, pos2, gaps, lengths );
+     *a = align ( pos1, pos2, gaps, lengths );
      return best_score;
 }
 
 unsigned int SmithWatAffineBandedCoreFast( const basevector& S, const basevector& T,
-			     align* a, int offset, int bandwidth,
+			     align * a, int offset, int bandwidth,
                              bool penalize_left_gap, bool penalize_right_gap,
                              const int mismatch_penalty,
                              const int gap_open_penalty,
@@ -427,7 +427,7 @@ unsigned int SmithWatAffineBandedCoreFast( const basevector& S, const basevector
      {   pos1 += gaps(0);
          gaps(0) = 0;    }
 
-     *a = align( pos1, pos2, gaps, lengths );
+     *a = align ( pos1, pos2, gaps, lengths );
      return best_score;
 }
 
@@ -943,7 +943,7 @@ unsigned int SmithWatAffineParallel(const basevector & S, const basevector & T,
 // outputs are guaranteed only if reasonable offset and bandwidth are given.
 unsigned int SmithWatAffineBanded( const basevector& S, const basevector& T,
                              int offset, int bandwidth,
-			     align& a, int& error,
+			     allpathslg::align & a, int& error,
                              const int mismatch_penalty,
                              const int gap_open_penalty,
                              const int gap_extend_penalty )
@@ -966,7 +966,7 @@ unsigned int SmithWatAffineBanded( const basevector& S, const basevector& T,
     a.Setpos2(a.pos2()  + t_start);
     if ( a.pos1() < 0 || a.pos2() < 0 || a.Pos1() > (int)S.size()
             || a.Pos2() > (int)T.size() ) {
-        a = align();
+        a = align ();
         score = Infinity;
     }
     return score;
@@ -1270,7 +1270,7 @@ static void find_perfect_seeds( const basevector& S, const basevector& T, int K,
     new_perf_intervals.push_back({0,0,0});          // left edge is a zero-length, perfect interval
 
     if ( verbose >= 2 )
-        cout << "SmithWatAffineSuper: align len " << S.size() << " to len " << T.size() << endl;
+        cout << "SmithWatAffineSuper: align  len " << S.size() << " to len " << T.size() << endl;
 
     while ( 1 ) {
 
@@ -1479,7 +1479,7 @@ unsigned int SmithWatAffineSuper( const basevector& S, const basevector& T,
 
 
     if ( verbose >= 1 ) {
-        cout << Date() << ": SmithWatAffineSuper align S.len=" << S.size()  <<
+        cout << Date() << ": SmithWatAffineSuper align  S.len=" << S.size()  <<
             " T.len=" << T.size() << ", K=" << K << ", penalize L,R=" <<
             penalize_left_gap << "," << penalize_right_gap << endl;
     }
@@ -1547,7 +1547,7 @@ unsigned int SmithWatAffineSuper( const basevector& S, const basevector& T,
 		if (pi == perf_intervals.size() - 1)
 		    t_right_gap = penalize_right_gap;
 		if (verbose >= 2)
-		    cout << "sw-align on ref [" << last.pos1 + last.len << ","
+		    cout << "sw-align  on ref [" << last.pos1 + last.len << ","
 			    << cur.pos1 << ")  sizes " << Spr.size() << " to "
 			    << Tpr.size() << endl << "L,R gap penalty="
 			    << t_left_gap << "," << t_right_gap << endl;
@@ -1642,8 +1642,8 @@ unsigned int SmithWatAffineSuper( const basevector& S, const basevector& T,
 #if 0
     //NIW
     cout << "NEIL ALIGNS:" << endl;
-    for ( auto const& align : new_aligns )
-	align.Print(cout);
+    for ( auto const& align  : new_aligns )
+	align .Print(cout);
     cout << "NEIL EXTRA GAPS:" << endl;
     for ( auto const& gap : extra_gaps )
 	cout << gap << endl;

@@ -57,7 +57,7 @@
  * REGAP_NEG_GAPS: get rid of illogical negative gaps (in RegapSupers)
  * USE_HIGH_CN_ALIGNS: do a single merging run at the end with high cn aligns
  * MERGE_CONSECUTIVE_CONTIGS: try to merge consecutive, overlapping contigs
- * USE_UNIBASES: align high copy number unibases to scaffolds and break if no o
+ * USE_UNIBASES: align  high copy number unibases to scaffolds and break if no o
  *               no spanning read pair present
  * FORCE: do not used cached data
  * VERBOSE: verbose log

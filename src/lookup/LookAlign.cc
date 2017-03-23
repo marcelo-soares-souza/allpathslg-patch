@@ -31,7 +31,7 @@
 
 String QUERY("QUERY");
 
-void look_align::ResetFromAlign(const align & al, const basevector & b1,
+void look_align::ResetFromAlign(const allpathslg::align  & al, const basevector & b1,
 				const basevector & b2) {
   a = al;
   vec<int> errs = a.MutationsGap1Gap2(b1, b2);
@@ -413,7 +413,7 @@ Float look_align::QualScore( const basevector& query,
   if ( qual_g.size( ) > 0 )
     target_q.SetToSubOf( qual_g, start_on_target, target.size( ) );
   else target_q.resize(0);
-  align al;
+  allpathslg::align  al;
   al = a;
   al.Setpos2( a.pos2( ) - start_on_target );
   basevector Query;
@@ -571,7 +571,7 @@ void look_align::PrintVisual( ostream& out, const basevector& query,
      qualvector q1;
      q1 = query_qual;
      if (rc1) q1.ReverseMe( );
-     align ar;
+     allpathslg::align  ar;
      ar = a;
      ar.Setpos2( a.pos2( ) - start_on_target );
      PrintVisualAlignment( abbr, out, rd1, target, ar, q1 );     }
@@ -585,7 +585,7 @@ void look_align::PrintVisual( ostream& out, const fastavector& query,
      qualvector q1;
      q1 = query_qual;
      if (rc1) q1.ReverseMe( );
-     align ar;
+     allpathslg::align  ar;
      ar = a;
      ar.Setpos2( a.pos2( ) - start_on_target );
      PrintVisualAlignment( abbr, out, rd1, fastavector(target), ar, q1 );     }
@@ -599,7 +599,7 @@ void look_align::PrintVisual( ostream& out, const basevector& query,
      qualvector q1;
      q1 = query_qual;
      if (rc1) q1.ReverseMe( );
-     align ar;
+     allpathslg::align  ar;
      ar = a;
      ar.Setpos2( a.pos2( ) - start_on_target );
      PrintVisualAlignment( abbr, out, fastavector(rd1), target, ar, q1 );     }
@@ -613,7 +613,7 @@ void look_align::PrintVisual( ostream& out, const fastavector& query,
      qualvector q1;
      q1 = query_qual;
      if (rc1) q1.ReverseMe( );
-     align ar;
+     allpathslg::align  ar;
      ar = a;
      ar.Setpos2( a.pos2( ) - start_on_target );
      PrintVisualAlignment( abbr, out, fastavector(rd1), target, ar, q1 );     }
@@ -629,7 +629,7 @@ void look_align::PrintVisual( ostream& out, const basevector& query,
      qualvector q1;
      q1 = query_qual;
      if (rc1) q1.ReverseMe( );
-     align ar;
+     allpathslg::align  ar;
      ar = a;
      ar.Setpos2( a.pos2( ) - start_on_target );
      PrintVisualAlignment( abbr, out, rd1, target, ar, q1, target_qual );     }
@@ -645,7 +645,7 @@ void look_align::PrintVisual( ostream& out, const fastavector& query,
      qualvector q1;
      q1 = query_qual;
      if (rc1) q1.ReverseMe( );
-     align ar;
+     allpathslg::align  ar;
      ar = a;
      ar.Setpos2( a.pos2( ) - start_on_target );
      PrintVisualAlignment( abbr, out, rd1, fastavector(target), ar, q1, target_qual );     }
@@ -661,7 +661,7 @@ void look_align::PrintVisual( ostream& out, const basevector& query,
      qualvector q1;
      q1 = query_qual;
      if (rc1) q1.ReverseMe( );
-     align ar;
+     allpathslg::align  ar;
      ar = a;
      ar.Setpos2( a.pos2( ) - start_on_target );
      PrintVisualAlignment( abbr, out, fastavector(rd1), target, ar, q1, target_qual );     }
@@ -677,7 +677,7 @@ void look_align::PrintVisual( ostream& out, const fastavector& query,
      qualvector q1;
      q1 = query_qual;
      if (rc1) q1.ReverseMe( );
-     align ar;
+     allpathslg::align  ar;
      ar = a;
      ar.Setpos2( a.pos2( ) - start_on_target );
      PrintVisualAlignment( abbr, out, rd1, target, ar, q1, target_qual );     }
@@ -691,7 +691,7 @@ void look_align::PrintVisual( ostream& out, const basevector & query,
           {    b.ReverseComplement( );
                PrintVisualAlignment( abbr, out, b, target, a );    }
           else
-          {    align arc = a;
+          {    allpathslg::align  arc = a;
                arc.ReverseThis( query.size( ), target.size( ) );
                PrintVisualAlignment( abbr, out, query, target_rc, arc );    }    }
      else PrintVisualAlignment( abbr, out, query, target, a );    }
@@ -703,7 +703,7 @@ void look_align::PrintVisual( ostream& out, const basevector& query,
 {    basevector rd1;
      qualvector q1;
      rd1 = query, q1 = query_qual;
-     align ar;
+     allpathslg::align  ar;
      ar = a;
      if ( !reverse_display || !rc1 )
      {    if (rc1) rd1.ReverseComplement( );
@@ -814,13 +814,13 @@ bool LookAlignOffset( const look_align_plus &hit1,
 		      const look_align_plus &hit2,
 		      int &offset )
 {
-  // int len1, int len2, const align &al1, const align &al2, int &amt )
+  // int len1, int len2, const allpathslg::align  &al1, const allpathslg::align  &al2, int &amt )
   offset = 0;
 
   int len1 = hit1.query_length;
   int len2 = hit2.query_length;
-  const align &al1 = hit1.a;
-  const align &al2 = hit2.a;
+  const allpathslg::align  &al1 = hit1.a;
+  const allpathslg::align  &al2 = hit2.a;
   const block_align b_al1( &hit1 );
   const block_align b_al2( &hit2 );
 
@@ -906,49 +906,49 @@ int LookAlignOffsetOverlap( const look_align_plus &hit1,
 
 // return true if the beginning of a query (left side for fw orientation)
 // aligns to the target
-bool IsLeft( const look_align &align )
+bool IsLeft( const look_align &align  )
 {
-  if ( !align.rc1 )
-    return ( align.a.pos1() == 0 && align.a.Pos1() < (int) align.query_length );
+  if ( !align .rc1 )
+    return ( align .a.pos1() == 0 && align .a.Pos1() < (int) align .query_length );
   else
-    return ( align.a.pos1() > 0 && align.a.Pos1() == (int) align.query_length );
+    return ( align .a.pos1() > 0 && align .a.Pos1() == (int) align .query_length );
 }
 
 // return true if the end of a query (right side for fw orientation)
 // aligns to the target
-bool IsRight( const look_align &align )
+bool IsRight( const look_align &align  )
 {
-  if ( !align.rc1 )
-    return ( align.a.pos1() > 0 && align.a.Pos1() == (int) align.query_length );
+  if ( !align .rc1 )
+    return ( align .a.pos1() > 0 && align .a.Pos1() == (int) align .query_length );
   else
-    return ( align.a.pos1() == 0 && align.a.Pos1() < (int) align.query_length );
+    return ( align .a.pos1() == 0 && align .a.Pos1() < (int) align .query_length );
 }
 
 // return true if neither end of the query
 // aligns to the target
-bool IsCenter( const look_align &align )
+bool IsCenter( const look_align &align  )
 {
-  return ( align.a.pos1() > 0 && align.a.Pos1() < (int) align.query_length );
+  return ( align .a.pos1() > 0 && align .a.Pos1() < (int) align .query_length );
 }
 
 
-// return the begin, end bases of the query which do not align to the target
-pair<int,int> hangingEnd( const look_align &align )
+// return the begin, end bases of the query which do not align  to the target
+pair<int,int> hangingEnd( const look_align &align  )
 {
-  if ( !align.rc1 )
+  if ( !align .rc1 )
   {
-    if ( IsLeft( align ) )
-      return ( make_pair(align.a.Pos1(), align.query_length) );
-    else if ( IsRight( align ) )
-      return ( make_pair(0, align.a.pos1()) );
+    if ( IsLeft( align  ) )
+      return ( make_pair(align .a.Pos1(), align .query_length) );
+    else if ( IsRight( align  ) )
+      return ( make_pair(0, align .a.pos1()) );
     else return ( make_pair( -1, -1 ) );
   }
   else
   {
-    if ( IsLeft( align ) )
-      return ( make_pair( align.query_length-align.a.pos1(), align.query_length) );
-    else if ( IsRight( align ) )
-      return ( make_pair(0, align.query_length-align.a.Pos1()) );
+    if ( IsLeft( align  ) )
+      return ( make_pair( align .query_length-align .a.pos1(), align .query_length) );
+    else if ( IsRight( align  ) )
+      return ( make_pair(0, align .query_length-align .a.Pos1()) );
     else return ( make_pair( -1, -1 ) );
   }
 }
@@ -1205,7 +1205,7 @@ void RemoveOverlap(look_align & la1, look_align & la2, bool verbose) {
 
   if (startOn1 == startOn2 ) { //remove the shorter of the two alignments.
     if (la1.a.extent1() < la2.a.extent1()) swap(la1,la2);
-    la2.a = align();
+    la2.a = allpathslg::align ();
     la2.mutations = la2.indels = la2.nhits = 0;
     return;
   }
@@ -1223,7 +1223,7 @@ void RemoveOverlap(look_align & la1, look_align & la2, bool verbose) {
 
   //Calculate the endpoint for trimming
   int newend = startOn2 - 1;
-  align a;
+  allpathslg::align  a;
   //Adjust the end of la1. Note that the indels
   //and mutations members of la1 become invalid.
   if (!la1.rc1) {
@@ -1250,7 +1250,7 @@ look_align FromAlignmentPlus(const alignment_plus & alp, int query_length,
   if ( alp.Rc2() ) {
     alg.ReverseThis( query_length,  target_length);
   }
-  align a;
+  allpathslg::align  a;
   a.UnpackFrom(alg);
   return look_align( qid, tid, query_length, target_length, alp.Rc2(), a, 0, 0, 0 );
 }

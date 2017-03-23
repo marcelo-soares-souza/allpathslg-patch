@@ -469,7 +469,7 @@ int main(int argc, char *argv[])
      
      // Align the jumping reads to these unibases.  We first create a copy of the
      // unibases in which reverse complements are deleted.  Otherwise, since we
-     // require unique placement, nothing would align.
+     // require unique placement, nothing would align .
 
      vecbasevector unibases0(unibases);
      for ( int u = 0; u < (int) unibases.size( ); u++ )

@@ -90,7 +90,7 @@
 
 void AddToPileup( const read_loc& rl, const basevector& b, const qualvector& q,
      const basevector& tig, vec<dumbcall>& calls )
-{    align a;
+{    allpathslg::align  a;
      rl.GetAlign( a, b, tig );
      int p1 = a.pos1( ), p2 = a.pos2( );
      for ( int j = 0; j < a.Nblocks( ); j++ )

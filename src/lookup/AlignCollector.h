@@ -62,7 +62,7 @@
    Method: AlignsWanted
    
    Whether to skip further alignments for this query.
-   Reimplemented by unique align collectors.
+   Reimplemented by unique align  collectors.
    
    >bool AlignsWanted(unsigned int query_id) const;
 
@@ -89,7 +89,7 @@
    Method: Consolidate
    
    Do nothing for base implementation.
-   Some align collectors may need to do some cleanup before
+   Some align  collectors may need to do some cleanup before
    the results are usable (e.g. sort and/or remove duplicates)
    
    > void Consolidate();
@@ -136,7 +136,7 @@ public:
   /// In other words: this returns the number of queries for
   /// which this AlignCollector is storing alignments; there might be
   /// no alignments stored for some queries and multiple alignments
-  /// stored for others, depending on the concrete type of the align collector
+  /// stored for others, depending on the concrete type of the align  collector
   /// used and the parameters it was initialized with.
   virtual unsigned int size() const { return best_.size(); }
   
@@ -145,7 +145,7 @@ public:
   /// for this query (i.e. the concrete collector type is designed to collect
   /// unique alignments, and from the history of alignments it has seen so far
   /// it can be guaranteed that no unique alignment can exist for the given query)
-  /// Reimplemented by unique align collectors.
+  /// Reimplemented by unique align  collectors.
   virtual bool AlignsWanted(unsigned int query_id) const { return true; }
 
   /// Returns the maximum number of errors
@@ -172,14 +172,14 @@ public:
       return false;
   }
 
-  /// returns an align for query <id>, if such align exists; behavior if alignment does
+  /// returns an align  for query <id>, if such align  exists; behavior if alignment does
   /// not exist is left to concrete implementations; if multiple alignments for the query
   /// are stored by concrete collector implementation, it is up to the collector to decide
   /// which one to return, but it is normally expected to be the best one - see concrete implementations
   /// (some implementations may not be able to return the best alignment correctly until they are consolidated).
   virtual const look_align & Align(unsigned int id) const = 0;
 
-  /// returns mutable align reference that can be changed from external code; use wisely, it's generally a bad idea
+  /// returns mutable align  reference that can be changed from external code; use wisely, it's generally a bad idea
   /// to change aligns right inside the collector.
   virtual look_align & MutableAlign(unsigned int id) const = 0;
 
@@ -192,7 +192,7 @@ public:
   virtual void Print(ostream & out, bool readable = true) = 0;
 
   /// Do nothing for base implementation.
-  /// Some align collectors may need to do some cleanup before
+  /// Some align  collectors may need to do some cleanup before
   /// the results are usable (e.g. sort and/or remove duplicates)
   virtual void Consolidate() {}
 
@@ -337,7 +337,7 @@ public:
   }
 
   /// If the collector is consolidated and there is still at least one
-  /// align for the query_id, then returns the best align; otherwise breaks.
+  /// align  for the query_id, then returns the best align ; otherwise breaks.
   const look_align & Align(unsigned int query_id ) const {
     ForceAssert(consolidated_);
     ForceAssertGt(aligns_[query_id].size(),0u);
@@ -397,7 +397,7 @@ public:
 
   /// Print all parseable and readable brief (if <readable> = <true> )
   /// alignments up to best_err+maxErrDiff for all query_ids that 
-  /// align (have best align errors best_err <= maxErrs).
+  /// align  (have best align  errors best_err <= maxErrs).
   /// Calls Consolidate() first (just in case).
   void Print(ostream & out, bool readable = true) {
     Consolidate();
@@ -436,7 +436,7 @@ private:
   
 };  // class MaxErrDiffAlignCollector
 
-/// This class encapsulates saving only aligns for queries that align uniquely.
+/// This class encapsulates saving only aligns for queries that align  uniquely.
 /// \class UniqueByErrDiffAlignCollector
 ///
 /// By uniquely we mean that the next best alignment has at least
@@ -555,7 +555,7 @@ public:
   }
 
   /// Print parseable and readable brief (if <readable> = <true>) unique alignments for all query_ids
-  /// that align uniquely.
+  /// that align  uniquely.
   void Print(ostream & out, bool readable = true) {
 	for (int i=0; i != aligns_.isize(); ++i ) Print(out, i, readable);
   }
@@ -587,7 +587,7 @@ private:
 /// alignments as long as best err <= maxErr.
 /// [ Note that UniqueByErrDiffAlignCollector does refuse to accept more
 /// alignments when it has enough information to decide that the read can not
-/// be aligned uniquely. Hence UniqueByErrDiffAlignCollector's "best" align
+/// be aligned uniquely. Hence UniqueByErrDiffAlignCollector's "best" align 
 /// stored for non-uniquely aligning reads can be incorrect.]
 ///
 /// This collector always keeps aligns for a given read sorted: best alignment first,
@@ -711,7 +711,7 @@ public:
   }
 
   /// Print parseable and readable brief (if <readable>=<true>) best and next best 
-  /// alignments for all query_ids that align (have best_err <= maxErr).
+  /// alignments for all query_ids that align  (have best_err <= maxErr).
   void Print(ostream & out, bool readable = true) {
       Consolidate();
       for (int i=0; i != aligns_.isize(); ++i ) Print(out, i, readable);
@@ -760,10 +760,10 @@ private:
 
 
 
-/// Always keeps the best align(s) (by error count) as long as they have <= maxErr; the 
+/// Always keeps the best align (s) (by error count) as long as they have <= maxErr; the 
 /// distance maxErrDiff is ignored by this policy except for the AlignedUniquely() method 
-/// (this collector still holds the error count for next-best align observed, so it can tell
-/// whether the best align it holds is unique or not). The difference from UniqueByErrDiffAlignCollector
+/// (this collector still holds the error count for next-best align  observed, so it can tell
+/// whether the best align  it holds is unique or not). The difference from UniqueByErrDiffAlignCollector
 /// is that truly best alignment with <= maxErr errors (or multiple best alignments if there are many) observed so far 
 /// is guaranteed to be held regardless of its uniqueness status.
 class BestAlignCollector : public AlignCollectorBase {
@@ -822,7 +822,7 @@ public:
   /// Best alignment for this query_id. WARNING: if no alignments at
   /// all are stored for this query id the method will crash on ForceAssert!
   /// Check for existence of at least one alignment prior to invoking this method.
-  /// (DJ: I'm not sure what this returns if there is more than one best align.)
+  /// (DJ: I'm not sure what this returns if there is more than one best align .)
   const look_align & Align(unsigned int query_id) const { 
     ForceAssertGt(aligns_[query_id].size(),0u);
     return aligns_[query_id][0];
@@ -873,7 +873,7 @@ public:
 
   /// Print all parseable and readable brief (if <readable>==<true>) best alignments for 
   /// the query_id if the read aligns (best_err <=maxErr, not necesserily uniquely), or does nothing
-  /// if read does not align/aligns with > maxErr errors.
+  /// if read does not align /aligns with > maxErr errors.
   void Print(ostream & out, int query_id, bool readable = true) const {
     if ( ! Aligned(query_id) ) return;
     for (ConstIter i=Begin(query_id); i != End(query_id); ++i) {
@@ -883,7 +883,7 @@ public:
   }
 
   /// Print all parseable and readable brief (if <readable> = <true>) best alignments for all query_ids
-  /// that align (i.e. have at least one alignment with err <= maxErr)
+  /// that align  (i.e. have at least one alignment with err <= maxErr)
   void Print(ostream & out, bool readable = true) {
       Consolidate();
       for (int i=0; i != aligns_.isize(); ++i ) Print(out, i, readable);
@@ -1007,7 +1007,7 @@ unsigned int ErrorThreshold(unsigned int query_id) {
    return best_[query_id] ;
 }
 
-// Use align to test read for ambiguity, add align if needed
+// Use align  to test read for ambiguity, add align  if needed
 void Insert(const look_align & la);
 
 bool AlignsWanted(unsigned int query_id) const { 
@@ -1072,7 +1072,7 @@ int num_better_aligns_;
 /// Collector must be resized prior to passing to this method, so that its size is 
 /// (at least) equal to the number
 /// of query IDs in the qltout file or in the [<low_id>,<high_id>) range (if specified)! 
-/// Upon return, the align collector
+/// Upon return, the align  collector
 /// is consolidated and ready to use.
 template <class AlignCollector>
 void LoadLookAligns(const String & file_name, AlignCollector &aligns, int low_id = 0, int high_id = -1, bool ordered=false ) {
@@ -1157,12 +1157,12 @@ void LoadLookAlignsBinary(const String & file_name,
 /// is translated into the whole-genome coordinates using this map before attempting to add it to the collector.
 /// NOTE: this may have non-trivial effect if the amplicons of the local reference overlap and non-unique
 /// alignments against the local reference are stored: a read from the region covered by overlapping
-/// amplicons will align to both amplicons (i.e. it is "non-unique", quite artificially, with respect  
+/// amplicons will align  to both amplicons (i.e. it is "non-unique", quite artificially, with respect  
 /// to the local reference), but when mapped to the global reference these alignments will be equivalent (map 
 /// to the same genomic position). If the alignments to the local reference are loaded "as is" and Unique...
-/// align collector is used, then such alignments will be lost (align collector will deem them non-unique
+/// align  collector is used, then such alignments will be lost (align  collector will deem them non-unique
 /// and discard them). However, if the aligns are loaded with mapping, the collector will be aware of the fact
-/// that it is actually the same align.
+/// that it is actually the same align .
 /// The aligns loaded by this method into the collector will have their TargetId() and StartOnTarget()
 /// method returning position in terms of the whole genome. NOTE: Target length will be set to 0 in the 
 /// remapped aligns!!!
@@ -1191,7 +1191,7 @@ void LoadMappedLookAligns(const String & file_name, vec<pair<unsigned int, unsig
       la.target_id = l2g_map[la.target_id].first;
       la.target_length = 0; // THIS IS UNSAFE! CALLER MUST UPDATE TARGET_LENGTH IF NEEDED
       // insert remapped alignment; collector should recognize the attempt to insert the 
-      // same align again and should not consider this as inserting a "non-unique" alignment
+      // same align  again and should not consider this as inserting a "non-unique" alignment
       aligns.Insert(la);
       count++;
     }
@@ -1248,7 +1248,7 @@ void LoadMappedLookAlignsBinary(const String & file_name,
       it->target_id = l2g_map[it->TargetId()].first;
       it->target_length = 0; // THIS IS UNSAFE! CALLER MUST UPDATE TARGET_LENGTH IF NEEDED
       // insert remapped alignment; collector should recognize the attempt to insert the 
-      // same align again and should not consider this as inserting a "non-unique" alignment
+      // same align  again and should not consider this as inserting a "non-unique" alignment
       aligns.Insert(*it);
     }
   }
@@ -1257,7 +1257,7 @@ void LoadMappedLookAlignsBinary(const String & file_name,
 
 
 
-/// Utility method that scans the align collector and returns the number
+/// Utility method that scans the align  collector and returns the number
 /// of aligned queries. Normally a query is considered to be aligned if at least
 /// one alignment with MaxErr or fewer errors was observed, uniqueness
 /// is not taken into account - unless specific collector
@@ -1272,7 +1272,7 @@ unsigned int AlignedCount(const AlignCollector & aligns) {
   return aligned;
 }
 
-/// Utility method, scans the align collector and returns the number
+/// Utility method, scans the align  collector and returns the number
 /// of uniquely aligned queries. Normally, a query is considered to be 
 /// uniquely aligned if its best alignment has MaxErr or fewer errors, 
 /// and if the next best alignment has more than MaxErr+ErrDiff errors -
@@ -1297,7 +1297,7 @@ unsigned int UniquelyAlignedCount(const AlignCollector & aligns) {
 template <class AlignCollector>
 void Combine(AlignCollector & trg, const AlignCollector & src ) {
   if ( trg.size() != src.size() ) {
-    cout << "Sizes of align collectors do not match" << endl;
+    cout << "Sizes of align  collectors do not match" << endl;
     exit(1);
   }
   for ( unsigned int i = 0 ; i < trg.size() ; i++ ) {

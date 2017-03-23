@@ -84,7 +84,7 @@ int main( int argc, char *argv[] )
       genome_size += genome[ii].size( );
   }
 
-  // Select supers to align.
+  // Select supers to align .
   int n_selected = 0;
   vec<bool> selected;
   if ( SUPER_IDS != "" ) {

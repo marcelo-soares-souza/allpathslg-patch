@@ -67,10 +67,10 @@ void ImperfectLookup(
 /// the query reads[i] aligned uniquely, false otherwise. In both cases, the
 /// number of errors in the best alignment for query i is returned in best_errors[i].
 /// NOTE: the value returned in best_errors is correct only for uniquely aligned reads;
-/// for the reads that do not align uniquely, this method gives up
+/// for the reads that do not align  uniquely, this method gives up
 /// early and reported error count may be greater than in the best possible alignment.
 /// See ImperfectLookup(lookup_table &, vecbasevector &, AlignCollector &,...) for
-/// more flexible implementation templatized by the "align acceptance" policy.
+/// more flexible implementation templatized by the "align  acceptance" policy.
 void ImperfectLookup( lookup_table &look, const vecbasevector& reads,
 		      vec<look_align>& aligns, vec<int>& best_errors,
 		      AlignDir direction, int best_prox, int max_errors,
@@ -161,7 +161,7 @@ void ImperfectLookup( lookup_table &look, const vecbasevector& reads,
     unsigned int ChunkSize = look.NBasesInChunk(i);
     unsigned int FirstBaseInChunk = look.BasesStart();
 
-    // Go through the query sequences trying to align them in the current chunk.
+    // Go through the query sequences trying to align  them in the current chunk.
 
     for ( la.query_id = 0; (unsigned int)la.query_id < nqueries ; ++la.query_id ) {
       if ( ! aligns.AlignsWanted(la.query_id) ) continue;
@@ -176,7 +176,7 @@ void ImperfectLookup( lookup_table &look, const vecbasevector& reads,
 	  if ( useReverse ) src.Reverse(reads[la.query_id]);
 	  else src.ReverseComplement(reads[la.query_id]);
 	}
-	// this is what we are going to align for this query and this pass:
+	// this is what we are going to align  for this query and this pass:
 	const basevector& S = ( pass == 0 ? reads[la.query_id] : src );
 
 	static qualvector rq;
@@ -308,7 +308,7 @@ void AlignInChunksOnFarm_ILT(const String & readfile,
 
     cout << "Alignment file missing. Starting new alignment." << endl;
 
-    // total number of reads to align:
+    // total number of reads to align :
     unsigned int nreads = MastervecFileObjectCount(readfile);
     // total number of batch jobs to spawn:
     int nbatches = ( nreads + batch_size - 1 ) / batch_size;

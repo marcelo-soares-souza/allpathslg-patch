@@ -56,7 +56,7 @@ void AlignReadToPath( const basevector& r, const int id, const Bool fw,
      vec<Bool>& ppath_seen, const int L, const Bool PRINT_MATCHES,
      const Bool DUMP_LOCAL, const Bool PRINT_LM1, double& ERRS, int& LMATCHES,
      triple<int,int,String>& EREPORTS, int& LASTPOS, int& LAST, Bool& SKIPPED,
-     map< pair<ho_interval,basevector>, pair<align,double> >& A );
+     map< pair<ho_interval,basevector>, pair<align ,double> >& A );
 
 void Phase2( const int u, const vecbasevector& unibases, 
      const vec< vec< pair<int,int> > >& Ulocs, const vec<int>& to_rc,

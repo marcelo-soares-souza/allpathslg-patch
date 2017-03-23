@@ -173,7 +173,7 @@ SeedNeighborhood::MakeUnipathCloud
  *
  * METHOD:
  * 1. Run FindPrimaryReadCloud to find all reads (and unibases) that
- *    align to these unipaths
+ *    align  to these unipaths
  * 2. Create a vecbasevector of local reads
  * 
  ******************************************************************************/

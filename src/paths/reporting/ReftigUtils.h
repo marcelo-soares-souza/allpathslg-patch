@@ -66,7 +66,7 @@ void GenerateDot( const int ORIGIN, const String &dot_base,
  *
  * Print given reftigs.
  *
- * K: the kmer used to align (as in HyperToReftigsCore above)
+ * K: the kmer used to align  (as in HyperToReftigsCore above)
  * ORIGIN: offset the start point of the reftigs
  * out: where output is sent
  * amb: if given, use it to disply gaps

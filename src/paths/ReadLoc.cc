@@ -162,7 +162,7 @@ ostream& operator<<( ostream& out, const read_loc& rl ) // OLD!
 void read_loc::PrintVisualLoc( const Bool visual_abbr, ostream& out,
      const String& read_name, const basevector& b, const basevector& t,
      const qualvector* q, const Bool partner ) const
-{    align a;
+{    allpathslg::align  a;
      GetAlign( a, b, t, partner );
      out << read_name << ": " << a.pos1( ) << " - " << a.Pos1( ) << ", contig: " 
           << a.pos2( ) << " - " << a.Pos2( ) << " of " << t.size( ) << "\n ";
@@ -438,7 +438,7 @@ void PrintSAMAligns( ostream& sam, const vec<read_loc>& rl,
       sam_flag |= FIRST_READ;
       mate_sam_flag |= IS_PAIRED;
       mate_sam_flag |= SECOND_READ;
-      align r_align;
+      align  r_align;
       for ( int pass = 1; pass <= 2; pass++ ) {
 	uint64_t id = ( pass == 1 ? rl[i].ReadId( ) : rl[i].PartnerReadId( ) );
 	basevector b;
@@ -481,7 +481,7 @@ void PrintSAMAligns( ostream& sam, const vec<read_loc>& rl,
 	if ( pass == 1 || rl[i].PartnerPlaced( ) ) {
 	  int m = ( pass == 1 ? rl[i].ContigId( ) : rl[i].PartnerContigId( ) );
 	  const basevector& t = tigs[ BinPosition(tig_ids, m) ];
-	  align a;
+	  allpathslg::align  a;
 	  rl[i].GetAlign( a, b, t, ( pass == 2 ) );
 	  if ( pass == 1 ) {
 	    r_align = a;
@@ -592,7 +592,7 @@ void PrintSAMAligns( ostream& sam, const vec<read_loc>& rl,
 }
 
 
-    read_loc::read_loc( const align& a, const uint64_t read_id, 
+    read_loc::read_loc( const allpathslg::align & a, const uint64_t read_id, 
          const uint32_t contig_id, const bool fw_on_contig, 
          const uint8_t read_class, const uint8_t library_id, 
          const uint16_t read_length ) :
@@ -629,7 +629,7 @@ void PrintSAMAligns( ostream& sam, const vec<read_loc>& rl,
 
 void AddToPileup( const read_loc& rl, const basevector& b, const basevector& tig,
      vec<dumbcall>& calls )
-{    align a;
+{    allpathslg::align  a;
      rl.GetAlign( a, b, tig );
      int p1 = a.pos1( ), p2 = a.pos2( );
      for ( int j = 0; j < a.Nblocks( ); j++ )
@@ -707,7 +707,7 @@ void Pileup( const basevector& tig, const vec<read_loc>& rl,
   Pileup( tig, rl, run_dir, calls, True, True, True );
 }
 
-void read_loc::GetAlign( align& a, const basevector& b, const basevector& t,
+void read_loc::GetAlign( allpathslg::align & a, const basevector& b, const basevector& t,
      const Bool partner ) const
 {    int errors;
      if ( !partner ) SmithWatBandedA( b, t, -Start( ), Bandwidth( ), a, errors );

@@ -56,7 +56,7 @@ Bool ReadsOverlap( const assembly& a, int m1, int m2, Bool RC );
 // are saved as a vec of pairs.
 
 int OverlapUpdate( vec< StdSet<int> > &no_overlap,
-     assembly& a, int m1, int m2, align& al, 
+     assembly& a, int m1, int m2, allpathslg::align & al, 
      int kmer_size = 12, int min_mutmer = 0, Bool RC = False, int mode = 1,
      int min_align = 100, int min_align_see = 30 );
 
@@ -64,7 +64,7 @@ int OverlapUpdate( vec< StdSet<int> > &no_overlap,
 // is set, the second mtig is treated as reversed.  If require_read_evidence = True,
 // the code is faster but a bit less sensitive.
 
-int Overlap( const assembly& a, int m1, int m2, align& al, 
+int Overlap( const assembly& a, int m1, int m2, allpathslg::align & al, 
      int kmer_size = 12, int min_mutmer = 0, Bool RC = False, int mode = 1,
      int min_align = 100, int min_align_see = 30, 
      Bool require_read_evidence = False );
@@ -81,13 +81,13 @@ void Reverse( assembly& a, int s );
 // alignment, and update the assembly accordingly.  The mtig m2 is
 // deleted.
 
-void MergeMtigs( assembly& a, int m1, int m2, align& al );
+void MergeMtigs( assembly& a, int m1, int m2, allpathslg::align & al );
 
 // TryMergeMtigs: same as MergeMtigs, but does not modify the assembly.
 // Produces as output a vec<read_location> new_tig and a basevector
 // new_tig_bases.
 
-void TryMergeMtigs( const assembly& a, int m1, int m2, const align& al,
+void TryMergeMtigs( const assembly& a, int m1, int m2, const allpathslg::align & al,
      vec<read_location>& new_tig, basevector& new_tig_bases );
 
 // RecomputeGaps: recompute gaps between mtigs in a supercontig, in a
@@ -133,7 +133,7 @@ bool IsContigFlimsy( assembly &A, int contig_id );
 bool IsSuperDegenerate( assembly &A, int super_id, int sc_info_min_length );
 
 void MergeMtigsHead( const basevector& b1, const basevector& b2,
-     const qualvector& q1, const qualvector& q2, const align& al,
+     const qualvector& q1, const qualvector& q2, const allpathslg::align & al,
      basevector& c, qualvector& q, vec<int>& to1, vec<int>& to2 );
 
 #endif

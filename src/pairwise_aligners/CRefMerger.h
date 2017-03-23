@@ -69,22 +69,22 @@ private:
   void CompactifyData( const int min_clen = 0 );
   
   // Find pos on 1 corresponding to pos2 on 2 (-1 on error).
-  int PosOn1( const int pos2, const align &al ) const;
+  int PosOn1( const int pos2, const allpathslg::align  &al ) const;
 
   // Find pos on 2 corresponding to pos1 on 1 (-1 on error).
-  int PosOn2( const int pos1, const align &al ) const;
+  int PosOn2( const int pos1, const allpathslg::align  &al ) const;
 
-  // If align is perfect (no mismatches/indels).
-  bool IsPerfect( const bvec &b1, const bvec &b2, const align &al ) const;
+  // If align  is perfect (no mismatches/indels).
+  bool IsPerfect( const bvec &b1, const bvec &b2, const allpathslg::align  &al ) const;
 
   // Overlap implied by aligns on reference.
   int ImpliedOverlap( const int idx1, const int idx2 ) const;
   
-  // Internal consistency test for given align.
+  // Internal consistency test for given align .
   bool IsValid( const int idx, ostream *log = 0 ) const;
   
-  // Generate a printable string representing the align.
-  String BriefAlignInfo( const align &al ) const;
+  // Generate a printable string representing the align .
+  String BriefAlignInfo( const allpathslg::align  &al ) const;
   
   
 private:

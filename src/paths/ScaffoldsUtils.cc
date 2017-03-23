@@ -48,7 +48,7 @@ void AlignReadsToContigs( const int K,
   FetchReads( target, 0, tmp_contigs_fasta.c_str( ) );
   target.WriteAll( tmp_contigs_fastb );
 
-  log << Date( ) << ": SearchFastb2 - parallel align reads" << endl;
+  log << Date( ) << ": SearchFastb2 - parallel align  reads" << endl;
   const int mp = -1;
   const double mf = 0.90;
   vec< triple<int64_t,int64_t,int> > als;

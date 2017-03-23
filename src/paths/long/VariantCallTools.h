@@ -13,7 +13,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-// A class to re-align assembly to reference and call variants.
+// A class to re-align  assembly to reference and call variants.
 // 
 // We start from the best path, which is essentially a linear graph. Then we
 // add the other edges based on the connectivity in the assembly. At the end,
@@ -98,7 +98,7 @@ public:
 
     // Call variants. Using bubble graph
     void CallVariantsGroupedWithProb(int gid, vec<VariantCallGroup> *p_groups, 
-            vec<align>* p_edge_aligns, int verbosity = 0) ;
+            vec<allpathslg::align >* p_edge_aligns, int verbosity = 0) ;
 
     // ============= Utility functions =============================
     
@@ -144,7 +144,7 @@ public:
     void FindAnchoringEdges(vec<vec<int>>& single_edges) const;
 
     void AlignAnchoringEdges(vec<vec<int>>& single_edges,
-            vec<align>& single_edge_aligns, int verbosity);
+            vec<allpathslg::align >& single_edge_aligns, int verbosity);
 
 private:
     HyperBasevector                       hb_;
@@ -183,7 +183,7 @@ private:
 // Given the variants and callers, find the multiple placement of the caller
 // edges and genome location (gid, pos) of the alternative placement.
 void FindVariantFriends(const vec<VariantCallGroup>& vcall_groups, 
-        const vec<vec<align>>& all_aligns, const HyperBasevector& hbp,
+        const vec<vec<allpathslg::align >>& all_aligns, const HyperBasevector& hbp,
         const vec<pair<int,Bool>>& hbp_to_hb,
         map<Variant, vec<pair<int,int>>> *p_var_friending);
 

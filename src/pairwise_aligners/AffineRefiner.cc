@@ -5,7 +5,7 @@
 #include "pairwise_aligners/SmithWatAffine.h"
 
 void
-AffineRefiner::RefineAlign( align &theAlign, 
+AffineRefiner::RefineAlign( allpathslg::align  &theAlign, 
                             const basevector &bases1, 
                             const basevector &bases2 )
 {
@@ -31,7 +31,7 @@ AffineRefiner::RefineAlign( align &theAlign,
   */
 
 
-  // Find the gaps and lengths for the new align.
+  // Find the gaps and lengths for the new align .
   m_newAlignGaps.clear();
   m_newAlignLens.clear();
 
@@ -52,7 +52,7 @@ AffineRefiner::RefineAlign( align &theAlign,
     m_newAlignLens.push_back( theAlign.Lengths( copyBlockNum ) );
   }
 
-  // Build the new align.
+  // Build the new align .
   ForceAssertEq( m_newAlignGaps.size(), m_newAlignLens.size() );
   m_newAlign.Setpos1( theAlign.pos1() );
   m_newAlign.Setpos2( theAlign.pos2() );
@@ -74,7 +74,7 @@ AffineRefiner::RefineAlign( align &theAlign,
     m_newAlign.SetLength( ii, m_newAlignLens[ii] );
   }
 
-  // Copy it to the input align.
+  // Copy it to the input align .
   theAlign = m_newAlign;
 
   /* FOR DEBUGGING
@@ -102,7 +102,7 @@ AffineRefiner::RefineAlign( align &theAlign,
 
 bool
 AffineRefiner::BlockIsAnchor( const int currentBlock,
-                              const align &theAlign,
+                              const allpathslg::align  &theAlign,
                               const basevector &bases1,
                               const basevector &bases2 )
 {
@@ -123,7 +123,7 @@ AffineRefiner::BlockIsAnchor( const int currentBlock,
     
 void 
 AffineRefiner::CheckBlock( const int currentBlock, 
-                           const align &theAlign, 
+                           const allpathslg::align  &theAlign, 
                            const basevector &bases1, const basevector &bases2 )
 {
   int gap = theAlign.Gaps( currentBlock );
@@ -151,7 +151,7 @@ AffineRefiner::CheckBlock( const int currentBlock,
                             m_lastAnchor, currentBlock,
                             bases1, bases2 );
 
-    // Otherwise, just copy the intervening blocks from the old align.
+    // Otherwise, just copy the intervening blocks from the old align .
     else
     {
       for ( int copyBlockNum = m_lastAnchor + 1;
@@ -177,7 +177,7 @@ AffineRefiner::CheckBlock( const int currentBlock,
 
 
 void
-AffineRefiner::PatchAlignment( const align &theAlign, 
+AffineRefiner::PatchAlignment( const allpathslg::align  &theAlign, 
                                const int startAnchor, 
                                const int stopAnchor, 
                                const basevector &bases1, const basevector &bases2 )
@@ -233,7 +233,7 @@ AffineRefiner::PatchAlignment( const align &theAlign,
   int score = SmithWatAffine( m_chunk1, m_chunk2, m_patchAlignment,
                               penalizeLeftGap, penalizeRightGap,
                               mismatchPenalty, gapOpenPenalty, gapExtendPenalty );
-  align m_patchAlign( m_patchAlignment );
+  allpathslg::align  m_patchAlign( m_patchAlignment );
 
   /* FOR DEBUGGING
   cout << "chunk alignment:" << endl;

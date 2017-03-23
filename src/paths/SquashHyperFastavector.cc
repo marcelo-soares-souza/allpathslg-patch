@@ -82,7 +82,7 @@ void SquashHyperFastavector( const String &work_dir,
       // Discard query == target, and (for unicity) query > target.
       if ( hit.query_id >= hit.target_id ) continue;
 
-      // Not a proper align.
+      // Not a proper align .
       int qlen = hit.query_length;
       int tlen = hit.target_length;
       bool is_short = ( hit.Pos2( ) - hit.pos2( ) < slack_min_overlap );

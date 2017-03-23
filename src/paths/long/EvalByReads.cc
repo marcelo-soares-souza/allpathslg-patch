@@ -245,7 +245,7 @@ void EvaluateRead( const int id, const HyperBasevector& hb_A_fw,
                               << " and qual sum = " << qual_sum[pass] 
                               << ", start = " << p.E(0) << ":" << p.P( ) << endl;
                          cout << "\nalignment of read " << id << endl;
-                         align a;
+                         allpathslg::align  a;
                          a.SetNblocks(1);
                          a.SetGap( 0, 0 );
                          a.SetLength( 0, b.size( ) );

@@ -21,7 +21,7 @@
  *
  * Align (and eventually merge) the two contigs at cgpos, cgpos+1 in
  * the given super. It return true iff they overlap. For efficiency,
- * align only portions of the contigs, cut from the input according to
+ * align  only portions of the contigs, cut from the input according to
  * the expected overlap (as deduced from the super info). Some contigs
  * will be resized to 0, and removed from the supers.
  *

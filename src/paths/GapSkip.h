@@ -14,7 +14,7 @@ class NegativeGapValidator;
 // If the reads keep going beyond the merger, then:
 //  .DONE is False
 //  .loc1 and .loc2 point to the common k-mers of the given KmerPaths
-//       which align on the far side of the gap
+//       which align  on the far side of the gap
 //  .merged is the merged path in between the orig locs and the returned ones;
 //       for the rest of the path, recurse on .loc1 and .loc2.
 //

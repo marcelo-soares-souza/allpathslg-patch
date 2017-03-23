@@ -272,7 +272,7 @@ public:
     AssertLt(library_id,1ul<<8); 
     AssertLt(read_length,1ul<<16); }
 
-  read_loc( const align& a, const uint64_t read_id, const uint32_t contig_id,
+  read_loc( const allpathslg::align & a, const uint64_t read_id, const uint32_t contig_id,
          const bool fw_on_contig, const uint8_t read_class, 
          uint8_t library_id, const uint16_t read_length );
 
@@ -359,7 +359,7 @@ public:
   // GetAlign: recover the alignment corresponding to a read location.  The 
   // basevector b should be reversed before calling if Rc( ).
 
-  void GetAlign( align& a, const basevector& b, const basevector& t,
+  void GetAlign( allpathslg::align & a, const basevector& b, const basevector& t,
      const Bool partner = False ) const;
 
   void PrintVisualLoc( const Bool visual_abbr, ostream& out, 

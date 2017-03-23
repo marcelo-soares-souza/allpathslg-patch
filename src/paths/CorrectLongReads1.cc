@@ -564,7 +564,7 @@ void Phase1(
 	      {    int u2 = ALIGNS[y].first;
 		basevector z1( longreads[id], rpos1, rpos2 - rpos1 );
 		basevector z2( unibases[u2], upos1, upos2 - upos1 );
-		align a;
+		align  a;
 		if ( z1.size( ) == 0 || z2.size( ) == 0 )
 		  over = 0;
 		else
@@ -881,7 +881,7 @@ void Phase1(
 	    
 	    // For each overlap, Smith-Waterman to the joined unibases.
 	    
-	    vec<align> sw( o.size( ) );
+	    vec<allpathslg::align > sw( o.size( ) );
 	    vec<int> errs( o.size( ) );
 	    vec< vec<ho_interval> > perf1( o.size( ) );
 	    vec< vec<ho_interval> > perf2( o.size( ) );

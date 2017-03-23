@@ -98,7 +98,7 @@ int main( int argc, char *argv[] )
       if ( i % NUM_THREADS == j ) idsout << ids[i] << "\n";
   }
   
-  // Call QueryLookupTable in parallel to align the seeds to reference.
+  // Call QueryLookupTable in parallel to align  the seeds to reference.
   cout << Date() << ": Aligning seeds to reference" << endl;
 #pragma omp parallel for
   for ( size_t j = 0; j < NUM_THREADS; j++ ) {

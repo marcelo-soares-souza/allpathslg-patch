@@ -137,7 +137,7 @@ int Mutations(const basevector& rd1, const basevector& rd2, int p1, int p2,
      return answer;    }
 
 // An isolated gap in a pairwise alignment is mobile if it can be shifted one
-// base to the left or right, without changing the number of bases which align
+// base to the left or right, without changing the number of bases which align 
 // correctly.  The routine CenterMobileGaps is designed to put the gaps into
 // "canonical position", so that in a collection of pairwise alignments, the
 // gaps which appear in related regions will be in the same position.
@@ -161,7 +161,7 @@ int Mutations(const basevector& rd1, const basevector& rd2, int p1, int p2,
 
 // The implementation is horrendously inefficient.
 
-Bool CenterMobileGaps( align& a, const basevector& rd1, const basevector& rd2,
+Bool CenterMobileGaps( allpathslg::align & a, const basevector& rd1, const basevector& rd2,
      bool verbose, ostream& log )
 {    
      int pos1 = a.pos1( ), pos2 = a.pos2( ), nblocks = a.Nblocks( );

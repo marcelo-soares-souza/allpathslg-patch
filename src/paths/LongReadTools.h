@@ -161,7 +161,7 @@ class align_data
 
      align_data( ) { }
 
-     align_data( const align& a, const int gid, const int pos2, const int Pos2,
+     align_data( const allpathslg::align & a, const int gid, const int pos2, const int Pos2,
           const int errors, const Bool fw )
           : a(a), gid(gid), pos2(pos2), Pos2(Pos2), errors(errors), fw(fw) { }
 
@@ -180,7 +180,7 @@ class align_data
      {    return a1.gid == a2.gid && a1.pos2 == a2.pos2 && a1.Pos2 == a2.Pos2
                && a1.errors == a2.errors && a1.fw == a2.fw;    }
 
-     align a;
+     allpathslg::align  a;
      int gid;
      int pos2, Pos2;
      int errors;
@@ -260,7 +260,7 @@ void GetLocalAligns( const BaseVec& r, const BaseVecVec& U,
 
 void GetGlobalAligns( const BaseVec& r, const BaseVecVec& U, 
      const vec< triple<int,int,int> >& aligns, const int bandwidth_div,
-     vec<align>& aligns_a, const double sub_frac, const double ins_frac,
+     vec<allpathslg::align >& aligns_a, const double sub_frac, const double ins_frac,
      const double del_frac );
 
 // MakeAlignmentGraph.  The argument alignsx has the form
@@ -288,7 +288,7 @@ Bool ConvertPathIntoBasesValid( const int L, const digraphE<int>& G,
      const vec<int>& p, vec< pair< int, vec< pair<int,int> > > >& alignsx,
      const vecbasevector& U );
 
-int SmithWatFreeSym( const basevector& b1, const basevector& b2, align& a,
+int SmithWatFreeSym( const basevector& b1, const basevector& b2, allpathslg::align & a,
      const Bool penalize_left_gap = False, const Bool penalize_right_gap = False,
      unsigned int mismatch_penalty = 2, unsigned int gap_penalty = 3,
      unsigned int outer_gap_penalty = 3 );

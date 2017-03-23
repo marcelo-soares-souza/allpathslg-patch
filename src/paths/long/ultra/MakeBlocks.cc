@@ -358,7 +358,7 @@ template<int K> void MakeBlocks(
 
                if ( start < 0 || stop > reads[id].isize( ) ) continue;
                if ( !( start < stop ) ) continue;
-               align a;
+               allpathslg::align  a;
                const int add = 5;
                start = start - add;
                stop = stop + add;

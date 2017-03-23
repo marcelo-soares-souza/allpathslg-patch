@@ -104,7 +104,7 @@ private:
         void* allocate( size_t siz, size_t alignmentReq )
         { char* result = 0;
           if ( mEnd-siz >= mFree )
-          { result = align(alignmentReq);
+          { result = align (alignmentReq);
             mFree = result + siz;
             Assert(mFree <= mEnd); }
           return result; }
@@ -120,7 +120,7 @@ private:
         char const* start() const
         { return reinterpret_cast<char const*>(this+1); }
 
-        char* align( size_t alnReq )
+        char* align ( size_t alnReq )
         { Assert(alnReq && !(alnReq & (alnReq-1)) ); // i.e., is a power of 2
           size_t mask = alnReq - 1;
           size_t vvv = (reinterpret_cast<size_t>(mFree)+mask) & ~mask;

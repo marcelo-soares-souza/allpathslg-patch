@@ -31,7 +31,7 @@
 // #include <time.h> // AAA
 
 void MergeTwoBaseVectors( const basevector& b1, const basevector& b2,
-     const align& a, basevector& c, const qualvector& q1,
+     const allpathslg::align & a, basevector& c, const qualvector& q1,
      const qualvector& q2, qualvector& q )
 {    int pos1 = a.pos1( ), pos2 = a.pos2( ), Pos1 = a.Pos1( ), Pos2 = a.Pos2( );
      const avector<int> &gaps = a.Gaps( ), &lengths = a.Lengths( );
@@ -111,10 +111,10 @@ void MergeTwoBaseVectors( const basevector& b1, const basevector& b2,
 
 // AlignTwoBasevectors( b1, b2, a, min_overlap, max_overlap, max_error_rate, log ):
 //
-// attempt to align basevector b1 to basevector b2, subject to the following
+// attempt to align  basevector b1 to basevector b2, subject to the following
 // criteria:
 //
-// * between min_overlap and max_overlap bases at the right end of b1 must align
+// * between min_overlap and max_overlap bases at the right end of b1 must align 
 //   with the left end of b2;
 //
 // * the error rate on this overlap must be <= max_error_rate;
@@ -132,7 +132,7 @@ class augmented_align {
 
      public:
 
-     align a;
+     allpathslg::align  a;
      int RC;
      int length1, length2;
      int id1, id2;
@@ -142,7 +142,7 @@ class augmented_align {
 
      augmented_align( ) { }
 
-     void SetFrom( const align& ax, int RCx, int length1x, int length2x, int id1x,
+     void SetFrom( const allpathslg::align & ax, int RCx, int length1x, int length2x, int id1x,
           int id2x, int pos1x, int pos2x, Float scorex, int Pos1x, int Pos2x )
      {    a = ax;
           RC = RCx;
@@ -158,7 +158,7 @@ class augmented_align {
 
 };
 
-int AlignTwoBasevectors( const basevector& b1, const basevector& b2, align& a,
+int AlignTwoBasevectors( const basevector& b1, const basevector& b2, allpathslg::align & a,
      int min_overlap, int max_overlap, float max_error_rate, ostream* log, int& Rc,
      int mode, int K, int stretch, int nstretch, const qualvector& q1,
      const qualvector& q2, float max_score, float max_errors,
@@ -254,7 +254,7 @@ int AlignTwoBasevectors( const basevector& b1, const basevector& b2, align& a,
      int nobbit_count = 0;
 
      Bool rc = False;
-     static align als[50000];
+     static allpathslg::align  als[50000];
 
      int answer_ptr = 0, answer_counts_ptr = 0;
      while(1)
@@ -285,14 +285,14 @@ int AlignTwoBasevectors( const basevector& b1, const basevector& b2, align& a,
                               length1, length2, id1, id2, pos1, pos2,
                               0, Pos1, Pos2 );    }
                     else
-                    {    static align r;
+                    {    static allpathslg::align  r;
                          r = als[ll];
                          r.ReverseThis( length1, length2 );
                          nobbits[nobbit_count++].SetFrom( r, rc, length1,
                               length2, id1, id2, r.pos1( ), r.pos2( ), 0,
                               r.Pos1( ), r.Pos2( ) );    }    }
                else
-               {    static align a;
+               {    static allpathslg::align  a;
                     a = als[ll];
                     a.Flip( );
                     nobbits[nobbit_count++].SetFrom( a, rc, length2,
@@ -312,7 +312,7 @@ int AlignTwoBasevectors( const basevector& b1, const basevector& b2, align& a,
      // variables.
 
      for ( int i = 0; i < nobbit_count; i++ )
-     {    align& al = nobbits[i].a;
+     {    allpathslg::align & al = nobbits[i].a;
           int RC = nobbits[i].RC;
           int pos1 = nobbits[i].pos1, Pos1 = nobbits[i].Pos1;
           int pos2 = nobbits[i].pos2;
@@ -338,7 +338,7 @@ int AlignTwoBasevectors( const basevector& b1, const basevector& b2, align& a,
           {    if ( log != 0 ) *log << "EXPECTED OVERLAP EXCEEDED\n";
                continue;    }
 
-          static align al_flip;
+          static allpathslg::align  al_flip;
           al_flip = al;
           al_flip.Flip( );
 

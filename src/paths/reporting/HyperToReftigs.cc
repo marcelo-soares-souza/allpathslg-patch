@@ -53,11 +53,11 @@ int main( int argc, char *argv[] )
      CommandArgument_Bool_OrDefault( DOT, False );
      CommandArgument_Int_OrDefault( VERBOSITY, 1 );
      
-     // Default source mode: align <READS>.unibases.k<K> to reference
+     // Default source mode: align  <READS>.unibases.k<K> to reference
      CommandArgument_String_OrDefault(READS, "");
      CommandArgument_Int_OrDefault(ORIGIN, 0);
      
-     // Alt source mode: align nhoods to reference (if NHOODS != "").
+     // Alt source mode: align  nhoods to reference (if NHOODS != "").
      // If DOT is true, then DOT_OUT must be specified (as full path
      // name of dot output file). Notice: output will be saved as
      // <DOT_OUT>.dot (ie ".dot" will be appended).

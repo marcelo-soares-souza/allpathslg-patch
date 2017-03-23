@@ -154,7 +154,7 @@ class TrustedPath {
 
   genome_part_id_t GetFinishedId() const { return m_aligns.front().target_id; }
 
-  // Where on the forward version of the finished sequence does the trusted path align?
+  // Where on the forward version of the finished sequence does the trusted path align ?
   genome_part_pos_t Begin() const { return m_aligns.front().a.pos2(); }
   genome_part_pos_t End() const { return m_aligns.back().a.Pos2(); }
   int Length() const { return this->End() - this->Begin(); }

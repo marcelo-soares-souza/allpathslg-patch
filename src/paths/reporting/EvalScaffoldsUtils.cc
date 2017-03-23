@@ -464,7 +464,7 @@ void PrintChain( const shandler &supers,
     // Mapping on reference.
     String str_map;
     if ( hit_id < 0 )
-      str_map = "no align found";
+      str_map = "no align  found";
     else {
       const look_align_plus &hit = hits[hit_id];
       str_map

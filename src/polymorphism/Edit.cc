@@ -10,7 +10,7 @@
 #include "PackAlign.h"
 #include "polymorphism/Edit.h"
 
-vec<pair<int,edit0>> AlignToEdits(const align& a, const basevector& S, 
+vec<pair<int,edit0>> AlignToEdits(const allpathslg::align & a, const basevector& S, 
         const basevector& T) 
 {
     vec<pair<int,edit0>> edits;

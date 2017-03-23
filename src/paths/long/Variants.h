@@ -104,14 +104,14 @@ struct VariantCall {
 
 
 // A VariantCallGroup contains a cell or a single branches in the unrolled graph.
-// All branches in the group align to same region in the genome. 
+// All branches in the group align  to same region in the genome. 
 class VariantCallGroup {
 public:
     VariantCallGroup () :gid(-1), start(-1), end(-1) {};
     VariantCallGroup (int gid, int start, int end) :gid(gid), start(start), end(end){};
 
     void AddBranch(const vec<int>& path, const vec<VariantCall>& vcalls, 
-            const align& a, const pair<int,int>& trim, vec<double> weight = vec<double>()) 
+            const allpathslg::align & a, const pair<int,int>& trim, vec<double> weight = vec<double>()) 
     { branches_.push_back(path); vcalls_.push_back(vcalls); 
       aligns_.push_back(a); weights_.push_back(weight); trims_.push_back(trim);}
 
@@ -130,7 +130,7 @@ public:
     const vec<int>& GetBranchPath(int branch_id) const 
     { return branches_[branch_id];  }
 
-    const align& GetAlign(int branch_id) const 
+    const allpathslg::align & GetAlign(int branch_id) const 
     { return aligns_[branch_id]; }
 
     const vec<VariantCall>& GetVariantCalls (int branch_id) const 
@@ -167,7 +167,7 @@ private:
     int start, end;                      // covered region in reference genome
     vec<vec<int>> branches_;             // path (in hbp) of each branch
     vec<vec<VariantCall>> vcalls_;       // variant calls from each branch
-    vec<align> aligns_;                  // alignment of the branch to reference
+    vec<allpathslg::align > aligns_;                  // alignment of the branch to reference
     vec<pair<int,int>> trims_;            // branch was trimmed 
     vec<vec<double>> weights_;           // weights for each branch
     vec<double> ref_weight_;             // weight for ref brach 

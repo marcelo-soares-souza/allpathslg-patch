@@ -16,20 +16,20 @@
 
 // ================================================================================
 //
-// Given a list of nonoverlapping mutmers (in order), create a align from
+// Given a list of nonoverlapping mutmers (in order), create a align  from
 // them by filling in the gaps.  You have to also provide the reads themselves.
 //
 // Set errors_found to the number of errors in the alignment.
 //
 // If there are >= max_errors, abort the construction, returning an 
-// align with Nblocks( ) == 0.
+// align  with Nblocks( ) == 0.
 // uninitialized alignment.
 //
 // Does the code check for overflow in the vectors gaps and lengths??
 //
 // ================================================================================
 
-void align::CreateFromMutmers(int k, shortvector<mutmer>& m, const basevector& rd1, 
+void align ::CreateFromMutmers(int k, shortvector<mutmer>& m, const basevector& rd1, 
      const basevector& rd2, int max_errors, float max_badness,
      int local_max_errors, int end_stretch, int local_max_errors_done, 
      int& errors_found )
@@ -37,7 +37,7 @@ void align::CreateFromMutmers(int k, shortvector<mutmer>& m, const basevector& r
      SetNblocks(0);
      const int MAX_ERRORS = 10000 ;
      if ( max_errors > MAX_ERRORS )
-          FatalErr( "You've called the align constructor (in "
+          FatalErr( "You've called the align  constructor (in "
                << "AlignFromMutmers.cc) with a max_errors\nvalue of > 10000.\n"
                << "If you really want to do this, you need to increase  "
 		    << "MAX_ERRORS and halfgaps in AlignFromMutmers.cc\n " );
@@ -548,7 +548,7 @@ void align::CreateFromMutmers(int k, shortvector<mutmer>& m, const basevector& r
           SetLength( i, lengths2(i) );    }
      errors_found = errors;    }
 
-void align::CreateFromMutmersMT(int k, shortvector<mutmer>& m, const basevector& rd1, 
+void align ::CreateFromMutmersMT(int k, shortvector<mutmer>& m, const basevector& rd1, 
      const basevector& rd2, int max_errors, float max_badness,
      int local_max_errors, int end_stretch, int local_max_errors_done, 
      int& errors_found )
@@ -556,7 +556,7 @@ void align::CreateFromMutmersMT(int k, shortvector<mutmer>& m, const basevector&
      SetNblocks(0);
      const int MAX_ERRORS = 10000 ;
      if ( max_errors > MAX_ERRORS )
-          FatalErr( "You've called the align constructor (in "
+          FatalErr( "You've called the align  constructor (in "
                << "AlignFromMutmers.cc) with a max_errors\nvalue of > 10000.\n"
                << "If you really want to do this, you need to increase  "
 		    << "MAX_ERRORS and halfgaps in AlignFromMutmers.cc\n " );

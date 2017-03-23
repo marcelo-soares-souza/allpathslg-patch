@@ -407,7 +407,7 @@ void FindIllegalPaths( const int len_max, const int K, const int L,
                if ( mean_cov >= cov_bound ) continue;
 
                // Estimate the probability that a random read with 25% error rate
-               // would fail to align to this.
+               // would fail to align  to this.
 
                int rand_ptr = 0, n = nk + K - 1;
                vec<ho_interval> required;
@@ -1110,7 +1110,7 @@ int main(int argc, char *argv[])
                if ( datab0[j1].size( ) == 0 || datab0[j2].size( ) == 0 )
                     dout << "\n(indel)\n";
                else
-               {    align a;
+               {    allpathslg::align  a;
                     SmithWatFreeSym( datab0[j1], datab0[j2], a, True, True, 1, 1 );
                     PrintVisualAlignment( True, dout, datab0[j1], datab0[j2], a ); 
 
@@ -1148,7 +1148,7 @@ int main(int argc, char *argv[])
                for ( int l1 = 0; l1 < casesx[j1].isize( ); l1++ )
                {    int id = casesx[j1][l1].first;
                     int p1 = casesx[j1][l1].second, p2 = casesx[j1][l1].third;
-                    align a;
+                    allpathslg::align  a;
                     Bool rc = ( id >= nr );
                     int ide = ( rc ? id - nr : id ), rpos1, rpos2, upos1, upos2;
                     const vec< pair<int,int> >& a1 
@@ -2152,7 +2152,7 @@ int main(int argc, char *argv[])
                          exp2_verts.push_back( M.Vert(v) );    }
                if (VERBOSE) cout << "\nDOES NOT REACH STUD!\n";    }
 
-          // Find long stretches of reads that align to vertices, and define
+          // Find long stretches of reads that align  to vertices, and define
           // coverage based on this.
 
           if (VERBOSE) cout << "\n";

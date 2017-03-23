@@ -111,7 +111,7 @@ public:
 
 /// MSP_PairedPairs is a MuxSearchPolicy that says reads are good
 /// if they paired-pair overlap with an earlier good read;
-/// paired-pair overlapping means both ends reads of the insert align.
+/// paired-pair overlapping means both ends reads of the insert align .
 /// Intended for libraries with very tight length distribution and
 /// high depth of coverage.
 //

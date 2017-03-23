@@ -164,7 +164,7 @@ void CompressedSeqOnHyper::Compress( const SeqOnHyper& salign,
 
   // Otherwise, we need to trace the basevector through the graph,
   // and record which choice to make if there's ambiguity.
-  // Also, assert if the basevector doesn't actually align.
+  // Also, assert if the basevector doesn't actually align .
 
   int K = hbv_aligned.K();
   int pos = m_first_edge_alignment.Pos1() - K + 1; // I think
@@ -184,13 +184,13 @@ void CompressedSeqOnHyper::Compress( const SeqOnHyper& salign,
     AgreeingFromEdges( hbv_aligned, vx_id, pos, Rc1(), from_edges );
 
     if( ! Member( from_edges, edge_id ) ) { // uh oh
-      cout << "SeqOnHyper doesn't align correctly to HyberBasevector!"
+      cout << "SeqOnHyper doesn't align  correctly to HyberBasevector!"
 	   << "\nwhole basevector: " << mp_bases->ToString()
 	   << "\npos=" << pos << ", " << (Rc1() ? "rc" : "fw")
 	   << "\nedge " << edge_id << ": " 
 	   << hbv_aligned.EdgeObject(edge_id).ToString()
 	   << endl;
-      FatalErr( "SeqOnHyper doesn't align correctly to HyperBasevector!" );
+      FatalErr( "SeqOnHyper doesn't align  correctly to HyperBasevector!" );
     }
 
     if( from_edges.size() != 1 )  // we have ambiguity, captain

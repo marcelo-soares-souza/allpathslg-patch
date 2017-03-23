@@ -52,7 +52,7 @@ const unsigned char HB_all_flags_set     = 0xFF;
 const int HB_blocks_in_header = 5;
 
 // If the "use previous id1" flag is set, then id1 is the id1 of the
-// previous align and id2 is the next int.  Otherwise, id1 is the next
+// previous align  and id2 is the next int.  Otherwise, id1 is the next
 // int and id2 is the int after that.
 //
 // If the "pos1, pos2, errors are compressed flag is set, then the
@@ -75,7 +75,7 @@ const int PPE_errors_shift               = 22;
 
 // otherwise, the next int contains pos1, the next pos2, and the next errors.
 //
-// This is followed by the score of the align in float form.
+// This is followed by the score of the align  in float form.
 //
 // Next comes the number of blocks in int form.
 // 

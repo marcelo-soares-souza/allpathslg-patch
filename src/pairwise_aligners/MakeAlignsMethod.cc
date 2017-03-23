@@ -22,7 +22,7 @@
 // If there's a perfect match of length at least perf but we produced no proper 
 // alignment, use banded Smith-Waterman to create one.
 
-void NoProperAligns( vec<align>& aligns, int& aligns_length, 
+void NoProperAligns( vec<allpathslg::align >& aligns, int& aligns_length, 
      const vec<mutmer>& mm, const basevector& rd1, const basevector& rd2,
      int perf, int bandwidth )
 {    Bool proper = False;
@@ -56,7 +56,7 @@ void NoProperAligns( vec<align>& aligns, int& aligns_length,
           << "\n";    
      cout << "aligning:\n";
      */
-     align a;
+     allpathslg::align  a;
      int a_errors;
      mm[best_mutmer].Unpack( p1, p2, len, e );
      SmithWatBandedA( rd1, rd2, p1 - p2, bandwidth, a, a_errors );
@@ -67,7 +67,7 @@ void NoProperAligns( vec<align>& aligns, int& aligns_length,
 // --- ORIG METHOD
 
 Bool makealigns_orig_method::MutmersToAlign( const vec<mutmer>& mm, int k,
-     const basevector& rd1, const basevector& rd2, vec<align>& aligns, 
+     const basevector& rd1, const basevector& rd2, vec<allpathslg::align >& aligns, 
      vec<int>& errors, int& aligns_length, int min_mutmer, ostream* log )
 {    
   // Old method.
@@ -367,7 +367,7 @@ Bool makealigns_orig_method::MutmersToAlign( const vec<mutmer>& mm, int k,
           try_if_no_proper_perf_, try_if_no_proper_bandwidth_ );
        return False;    }
 
-    align a;
+    allpathslg::align  a;
     int errors_found;
     a.CreateFromMutmers( k, m, rd1, rd2, max_errs_, max_badness_ * 1.5, 
 			 local_max_errs_, end_stretch_, 
@@ -390,7 +390,7 @@ Bool makealigns_orig_method::MutmersToAlign( const vec<mutmer>& mm, int k,
 
 Bool makealigns_alt_method::MutmersToAlign( const vec<mutmer>& mm, int k,
 					    const basevector& rd1, const basevector& rd2, 
-					    vec<align>& aligns, vec<int>& errors, 
+					    vec<allpathslg::align >& aligns, vec<int>& errors, 
 					    int& aligns_length, 
 					    int min_mutmer, ostream* log )
 {    
@@ -456,7 +456,7 @@ Bool makealigns_alt_method::MutmersToAlign( const vec<mutmer>& mm, int k,
   }
   for ( unsigned int i = 0; i < offsets.size( ); ++i )
   {
-    align a;
+    allpathslg::align  a;
     int a_errors;
     if ( rd1.size( ) <= 10 * rd2.size( ) )
       SmithWatBandedA( rd1, rd2, offsets[i], bandwidth_, a, a_errors );
@@ -478,7 +478,7 @@ Bool makealigns_alt_method::MutmersToAlign( const vec<mutmer>& mm, int k,
 
 Bool makealigns_perfect_method::MutmersToAlign( const vec<mutmer>& mm, int k,
                                                 const basevector& rd1, const basevector& rd2, 
-                                                vec<align>& aligns, vec<int>& errors, 
+                                                vec<allpathslg::align >& aligns, vec<int>& errors, 
                                                 int& aligns_length, 
                                                 int min_mutmer, ostream* log )
 {
@@ -501,7 +501,7 @@ Bool makealigns_perfect_method::MutmersToAlign( const vec<mutmer>& mm, int k,
       continue;
 
     errors[aligns_length] = 0;
-    align &theAlign = aligns[aligns_length++];
+    align  &theAlign = aligns[aligns_length++];
     
     theAlign.Setpos1( theMutmer.Pos1() );
     theAlign.Setpos2( theMutmer.Pos2() );
@@ -625,7 +625,7 @@ public:
   void TrimMutmers( const basevector &rd1, const basevector &rd2, int min_size,
 		    ostream *log );
 
-  int CreateAlign( align &a, int k, 
+  int CreateAlign( allpathslg::align  &a, int k, 
 		   const basevector &rd1, const basevector &rd2,
 		   int max_errs, int end_stretch, bool affine_penalties ) const;
 
@@ -865,7 +865,7 @@ void progression::TrimMutmers( const basevector &rd1, const basevector &rd2,
 }
   
 
-int progression::CreateAlign( align &a, int k, 
+int progression::CreateAlign( allpathslg::align  &a, int k, 
 			      const basevector& rd1, const basevector& rd2,
 			      int max_errs, int end_stretch, bool affine_penalties ) const
 {
@@ -882,7 +882,7 @@ int progression::CreateAlign( align &a, int k,
 
 Bool makealigns_sw_gap_method::MutmersToAlign( const vec<mutmer>& const_mm, int k,
 					       const basevector& rd1, const basevector& rd2, 
-					       vec<align>& aligns, vec<int>& errors, 
+					       vec<allpathslg::align >& aligns, vec<int>& errors, 
 					       int& aligns_length, 
 					       int min_mutmer, ostream* log )
 {    
@@ -1040,7 +1040,7 @@ Bool makealigns_sw_gap_method::MutmersToAlign( const vec<mutmer>& const_mm, int 
 
   // Feed each path of non-overlapping mutmers into a function that heuristically
   // closes the gaps between them.
-  align a;
+  allpathslg::align  a;
   int errors_found;
   aligns_length = 0;
 
@@ -1059,7 +1059,7 @@ Bool makealigns_sw_gap_method::MutmersToAlign( const vec<mutmer>& const_mm, int 
 
     if ( verbose_ && log != 0 )
     {
-      *log << "Making align with progression:" << "\n";
+      *log << "Making align  with progression:" << "\n";
       *log << *prog_iter << "\n";
     }
 

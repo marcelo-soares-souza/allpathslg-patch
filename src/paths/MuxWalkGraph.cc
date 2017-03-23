@@ -214,7 +214,7 @@ void MuxWalkGraph_to_vecKmerPath::CalcInDegrees( ) const {
 
 // path_so_far is a path probably ending with the read indicated by label,
 //    though it may not reach quite that far, if the read of label didn't
-//    align properly -- in which case, label_was_added is false.
+//    align  properly -- in which case, label_was_added is false.
 // dte_so_far is the dist_to_end of the last read which did get added.
 //
 // recursively call on all successors.

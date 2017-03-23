@@ -647,7 +647,7 @@ public:
   }
 
 
-  // we don't align ambiguous reads
+  // we don't align  ambiguous reads
   void SetAmbiguousReads(vec<int> &amb) { ambiguous_reads_ = amb; }
   void SetStartRead(int s) { start_read_=s; }
 

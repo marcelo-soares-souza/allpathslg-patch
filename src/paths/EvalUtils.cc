@@ -255,7 +255,7 @@ void PrintGraphStatistics
 	 if ( h.From(v)[0] != h.From(v)[1] ) continue;
 	 
 	 // Find the alignments of the two edges in the bubble.
-	 // Require them to align uniquely to the reference, if at all
+	 // Require them to align  uniquely to the reference, if at all
 	 // (the SNPy edge might not have aligned.)
 	 int e1 = h.EdgeObjectIndexByIndexFrom( v, 0 );
 	 int e2 = h.EdgeObjectIndexByIndexFrom( v, 1 );
@@ -430,7 +430,7 @@ void EvaluateAssembly( HyperKmerPath& h, const KmerBaseBroker* kbb,
                SummarizeReferenceCoverage( total_bases, total_covered, bout, 
 					   genome, genome_diploid, genome_amb, aligns, pass == 1 );
                if ( pass == 2 )
-               {    bout << "\nEdges of size >= 10 kb that do not align "
+               {    bout << "\nEdges of size >= 10 kb that do not align  "
                          << "to reference at all:\n\n";
                     vec<Bool> aligned( h.EdgeObjectCount( ), False );
                     for ( int i = 0; i < aligns.isize( ); i++ )
@@ -447,7 +447,7 @@ void EvaluateAssembly( HyperKmerPath& h, const KmerBaseBroker* kbb,
                          << PERCENT_RATIO(4, total_covered_plus, total_bases)
                          << " (" << total_covered_plus << "/" << total_bases << ") "
                          << "of reference covered (including unaligned edges)\n";
-                    bout << "\nEdges of size >= 10 kb that align imperfectly "
+                    bout << "\nEdges of size >= 10 kb that align  imperfectly "
                          << "to reference:\n\n";
                     vec<Bool> perf( h.EdgeObjectCount( ), False );
                     for ( int i = 0; i < aligns.isize( ); i++ )
@@ -467,7 +467,7 @@ void EvaluateAssembly( HyperKmerPath& h, const KmerBaseBroker* kbb,
                     vec<look_align> good_and_long_aligns = aligns;
                     EraseIf( good_and_long_aligns, short_or_bad );
                     bout << "\nCoverage of reference by edges of size >= 10 kb "
-                         << "that align perfectly:";
+                         << "that align  perfectly:";
                     longlong total_bases, total_covered;
                     vecbitvector genome_amb;
                     SummarizeReferenceCoverage( total_bases, total_covered, bout,
@@ -677,7 +677,7 @@ void EvaluateAssembly( HyperKmerPath& h, const KmerBaseBroker* kbb,
           vec<look_align> good_and_long_aligns = aligns;
           EraseIf( good_and_long_aligns, short_or_bad );
           bout << "\nCoverage of reference by edges of size >= 10 kb that "
-               "align perfectly:";
+               "align  perfectly:";
           SummarizeReferenceCoverage( total_bases, total_covered, bout, genome, 
 				      genome_diploid, genome_amb, good_and_long_aligns, True );
           PrintGraphStatistics( cout, h2, genome, genome_diploid, aligns, aligns_index );
@@ -713,7 +713,7 @@ void FilterAligns( const HyperKmerPath& h, vec<look_align>& aligns,
 
      //double alignclock = WallClockTime( );
      FilterPathsByAlignDominance( trusted_paths );
-     //cout << TimeSince(alignclock) << " used filtering trusted paths by align dominance." << endl;
+     //cout << TimeSince(alignclock) << " used filtering trusted paths by align  dominance." << endl;
 
      //double edgeclock = WallClockTime( );
      FilterPathsByEdgeDominance( trusted_paths, aligns_index.size() );

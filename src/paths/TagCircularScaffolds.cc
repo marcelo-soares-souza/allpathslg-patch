@@ -151,7 +151,7 @@ int main( int argc, char *argv[] )
       int offset = Min( (int)lb.size( ) + gap, (int)lb.size( ) );
       int band = 3 * dev;
       int errors = 0;
-      align al;
+      align  al;
       SmithWatBandedA2<unsigned int>( lb, rb, offset, band, al, errors );
       
       // Align is not perfect.

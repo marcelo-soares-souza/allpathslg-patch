@@ -162,7 +162,7 @@ Float ScoreGapOnSecondRead( int p1, int p2, int gap,
 // sequences or for the first sequence, score the alignment.
 
 template< class rd2_transform >
-Float ScoreAlignment( const align& a, 
+Float ScoreAlignment( const allpathslg::align & a, 
 		      const basevector& rd1, const qualvector& scores1, 
 		      const basevector& rd2, const qualvector& scores2,
 		      const rd2_transform& trans, int start1, int stop1,
@@ -232,7 +232,7 @@ Float ScoreAlignment( const align& a,
      answer = a2/a1;
      return answer;    }
 
-Float ScoreAlignment( const align& a, 
+Float ScoreAlignment( const allpathslg::align & a, 
 		      const basevector& rd1, const qualvector& scores1, 
 		      const basevector& rd2, const qualvector& scores2,
                       int start1, int stop1, int start2, int stop2,
@@ -242,7 +242,7 @@ Float ScoreAlignment( const align& a,
                          start1, stop1, start2, stop2, ignore_gaps );
 }
 			 
-Float ScoreAlignment( Bool rd2_is_rc, const align& a, 
+Float ScoreAlignment( Bool rd2_is_rc, const allpathslg::align & a, 
 		      const basevector& rd1, const qualvector& scores1, 
 		      const basevector& rd2, const qualvector& scores2,
                       int start1, int stop1, int start2, int stop2,
@@ -263,7 +263,7 @@ Float ScoreAlignment( Bool rd2_is_rc, const align& a,
 // 3. We substitute (sum of quality scores)/40 for total_length.
 
 template< class rd2_transform >
-int ScoreAlignmentPoly( const align& a, 
+int ScoreAlignmentPoly( const allpathslg::align & a, 
 		      const basevector& rd1, const qualvector& scores1, 
 		      const basevector& rd2, const qualvector& scores2,
 		      const rd2_transform& trans, int start1, int stop1,
@@ -309,7 +309,7 @@ int ScoreAlignmentPoly( const align& a,
                break;    }
      return (int) mismatches.size( ) - i;    }
 
-int ScoreAlignmentPoly( const align& a, 
+int ScoreAlignmentPoly( const allpathslg::align & a, 
 		      const basevector& rd1, const qualvector& scores1, 
 		      const basevector& rd2, const qualvector& scores2,
                       int start1, int stop1, int start2, int stop2 )
@@ -318,7 +318,7 @@ int ScoreAlignmentPoly( const align& a,
       start1, stop1, start2, stop2 );
 }
 			 
-int ScoreAlignmentPoly( Bool rd2_is_rc, const align& a, 
+int ScoreAlignmentPoly( Bool rd2_is_rc, const allpathslg::align & a, 
 		      const basevector& rd1, const qualvector& scores1, 
 		      const basevector& rd2, const qualvector& scores2,
                       int start1, int stop1, int start2, int stop2 )
@@ -342,7 +342,7 @@ int ScoreAlignmentPoly( Bool rd2_is_rc, const align& a,
 // the quality scores.
 
 template< class rd2_transform >
-void Regap( align& a, 
+void Regap( allpathslg::align & a, 
 	    const basevector& rd1, const qualvector& scores1,
 	    const basevector& rd2, const qualvector& scores2,
 	    const rd2_transform& trans )
@@ -536,7 +536,7 @@ void Regap( align& a,
 } 
 
 
-void Regap( align& a, 
+void Regap( allpathslg::align & a, 
 	    const basevector& rd1, const qualvector& scores1, 
 	    const basevector& rd2, const qualvector& scores2 )
 {
@@ -544,7 +544,7 @@ void Regap( align& a,
 }
 
 void Regap( Bool rd2_is_rc, 
-	    align& a, 
+	    allpathslg::align & a, 
 	    const basevector& rd1, const qualvector& scores1, 
 	    const basevector& rd2, const qualvector& scores2 )
 {

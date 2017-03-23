@@ -90,7 +90,7 @@ HeuristicBool( USE_MULTIPLE_ALIGNER, False,
      "use the multiple aligner for thread consensus" );
 
 HeuristicBool( FILTER_BAD_BLOCKS, True,
-     "remove reads having blocks that align with too many errors" );
+     "remove reads having blocks that align  with too many errors" );
 
 HeuristicBool( COLUMN_FILTER, True, 
      "identify and remove false friends based on columns in multiple alignment" );

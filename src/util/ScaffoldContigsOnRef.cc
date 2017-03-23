@@ -47,7 +47,7 @@ void ScaffoldContigsOnRef( const vec<superb> &initial_supers,
     int clen = al.query_length;
     int tlen = al.target_length;
 
-    // Skip align.
+    // Skip align .
     if ( ! initial[cid] ) continue;   // skip contig
     if ( placed[cid] ) continue;   // already placed
     if ( ! al.IsProper( ) ) continue;   // improper

@@ -24,7 +24,7 @@
 // If given a nonnegative segoff, it only checks the original
 // reads with the first read extending segoff segments to the
 // left of the second read.  (Muxes provide that information.)
-// The partner reads may still align in any way.
+// The partner reads may still align  in any way.
 
 bool MSP_PairedPairs::PairedPairsPerfectMatch( const OrientedKmerPathId& okpid1,
 					       const OrientedKmerPathId& okpid2,

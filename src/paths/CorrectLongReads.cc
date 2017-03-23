@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
      // Diagnostic arguments.
 
      CommandArgument_Bool_OrDefault_Doc(QLT1, False,
-          "align some stuff; forces single thread on main loop");
+          "align  some stuff; forces single thread on main loop");
      CommandArgument_Bool_OrDefault_Doc(DOT1, False, "generate dot file");
      CommandArgument_Bool_OrDefault_Doc(DOT2, False, "generate dot file");
      CommandArgument_Bool_OrDefault_Doc(DUMP_LOCAL, False, "print local alignments");

@@ -268,7 +268,7 @@ template<int I, int k, int BLOCKS_PER_NODE> void MakeAlignsStatic(
 
      static vec< mutmer_read_idX<I> > mid;
      mid.resize( Max(M.Counts( )) );
-     static vec<align> aligns;
+     static vec<allpathslg::align > aligns;
      aligns.resize(max_alignments);
      static vec<int> errors;
      errors.resize(max_alignments);

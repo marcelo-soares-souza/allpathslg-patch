@@ -45,7 +45,7 @@ void ClusterAligner( basevector q, const vecbasevector& G, const int K,
      // Align.
 
      aligns.clear( );
-     align a;
+     allpathslg::align  a;
      vec<int> errs;
      int npasses = ( FW_ONLY ? 1 : 2 );
      for ( int pass = 1; pass <= npasses; pass++ )

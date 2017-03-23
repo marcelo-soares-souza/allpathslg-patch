@@ -19,7 +19,7 @@
  * BeautifyTable
  *
  * Add enough spaces to entries so that the entries in the printed table
- * will align uniformly. Input is modified.
+ * will align  uniformly. Input is modified.
  *
  * rjustify: justify column on left/right (if given)
  */

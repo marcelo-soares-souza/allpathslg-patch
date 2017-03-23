@@ -192,7 +192,7 @@ void ReorderToFollowReference( HyperKmerPath& h, vec<look_align>& aligns,
           UniqueSort(oe);
 
 	  // Get a list of the longest (maximal-length) edges of this component.
-	  // We'll align this component to the reference by aligning its longest edges.
+	  // We'll align  this component to the reference by aligning its longest edges.
 	  // There may be several longest edges, and each may have several alignments
 	  // to the reference, so there may be several candidate alignments of this
 	  // component to the reference.
@@ -329,8 +329,8 @@ void PrintAlignedHyperKmerPath( ostream& out, const HyperKmerPath& h,
 	       //
 	       //   errors - the number of alignment errors in this trusted path
 	       //   haploid_errors - the number of alignment errors in edges that 
-               //      align to only one strand of a diploid genome
-	       //   proper - whether all the path's edges align fully to the 
+               //      align  to only one strand of a diploid genome
+	       //   proper - whether all the path's edges align  fully to the 
                //      reference
 	       //   source_start - whether the path starts at a <source node>
 	       //   sink_stop - whether the path stops at a <sink node>
@@ -363,7 +363,7 @@ void PrintAlignedHyperKmerPath( ostream& out, const HyperKmerPath& h,
                          if ( !la.FullLength( ) ) proper[u] = False;    }    }
 
 	       // Count how many "good" trusted paths there are through this 
-               // component.  Good means they (i.e. their edges) align to the 
+               // component.  Good means they (i.e. their edges) align  to the 
                // reference with few errors.
 
                const int max_errors = 10;
@@ -579,7 +579,7 @@ void TrustedPathsToIndexedAligns( const vec<TrustedPath>& paths,
 // Function: FilterByReference
 //
 // For each <component> of a HyperKmerPath, create <trusted paths> through the component
-// that follow the component's graph structure but also align well to the reference.
+// that follow the component's graph structure but also align  well to the reference.
 //
 // Find edge alignments and filter them by finding
 // the alignments most consistent with the graph structure and the
@@ -625,7 +625,7 @@ void FilterByReference( const HyperKmerPath& theGraph,
 
     // Copy aligns for given contig:
     // alignments of this contig's edges to the reference.
-    // Note that each edge may in general align to many places in the reference
+    // Note that each edge may in general align  to many places in the reference
     // (even to different <genome parts>).
     // Also, determine the length and id of the longest edge. 
     vec<look_align> rawAligns;
@@ -672,27 +672,27 @@ void FilterByReference( const HyperKmerPath& theGraph,
     const int nullSeed = -1;
     vec<align_id_t> fromSeed( rawAligns.size(), nullSeed );
 
-    // Start at each seed align, and work forwards, flagging aligns
+    // Start at each seed align , and work forwards, flagging aligns
     // as trusted if they match the graph structure, stopping when you
-    // hit an already-trusted align.
+    // hit an already-trusted align .
     for ( unsigned int seedIdx = 0; seedIdx < isSeed.size(); ++seedIdx ) {
       // If this is not a seed, skip it.
       if ( ! isSeed[seedIdx] )
         continue;
       
-      // If this align has already been claimed by some other seed, skip it.
+      // If this align  has already been claimed by some other seed, skip it.
       if ( fromSeed[seedIdx] != nullSeed )
         continue;
       
-      // Claim this align for this seed.
+      // Claim this align  for this seed.
       fromSeed[seedIdx] = seedIdx;
 
       look_align* pLastTrustedAlign = &rawAligns[seedIdx];
       int lastTrustedEdgeIdx = pLastTrustedAlign->query_id;
       genome_part_id_t targetId = pLastTrustedAlign->target_id;
 
-      // What will be the pos2 (start on the reference) of the next align?
-      // It will be at the end of the last trusted align
+      // What will be the pos2 (start on the reference) of the next align ?
+      // It will be at the end of the last trusted align 
       // (with an adjustment for the fact that edges are KmerPaths in kmer space,
       // so KmerPaths from adjacent edges overlap by K-1 bases).
       genome_part_pos_t pos2Target = pLastTrustedAlign->Pos2() - (int)(K-1);
@@ -708,7 +708,7 @@ void FilterByReference( const HyperKmerPath& theGraph,
       }
       sort( validEdges.begin(), validEdges.end() );  // so we can binary_search it
 
-      // Find edge alignments to the reference, that align an edge of this contig
+      // Find edge alignments to the reference, that align  an edge of this contig
       // to the endpoint of the current trusted path.
       // Remember that rawAligns is sorted by the genome part and within a genome part
       // by the start of the alignment on that genome part.
@@ -802,18 +802,18 @@ void FilterByReference( const HyperKmerPath& theGraph,
           }  // for each candidate edge (an edge aligned to the end of the trusted-path-so-far).
 
           // If lowestErrorRate is still less than zero, we found no
-          // valid align to a valid edge, so we're done.
+          // valid align  to a valid edge, so we're done.
           if ( lowestErrorRate < Float(0) )
             break;
 
-          // Otherwise, bestAlignIdx is the align we'll follow.
+          // Otherwise, bestAlignIdx is the align  we'll follow.
           pThisAlign = &rawAligns[bestAlignIdx];
           fromSeed[ bestAlignIdx ] = seedIdx;
 
           // The for loop will increment this.
           forwIdx = candidatesEnd-1;
 
-          // Set up the criteria for the next align.
+          // Set up the criteria for the next align .
           lastTrustedEdgeIdx = pThisAlign->query_id;
           pLastTrustedAlign = pThisAlign;
           if ( pLastTrustedAlign->rc1 ) {
@@ -1047,7 +1047,7 @@ void TrustedPath::PrintSummary( ostream& out ) const
 void TrustedPath::TestValid( ) const {
   ForceAssert( !m_aligns.empty() );
   ForceAssertEq( m_vertexIds.size() - 1, m_aligns.size() );
-  // check that all edges of a path align to the same genome part,
+  // check that all edges of a path align  to the same genome part,
   // to the same strand of that genome part, and follow each other
   // (are adjacent to each other) on that strand.
   
@@ -1444,8 +1444,8 @@ public:
 
    Algorithm:
 
-   Stratify paths by contig and (within the contig) by the genome part to which they align.
-   For paths within a contig that align to the same genome part:
+   Stratify paths by contig and (within the contig) by the genome part to which they align .
+   For paths within a contig that align  to the same genome part:
    Sort the begins & ends of paths along the genome part.
    (So, for each path we create a begin marker and an end marker, and sort the combined vector of all markers
    by position on the reference).

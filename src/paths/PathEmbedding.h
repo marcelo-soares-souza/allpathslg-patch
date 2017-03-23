@@ -142,7 +142,7 @@ public:
 
   // Here's where they come from.  The return value is just !ans.empty()
   // If start_of_sub_on_super is specified, it's the segment of super that
-  // the 0th segment of sub should align to.
+  // the 0th segment of sub should align  to.
   friend 
   bool FindPathEmbeddings( const KmerPath& sub, const KmerPath& super,
 			   vec<PathEmbedding>& ans, 

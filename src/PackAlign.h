@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // This file defines three classes for storing alignments between two DNA sequences:
-// class align: stores a forward alignment
 // class packalign: stores a forward alignment in a compressed form
 // class flatalign: stores an alignment having no indels. [NOT DEFINED YET.]
 // Added: class placement_mark.
@@ -114,7 +113,6 @@
 // gap(1) -     32 bits
 // ...
 
-// To reduce running time, we also define a class align, which is the same as
 // class packalign, but is not compressed.  Note that it keeps vectors of gaps
 // and lengths, but that only the first nblocks of them are relevant.
 
@@ -152,7 +150,7 @@ class int_pointer_or_words {
   };
 };
 
-class align;
+// class align ;
 
 class packalign {
 
@@ -166,8 +164,6 @@ class packalign {
 
   packalign( int pos1, int pos2, const avector<int>& gaps, 
              const avector<int>& lengths );
-
-  packalign( const align& a );
 
   void Set( int pos1, int pos2, const avector<int>& gaps, 
             const avector<int>& lengths, int nblocks = -1 );
@@ -218,9 +214,7 @@ class packalign {
   void ReverseThis( int b1_len, int b2_len );
 
   void SetToFlipOf( const packalign& p );
-  void SetToFlipOf( align a );
   void SetToReverseFlipOf( const packalign& p, int b1_len, int b2_len );
-  void SetToReverseFlipOf( align a, int b1_len, int b2_len );
 
   // =========================================================================
   // The remaining public members are boring utilities:
@@ -290,28 +284,30 @@ class packalign {
 };
 
 /**
-    Class: align
+    Class: align 
 
     Alignment of query to target, possibly with gaps.
     Models type concept Align.
  */
-class align {
+namespace allpathslg {
+
+class align  {
 
  public:
 
-  align( ): pos1_(0), pos2_(0), nblocks_(0)
+  align ( ): pos1_(0), pos2_(0), nblocks_(0)
   {
     gaps_.Setsize(0);
     lengths_.Setsize(0);
   }
 
-  align( int pos1, int pos2, const avector<int>& gaps, 
+  align ( int pos1, int pos2, const avector<int>& gaps, 
          const avector<int>& lengths )
     : pos1_(pos1), pos2_(pos2), nblocks_( gaps.length ), gaps_(gaps), 
       lengths_(lengths) { }
   
     // copy ctor
-  align( const align & a ) {
+  align ( const allpathslg::align  & a ) {
     pos1_ = a.pos1_;
     pos2_ = a.pos2_;
     nblocks_ = a.nblocks_;
@@ -338,7 +334,7 @@ class align {
     memcpy( lengths_.x, l.x, nblocks_ * sizeof(int) );    
   }
 
-  align& operator=( const align& a )
+  align & operator=( const allpathslg::align & a )
   {
     pos1_ = a.pos1_;
     pos2_ = a.pos2_;
@@ -352,7 +348,7 @@ class align {
     return *this;    
   }
 
-  align( const packalign& p )
+  align ( const packalign& p )
   {    p.Unpack( pos1_, pos2_, gaps_, lengths_, nblocks_ );    }
 
   void writeBinary( BinaryWriter& writer ) const;
@@ -491,9 +487,9 @@ class align {
 
   /// Return new alignment corresponding to basevector 1 being trimmed.
   /// This is meant to be parallel to the call SetToSubOf(b1,startOn1,len);
-  align TrimmedTo1(int startOn1, int len) const;
+  align  TrimmedTo1(int startOn1, int len) const;
 
-  /// Adjust the align object into sync with the 454-cycles of TACG.
+  /// Adjust the align  object into sync with the 454-cycles of TACG.
   void Sync_to_TACG( const basevector & seq1,
                      const basevector & seq2,
                      Bool  isRC = False );
@@ -505,7 +501,7 @@ class align {
   ///Not correlated with Read
   void Write( ostream& out, int id1, int id2, Bool rc, int errors );
 
-  friend Bool operator==( const align& a1, const align& a2 )
+  friend Bool operator==( const allpathslg::align & a1, const allpathslg::align & a2 )
   {
     if ( a1.pos1_ != a2.pos1_ ) return False;
     if ( a1.pos2_ != a2.pos2_ ) return False;
@@ -516,7 +512,7 @@ class align {
     return True; 
   }
 
-  friend Bool operator<( const align& a1, const align& a2 )
+  friend Bool operator<( const allpathslg::align & a1, const allpathslg::align & a2 )
   {    if ( a1.pos1_ < a2.pos1_ ) return True;
        if ( a1.pos1_ > a2.pos1_ ) return False;
        if ( a1.pos2_ < a2.pos2_ ) return True;
@@ -591,47 +587,53 @@ class align {
   int nblocks_;
   avector<int> gaps_, lengths_;
 
-};  // class align
-SELF_SERIALIZABLE(align);
+};  // class align 
 
-ostream & operator<<(ostream & os, const align & a);
+}
 
-Bool Proper( const align& a, int len1, int len2 );
+SELF_SERIALIZABLE(allpathslg::align );
 
-void RequireProper( const align& a, int id1, int id2, Bool rc2, 
+void SetToFlipOf( allpathslg::align  a ) {};
+void SetToReverseFlipOf( allpathslg::align  a, int b1_len, int b2_len ) {};
+
+ostream & operator<<(ostream & os, const allpathslg::align  & a);
+
+Bool Proper( const allpathslg::align & a, int len1, int len2 );
+
+void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2, 
                     const vecbasevector& EE, int test_no, Bool fatal = True );
 
-void RequireProper( const align& a, int id1, int id2, Bool rc2, 
+void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2, 
                     const vec<int>& EE_length, int test_no, Bool fatal = True );
 
 // Compute the number of errors in an alignment.
 
 template<class BASEVEC1, class BASEVEC2>
 int ActualErrors( const BASEVEC1& rd1, const BASEVEC2& rd2, 
-                  const align& a, int mismatch_penalty = 1, int gap_penalty = 2 );
+                  const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
 
 template<class BASEVEC1, class BASEVEC2>
 int ActualErrors( Bool rc, const BASEVEC1& rd1, const BASEVEC2& rd2, 
-                  const align& a, int mismatch_penalty = 1, int gap_penalty = 2 );
+                  const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
 
 int ActualErrors( const basevector& rd1, const basevector& rd2, 
-                  const align& a, int mismatch_penalty = 1, int gap_penalty = 2 );
+                  const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
 int ActualErrors( const fastavector& rd1, const basevector& rd2, 
-                  const align& a, int mismatch_penalty = 1, int gap_penalty = 2 );
+                  const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
 int ActualErrors( const vec<char>& rd1, const basevector& rd2, 
-                  const align& a, int mismatch_penalty = 1, int gap_penalty = 2 );
+                  const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
 int ActualErrors( const fastavector& rd1, const fastavector& rd2, 
-                  const align& a, int mismatch_penalty = 1, int gap_penalty = 2 );
+                  const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
 
-int Bandwidth( align& a );
+int Bandwidth( allpathslg::align & a );
 
-int CorrelatePositions( const align& a, int x1 );
+int CorrelatePositions( const allpathslg::align & a, int x1 );
 
 /// Trim a basevector and an alignment on that basevector in sync.
 
 void Trim1Together(const basevector & b1, const basevector & b2, 
-		   const align & a, int startOn1, int len, 
-		   basevector & trimmedb1, align & trimmeda); 
+		   const allpathslg::align  & a, int startOn1, int len, 
+		   basevector & trimmedb1, allpathslg::align  & trimmeda); 
 
 /// Class placement_mark: small-size structure to keep only the
 /// target (contig) index/start position and query sequence orientation 

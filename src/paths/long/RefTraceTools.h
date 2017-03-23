@@ -86,10 +86,10 @@ public:
 
     vec< quad< triple<int,int,int>, triple<int,int,int>, 
         pair<int,int>, pair<int,int> > > vedata;
-    vec<align> aligns;
+    vec<allpathslg::align > aligns;
     vec<int> xto_left, xto_right;
 private:
-    int CorrelatePositionsAlways(const align& a, const int x1)const;
+    int CorrelatePositionsAlways(const allpathslg::align & a, const int x1)const;
 };
 
 class GraphZ {
@@ -255,10 +255,10 @@ void EdgePlacements::AlignEdgesToRef(
 
                // Do the alignment.  This is kludgy.  If the alignment has too 
                // many errors and the edge is long, we suspect that the problem
-               // might be with a big indel, so we align using a larger bandwidth.
+               // might be with a big indel, so we align  using a larger bandwidth.
                // Note the unfortunate us of hardcoded constants.
 
-               align a;
+               allpathslg::align  a;
                int errors;
 
                if ( !REFTRACE_VARIANTS )
@@ -348,7 +348,7 @@ void EdgePlacements::AlignEdgesToRef(
      SortSync(vedata, aligns);
 }
 
-// An experimental version of function to align edges to reference that
+// An experimental version of function to align  edges to reference that
 // automatically adjust heuristics for best results.
 
 template<int L> 
@@ -509,9 +509,9 @@ void EdgePlacements::AlignEdgesToRefExp(const int verbosity, ostream& out)
                         = Max(mid_offset - off_low, off_high - mid_offset) + std::get<2>(entry);// rth.offset_add;
                    // Do the alignment.  This is kludgy.  If the alignment has too 
                    // many errors and the edge is long, we suspect that the problem
-                   // might be with a big indel, so we align using a larger bandwidth.
+                   // might be with a big indel, so we align  using a larger bandwidth.
                    // Note the unfortunate us of hardcoded constants.
-                   align a;
+                   allpathslg::align  a;
                    int errors;
                    swbae.run( hbp.EdgeObject(indices.first), G[g],
                         -mid_offset, bandwidth, a, errors, 0, 1, 1 );

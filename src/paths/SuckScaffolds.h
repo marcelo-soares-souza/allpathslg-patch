@@ -22,7 +22,7 @@
  * Returns the number of sucking events.
  *
  * pairs: pairs info
- * aligns_index: index from read it to align object (or <0 if not unique)
+ * aligns_index: index from read it to align  object (or <0 if not unique)
  * aligns: alignments of reads onto contigs (these may be flipped)
  * scaffolds: both input and output
  * rctig: stores info on which contigs are rc-ed (scaffolds can be rc-ed)

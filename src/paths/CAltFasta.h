@@ -78,7 +78,7 @@ private:
   vecfvec alt_;           // alternates (alt_[0] = [begin, end) in contig_)
   vecbvec reads_;         // reads over [begin, end) of contig cid_
   vecqnibvec readsq_;     // qualities of reads
-  vec< vec<int> > errs_;  // errs_[i][j]: score of align reads_[i] on alt_[j]
+  vec< vec<int> > errs_;  // errs_[i][j]: score of align  reads_[i] on alt_[j]
   ostream *plog_;   // thread-safe log stream
 
   vec< pair<int,double> > votes;

@@ -58,7 +58,7 @@ private:
   // Centralized factory for the maps in the class.
   void GenerateMaps( );
   
-  // Window on super (these assert if read does not align).
+  // Window on super (these assert if read does not align ).
   int SuperId( int read_id ) const;
   bool FwOnSuper( int read_id ) const;
   pair<int,int> WinOnSuper( int read_id ) const;
@@ -75,7 +75,7 @@ private:
   vec<int> super_pos_;    // position in super for this edge
   vec<int> super_begin_;  // begin of edge on super
   vec<int> super_end_;    // end of edge on super
-  VecIntVec read_ids_;    // reads in this edge that own an align
+  VecIntVec read_ids_;    // reads in this edge that own an align 
 
   vec<int> true_begin_;   // cached true begin for this super
   vec<int> true_end_;     // cached true end for this super

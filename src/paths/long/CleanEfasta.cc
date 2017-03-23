@@ -50,7 +50,7 @@ void CleanEfasta( HyperEfasta& he, vec<int>& inv, const long_logging& logc )
           basevector b1(e1), b2(e2);
           const int bw = 20;
           const int max_errs = 10;
-          align a;
+          allpathslg::align  a;
           int e;
           SmithWatBandedA( b1, b2, 0, bw, a, e, 0, 1, 1 );
           e += a.pos1( ) + a.pos2( )

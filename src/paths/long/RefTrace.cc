@@ -122,7 +122,7 @@ void ShowReftraceEvents(const basevector& best_bpath, const basevector& ref, int
     alignment al;
     const basevector& b1 = best_bpath, &b2 = ref;
     SmithWatAffineParallel( b1, b2, al );
-    align a(al);
+    allpathslg::align  a(al);
     vec< pair<int,int> > P1, P2;
     DecomposeAlign( a, b1, b2, P1, P2 );
     for ( int z = 0; z < P1.isize( ); z++ ) {    
@@ -130,7 +130,7 @@ void ShowReftraceEvents(const basevector& best_bpath, const basevector& ref, int
                 P1[z].second - P1[z].first );
         basevector B2( b2, P2[z].first, 
                 P2[z].second - P2[z].first );
-        align A = a.TrimmedTo1( 
+        allpathslg::align  A = a.TrimmedTo1( 
                 P1[z].first, P1[z].second - P1[z].first );
         vec<int> mgg = A.MutationsGap1Gap2( B1, b2 );
         int start = P2[z].first, stop = P2[z].second;

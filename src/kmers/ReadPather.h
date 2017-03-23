@@ -1148,7 +1148,7 @@ private:
     size_t mFinalSkip;
 };
 
-/// Describes how reads align to a UnipathGraph.
+/// Describes how reads align  to a UnipathGraph.
 template <unsigned K>
 class PathCollection
 {

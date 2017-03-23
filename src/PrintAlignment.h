@@ -21,7 +21,7 @@ void PrintBases( ostream& out, const BASEVEC& rd, int from, int to );
 
 template<class BASEVEC1, class BASEVEC2>
 void PrintVisualAlignment( Bool abbreviate, ostream& out, const BASEVEC1& rd1, 
-     const BASEVEC2& rd2, const align& a, 
+     const BASEVEC2& rd2, const allpathslg::align & a, 
      const qualvector& scores1 = qualvector(0), 
      const qualvector& scores2 = qualvector(0), 
      int begin = 0, Bool one_frame = false, int min_score_to_abbrev = 0,
@@ -34,7 +34,7 @@ void PrintVisualAlignment( Bool abbreviate, ostream& out, const BASEVEC1& rd1,
 
 template<class BASEVEC1, class BASEVEC2>
 void PrintVisualAlignmentClean( Bool abbreviate, ostream& out, const BASEVEC1& rd1, 
-     const BASEVEC2& rd2, const align& a, 
+     const BASEVEC2& rd2, const allpathslg::align & a, 
      const qualvector& scores1 = qualvector(0), 
      const qualvector& scores2 = qualvector(0), 
      int begin = 0, Bool one_frame = false, int min_score_to_abbrev = 0,
@@ -65,7 +65,7 @@ void PrintVisualAlignmentClean( Bool abbreviate, ostream& out, const BASEVEC1& r
 
 template<class BASEVEC1, class BASEVEC2>
 void PrintVisualAlignment( Bool rd2_is_rc, Bool abbreviate, ostream& out, 
-     const BASEVEC1& rd1, BASEVEC2 rd2, const align& a, 
+     const BASEVEC1& rd1, BASEVEC2 rd2, const allpathslg::align & a, 
      const qualvector& scores1 = qualvector(0), qualvector scores2 = qualvector(0),
      int begin = 0, Bool one_frame = false, int min_score_to_abbrev = 0,
      Bool abbeviate_poor = False, float min_fract_poor = 2.0,
@@ -78,7 +78,7 @@ inline void PrintVisualAlignment( Bool abbreviate, ostream& out,
      const qualvector& scores2 = qualvector(0),
      int begin = 0, Bool one_frame = false, int min_score_to_abbrev = 0,
      Bool abbreviate_poor = False, float min_fract_poor = 2.0, const int pw = 80 )
-{    PrintVisualAlignment( abbreviate, out, rd1, rd2, align(packalign(a)),
+{    PrintVisualAlignment( abbreviate, out, rd1, rd2, allpathslg::align (packalign(a)),
           scores1, scores2, begin, one_frame, min_score_to_abbrev,
           abbreviate_poor, min_fract_poor, pw );    }
 
@@ -90,7 +90,7 @@ inline void PrintVisualAlignment( Bool rd2_is_rc, Bool abbreviate, ostream& out,
      int begin = 0, Bool one_frame = false, int min_score_to_abbrev = 0,
      Bool abbreviate_poor = False, float min_fract_poor = 2.0, const int pw = 80 )
 {    PrintVisualAlignment( rd2_is_rc, abbreviate, out, rd1, rd2, 
-          align(packalign(a)), scores1, scores2, begin, one_frame,
+          allpathslg::align (packalign(a)), scores1, scores2, begin, one_frame,
           min_score_to_abbrev, abbreviate_poor, min_fract_poor, pw );    }
 
 void PrintAlignment( ostream& out, const basevector& rd1, 

@@ -25,7 +25,7 @@
  * Align contigs to a reference, and merge consecutive contigs, if
  * they overlap by >= MIN_OVERLAP bases (perfect matches only). If a
  * repetitive contig is involved in multiple overlaps, all are taken
- * into account. For example, if unique sequences A and B both align
+ * into account. For example, if unique sequences A and B both align 
  * repetitive sequence R, then we merge both A + R -> A', and B + R ->
  * B'.
  *
@@ -41,7 +41,7 @@
  * MIN_GAP: min gap size allowed
  * MIN_GAP_DEV: min value for gaps' dev
  * NUM_THREADS: use all available if 0
- * FW_ONLY: discard contigs that align rc on reference
+ * FW_ONLY: discard contigs that align  rc on reference
  * FORCE: do not load cached aligns, regenerate them
  */
 int main( int argc, char *argv[] )
@@ -70,7 +70,7 @@ int main( int argc, char *argv[] )
     cout << "FATAL ERROR - At this time the argument UNIBASES_K must be\n"
 	 << "given: CRerfManager does not currently support rc aligns.\n"
 	 << "Notice that contigs could own both fw and rc aligns, which means\n"
-	 << "that we cannot just flip contigs if they align rc.\n"
+	 << "that we cannot just flip contigs if they align  rc.\n"
 	 << "\n"
 	 << "LEAVING NOW.\n"
 	 << endl;
@@ -111,7 +111,7 @@ int main( int argc, char *argv[] )
   if ( UNIBASES_K != "" ) {
     cout << Date( ) << ": unibases in input, removing rc copies" << endl;
 
-    // If an unibase has at least a fw align, then it is a keeper.
+    // If an unibase has at least a fw align , then it is a keeper.
     vec<bool> keepers( contigs.size( ), false );
     vec<bool> aligned( contigs.size( ), false );
     for (size_t ii=0; ii<aligns.size( ); ii++) {

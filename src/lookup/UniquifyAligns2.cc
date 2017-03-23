@@ -109,7 +109,7 @@ int main( int argc, char *argv[] )
      cout << Date() << " Loaded " << pairs.nPairs() << " pairs." << endl;
 
      // Possibly here: remove aligns where the combination
-     // of errors implied by the align is highly unlikely
+     // of errors implied by the align  is highly unlikely
      // (based on quality scores / trustedness / intensisites / etc).
 
      // Build an index: for each read, aligns of that read.

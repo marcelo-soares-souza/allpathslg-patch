@@ -110,10 +110,10 @@ void ImperfectLookup(
 /// the query reads[i] aligned uniquely, false otherwise. In both cases, the
 /// number of errors in the best alignment for query i is returned in best_errors[i].
 /// NOTE: the value returned in best_errors is correct only for uniquely aligned reads;
-/// for the reads that do not align uniquely, this method gives up
+/// for the reads that do not align  uniquely, this method gives up
 /// early and reported error count may be greater than in the best possible alignment.
 /// See ImperfectLookup(lookup_table &, vecbasevector &, AlignCollector &,...) for
-/// more flexible implementation templatized by the "align acceptance" policy.
+/// more flexible implementation templatized by the "align  acceptance" policy.
 void ImperfectLookup(
      // inputs:
      lookup_table &look, const vecbasevector& reads,
@@ -128,7 +128,7 @@ void ImperfectLookup(
      bool useReverse = false, const unsigned int max_freq = 0 );
 
 
-/// A "modern" overload of ImperfectLookup that takes align collector as an argument.
+/// A "modern" overload of ImperfectLookup that takes align  collector as an argument.
 /// This method achieves better concept separation: the only job of the implementation
 /// is to look for all putative ungapped alignments of the reads and pass them
 /// to the collector. It is the job of the collector implementation to decide whether
@@ -150,7 +150,7 @@ void ImperfectLookup(
 ///               instruments the method with separate time counts for I/O and for alignment itself
 /// @param[in] quals if specified, should point to the array of per-base quality scores for all reads
 /// @param useReverse if true, and direction is FW_OR_RC, then in addition to forward alignment, an
-///                    attempt will be made to align simple *reverse* of each sequence instead of
+///                    attempt will be made to align  simple *reverse* of each sequence instead of
 ///                    its reverse complement (useful for alignments in color space - SOLiD technology).
 /// @param max_freq ignore altogether Kmers with frequencies >= max_freq
 
@@ -229,7 +229,7 @@ void ImperfectLookup( lookup_table &look, const vecbasevector& reads,
     unsigned int ChunkSize = look.NBasesInChunk(i);
     unsigned int FirstBaseInChunk = look.BasesStart();
 
-    // Go through the query sequences trying to align them in the current chunk.
+    // Go through the query sequences trying to align  them in the current chunk.
 
     for ( la.query_id = 0; (unsigned int)la.query_id < nqueries ; ++la.query_id ) {
       if ( ! aligns.AlignsWanted(la.query_id) ) continue;
@@ -244,7 +244,7 @@ void ImperfectLookup( lookup_table &look, const vecbasevector& reads,
 	  if ( useReverse ) src.Reverse(reads[la.query_id]);
 	  else src.ReverseComplement(reads[la.query_id]);
 	}
-	// this is what we are going to align for this query and this pass:
+	// this is what we are going to align  for this query and this pass:
 	const basevector& S = ( pass == 0 ? reads[la.query_id] : src );
 
 	static qualvector rq;
@@ -579,7 +579,7 @@ class ImperfectLookupAligner {
 	unsigned int ChunkSize = m_plookup->NBasesInChunk(i);
 	unsigned int FirstBaseInChunk = m_plookup->BasesStart();
 
-	// Go through the query sequences trying to align them in the current chunk.
+	// Go through the query sequences trying to align  them in the current chunk.
 
 	for ( la.query_id = 0; (unsigned int)la.query_id < nqueries ; ++la.query_id ) {
 	    if ( ! aligns.AlignsWanted(la.query_id) ) continue;
@@ -595,7 +595,7 @@ class ImperfectLookupAligner {
 		    else src.ReverseComplement(query_seqs[la.query_id]);
 		}
 
-		// this is what we are going to align for this query and this pass:
+		// this is what we are going to align  for this query and this pass:
 		const basevector& S = ( pass == 0 ? query_seqs[la.query_id] : src );
 
 		static qualvector rq;

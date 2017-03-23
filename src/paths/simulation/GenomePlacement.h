@@ -51,7 +51,7 @@ class genome_placement {
 	     Note that this index is inclusive: it is the index of the last base of the placement,
 	     not of the base after the last base.
 	   rc - whether the read itself aligns to the genome part, or the read's reverse complement.
-	   nplaces - to how many places in the genome does this read or unipath align?  makes sense
+	   nplaces - to how many places in the genome does this read or unipath align ?  makes sense
 	      only in the context of a _vector_ of genome_placements -- all genome_placements with
 	      a given read_id have their nplaces set to the total number of genome_placements with
 	      that read_id in that vector.

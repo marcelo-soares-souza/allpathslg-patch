@@ -30,7 +30,7 @@ void PerfectLookup( const unsigned int K, const vecbasevector& query,
 {    
      aligns.clear( );
      
-     // Check we have something to align
+     // Check we have something to align 
      if (query.empty())
        return;
 
@@ -382,7 +382,7 @@ void ParallelPerfectLookup( const int max_threads, const unsigned int K,
      npasses = ( direction == FW ? 1 : 2 );
      alignsp = &aligns;
      
-     // Check we have something to align
+     // Check we have something to align 
 
      if (query.empty()) return;
 

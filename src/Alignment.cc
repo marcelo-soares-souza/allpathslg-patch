@@ -60,7 +60,7 @@ void alignment::Read( istream& in, int& id1, int& id2, Bool& rc )
 
 void alignment::Print( ostream& out ) const
 {
-     align a = *this;
+     align  a = *this;
      cout << "pos1=" << a.pos1() << ", Pos1=" << a.Pos1() <<
         ", pos2=" << a.pos2() << ", Pos2=" << a.Pos2() << ", errors=" <<
         this->Errors() << endl;
@@ -305,7 +305,7 @@ void alignment_plus::SetToSwapOf( const alignment_plus& x, int rd1length,
      else a.SetToFlipOf( x.a );
      a.SetErrors( x.a.Errors( ) );    }
 
-void alignment_plus::SetToSwapOf( const align& x, int id1, int id2, Bool rc2,
+void alignment_plus::SetToSwapOf( const align & x, int id1, int id2, Bool rc2,
      float s, int rd1length, int rd2length )
 {    SetId2( id1 );
      SetId1( id2 );
@@ -669,7 +669,7 @@ int Bandwidth( alignment& a )
           high = Max( high, gap_total );    }
      return Max( Abs(low), Abs(high) ) + add_to_bandwidth;    }
 
-// There are versions of TrimAlignmentFront for class align and for 
+// There are versions of TrimAlignmentFront for class align  and for 
 // class alignment.  We should try to eliminate the one for class alignment.
 
 void TrimAlignmentFront( alignment& a, int n )
@@ -721,7 +721,7 @@ void TrimAlignmentFront( alignment& a, int n )
      a = alignment( pos1, pos2, errors, gaps, lengths );    }
 
 
-void TrimAlignmentFront( align& a, int n )
+void TrimAlignmentFront( allpathslg::align & a, int n )
 {    int pos1 = a.pos1( ), pos2 = a.pos2( );
      const avector<int> &gaps = a.Gaps( ), &lengths = a.Lengths( );
      int nblocks = a.Nblocks( );
@@ -759,7 +759,7 @@ void TrimAlignmentFront( align& a, int n )
      a.Setpos2(pos2);    }
 
 
-void TrimAlignmentBack( align& a, int n )
+void TrimAlignmentBack( allpathslg::align & a, int n )
 {    int Pos1 = a.Pos1( ) - 1, Pos2 = a.Pos2( ) - 1;
      const avector<int> &gaps = a.Gaps( ), &lengths = a.Lengths( );
      int nblocks = a.Nblocks( );
@@ -787,7 +787,7 @@ void TrimAlignmentBack( align& a, int n )
      a.SetNblocks( j+1 );    }
 
 
-int MaxPerfectMatch( Bool rd1_is_rc, const align& a, const basevector& rd1, 
+int MaxPerfectMatch( Bool rd1_is_rc, const allpathslg::align & a, const basevector& rd1, 
      const basevector& rd2 )
 {    int answer = 0;
      int pos1 = a.pos1( ), pos2 = a.pos2( );

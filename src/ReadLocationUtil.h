@@ -12,8 +12,8 @@
 // Count number of reads aligning the given loc.
 //  loc_id: the index in locs 
 //  n_aligns_found: filled with the number of aligns found
-//  alignsIndexRdr: reads aligns.index to check if align exists
-//  min_align: minimum LocsOverlap bases to say that two reads align
+//  alignsIndexRdr: reads aligns.index to check if align  exists
+//  min_align: minimum LocsOverlap bases to say that two reads align 
 //  max_skip: used as a bound on the number of LocOverlap checks performed
 int AlignsCount( const vec<read_location> &locs,
 		 int loc_id,

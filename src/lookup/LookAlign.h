@@ -92,7 +92,7 @@ class look_align {
   int nhits;
   nmuts_t mutations;
   int indels;
-  align a;
+  allpathslg::align  a;
   Bool rc1;
 
   look_align( )
@@ -111,7 +111,7 @@ class look_align {
 	      unsigned int query_length_arg,
 	      unsigned int target_length_arg,
 	      Bool rc1_arg,
-	      const align& a_arg,
+	      const allpathslg::align & a_arg,
 	      int nhits_arg,
 	      nmuts_t mutations_arg,
 	      int indels_arg )
@@ -126,12 +126,12 @@ class look_align {
       rc1(rc1_arg)
   { }
 
-  /// Reset the align, mutations and indels parameters, keep
+  /// Reset the align , mutations and indels parameters, keep
   /// the original target and query info.
-  void ResetFromAlign(const align & a, const basevector &b1,
+  void ResetFromAlign(const allpathslg::align  & a, const basevector &b1,
 		      const basevector &b2);
 
-  // Copy some member functions for align a.
+  // Copy some member functions for align  a.
 
   /// start position of the alignment on the query sequence; cryptic legacy interface
   int pos1( ) const { return a.pos1( ); }
@@ -789,7 +789,7 @@ int LookAlignOffset( const look_align_plus &hit );
 /**
  * LookAlignOffset
  *
- * By example: say that two chimp reads align an human chromosome as
+ * By example: say that two chimp reads align  an human chromosome as
  * per hit1 and hit2 . LookAlignOffset fills offset with the offset
  * between the two reads determined by the best shared aligning
  * block. It returns false if they do not share a (decent) common
@@ -950,24 +950,24 @@ public:
 
 // return true if the beginning of a query (left side for fw orientation)
 // aligns to the target
-bool IsLeft( const look_align &align );
+bool IsLeft( const look_align &align  );
 
 // return true if the end of a query (right side for fw orientation)
 // aligns to the target
-bool IsRight( const look_align &align );
+bool IsRight( const look_align &align  );
 
 // return true if neither end of the query
 // aligns to the target
-bool IsCenter( const look_align &align );
+bool IsCenter( const look_align &align  );
 
-// return the begin, end bases of the query which do not align to the target
-pair<int,int> hangingEnd( const look_align &align );
+// return the begin, end bases of the query which do not align  to the target
+pair<int,int> hangingEnd( const look_align &align  );
 
 // return the maximum hang amount (largest between head and tail)
-int MaxHang( const look_align &align );
+int MaxHang( const look_align &align  );
 
 // return size of largest gap
-int MaxGap( const look_align &align );
+int MaxGap( const look_align &align  );
 
 // a pair is logical iff hits belong to same target and have different orient
 bool IsLogicalPair( const look_align &hit1,

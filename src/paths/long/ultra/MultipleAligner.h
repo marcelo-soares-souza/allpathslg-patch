@@ -228,12 +228,12 @@ public:
 
     template <class Itr> // Itr returns base codes
     void addRead( Itr const& beg, Itr const& end )
-    { mNW.align(mScores,beg,end);
+    { mNW.align (mScores,beg,end);
       mNW.tracebackAdjustScores(mScores,beg); }
 
     template <class Itr> // Itr returns base codes
     gvec alignRead( Itr const& beg, Itr const& end )
-    { mNW.align(mScores,beg,end);
+    { mNW.align (mScores,beg,end);
       return mNW.traceback(mScores,beg); }
 
     Scorer const& getScorer() const { return mNW.getScorer(); }
@@ -303,7 +303,7 @@ public:
 
     template <class Itr> // Itr returns base codes
     gvec getAlignment( Itr const& beg, Itr const& end ) const
-    { mNW.align(mScores,beg,end);
+    { mNW.align (mScores,beg,end);
       return mNW.tracebackGVec(beg); }
 
     template <class Itr> // Itr returns read-like objects
@@ -329,7 +329,7 @@ private:
         Scorer const& getScorer() const { return mScorer; }
 
         template <class Itr>
-        unsigned align( VecConsScore const& scores, Itr itr, Itr const& end )
+        unsigned align ( VecConsScore const& scores, Itr itr, Itr const& end )
         { using std::distance;
           mBackPtrs.clear().reserve(distance(itr,end)+1);
           mRow[0].clear(); mRow[0].reserve(2*scores.size());
@@ -469,7 +469,7 @@ private:
     template <class Itr> // Itr returns base codes
     void printAlignment( std::ostream& os,
                                 Itr const& beg, Itr const& end ) const
-    { unsigned score = mNW.align(mScores,beg,end);
+    { unsigned score = mNW.align (mScores,beg,end);
       os << mNW.tracebackGVec(beg) << ' ' << score << '\n'; }
 
     mutable NeedlemanWunscher mNW;

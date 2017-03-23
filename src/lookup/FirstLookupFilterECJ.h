@@ -76,7 +76,7 @@ struct FirstLookupFilterECJ {
   int mismatch_neighborhood;
   int mismatch_backoff;
 
-  // If set, require this many bases to align (after cutoff and backoff described by the above
+  // If set, require this many bases to align  (after cutoff and backoff described by the above
   // parameters) before accepting the alignment.
   int min_match;
 

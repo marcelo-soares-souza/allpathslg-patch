@@ -57,7 +57,7 @@ void RecursiveAlignAndMergeRight( const KmerPathLoc& loc1orig,
 //
 // In this example, the two kmers added into the middle don't belong at all,
 // but the NGV is too late to stop them.  Note that now the original path
-// doesn't even align to the post-NGV version of the merger!
+// doesn't even align  to the post-NGV version of the merger!
 
 void MergePaths( const KmerPath& p1, const KmerPath& p2, 
 		 int ind1, int ind2, 

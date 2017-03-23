@@ -36,7 +36,7 @@ a matching read pair P, yielding X' (which replaces X), e.g.
                  4,3,6 -->      5,7,2   P  (gap = t +/- e)
              1,7,4,3,6 -->  3,5,5,7,2   X' (gap = (s - L[6]) +/- d)
 where the marks on X are carried forward to X';
-(c) X and P must match (align end to end) on both sides;
+(c) X and P must match (align  end to end) on both sides;
 (d) such a merger is only allowed if the implied gap g1 on X' as computed from
 X, e.g. s - L[6] is compatible with the gap g2 on X' as computed from
 P, e.g. t - L[3] - L[5], in the sense that |g1-g2| <= dmult(d+e), where dmult 

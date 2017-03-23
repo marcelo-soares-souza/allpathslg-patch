@@ -21,11 +21,11 @@
 // for unknown reasons.
 
 template<class X> float SmithWatBandedA2( const basevector& S, 
-     const basevector& T, int offset, int bandwidth, align& a, int& errors, 
+     const basevector& T, int offset, int bandwidth, allpathslg::align & a, int& errors, 
      ostream* log = 0, int mis=2, int ins=3, int del=3 );
 
 inline float SmithWatBandedA( const basevector& S, const basevector& T, 
-     int offset, int bandwidth, align& a, int& errors, ostream* log = 0, 
+     int offset, int bandwidth, allpathslg::align & a, int& errors, ostream* log = 0, 
      int mis=2, int gap=3  )
 {    
      return SmithWatBandedA2<unsigned char>( 
@@ -38,13 +38,13 @@ class SmithWatBandedAEngine{
 public:
     SmithWatBandedAEngine(size_t a, size_t b): m_from(a,2*b+4),m_x(a+1),m_s(a+1) { };
     float run( const basevector& S, const basevector& T
-             , int offset, int bandwidth, align& a, int& errors
+             , int offset, int bandwidth, allpathslg::align & a, int& errors
              , ostream* log = 0, int mis=2, int gap=3  ){
         return run2A( S, T, offset, bandwidth, a, errors, log, mis, gap, gap  );
     };
 private:
     float run2A( const basevector& S, const basevector& T
-               , int offset, int bandwidth, align& a, int& errors
+               , int offset, int bandwidth, allpathslg::align & a, int& errors
                , ostream* log = 0, int mis=2, int ins=3, int del=3 );
     class matrix_t{
     public:
@@ -67,11 +67,13 @@ private:
     vec<char> m_s;
 };
 
-inline float SmithWatBandedA( const basevector& S, const basevector& T, 
-     int offset, int bandwidth, alignment& a, ostream *log = 0 )
-{    align temp; int errors;
+inline float SmithWatBandedA( const basevector& S, const basevector& T, int offset, int bandwidth, alignment& a, ostream *log = 0 )
+{
+     allpathslg::align  temp;
+     int errors;
      float result = SmithWatBandedA( S, T, offset, bandwidth, temp, errors, log );
      a.Set( temp, errors );
-     return result;    }
+     return result;
+}
 
 #endif

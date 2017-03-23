@@ -6,7 +6,7 @@
 //   Institute is not responsible for its use, misuse, or functionality.     //
 ///////////////////////////////////////////////////////////////////////////////
 
-// AlignReads.  This is experimental code to align reads to an assembly.
+// AlignReads.  This is experimental code to align  reads to an assembly.
 // Generates as output: sub_dir + "/" + ASSEMBLY + ".readlocs".
 //
 // TO DO:
@@ -161,10 +161,10 @@ class align_plus {
      public:
 
      align_plus( ) : tig(-1) { }
-     align_plus( const align& a, const int tig, const Bool fw )
+     align_plus( const allpathslg::align & a, const int tig, const Bool fw )
           : a(a), tig(tig), fw(fw) { }
 
-     align a;
+     allpathslg::align  a;
      int tig;
      Bool fw;
 
@@ -175,7 +175,7 @@ vec<int> *TO_SUPER, *TO_SUPER_POS;
 void PrintAlignmentNicely( const align_plus& ap, const basevector& TIG, 
      const vecbasevector& bases, const int64_t id )
 {    ostringstream sout;
-     const align& a = ap.a;
+     const allpathslg::align & a = ap.a;
      cout << "id = " << id << ", tig = " << ap.tig << " (" << (*TO_SUPER)[ap.tig] 
           << "." << (*TO_SUPER_POS)[ap.tig] << "), " 
           << ( ap.fw ? "fw" : "rc" ) << "\n";
@@ -357,8 +357,8 @@ void FindAcceptableAlignment( const int rpass, const double max_OK,
      if ( aligns.empty( ) ) return; /* fail */
      SortSync( badnesses, aligns );
 
-     // Special processing for long jumps.  We require that the first 10 bases align
-     // with no errors, and that the first 20 bases align with at most four errors.
+     // Special processing for long jumps.  We require that the first 10 bases align 
+     // with no errors, and that the first 20 bases align  with at most four errors.
      // It would probably be better to compare to fastavector contigs as at present
      // this will lose reads landing on SNPs.  Note that the algorithm relies on the
      // fact that long jump reads are not reversed.  If the molecular biology 
@@ -367,7 +367,7 @@ void FindAcceptableAlignment( const int rpass, const double max_OK,
      if ( rpass == 2 )
      {    Bool long_jump_OK = False;
           const align_plus& ap = aligns[0];
-          align a = ap.a;
+          align  a = ap.a;
           const basevector& TIG = tigs[ap.tig];
           basevector b = bases[id];
           if ( !ap.fw ) b.ReverseComplement( );
@@ -583,7 +583,7 @@ void ProcessPairs(
           Bool inconsistent = False;
           int tig1 = ap1.tig, tig2 = ap2.tig;
           Bool FW1 = ap1.fw, FW2 = ap2.fw;
-          const align &a1 = ap1.a, &a2 = ap2.a;
+          const allpathslg::align  &a1 = ap1.a, &a2 = ap2.a;
           if ( tig1 >= 0 && tig2 >= 0 )
           {    inconsistent = Inconsistent( tig1, tig2, FW1, FW2, offset1, offset2, 
                     tigs, scaffolds, to_super, to_super_pos );    }
@@ -626,7 +626,7 @@ void ProcessPairs(
                     continue;
                const align_plus& ap = ( pass == 0 ? ap2 : ap1 );
                int tig = ap.tig;
-               const align& a = ap.a;
+               const allpathslg::align & a = ap.a;
                int side = pass;
                int64_t id = ( pass == 0 ? id1 : id2 );
                align_plus& ap_new = ( pass == 0 ? ap1_new : ap2_new );

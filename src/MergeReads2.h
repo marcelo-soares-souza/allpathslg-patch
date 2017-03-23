@@ -24,7 +24,7 @@ void PickWinner
                       vec<Bool>& RC, vec<int>& contig_no,
                       int scoring );
 
-Bool CenterMobileGaps( align& a, const basevector& rd1, const basevector& rd2,
+Bool CenterMobileGaps( allpathslg::align & a, const basevector& rd1, const basevector& rd2,
      bool verbose, ostream& log );
 
 #endif

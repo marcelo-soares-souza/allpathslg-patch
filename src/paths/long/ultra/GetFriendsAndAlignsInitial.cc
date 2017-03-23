@@ -120,7 +120,7 @@ template<int K> void GetFriendsAndAlignsInitial(
      // read ec.  Build kmer aligns to read ec.
 
      double align_clock = WallClockTime( );
-     vec<align> aligns( gang.size( ) );
+     vec<allpathslg::align > aligns( gang.size( ) );
      vec<Bool> accepted( N, False );
      vec<int> errs(N, -1);
      vec<ho_interval> ext1(N);
@@ -145,7 +145,7 @@ template<int K> void GetFriendsAndAlignsInitial(
           {    if ( id == 0 ) continue;
                if ( pos1_count[id] >= max_pos1_count/2 && offsets[id].nonempty( ) )
                {    accepted[id] = True;
-                    // Using kmer-align method instead of smith-waterman
+                    // Using kmer-align  method instead of smith-waterman
                     if (heur.USE_KMER_ALIGN_METHOD) 
                     {    KmerAlign( offsets[id], a[id], 
                               logc.verb[ "FRIEND" ] ); 
@@ -198,7 +198,7 @@ template<int K> void GetFriendsAndAlignsInitial(
 
                     // Align.
 
-                    align x;
+                    align  x;
                     int errors;
                     SmithWatBandedA( gang[0], gang[id], offset, bandwidth, x,
                          errors, 0, 1, 1 );    
@@ -282,7 +282,7 @@ template<int K> void GetFriendsAndAlignsInitial(
                    {    for ( int j = 0; j < ncols; j++ )
                              multi[id][j] = gang[0][j];    }
                    else
-                   {    const align& a = aligns[id];
+                   {    const allpathslg::align & a = aligns[id];
                         int p1 = a.pos1( ), p2 = a.pos2( );
                         for ( int j = 0; j < a.Nblocks( ); j++ )
                         {    if ( a.Gaps(j) > 0 ) p2 += a.Gaps(j);

@@ -11,7 +11,7 @@
 
 void mutmer::Print( ostream &out, const basevector &rd1, const basevector &rd2 )
 {
-  align a;
+  allpathslg::align  a;
   a.Setpos1( pos1_ );
   a.Setpos2( pos2_ );
   a.SetNblocks( 1 );

@@ -16,7 +16,7 @@
  * BlockAlign
  * Constructor
  */
-block_align::block_align( const align *al, const vec<int> *mut )
+block_align::block_align( const align  *al, const vec<int> *mut )
 {
   this->Setup( al, mut );
 }
@@ -38,7 +38,7 @@ block_align::block_align( const look_align_plus *hit )
  * BlockAlign
  * SetFromAlign
  */
-void block_align::SetFromAlign( const align *al, const vec<int> *mut )
+void block_align::SetFromAlign( const align  *al, const vec<int> *mut )
 {
   this->Setup( al, mut );
 }
@@ -60,7 +60,7 @@ void block_align::SetFromLookAlign( const look_align_plus *hit )
  * BlockAlign
  * Setup
  */
-void block_align::Setup( const align *al, const vec<int> *mut )
+void block_align::Setup( const align  *al, const vec<int> *mut )
 {
   if ( mut )
     ForceAssert( (int)mut->size( ) == al->Nblocks( ) );

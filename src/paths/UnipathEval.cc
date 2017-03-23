@@ -137,8 +137,8 @@ void AlignUnibases( const int &K,
         unipath length boundaries
 
      SHOW_MAP - print out the order of the unipaths along the genome,
-        with gaps highlighted unipaths that align imperfectly are
-        given a "copy number" of -1, while unipaths that align
+        with gaps highlighted unipaths that align  imperfectly are
+        given a "copy number" of -1, while unipaths that align 
         perfectly but wrap around the genome from beginning to end are
         given a "copy number" of -2
 
@@ -1207,7 +1207,7 @@ void AlignUnibases( const int &K,
       unibases[ii].resize(0);
   unibases.WriteAll( run_dir + "/unibases.UnipathEval.fastb" );
 
-  out << Date() << ": Calling GetAlignsFast to align "
+  out << Date() << ": Calling GetAlignsFast to align  "
       << unibases.size() << " unipaths to the reference..." << endl;
   
   best_aligns.resize( unibases.size() );

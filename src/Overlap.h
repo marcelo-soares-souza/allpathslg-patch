@@ -12,7 +12,7 @@
 int EstimatedOverlap( const alignment& a,
      const basevector& rd1, const basevector& rd2 );
 
-int EstimatedOverlap( const align& a,
+int EstimatedOverlap( const allpathslg::align & a,
      const basevector& rd1, const basevector& rd2 );
 
 #endif

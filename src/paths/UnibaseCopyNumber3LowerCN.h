@@ -124,7 +124,7 @@ void GetUnibaseSepsExp(
     );
 
 
-// Wrapper to call functions in RemodelGapsTools to align reads to unibases
+// Wrapper to call functions in RemodelGapsTools to align  reads to unibases
 // and estimate the gaps
 void UnibaseGapRemodeling ( 
           // input

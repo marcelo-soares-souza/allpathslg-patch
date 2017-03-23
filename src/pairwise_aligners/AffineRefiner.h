@@ -25,22 +25,22 @@ class AffineRefiner
 
   // Refine the given alignment between the given sequences.
   void
-  RefineAlign( align &theAlign,
+  RefineAlign( allpathslg::align  &theAlign,
                const basevector &bases1, 
                const basevector &bases2 );
   
  private:
   // Check whether the given block of the alignment begins or ends a gappy region.
   void CheckBlock( const int currentBlock, 
-                   const align &theAlign,
+                   const allpathslg::align  &theAlign,
                    const basevector &bases1, const basevector &bases2 );
 
   bool BlockIsAnchor( const int currentBlock,
-                      const align &theAlign,
+                      const allpathslg::align  &theAlign,
                       const basevector &bases1, const basevector &bases2 );
   
   // Patch the given region with a SW affine alignment.
-  void PatchAlignment( const align &theAlign, 
+  void PatchAlignment( const allpathslg::align  &theAlign, 
                        const int startAnchor, 
                        const int stopAnchor, 
                        const basevector &bases1, const basevector &bases2 );
@@ -49,7 +49,7 @@ class AffineRefiner
 
   vec<int> m_newAlignGaps;
   vec<int> m_newAlignLens;
-  align    m_newAlign;
+  allpathslg::align     m_newAlign;
 
   int m_posOn1, m_posOn2;
   int m_lastAnchor;
@@ -59,7 +59,7 @@ class AffineRefiner
 
   basevector m_chunk1, m_chunk2;
   alignment  m_patchAlignment;
-  align      m_patchAlign;
+  allpathslg::align       m_patchAlign;
 };
 
 

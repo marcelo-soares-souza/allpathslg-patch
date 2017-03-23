@@ -9,7 +9,7 @@
 #include "Overlap.h"
 
 // Note: There are two versions of EstimatedOverlap, one for an alignment, and one
-// for an align.  Probably the goal should be to get rid of the one for an
+// for an align .  Probably the goal should be to get rid of the one for an
 // alignment.
 
 // ================================================================================
@@ -48,7 +48,7 @@ int EstimatedOverlap( const alignment& a,
           return total_len;
      else return 0;    }
 
-int EstimatedOverlap( const align& a, const basevector& rd1, const basevector& rd2 )
+int EstimatedOverlap( const allpathslg::align & a, const basevector& rd1, const basevector& rd2 )
 {    const avector<int>& gaps = a.Gaps( ); 
      const avector<int>& lengths = a.Lengths( );
      int pos1 = a.pos1( );

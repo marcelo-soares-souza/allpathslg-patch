@@ -91,7 +91,7 @@ Bool EvaluatePair(const vec<look_align>& aligns, const vec<int>& indexReadA,
 		  int expectedSep, int expectedSd,
 		  int& alignmentCount, double max = 3) {
 
-  if (indexReadA.empty() || indexReadB.empty()) // need both to align
+  if (indexReadA.empty() || indexReadB.empty()) // need both to align 
     return False;
 
   valid.clear();

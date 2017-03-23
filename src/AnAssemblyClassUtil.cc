@@ -141,7 +141,7 @@ void CheckSuperOverlaps( ostream &log, assembly &Ass, int scg )
   }
 
   // Main loop over all contigs.
-  align al;
+  align  al;
 
   for (int cg=0; cg<n_contigs-1; cg++) {
     for (int ii=cg+1; ii<n_contigs; ii++) {
@@ -270,7 +270,7 @@ Bool ReadsOverlap( const assembly& a, int m1, int m2, Bool RC )
      return False;    }
 
 int OverlapUpdate( vec< StdSet<int> > &no_overlap,
-     assembly& a, int m1, int m2, align& al, int kmer_size,
+     assembly& a, int m1, int m2, allpathslg::align & al, int kmer_size,
      int min_mutmer, Bool RC, int mode, int min_align, int min_align_see )
 {
   // String m1_lost = a.mtig_aligns_lost[m1] ? " lost" : "";
@@ -293,7 +293,7 @@ int OverlapUpdate( vec< StdSet<int> > &no_overlap,
 }
 
 
-int Overlap( const assembly& a, int m1, int m2, align& al, int kmer_size,
+int Overlap( const assembly& a, int m1, int m2, allpathslg::align & al, int kmer_size,
      int min_mutmer, Bool RC, int mode, int min_align, int min_align_see,
      Bool require_read_evidence )
 {
@@ -611,7 +611,7 @@ void ReverseMtig( assembly& a, int m )
                     if ( b2.id2 == b1.id1 ) b2.rc2 = !b2.rc2;    }    }    }    }
 
 void MergeMtigsHead( const basevector& b1, const basevector& b2,
-     const qualvector& q1, const qualvector& q2, const align& al,
+     const qualvector& q1, const qualvector& q2, const allpathslg::align & al,
      basevector& c, qualvector& q, vec<int>& to1, vec<int>& to2 )
 {
      // Do sanity check.
@@ -665,7 +665,7 @@ void MergeMtigsHead( const basevector& b1, const basevector& b2,
      for ( int j = 0; j < (int) b2.size( ); j++ )
           ForceAssertGe( to2[j], 0 );    }
 
-void TryMergeMtigs( const assembly& a, int m1, int m2, const align& al,
+void TryMergeMtigs( const assembly& a, int m1, int m2, const allpathslg::align & al,
      vec<read_location>& new_tig, basevector& new_tig_bases )
 {    qualvector q;
      static vec<int> to1, to2, m1reads;
@@ -692,7 +692,7 @@ void TryMergeMtigs( const assembly& a, int m1, int m2, const align& al,
           r.SetContig(m1);
           new_tig.push_back(r);    }    }
 
-void MergeMtigs( assembly& a, int m1, int m2, align& al )
+void MergeMtigs( assembly& a, int m1, int m2, allpathslg::align & al )
 {
      basevector c;
      qualvector q;

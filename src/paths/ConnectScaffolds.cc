@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
                               const int min_sep = -1000;
                               int offset = tigs[m1].size( ) + sep;
                               if ( sep < min_sep )
-                              {    align a;
+                              {    allpathslg::align  a;
                                    int errors;
                                    basevector T1 = tigs[m1], T2 = tigs[m2];
                                    if (L.rc1) T1.ReverseComplement( );
@@ -425,7 +425,7 @@ int main(int argc, char *argv[])
                     // Merge m1 to m2 along overlap o.
      
                     // cout << "aligning" << endl; // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-                    align a;
+                    allpathslg::align  a;
                     int errors;
                     int offset = tigs[m1].isize( ) - o;
                     // PRINT2( m1, m2 ); // XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -484,7 +484,7 @@ int main(int argc, char *argv[])
                     int m1 = S.Tig(j), m2 = S.Tig(j+1);
                     const basevector &T1 = tigs[m1], &T2 = tigs[m2];
                     int offset = T1.isize( ) + S.Gap(j);
-                    align a;
+                    allpathslg::align  a;
                     int errors;
                     if ( offset > T1.isize( ) || offset < -T2.isize( ) ) continue;
                     int score = SmithWatBandedA( T1, T2, offset, bandwidth, 

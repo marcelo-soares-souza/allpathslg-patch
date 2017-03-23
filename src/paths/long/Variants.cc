@@ -255,7 +255,7 @@ void ReftraceVariants(ostream& out, ostream& callsOut, const vecbasevector& G,
 
     // Find variant by unrolling assembly on the reference, guided by best path.
     vec<VariantCallGroup> groups;
-    vec<vec<align>> all_aligns(G.size());  // alignments of all edges
+    vec<vec<allpathslg::align >> all_aligns(G.size());  // alignments of all edges
     vec<EdgesOnRef> unrolled_graph;
     for (size_t g = 0; g < G.size(); g++) {
         for( size_t component=0;component<best_path_s[g].size();++component){

@@ -107,7 +107,7 @@ int main( int argc, char *argv[] )
        "little cost (for 1-chunk lookup tables.)");
   CommandArgument_Int_OrDefault_Doc(START,0, "First read to process.");
   CommandArgument_Int_OrDefault_Doc(END,-1, 
-       "One past last read to align (if -1, end of file).");
+       "One past last read to align  (if -1, end of file).");
 
   // Output parameters:
   CommandArgument_Bool_OrDefault(PRINT_UNALIGNED_READS, False);
@@ -153,7 +153,7 @@ int main( int argc, char *argv[] )
 
   CommandArgument_Bool_OrDefault_Doc(IGNORE_AT_MAXFREQ,False,
        "If true, MAX_FREQ > 0 , and a single Kmer in a read has frequency "
-       "higher than MAX_FREQ, then the whole read is discarded without attempting to align it. "
+       "higher than MAX_FREQ, then the whole read is discarded without attempting to align  it. "
        "Currently works witn MAX_INDEL_LEN > 0 only");
 
   // Alignment filtering parameters: 

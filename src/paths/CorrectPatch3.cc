@@ -600,7 +600,7 @@ Bool CorrectPatch3( const basevector& LEFT, const basevector& RIGHT,
      // scores.
 
      vec< pair<int64_t,int64_t> > id1_id2;
-     vec< pair<align,align> > aligns;
+     vec< pair<align ,align > > aligns;
      vec<int> errs;
      for ( int i1 = 0; i1 < fw_hits.isize( ); i1++ )
      for ( int i2 = 0; i2 < rc_hits.isize( ); i2++ )
@@ -609,7 +609,7 @@ Bool CorrectPatch3( const basevector& LEFT, const basevector& RIGHT,
           int start = fw_hits[i1].second, stop = rc_hits[i2].second + F;
           if ( stop < start ) continue;
           id1_id2.push( id1, id2 );
-          align a1, a2;
+          align  a1, a2;
           int errors1, errors2;
           SmithWatBandedA( 
                fbases[id1], epatch, -start, bandwidth, a1, errors1, 0, 1, 1 );
@@ -625,10 +625,10 @@ Bool CorrectPatch3( const basevector& LEFT, const basevector& RIGHT,
 
      // Get best alignments.
 
-     vec<align> seq_aligns( seq.size( ) );
+     vec<allpathslg::align > seq_aligns( seq.size( ) );
      avector<int> gaps(1), lengths(1);
      gaps(0) = 0, lengths(0) = epatch.size( );
-     seq_aligns[0] = align( 0, 0, gaps, lengths );
+     seq_aligns[0] = align ( 0, 0, gaps, lengths );
      for ( int i = 0; i < id1_id2.isize( ); i++ )
      {    int j = id1_id2.NextDiff(i);
           vec<int> this_errs, ids( j - i, vec<int>::IDENTITY );
@@ -646,7 +646,7 @@ Bool CorrectPatch3( const basevector& LEFT, const basevector& RIGHT,
      /*
      for ( int z = 0; z < aligns.isize( ); z++ )
      {    int64_t id1 = id1_id2[z].first, id2 = id1_id2[z].second;
-          const align &a1 = aligns[z].first, &a2 = aligns[z].second;
+          const allpathslg::align  &a1 = aligns[z].first, &a2 = aligns[z].second;
           if (verbose)
           {    out << "\n";
                PRINT_TO( out, id1 );
@@ -707,7 +707,7 @@ Bool CorrectPatch3( const basevector& LEFT, const basevector& RIGHT,
           // Now assign coordinates to these unipaths.
 
           vec<int> coord;
-          const align& a = seq_aligns[i];
+          const allpathslg::align & a = seq_aligns[i];
           // PRINT4_TO( out, a.pos1( ), a.Pos1( ), a.pos2( ), a.Pos2( ) );
 
           coord.push_back( a.pos2( ) - read_start );

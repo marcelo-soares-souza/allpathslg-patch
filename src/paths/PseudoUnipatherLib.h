@@ -87,8 +87,8 @@ class Link {
   //    sep, dev - separation predicted for these two unipaths by aligning them to this
   //       paired read, and the standard deviation of the separation (since we know the
   //       distance between the two reads in a paired read only approximately)
-  //    start1, stop1 - where on the first unipath does the first read of the pair align?
-  //    start2, stop2 - where on the second unipath does the second read of the pair align?
+  //    start1, stop1 - where on the first unipath does the first read of the pair align ?
+  //    start2, stop2 - where on the second unipath does the second read of the pair align ?
   
      basevec_id_t tig1;
      basevec_pos_t start1, stop1;

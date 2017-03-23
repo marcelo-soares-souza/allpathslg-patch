@@ -137,7 +137,7 @@ packalign::packalign( int pos1, int pos2,
 
 }
 
-packalign::packalign( const align& a )
+packalign::packalign( const allpathslg::align & a )
 {
   ConstructorCore( a.pos1( ), a.pos2( ), a.Gaps( ), a.Lengths( ), 
                    a.Nblocks( ) );    
@@ -544,28 +544,28 @@ Bool packalign::Dead( ) const
 
 int packalign::pos1( ) const
 {
-  align a;
+  allpathslg::align  a;
   a.UnpackFrom(*this);
   return a.pos1( );    
 }
 
 int packalign::pos2( ) const
 {
-  align a;
+  allpathslg::align  a;
   a.UnpackFrom(*this);
   return a.pos2( );    
 }
 
 int packalign::Pos1( ) const
 {
-  align a;
+  allpathslg::align  a;
   a.UnpackFrom(*this);
   return a.Pos1( );    
 }
 
 int packalign::Pos2( ) const
 {
-  align a;
+  allpathslg::align  a;
   a.UnpackFrom(*this);
   return a.Pos2( );    
 }
@@ -637,7 +637,7 @@ void packalign::SetToFlipOf( const packalign& p )
   Set( pos2, pos1, gaps, lengths );    
 }
 
-void packalign::SetToFlipOf( align a )
+void packalign::SetToFlipOf( align  a )
 {
   for ( int i = 0; i < a.Nblocks( ); i++ )
     a.SetGap( i, -a.Gaps(i) );
@@ -685,7 +685,7 @@ void packalign::SetToReverseFlipOf( const packalign& p, int b1_len, int b2_len )
   Set( b1_len - Pos1, b2_len - Pos2, gaps_new, lengths_new );    
 }
 
-void packalign::SetToReverseFlipOf( align a, int b1_len, int b2_len )
+void packalign::SetToReverseFlipOf( align  a, int b1_len, int b2_len )
 {
   int pos1 = a.pos2( ), pos2 = a.pos1( );
   for ( int i = 0; i < a.Nblocks( ); i++ )
@@ -741,7 +741,7 @@ Bool operator==( const packalign& x, const packalign& y )
   return True;    
 }
 
-void align::Compactify( int len1, int len2 )
+void align ::Compactify( int len1, int len2 )
 {
     
   int ni;
@@ -926,15 +926,15 @@ check_first_gap:
 }
 
 
-void align::UnpackFrom( const packalign& p )
+void align ::UnpackFrom( const packalign& p )
 {
   p.Unpack( pos1_, pos2_, gaps_, lengths_, nblocks_ );    
 }
 
-// Proper tests an align to see if it is proper.  It does not flag "dead"
+// Proper tests an align  to see if it is proper.  It does not flag "dead"
 // alignments, those with no gaps or lengths.
 
-Bool Proper( const align& a, int len1, int len2 )
+Bool Proper( const allpathslg::align & a, int len1, int len2 )
 {
   if ( a.Nblocks( ) == 0 ) return True;
   int pos1 = a.pos1( ), pos2 = a.pos2( ), Pos1 = a.Pos1( ), Pos2 = a.Pos2( );
@@ -957,7 +957,7 @@ Bool Proper( const align& a, int len1, int len2 )
 // RequireProper tests an alignment_plus to see if it is proper.  It does not
 // object to "dead" alignments, those with no gaps or lengths.
 
-void RequireProper( const align& a, int id1, int id2, Bool rc2, 
+void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2, 
                     const vecbasevector& EE, int test_no, Bool fatal )
 {
   if ( Proper( a, EE[id1].size( ), EE[id2].size( ) ) ) return;
@@ -981,7 +981,7 @@ void RequireProper( const align& a, int id1, int id2, Bool rc2,
   if (fatal) ForceAssert( 0 == 1 );    
 }
 
-void RequireProper( const align& a, int id1, int id2, Bool rc2, 
+void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2, 
                     const vec<int>& EE_length, int test_no, Bool fatal )
 {
   if ( Proper( a, EE_length[id1], EE_length[id2] ) ) return;
@@ -998,7 +998,7 @@ void RequireProper( const align& a, int id1, int id2, Bool rc2,
 }
 
 int ActualErrors( const basevector& rd1, const basevector& rd2, 
-                  const align& a, int mismatch_penalty, int gap_penalty )
+                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
 {    int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
      for ( int j = 0; j < a.Nblocks( ); j++ )
      {    if ( a.Gaps(j) > 0 )
@@ -1013,7 +1013,7 @@ int ActualErrors( const basevector& rd1, const basevector& rd2,
      return answer;    }
 
 int ActualErrors( const vec<char>& rd1, const basevector& rd2, 
-                  const align& a, int mismatch_penalty, int gap_penalty )
+                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
 {    int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
      for ( int j = 0; j < a.Nblocks( ); j++ )
      {    if ( a.Gaps(j) > 0 )
@@ -1029,7 +1029,7 @@ int ActualErrors( const vec<char>& rd1, const basevector& rd2,
      return answer;    }
 
 int ActualErrors( const fastavector& rd1, const basevector& rd2, 
-                  const align& a, int mismatch_penalty, int gap_penalty )
+                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
 {    int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
      for ( int j = 0; j < a.Nblocks( ); j++ )
      {    if ( a.Gaps(j) > 0 )
@@ -1046,7 +1046,7 @@ int ActualErrors( const fastavector& rd1, const basevector& rd2,
      return answer;    }
 
 int ActualErrors( const fastavector& rd1, const fastavector& rd2, 
-                  const align& a, int mismatch_penalty, int gap_penalty )
+                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
 {    int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
      for ( int j = 0; j < a.Nblocks( ); j++ )
      {    if ( a.Gaps(j) > 0 )
@@ -1063,7 +1063,7 @@ int ActualErrors( const fastavector& rd1, const fastavector& rd2,
      return answer;    }
 
 int ActualErrorsRc( const basevector& rd1, const basevector& rd2, 
-                    const align& a, int mismatch_penalty, int gap_penalty )
+                    const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
 {    int n2 = rd2.size( );
      int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
      for ( int j = 0; j < a.Nblocks( ); j++ )
@@ -1079,7 +1079,7 @@ int ActualErrorsRc( const basevector& rd1, const basevector& rd2,
      return answer;    }
 
 int ActualErrorsRc( const fastavector& rd1, const basevector& rd2, 
-                    const align& a, int mismatch_penalty, int gap_penalty )
+                    const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
 {    int n2 = rd2.size( );
      int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
      for ( int j = 0; j < a.Nblocks( ); j++ )
@@ -1097,7 +1097,7 @@ int ActualErrorsRc( const fastavector& rd1, const basevector& rd2,
      return answer;    }
 
 int ActualErrorsRc( const fastavector& rd1, const fastavector& rd2, 
-                    const align& a, int mismatch_penalty, int gap_penalty )
+                    const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
 {    int n2 = rd2.size( );
      int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
      for ( int j = 0; j < a.Nblocks( ); j++ )
@@ -1116,20 +1116,20 @@ int ActualErrorsRc( const fastavector& rd1, const fastavector& rd2,
 
 template<class BASEVEC1, class BASEVEC2>
 int ActualErrors( Bool rc, const BASEVEC1& rd1, const BASEVEC2& rd2, 
-                  const align& a, int mismatch_penalty, int gap_penalty )
+                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
 {
   if ( !rc ) return ActualErrors( rd1, rd2, a, mismatch_penalty, gap_penalty );
   else return ActualErrorsRc( rd1, rd2, a, mismatch_penalty, gap_penalty );    
 }
 
 template int ActualErrors( Bool rc, const basevector& rd1, const basevector& rd2, 
-                  const align& a, int mismatch_penalty, int gap_penalty );
+                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty );
 template int ActualErrors( Bool rc, const fastavector& rd1, const basevector& rd2, 
-                  const align& a, int mismatch_penalty, int gap_penalty );
+                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty );
 template int ActualErrors( Bool rc, const fastavector& rd1, const fastavector& rd2, 
-                  const align& a, int mismatch_penalty, int gap_penalty );
+                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty );
 
-int Bandwidth( align& a )
+int Bandwidth( allpathslg::align & a )
 {
   const int add_to_bandwidth = 8; // heuristic
   int low = 0, high = 0, gap_total = 0;
@@ -1142,7 +1142,7 @@ int Bandwidth( align& a )
   return Max( Abs(low), Abs(high) ) + add_to_bandwidth;    
 }
 
-void align::Read( istream& in, int& errors, int& id1, int& id2, Bool& rc )
+void align ::Read( istream& in, int& errors, int& id1, int& id2, Bool& rc )
 {
   int pos1, pos2, gap, len, nblocks;
   BinRead( in, pos1 );
@@ -1164,7 +1164,7 @@ void align::Read( istream& in, int& errors, int& id1, int& id2, Bool& rc )
   BinRead( in, rc );    
 }
 
-int CorrelatePositions( const align& a, int x1 )
+int CorrelatePositions( const allpathslg::align & a, int x1 )
 {
   int pos1 = a.pos1( ), pos2 = a.pos2( );
   if ( x1 < pos1 ) return OffTheEnd;
@@ -1188,7 +1188,7 @@ int CorrelatePositions( const align& a, int x1 )
   return OffTheEnd;    
 }
 
-void align::ReverseThis( int b1_len, int b2_len )
+void align ::ReverseThis( int b1_len, int b2_len )
 {
   vec<int> gaps_new, lengths_new;
   gaps_new.resize(0);
@@ -1231,7 +1231,7 @@ void align::ReverseThis( int b1_len, int b2_len )
 }
 
 
-void align::Flip( )
+void align ::Flip( )
 {
   swap( pos1_, pos2_ );
   for ( int i = 0; i < nblocks_; i++ )
@@ -1239,7 +1239,7 @@ void align::Flip( )
 }
 
 
-align align::TrimmedTo1(const int start, const int len) const {
+align  align ::TrimmedTo1(const int start, const int len) const {
   //make sure start and end are sensible!
   int endOn1 = start + len;
   int startOn1 = start;
@@ -1250,13 +1250,13 @@ align align::TrimmedTo1(const int start, const int len) const {
   if (startOn1 < pos1()) {
     startOn1 = pos1(); 
   }
-  align ret;
+  align  ret;
   ret.pos1_ = ret.pos2_ = ret.nblocks_ = 0;
   //if the trimming no longer makes sense, return an empty alignment.
   if (endOn1 <= startOn1) return ret;
 
   int p1 = pos1( ), p2 = pos2( );
-  vec<int> gaps, blocks; //for the new align.
+  vec<int> gaps, blocks; //for the new align .
   bool started=false;
   bool done = false;
   int block=0, local=0;
@@ -1355,19 +1355,19 @@ align align::TrimmedTo1(const int start, const int len) const {
 }  
 
 void Trim1Together(const basevector & b1, const basevector & b2, 
-		   const align & a, int startOn1, int len, 
-		   basevector & trimmedb1, align & trimmeda) {
+		   const allpathslg::align  & a, int startOn1, int len, 
+		   basevector & trimmedb1, align  & trimmeda) {
   trimmeda = a.TrimmedTo1(startOn1, len);
   trimmedb1.SetToSubOf(b1, startOn1, len);
 }
 
 
-int align::Errors( const basevector& rd1, const basevector& rd2 ) const {
+int align ::Errors( const basevector& rd1, const basevector& rd2 ) const {
   vec<int> errs = MutationsGap1Gap2( rd1, rd2 );
   return accumulate(errs.begin(), errs.end(), 0);
 }
 
-Bool align::Perfect( const basevector& rd1, const basevector& rd2 ) const 
+Bool align ::Perfect( const basevector& rd1, const basevector& rd2 ) const 
 {    if ( Nblocks( ) != 1 ) return False;
      if ( Gaps(0) != 0 ) return False; // would be weird
      int p1 = pos1( ), p2 = pos2( );
@@ -1376,7 +1376,7 @@ Bool align::Perfect( const basevector& rd1, const basevector& rd2 ) const
           ++p1; ++p2;    }
      return True;    }
 
-vector<int> align::MutationsGap1Gap2( const basevector& rd1, 
+vector<int> align ::MutationsGap1Gap2( const basevector& rd1, 
                                       const basevector& rd2 ) const {
   vector<int> answer(3, 0);
   int p1 = pos1( ), p2 = pos2( );
@@ -1398,7 +1398,7 @@ vector<int> align::MutationsGap1Gap2( const basevector& rd1,
   return answer;    
 }
 
-int align::PosOn1(int on2) const {
+int align ::PosOn1(int on2) const {
   if (on2 < pos2() || on2 > Pos2()) return -1;
   int p1 = pos1(), p2 = pos2();
   for ( int j = 0; j < Nblocks( ); j++ ) {
@@ -1418,7 +1418,7 @@ int align::PosOn1(int on2) const {
   return -1;
 }
 
-int align::PosOn2(int on1) const {
+int align ::PosOn2(int on1) const {
   if (on1 < pos1() || on1 > Pos1()) return -1;
   int p1 = pos1(), p2 = pos2();
   for ( int j = 0; j < Nblocks( ); j++ ) {
@@ -1438,7 +1438,7 @@ int align::PosOn2(int on1) const {
   return -1;
 }
 
-pair<int, int> align::Gap1Gap2( ) const {
+pair<int, int> align ::Gap1Gap2( ) const {
   pair<int, int> ret(0,0);
   for ( int j = 0; j < Nblocks( ); j++ ) {
     if ( Gaps(j) > 0 )  {
@@ -1454,17 +1454,17 @@ pair<int, int> align::Gap1Gap2( ) const {
 
 
 void
-align::Sync_to_TACG( const basevector & seq1,
+align ::Sync_to_TACG( const basevector & seq1,
                      const basevector & seq2,
                      Bool  isRC )
 {
-  // Adjust the align object to synchronize with the 454-cycles of TACG.
+  // Adjust the align  object to synchronize with the 454-cycles of TACG.
   //
   // Upon return from this method, the members  nblocks_, gaps_  and  lengths_
   // will be adjusted so that the extents of the alignment on both sequences
   // are the same as before, but there is no mismatch within each block;
   // instead, mismatches will manifest themselves as "extra" indels
-  // in the align object, in sync with the flow order TACG on  seq2.
+  // in the align  object, in sync with the flow order TACG on  seq2.
   //
   // If isRC is False, the start positions (pos1(), pos2()) of the two sequences
   // are fixed but the end positions (Pos1(), Pos2()) may change.
@@ -1628,7 +1628,7 @@ align::Sync_to_TACG( const basevector & seq1,
 
   // lengths[i]  and  gaps[i]  for i = 0,...,block_index-1
   // now contain  the compactified length/gap info;
-  // we now copy that over to the private members of the align class
+  // we now copy that over to the private members of the align  class
 
   const int num_blocks = block_index;
   SetNblocks(num_blocks);
@@ -1680,7 +1680,7 @@ align::Sync_to_TACG( const basevector & seq1,
 
 
 
-int align::Mutations( const basevector& rd1, const basevector& rd2,
+int align ::Mutations( const basevector& rd1, const basevector& rd2,
                       const qualvector& q1, int min_score ) const
 {
   int answer = 0, j, p1 = pos1( ), p2 = pos2( );
@@ -1698,7 +1698,7 @@ int align::Mutations( const basevector& rd1, const basevector& rd2,
   return answer;    
 }
 
-void align::PrintMutations( const basevector& rd1, const basevector& rd2, ostream& log, const bool zero_based) const
+void align ::PrintMutations( const basevector& rd1, const basevector& rd2, ostream& log, const bool zero_based) const
 {
   int answer = 0, j, p1 = pos1( ), p2 = pos2( );
   int loc1 = zero_based ? p1 : p1+1;
@@ -1736,7 +1736,7 @@ void align::PrintMutations( const basevector& rd1, const basevector& rd2, ostrea
   }
 }
 
-int align::MatchingBases( const basevector& rd1, const basevector& rd2 )
+int align ::MatchingBases( const basevector& rd1, const basevector& rd2 )
 {
   int answer = 0, j, p1 = pos1( ), p2 = pos2( );
   for ( j = 0; j < Nblocks( ); j++ )
@@ -1753,7 +1753,7 @@ int align::MatchingBases( const basevector& rd1, const basevector& rd2 )
   return answer;    
 }
 
-void align::PerfectIntervals1( const basevector& rd1, const basevector& rd2,
+void align ::PerfectIntervals1( const basevector& rd1, const basevector& rd2,
      vec<ho_interval>& perfs ) const
 {    perfs.clear( );
      int p1 = pos1( ), p2 = pos2( );
@@ -1771,7 +1771,7 @@ void align::PerfectIntervals1( const basevector& rd1, const basevector& rd2,
           if ( p1 - (last+1) > 0 ) 
                perfs.push_back( ho_interval( last+1, p1 ) );    }    }
 
-void align::PerfectIntervals2( const basevector& rd1, const basevector& rd2,
+void align ::PerfectIntervals2( const basevector& rd1, const basevector& rd2,
      vec<ho_interval>& perfs ) const
 {    perfs.clear( );
      int p1 = pos1( ), p2 = pos2( );
@@ -1788,7 +1788,7 @@ void align::PerfectIntervals2( const basevector& rd1, const basevector& rd2,
           if ( p2 - (last+1) > 0 ) 
                perfs.push_back( ho_interval( last+1, p2 ) );    }    }
 
-void align::PerfectIntervals2( const fastavector& rd1, const fastavector& rd2,
+void align ::PerfectIntervals2( const fastavector& rd1, const fastavector& rd2,
      vec<ho_interval>& perfs ) const
 {    perfs.clear( );
      int p1 = pos1( ), p2 = pos2( );
@@ -1806,7 +1806,7 @@ void align::PerfectIntervals2( const fastavector& rd1, const fastavector& rd2,
           if ( p2 - (last+1) > 0 ) 
                perfs.push_back( ho_interval( last+1, p2 ) );    }    }
 
-int align::Indels( const basevector& rd1, const basevector& rd2,
+int align ::Indels( const basevector& rd1, const basevector& rd2,
                    const qualvector& q1, int min_score ) const
 {
   int answer = 0, p1 = pos1( ), p2 = pos2( );
@@ -1835,7 +1835,7 @@ int align::Indels( const basevector& rd1, const basevector& rd2,
   return answer;    
 }
 
-vector<int> align::MutationsGap1Gap2( const basevector& rd1, 
+vector<int> align ::MutationsGap1Gap2( const basevector& rd1, 
                                       int from1, int to1, 
                                       const basevector& rd2, 
                                       int from2, int to2 ) const
@@ -1868,7 +1868,7 @@ vector<int> align::MutationsGap1Gap2( const basevector& rd1,
   return answer;    
 }
 
-void align::Write( ostream& out, int id1, int id2, Bool rc, int errors )
+void align ::Write( ostream& out, int id1, int id2, Bool rc, int errors )
 {
   BinWrite( out, pos1_ );
   BinWrite( out, pos2_ );
@@ -1888,7 +1888,7 @@ void align::Write( ostream& out, int id1, int id2, Bool rc, int errors )
   BinWrite( out, rc );    
 }
 
-void align::writeBinary( BinaryWriter& writer ) const
+void align ::writeBinary( BinaryWriter& writer ) const
 {
     writer.write(pos1_);
     writer.write(pos2_);
@@ -1897,7 +1897,7 @@ void align::writeBinary( BinaryWriter& writer ) const
     writer.write(lengths_.x,lengths_.x+nblocks_);
 }
 
-void align::readBinary( BinaryReader& reader )
+void align ::readBinary( BinaryReader& reader )
 {
     reader.read(&pos1_);
     reader.read(&pos2_);
@@ -1908,7 +1908,7 @@ void align::readBinary( BinaryReader& reader )
     reader.read(lengths_.x,lengths_.x+nblocks_);
 }
 
-ostream & operator<<(ostream & os, const align & a) {
+ostream & operator<<(ostream & os, const allpathslg::align  & a) {
   os << "startOn1: " << a.pos1() << ", startOn2: " << a.pos2()
      << ", Nblocks: " << a.Nblocks() << endl;
   return os;

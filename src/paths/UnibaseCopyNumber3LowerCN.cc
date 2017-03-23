@@ -514,8 +514,8 @@ void GetUnibaseSepsExp(
      
      vec< pair<int,int> > all_linked = linking.GetAllLinked( );
      for ( int i = 0; i < all_linked.isize(); i++ ) {
-          // We get all the linked pairs where there are read pairs that start from (rc align)
-          // u1 and stop at (fw align) u2. Two possible arrangements :
+          // We get all the linked pairs where there are read pairs that start from (rc align )
+          // u1 and stop at (fw align ) u2. Two possible arrangements :
           // (1)
           //                  -----------------u1-------------- (gap) ------u2------
           //                                         <---@ r1             @-->r2

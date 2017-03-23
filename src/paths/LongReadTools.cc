@@ -332,7 +332,7 @@ void GetLocalAligns( const basevector& r, const vecbasevector& U,
                int best_loc;
                int errs = -1;
 
-               // The region on the unibase to which we align is chosen to
+               // The region on the unibase to which we align  is chosen to
                // be slightly larger than the region on the read.
 
                const int extra = 10;
@@ -361,7 +361,7 @@ void GetLocalAligns( const basevector& r, const vecbasevector& U,
 
 void GetGlobalAligns( const basevector& r, const vecbasevector& U, 
      const vec< triple<int,int,int> >& aligns, const int bandwidth_div,
-     vec<align>& aligns_a, const double sub_frac, const double ins_frac,
+     vec<allpathslg::align >& aligns_a, const double sub_frac, const double ins_frac,
      const double del_frac )
 {
      aligns_a.resize( aligns.size( ) );
@@ -570,7 +570,7 @@ void ConvertPathsIntoBases( const int L, const basevector& target,
           #pragma omp critical
           {    AlignToRef( B, run_dir, data_dir, rout, module );    }    }    }
 
-int SmithWatFreeSym( const basevector& b1, const basevector& b2, align& a,
+int SmithWatFreeSym( const basevector& b1, const basevector& b2, allpathslg::align & a,
      const Bool penalize_left_gap, const Bool penalize_right_gap,
      unsigned int mismatch_penalty, unsigned int gap_penalty,
      unsigned int outer_gap_penalty )
@@ -850,7 +850,7 @@ void CleanPatch(
           vec<double> mismatch_ratesx;
           vec< pair<int,int> > M;
           basevector u1_trunc( U[f.u1], f.pos1, U[f.u1].isize( ) - f.pos1 );
-          align a;
+          allpathslg::align  a;
           vec<ho_interval> pf1, pf2;
           SmithWatFreeSym( u1_trunc, f.target, a, True, False );
           a.PerfectIntervals1( u1_trunc, f.target, pf1 );
@@ -1084,7 +1084,7 @@ void AlignToTarget(
                vec<ho_interval> perf1, perf2, PERF1, PERF2;
                if ( uleft.size( ) > 0 )
                {    SmithWatFree( uleft, tleft, best_loc, al, False, True );
-                    align a(al);
+                    allpathslg::align  a(al);
                     left_bound = a.pos2( );
                     vec<int> mgg = a.MutationsGap1Gap2( uleft, tleft );
                     mis1 = mgg[0];
@@ -1098,7 +1098,7 @@ void AlignToTarget(
                {    PERF1.push( up, up + L ), PERF2.push( p, p + L );    }
                if ( uright.size( ) > 0 )
                {    SmithWatFree( uright, tright, best_loc, al, True, False );
-                    align a(al);
+                    allpathslg::align  a(al);
                     right_bound = a.Pos2( ) + tleft.isize( ) + L;    
                     vec<int> mgg = a.MutationsGap1Gap2( uright, tright );
                     mis2 = mgg[0];
@@ -1225,11 +1225,11 @@ void PickBestPath( const vec<basevector>& bpaths, const basevector& target,
      for ( int j = 0; j < bpaths.isize( ); j++ )
      {    if ( bpaths[j].size( ) <= target.size( ) )
           {    SmithWatFree( bpaths[j], target, best_loc, al, True, True );
-               errs[j] = ActualErrors( bpaths[j], target, align(al), 2, 3 );    }
+               errs[j] = ActualErrors( bpaths[j], target, allpathslg::align (al), 2, 3 );    }
           else
           {    SmithWatFree( target, bpaths[j], best_loc, al, True, True );
                errs[j] = ActualErrors(
-                    target, bpaths[j], align(al), 2, 3 );    }    }
+                    target, bpaths[j], allpathslg::align (al), 2, 3 );    }    }
      vec<int> ids( errs.size( ), vec<int>::IDENTITY );
      SortSync( errs, ids );
      bpath = bpaths[ ids[0] ];

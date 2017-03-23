@@ -317,7 +317,7 @@ void AlignReadToPath(
 
      double& ERRS, int& LMATCHES,
      triple<int,int,String>& EREPORTS, int& LASTPOS, int& LAST, Bool& SKIPPED,
-     map< pair<ho_interval,basevector>, pair<align,double> >& A )
+     map< pair<ho_interval,basevector>, pair<align ,double> >& A )
 {    
      ostringstream out;
      out << "read " << ( !fw ? "-" : "" ) << id << " vs path " << path_id << " = ";
@@ -365,7 +365,7 @@ void AlignReadToPath(
           // different regions, making the comparison in its current form unfair.
 
           basevector rx, tx;
-          align a;
+          allpathslg::align  a;
           for ( int j = 0; j < matches.isize( ); j++ )
           {    int k, rpos1, tpos1, rpos2 = -1, tpos2 = -1;
                rpos1 = matches[j].first, tpos1 = matches[j].second;
@@ -388,7 +388,7 @@ void AlignReadToPath(
                // Align, or fetch cached copy.
                               
                ho_interval h( rpos1 + L, rpos2 );
-               map< pair<ho_interval,basevector>, pair<align,double> > 
+               map< pair<ho_interval,basevector>, pair<align ,double> > 
                     ::iterator Ax = A.find( make_pair( h, tx ) );
                if ( Ax == A.end( ) )
                {    double err = SmithWatFreeSym( rx, tx, a, True, True, 1, 1 );    
@@ -507,10 +507,10 @@ void PartitionReads( const int u, const vec< triple<int,Bool,uniseq> >& rights,
                e.Join( k, i );
           j = i - 1;    }
 
-     // Now align.  Use the known equality to avoid excess aligning.
+     // Now align .  Use the known equality to avoid excess aligning.
 
      vec< vec<int> > score( ns, vec<int>(ns, 0) );
-     align a;
+     allpathslg::align  a;
      int errors;
      for ( int i1 = 0; i1 < ns; i1++ )
      for ( int i2 = 0; i2 < ns; i2++ )
@@ -1002,7 +1002,7 @@ void Phase2( const int u, const vecbasevector& unibases,
 
                               if ( U1.isize( ) - U2.isize( ) >= off ) continue;
 
-                              // Make sure that the unibases align.
+                              // Make sure that the unibases align .
 
                               Bool mismatch = False;
                               for ( int up1 = Max( 0, off );
@@ -1386,7 +1386,7 @@ void Phase2( const int u, const vecbasevector& unibases,
           // the read and the basevector it is to be aligned to.  As output
           // it returns the alignment and the error count.
 
-          map< pair<ho_interval,basevector>, pair<align,double> > A;
+          map< pair<ho_interval,basevector>, pair<align ,double> > A;
 
           // Proceed.
 

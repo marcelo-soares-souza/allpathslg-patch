@@ -204,7 +204,7 @@ void ShowFlakyRegions( const int n,
                     {    rout << "\n";
                          rl.PrintVisualLoc( False, rout, "frag read " 
                               + ToString( rl.ReadId( ) ), b, TIG );    }
-                    align a;
+                    allpathslg::align  a;
                     rl.GetAlign( a, b, TIG );
      
                           // Generate pkmers.

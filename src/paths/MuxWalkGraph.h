@@ -50,7 +50,7 @@ class MuxWalkGraph_to_HyperKmerPath2;
 
 // The encoded walks are only guaranteed legal extension by extension:
 // if it tells you to walk A->B->C, that does not guarantee that A and
-// C align, only that they align on the part of each that overlaps
+// C align , only that they align  on the part of each that overlaps
 // with B.  So converting this back to the exact list of legal insert
 // walks will still take work.  (See MuxToPath.)
 

@@ -98,7 +98,7 @@ class edit0 {
 
 };
 
-vec<pair<int,edit0>> AlignToEdits(const align& a, const basevector& S,
+vec<pair<int,edit0>> AlignToEdits(const allpathslg::align & a, const basevector& S,
         const basevector& T);
 
 #endif

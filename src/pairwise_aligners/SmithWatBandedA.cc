@@ -40,7 +40,7 @@
 
 template<class X>
 float SmithWatBandedA2( const basevector& S, const basevector& T, int offset,
-     int bandwidth, align& a, int& errors, ostream *log, int MIS, int INS, int DEL)
+     int bandwidth, allpathslg::align & a, int& errors, ostream *log, int MIS, int INS, int DEL)
 {
      const float divider = 2.0;
 
@@ -341,14 +341,14 @@ float SmithWatBandedA2( const basevector& S, const basevector& T, int offset,
      return float(best_score)/divider;    }
 
 template float SmithWatBandedA2<unsigned char>( const basevector&, 
-     const basevector&, int, int, align&, int&, ostream*, int, int, int );
+     const basevector&, int, int, align &, int&, ostream*, int, int, int );
 template float SmithWatBandedA2<unsigned short>( const basevector&, 
-     const basevector&, int, int, align&, int&, ostream*, int, int, int );
+     const basevector&, int, int, align &, int&, ostream*, int, int, int );
 template float SmithWatBandedA2<unsigned int>( const basevector&, 
-     const basevector&, int, int, align&, int&, ostream*, int, int, int );
+     const basevector&, int, int, align &, int&, ostream*, int, int, int );
 
 float SmithWatBandedAEngine::run2A( const basevector& S, const basevector& T, int offset,
-     int bandwidth, align& a, int& errors, ostream *log, int MIS, int INS, int DEL)
+     int bandwidth, allpathslg::align & a, int& errors, ostream *log, int MIS, int INS, int DEL)
 {
      const float divider = 2.0;
 

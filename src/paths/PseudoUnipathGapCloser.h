@@ -62,7 +62,7 @@ public:
    The two unipaths may overlap, be immediately adjacent, or be separated
    by a non-zero-length gap.  In the latter case, we represent the sequence
    between the two unipaths, that we were able to infer.  Currently we have two
-   methods of inferring this sequence: 1) bridge the gap by reads that align
+   methods of inferring this sequence: 1) bridge the gap by reads that align 
    to the two unipaths, and of all such bridging reads take the consensus as to
    each base in the gap; 2) find paths in kmer space from the end of one unipath
    to the beginning of the other.

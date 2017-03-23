@@ -14,7 +14,7 @@
 //
 // (a) a mismatch scores +1
 // (b) each blank in a gap scores +2
-// (c) each base of S must align with T (so S must be found as a subset of T)
+// (c) each base of S must align  with T (so S must be found as a subset of T)
 // (d) there is optionally a penalty for gaps on either side of S
 
 // Compile with -funroll-all-loops (perhaps 5% faster).

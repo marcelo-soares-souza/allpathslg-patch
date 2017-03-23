@@ -36,7 +36,7 @@ void ExitAssemblyEmpty( )
 void ExitPathsEmpty( )
 {    // DISCOVAR MESSAGE
      cout << "\nDear user, we are sad to report the current assembly is not supported by reads.\n"
-          << "This could happen if the reads do not align well with the reference (if supplied), or "
+          << "This could happen if the reads do not align  well with the reference (if supplied), or "
           << "that something\nelse is wrong with your data.\n"
           << "Discovar complete.  Have a nice day.\n\n";
      Scram( );    }

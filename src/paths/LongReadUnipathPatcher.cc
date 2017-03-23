@@ -152,7 +152,7 @@ class uniseq {
 
 vecbasevector* uniseq::unibasesp;
 
-void SmithWatFreeSym( const basevector& b1, const basevector& b2, align& a )
+void SmithWatFreeSym( const basevector& b1, const basevector& b2, allpathslg::align & a )
 {    alignment al;
      int best_loc;
      if ( b1.size( ) <= b2.size( ) )
@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
      CommandArgument_Bool_OrDefault_Doc(PATCH_ONLY, False, 
           "'True' skips reads that can not be used for patching");
      CommandArgument_Bool_OrDefault_Doc(TERMINAL_ONLY, False, 
-          "only align to unipaths that have a dead end");
+          "only align  to unipaths that have a dead end");
      // Evaluation.
      CommandArgument_Bool_OrDefault_Doc(VALIDATE, False,
 	  "assess results versus reference genome");
@@ -426,10 +426,10 @@ int main(int argc, char *argv[])
           vec< triple<int,int,int> > aligns;
           GetLocalAligns( r, U, Ulocs, L, flank, max_errs, aligns, cout );
           Sort(aligns);
-          vec<align> aligns_a( aligns.size( ) );
+          vec<allpathslg::align > aligns_a( aligns.size( ) );
           GetGlobalAligns( r, U, aligns, bandwidth_div, aligns_a, 1, 1, 1 );
           for ( int j = 0; j < aligns.isize( ); j++ )
-          {    const align& a = aligns_a[j];
+          {    const allpathslg::align & a = aligns_a[j];
                int u = aligns[j].first;
                if ( a.pos2( ) > 0 || a.Pos2( ) < r.isize( ) ) continue;
                vec<int> mgg = a.MutationsGap1Gap2( U[u], r );
@@ -616,7 +616,7 @@ int main(int argc, char *argv[])
           // local alignment.
 
           Sort(ALIGNS2[iR2]);
-          vec<align> aligns_a( ALIGNS2[iR2].size( ) );
+          vec<allpathslg::align > aligns_a( ALIGNS2[iR2].size( ) );
           GetGlobalAligns( r, U, ALIGNS2[iR2], bandwidth_div, aligns_a, sub_frac,
                ins_frac, del_frac );
 
@@ -625,7 +625,7 @@ int main(int argc, char *argv[])
           double max_error_rate_remove = 0.37;
           vec<Bool> to_remove( ALIGNS2[iR2].size( ), False );
           for ( int i = 0; i < aligns_a.isize( ); i++ )
-          {    const align& a = aligns_a[i];
+          {    const allpathslg::align & a = aligns_a[i];
                int u = ALIGNS2[iR2][i].first;
                int errs = ActualErrors( U[u], r, a, 1, 1 );
                double err_rate = double(errs) / double( a.extent1( ) );
@@ -637,7 +637,7 @@ int main(int argc, char *argv[])
 
           /*
           for ( int i = 0; i < aligns_a.isize( ); i++ )
-          {    const align& a = aligns_a[i];
+          {    const allpathslg::align & a = aligns_a[i];
                int u = ALIGNS2[iR2][i].first;
                int errs = ActualErrors( U[u], r, a, 1, 1 );
                double err_rate = double(errs) / double( a.extent1( ) );
@@ -658,7 +658,7 @@ int main(int argc, char *argv[])
           // case they belong in the same group.
 
           vec< vec< triple<int,int,int> > > alignsx;
-          vec<align> alignsx_a;
+          vec<allpathslg::align > alignsx_a;
           for ( int i = 0; i < ALIGNS2[iR2].isize( ); i++ )
           {    int j, l, u = ALIGNS2[iR2][i].first;
                vec< triple<int,int,int> > xxx;
@@ -673,7 +673,7 @@ int main(int argc, char *argv[])
                     int predicted_overlap = IntervalOverlap( 
                          0, U[u].isize( ), offset, offset + r.isize( ) );
                     int bandwidth = predicted_overlap / bandwidth_div;
-                    align a;
+                    allpathslg::align  a;
                     int errors;
                     SmithWatBandedA(U[u], r, offset, bandwidth, a, errors, 0, 1, 1);
                     vec<ho_interval> perfs1, perfs2;
@@ -1067,7 +1067,7 @@ int main(int argc, char *argv[])
                               << whichu[v1] << "] and "
                               << tou[v2] << "[" << whichu[v2] << "]\n";
                          int u1 = tou[v1], u2 = tou[v2];
-                         const align &a1 = alignsx_a[v1], &a2 = alignsx_a[v2];
+                         const allpathslg::align  &a1 = alignsx_a[v1], &a2 = alignsx_a[v2];
 
                          /*
                          out << "first alignment:\n";

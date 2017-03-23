@@ -91,7 +91,7 @@ void OffsetFromDistributions( CBundle &bundle,
   //    On different contigs:
   //        [2]     on1 fw     on2 rc
   //        [3]     on1 rc     on2 fw
-  //    One of the two reads align on another contig or not at all:
+  //    One of the two reads align  on another contig or not at all:
   //        [4]     on1 fw     x
   //        [5]     on1 rc     x
   //        [6]     x          on2 fw

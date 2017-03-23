@@ -88,7 +88,7 @@ void GetAlignsFast( const int K, const String& fastb_file, const String& lookup_
                avector<int> gaps(1), lengths(1);
                gaps(0) = 0;
                lengths(0) = seqs[id].size( );
-               align a( 0, xpos, gaps, lengths );
+               align  a( 0, xpos, gaps, lengths );
                look_align la( id, g, seqs[id].size( ), genome[g].size( ), pos < 0,
                     a, 0, 0, 0 );
                la.PrintParseable(out);    }    }

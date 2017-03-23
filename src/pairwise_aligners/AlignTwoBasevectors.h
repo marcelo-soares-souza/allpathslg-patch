@@ -12,7 +12,7 @@
 #include "system/Types.h"
 
 void MergeTwoBaseVectors( const basevector& b1, const basevector& b2, 
-     const align& a, basevector& c, const qualvector& q1,
+     const allpathslg::align & a, basevector& c, const qualvector& q1,
      const qualvector& q2, qualvector& q );
 
 // Beware of the default parameter, mode = 1.  This will discard alignments where 
@@ -25,7 +25,7 @@ void MergeTwoBaseVectors( const basevector& b1, const basevector& b2,
 // and min_progression_ratio are ignored, and the specified method is
 // used to build aligns instead.
 
-int AlignTwoBasevectors( const basevector& b1, const basevector& b2, align& a, 
+int AlignTwoBasevectors( const basevector& b1, const basevector& b2, allpathslg::align & a, 
      int min_overlap, int max_overlap, float max_error_rate, ostream* log, int& RC,
      int mode = 1, int K = 24, int stretch = 2, int nstretch = 1,
      const qualvector& q1 = qualvector(0), const qualvector& q2 = qualvector(0),
