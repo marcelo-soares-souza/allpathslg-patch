@@ -13,7 +13,7 @@
 #include "CoreTools.h"
 #include "paths/Uniseq.h"
 
-void GetHomes( const String run_dir, const int K2, const vecbasevector& unibases2, 
-     snark& S, const Bool VERBOSE );
+void GetHomes( const String run_dir, const int K2, const vecbasevector& unibases2,
+               snark& S, const Bool VERBOSE );
 
 #endif

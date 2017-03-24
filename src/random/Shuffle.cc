@@ -16,8 +16,10 @@
  */
 
 class ShuffleRandom: public unary_function<int, int> {
- public:
-  ShuffleRandom(longlong seed = 0) { srandomx(seed); }
+public:
+  ShuffleRandom(longlong seed = 0) {
+    srandomx(seed);
+  }
   int operator()(int range = RAND_MAX) {
     if (range == RAND_MAX) return randomx();//save a modulo operation.
     return randomx() % range;
@@ -26,7 +28,7 @@ class ShuffleRandom: public unary_function<int, int> {
 
 void Shuffle( int N, vec<int> &shuffled, int seed )
 {
-  ForceAssertGt( N , 0 );
+  ForceAssertGt( N, 0 );
 
   shuffled.resize(N);
   for (int i=0; i<N; i++) shuffled[i] = i;
@@ -42,8 +44,10 @@ void Shuffle( int N, vec<int> &shuffled, int seed )
 
 // this uses the MersenneTwister
 class ShuffleRandom64: public unary_function<uint64_t, uint64_t> {
- public:
-  ShuffleRandom64(uint64_t seed = 0) { init_genrand64(seed); }
+public:
+  ShuffleRandom64(uint64_t seed = 0) {
+    init_genrand64(seed);
+  }
   uint64_t operator()(uint64_t range = -1) {
     if (range == static_cast<uint64_t>(-1)) return genrand64_int64();//save a modulo operation.
     return genrand64_int64() % range;
@@ -52,7 +56,7 @@ class ShuffleRandom64: public unary_function<uint64_t, uint64_t> {
 
 void Shuffle64( uint64_t N, vec<uint64_t> &shuffled, uint64_t seed )
 {
-  ForceAssertGt( N , 0u );
+  ForceAssertGt( N, 0u );
 
   shuffled.resize(N);
   for (uint64_t i=0; i<N; i++) shuffled[i] = i;

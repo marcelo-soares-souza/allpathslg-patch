@@ -26,7 +26,7 @@ void BeautifyTable( vec< vec<String> > &table, const vec<Bool> *rjustify )
     ForceAssert( (int)table[ii].size( ) == n_cols );
   if ( rjustify )
     ForceAssert( (int)rjustify->size( ) == n_cols );
-		 
+
   // Determine columns' width.
   vec<int> max_width( n_cols, 0 );
   for (int ii=0; ii<n_rows; ii++)
@@ -37,8 +37,8 @@ void BeautifyTable( vec< vec<String> > &table, const vec<Bool> *rjustify )
   for (int ii=0; ii<n_rows; ii++) {
     for (int jj=0; jj<n_cols; jj++) {
       while ( (int)table[ii][jj].size( ) < max_width[jj] ) {
-	bool rjust = ( rjustify && (*rjustify)[jj] );
-	table[ii][jj] = rjust ? " " + table[ii][jj] : table[ii][jj] + " ";
+        bool rjust = ( rjustify && (*rjustify)[jj] );
+        table[ii][jj] = rjust ? " " + table[ii][jj] : table[ii][jj] + " ";
       }
     }
   }
@@ -48,12 +48,12 @@ void BeautifyTable( vec< vec<String> > &table, const vec<Bool> *rjustify )
  * BeautifyAndPrintTable
  */
 void BeautifyAndPrintTable(  vec< vec<String> > &table,
-			     ostream& out,
-			     const String separator,
-			     const vec<Bool> *rjustify )
+                             ostream& out,
+                             const String separator,
+                             const vec<Bool> *rjustify )
 {
   BeautifyTable( table, rjustify );
-  
+
   // Print the table row-by-row, using the separator between columns
   for (int i = 0 ; i < table.isize( ); i++) {
     for ( int j = 0; j < table[i].isize( ); j++ ) {
@@ -63,14 +63,14 @@ void BeautifyAndPrintTable(  vec< vec<String> > &table,
     }
     out << "\n";
   }
-  
+
 }
 
 /**
  * RemoveEmptyColumns
  */
 void RemoveEmptyColumns( vec< vec<String> > &table,
-			 const vec<String> *def_empty ) 
+                         const vec<String> *def_empty )
 {
   vec< vec<String> > result;
   result.resize ( table.size( ) );
@@ -87,7 +87,7 @@ void RemoveEmptyColumns( vec< vec<String> > &table,
     default_empty.push_back( "" );
   }
   const vec<String> &defe = def_empty ? *def_empty : default_empty;
-  
+
   // Check columns.
   vec<bool> remove( table[0].size( ), false );
   for (int colpos=1; colpos<(int)table[0].size( ); colpos++) {
@@ -97,17 +97,17 @@ void RemoveEmptyColumns( vec< vec<String> > &table,
     bool is_empty = false;
     for (int ii=0; ii<(int)defe.size( ); ii++) {
       if ( lead_record == defe[ii] ) {
-	is_empty = true;
-	break;
+        is_empty = true;
+        break;
       }
     }
     if ( ! is_empty )
       continue;
     bool all_empty = true;
-    for (int ii=2; ii<(int)table.size( ); ii++) { 
+    for (int ii=2; ii<(int)table.size( ); ii++) {
       if ( table[ii][colpos] != lead_record ) {
-	all_empty = false;
-	break;
+        all_empty = false;
+        break;
       }
     }
     if ( ! all_empty )
@@ -119,7 +119,7 @@ void RemoveEmptyColumns( vec< vec<String> > &table,
   for (int jj=0; jj<(int)table[0].size( ); jj++) {
     if ( ! remove[jj] ) {
       for (int ii=0; ii<(int)table.size( ); ii++) {
-	result[ii].push_back( table[ii][jj] );
+        result[ii].push_back( table[ii][jj] );
       }
     }
   }

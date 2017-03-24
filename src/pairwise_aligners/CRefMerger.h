@@ -27,36 +27,36 @@
 class CRefMerger {
 
 public:
-  
-  CRefMerger( const int min_overlap,
-	      const int swband_ratio,
-	      const int max_gap,
-	      const int min_gap,
-	      const int min_gap_dev,
-	      const vecbvec &ref );
 
   CRefMerger( const int min_overlap,
-	      const int swband_ratio,
-	      const int max_gap,
-	      const int min_gap,
-	      const int min_gap_dev,
-	      const vecbvec &ref,
-	      const vecbvec &in_contigs,
-	      const vec<look_align> &in_aligns );
-  
+              const int swband_ratio,
+              const int max_gap,
+              const int min_gap,
+              const int min_gap_dev,
+              const vecbvec &ref );
+
+  CRefMerger( const int min_overlap,
+              const int swband_ratio,
+              const int max_gap,
+              const int min_gap,
+              const int min_gap_dev,
+              const vecbvec &ref,
+              const vecbvec &in_contigs,
+              const vec<look_align> &in_aligns );
+
   // Digest original contigs aligns.
   void Setup( const vecbvec &in_contigs, const vec<look_align> &in_aligns );
-  
+
   // Merge contigs: run MergeIterations until no more merges are found.
   void Merge( ostream *log = 0 );
 
   // Save contigs (only keep contigs >= min_clen).
   void Save( const String &out_head, const int min_clen, ostream *log = 0 );
-  
+
   // Report count and N50 of merged contigs.
   String BriefStats( const int iter, const int *merges = 0 ) const;
-  
-  
+
+
 private:
 
   // One iteration of merging.
@@ -64,10 +64,10 @@ private:
 
   // Merge contigs (and aligns of contigs to reference).
   bool MergeContigs( const int idx1, const int idx2 );
-  
+
   // Remove empty contigs/aligns (only keep contigs >= min_clen).
   void CompactifyData( const int min_clen = 0 );
-  
+
   // Find pos on 1 corresponding to pos2 on 2 (-1 on error).
   int PosOn1( const int pos2, const allpathslg::align  &al ) const;
 
@@ -79,14 +79,14 @@ private:
 
   // Overlap implied by aligns on reference.
   int ImpliedOverlap( const int idx1, const int idx2 ) const;
-  
+
   // Internal consistency test for given align .
   bool IsValid( const int idx, ostream *log = 0 ) const;
-  
+
   // Generate a printable string representing the align .
   String BriefAlignInfo( const allpathslg::align  &al ) const;
-  
-  
+
+
 private:
 
   const int min_overlap_;    // min overlap to merge contigs
@@ -103,7 +103,7 @@ private:
   vecbvec contigs_;          // merged contigs
   vec<look_align> aligns_;   // aligns of merged contigs
   vec< vec<int> > orig_ids_; // ids of original contigs in each merged contig
-  
+
 };
 
 #endif

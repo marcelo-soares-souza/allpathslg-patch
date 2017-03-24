@@ -79,8 +79,10 @@
 #include "system/Worklist.h" // Worklist
 #include "system/LockedData.h" // LockedData
 
-static inline 
-String Tag(String S = "LRLG") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "LRLG") {
+  return Date() + " (" + S + "): ";
+}
 
 
 
@@ -133,7 +135,7 @@ public:
     // Make the directories that will contain output from the local assemblies.
     // We do this now because we do NOT want to do it in parallel.
     if ( makeSeedsDirs )
-        MakeSeedsDirs();
+      MakeSeedsDirs();
 
     ReadSeedStatus();
 
@@ -156,15 +158,27 @@ public:
     WriteSeedStatus(0);
   }
 
-  BinaryWriter& getWriter() { return mHBVWriter; }
+  BinaryWriter& getWriter() {
+    return mHBVWriter;
+  }
 
-  size_t GetNumSeeds() { return _num_seeds; }
-  size_t GetNumSeedsToDo() { return _i_seeds_todo.size(); }
-  size_t GetSeedID(const size_t i_seed) { return _seed_IDs[i_seed]; }
-  const vec<int> &GetSeedIDs( ) const { return _seed_IDs; }
+  size_t GetNumSeeds() {
+    return _num_seeds;
+  }
+  size_t GetNumSeedsToDo() {
+    return _i_seeds_todo.size();
+  }
+  size_t GetSeedID(const size_t i_seed) {
+    return _seed_IDs[i_seed];
+  }
+  const vec<int> &GetSeedIDs( ) const {
+    return _seed_IDs;
+  }
 
   String GetSeedDir(const size_t i_seed)
-  { return _sub_dir + "/seed/" + GetDirFromKey(i_seed, _SEEDS_PER_DIR); }
+  {
+    return _sub_dir + "/seed/" + GetDirFromKey(i_seed, _SEEDS_PER_DIR);
+  }
 
 private:
 
@@ -323,8 +337,8 @@ public:
   double T_insert_merging;
   vec< pair<int,int> > walks_info;   // inserts_(walked,total) for each nhood
 
-  LRLGCounters( size_t n_seeds ) 
-    : n_seeds_done(0), 
+  LRLGCounters( size_t n_seeds )
+    : n_seeds_done(0),
       n_inserts_walked(0),
       n_inserts_total(0),
       T_pathing(0.0),
@@ -467,12 +481,12 @@ public:
     while ( _seeds.GetNextSeedIndex( &i_seed ) ) {
       TaskTimer prun_timer;
       prun_timer.Start( );
-    
+
       size_t seed_ID = _seeds.GetSeedID(i_seed);
 
       String seed_string = Tag("LRLG.P") + "nhood #" + ToString(i_seed) + " seed_ID= " + ToString(seed_ID);
       (*_log_fs) << (seed_string + "  starting local assembly") << endl;
-      
+
       _seeds.SetSeedStatusRunning(i_seed);
 
       // Create SeedNeighborhood object to perform the local assembly
@@ -486,63 +500,63 @@ public:
       // Find the seed_dir, where we will be placing output files from this nhood.
       // This directory should already exist (DO NOT call Mkdir in parallel code!)
       {
-	Locker locker( _seeds );
-	String seed_dir = _seeds.GetSeedDir(i_seed);
-	nhood._outhead = seed_dir + "/" + ToString(i_seed);
-	String log_file = nhood._outhead + ".log";
-	String hbv_file = nhood._outhead + ".hbv";
-	if (_LOCAL_LOG) nhood.SetLog(log_file);
+        Locker locker( _seeds );
+        String seed_dir = _seeds.GetSeedDir(i_seed);
+        nhood._outhead = seed_dir + "/" + ToString(i_seed);
+        String log_file = nhood._outhead + ".log";
+        String hbv_file = nhood._outhead + ".hbv";
+        if (_LOCAL_LOG) nhood.SetLog(log_file);
       }
-      
+
       bool completed = false;
 
       // Find the neighborhood (unipaths, reads) of this seed
       nhood.MakeUnipathCloud(*_LG, *_predicted_CNs, *_branches);
       if (_EVAL)
-	nhood.EvalUnipathCloud(*_genome, *_unipath_POGs);
-      
+        nhood.EvalUnipathCloud(*_genome, *_unipath_POGs);
+
       nhood.MakeReadCloud(*_reads_bases, *_unibases, _LOCAL_PRIMARY);
       if (_EVAL && _READ_CLOUD_EVAL)
-	nhood.EvalReadCloud(*_genome, *_unipath_POGs, *_read_POGs);
+        nhood.EvalReadCloud(*_genome, *_unipath_POGs, *_read_POGs);
 
       // Assemble the nhood's reads into a local unipath graph and HyperKmerPath
       if (_BRIDGE_BETWEEN_CLOUD_UNIPATHS)
-	nhood.MakeLocalAssembly( *_unibases, *_unibases_next, *_to_rc, 1 );
+        nhood.MakeLocalAssembly( *_unibases, *_unibases_next, *_to_rc, 1 );
       nhood.MakeLocalAssembly( *_unibases, *_unibases_next, *_to_rc, 2 );
       if (_EVAL)
-	nhood.EvalLocalAssembly();
-      
+        nhood.EvalLocalAssembly();
+
       // Walk inserts in this neighborhood with the help of fragments;
       // then merge the walked inserts into the local assembly
       completed = nhood.MakeInsertWalks( );
       if (_EVAL && completed)
-	nhood.EvalInsertWalks();
-      
+        nhood.EvalInsertWalks();
+
       // Each locally assembled neighborhood is represented as a
       // HyperBasevector (which is a HyperKmerPath that is independent
       // of kmer numbering) The HyperBasevectors are saved into files
       // in SUBDIR
       prun_timer.Stop( );
       String run_time = ToString( prun_timer.Elapsed( ), 2 ) + "s";
-      
+
       if (completed) {
-	String str_done
-	  = ToString( seed_string ) + "  local assembly done ("
-	  + ToString( run_time ) + "): "
-	  + ToString( nhood._n_inserts_walked ) + " inserts walked, out of "
-	  + ToString( nhood._n_inserts_total ) + " selected";
+        String str_done
+          = ToString( seed_string ) + "  local assembly done ("
+            + ToString( run_time ) + "): "
+            + ToString( nhood._n_inserts_walked ) + " inserts walked, out of "
+            + ToString( nhood._n_inserts_total ) + " selected";
         (*_log_fs) << str_done << endl;
-	{
-	  Locker locker(_seeds);
-	  nhood.Write(i_seed, _seeds.getWriter(), _LOCAL_DOT, _LOCAL_FASTA);
- 	}
-	_seeds.SetSeedStatusDone(i_seed);
+        {
+          Locker locker(_seeds);
+          nhood.Write(i_seed, _seeds.getWriter(), _LOCAL_DOT, _LOCAL_FASTA);
+        }
+        _seeds.SetSeedStatusDone(i_seed);
       }
       else {
         (*_log_fs) << (seed_string  + "  local assembly TIMED OUT (" + run_time + ")") << endl;
         _seeds.SetSeedStatusTimedOut(i_seed);
       }
-      
+
       // Update global counter variables.
       {
         Locker l(*_counters); // destructor unlocks
@@ -555,9 +569,9 @@ public:
         _counters->T_pathing        += nhood._T_pathing;
         _counters->T_insert_walking += nhood._T_insert_walking;
         _counters->T_insert_merging += nhood._T_insert_merging;
-	// More granular informations on insert walking.
-	_counters->walks_info[i_seed]
-	  = make_pair( nhood._n_inserts_walked, nhood._n_inserts_total );
+        // More granular informations on insert walking.
+        _counters->walks_info[i_seed]
+          = make_pair( nhood._n_inserts_walked, nhood._n_inserts_total );
       }
     }
   }
@@ -582,50 +596,50 @@ int main(int argc, char *argv[])
   CommandArgument_String(RUN);
   CommandArgument_String_OrDefault(SUBDIR, "test");
   CommandArgument_Int(K);
-  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0, 
-    "Number of threads to use (use all available processors if set to 0)");
+  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0,
+      "Number of threads to use (use all available processors if set to 0)");
   CommandArgument_Int_OrDefault_Valid_Doc(PLOIDY, -1, "{-1,1,2}",
-    "Used in the absence of a ploidy file: 1 for Haploid, 2 for Diploid");
+                                          "Used in the absence of a ploidy file: 1 for Haploid, 2 for Diploid");
   CommandArgument_String_OrDefault(READS, "reads");
   // Arguments to do chunks of the pipeline (or not)
   CommandArgument_Bool_OrDefault(USE_TRUTH, True);
   CommandArgument_Bool_OrDefault(EVAL, True);
   CommandArgument_Bool_OrDefault_Doc(NHOOD_EVAL, False,
-    "[Optional] Run extra eval code on all the neighboroods.");
+                                     "[Optional] Run extra eval code on all the neighboroods.");
   CommandArgument_Bool_OrDefault_Doc(READ_CLOUD_EVAL, False,
-    "[Optional] Run extra read cloud eval code (only if EVAL=True).\nNB: it needs the output from GenomeReadLocs!\n");
+                                     "[Optional] Run extra read cloud eval code (only if EVAL=True).\nNB: it needs the output from GenomeReadLocs!\n");
   CommandArgument_String_OrDefault_Doc(SEED_IDS, "",
-    "[Optional] Assemble only these IDs from the seed list.");
+                                       "[Optional] Assemble only these IDs from the seed list.");
   CommandArgument_Bool_OrDefault_Doc(OVERRIDE_TIMEOUTS, False,
-    "[Optional] If any neighborhoods time out, re-run them afterward, in non-parallel.  Only operative if SEED_IDS=\"\".");
+                                     "[Optional] If any neighborhoods time out, re-run them afterward, in non-parallel.  Only operative if SEED_IDS=\"\".");
 
   // Heuristic parameters
   CommandArgument_Bool_OrDefault_Doc(USE_THEO_GRAPHS, False, "Use the file unipath_link_graph.theo, created by TheoreticalUnipathLinkGraph");
   CommandArgument_Int_OrDefault(NHOOD_RADIUS, 20000);
   CommandArgument_Int_OrDefault(NHOOD_RADIUS_INTERNAL, 10000);
   CommandArgument_Int_OrDefault_Doc(NHOOD_GLUEPERFECT_SIZE, 0,
-                                 "if >0, try to merge duplicate edge sequence of this size or greater");
+                                    "if >0, try to merge duplicate edge sequence of this size or greater");
   CommandArgument_Int_OrDefault_Doc(MAX_COPY_NUMBER_OTHER, 0, "Control the copy numer of unipaths entering the neighborhood.");
   CommandArgument_String_OrDefault_Doc(LOCAL_DUMP, "",
-     "List of zero or more of the following, to generate various files for\n"
-     "each local assembly:"
-     "\nLOG - make log file n.log"
-     "\nFASTA - make local assembly fasta file n.hbv.fasta"
-     "\nDOT - make local assembly dot file n.hbv.dot"
-     "\nUNIBASES - make local unibase files n.local_unibases.{dot,fasta}"
-     "\nPRIMARY - dump primary read close n.primary.fasta"
-     "\nUNMERGED - dump unmerged assembly n.unmerged.{dot,fasta}"
-     "\nSELECTED_PAIRS - dump selected pairs n.selected_pairs.fasta");
+                                       "List of zero or more of the following, to generate various files for\n"
+                                       "each local assembly:"
+                                       "\nLOG - make log file n.log"
+                                       "\nFASTA - make local assembly fasta file n.hbv.fasta"
+                                       "\nDOT - make local assembly dot file n.hbv.dot"
+                                       "\nUNIBASES - make local unibase files n.local_unibases.{dot,fasta}"
+                                       "\nPRIMARY - dump primary read close n.primary.fasta"
+                                       "\nUNMERGED - dump unmerged assembly n.unmerged.{dot,fasta}"
+                                       "\nSELECTED_PAIRS - dump selected pairs n.selected_pairs.fasta");
   CommandArgument_Int_OrDefault_Doc(VERBOSITY, 0,
-       "Verbosity bits: 1=UNIPATH_CLOUD.");
+                                    "Verbosity bits: 1=UNIPATH_CLOUD.");
   CommandArgument_Bool_OrDefault_Doc(USE_ACYCLIC, True,
-       "Use acyclic stuff in constructing neighborhoods.");
+                                     "Use acyclic stuff in constructing neighborhoods.");
   CommandArgument_Bool_OrDefault_Doc(BRIDGE_BETWEEN_CLOUD_UNIPATHS, False,
-       "Attempt to walk in the global unipath between cloud unipaths.");
+                                     "Attempt to walk in the global unipath between cloud unipaths.");
   EndCommandArguments;
 
   // Thread control
-   
+
   NUM_THREADS = configNumThreads(NUM_THREADS);
 
   cout << Tag() << "Beginning LocalizeReadsLG..." << endl;
@@ -663,10 +677,10 @@ int main(int argc, char *argv[])
   // check the ploidy input
   if (IsRegularFile(data_dir + "/ploidy")) {
     int ploidy_from_file = StringOfFile(data_dir + "/ploidy", 1).Int();
-    if (PLOIDY >= 1){
+    if (PLOIDY >= 1) {
       if (ploidy_from_file != PLOIDY)
         InputErr("PLOIDY set as a command option but different from a value in ploidy file.");
-    }else
+    } else
       PLOIDY = ploidy_from_file;
   }
   if (PLOIDY < 1 || PLOIDY > 2)
@@ -689,9 +703,10 @@ int main(int argc, char *argv[])
 
   vec< vec<int> > unibases_next( unibases.size( ) );
   vec<int> to_rc;
-  if (BRIDGE_BETWEEN_CLOUD_UNIPATHS) 
-  {    GetNexts( K, unibases, unibases_next );
-       UnibaseInvolution( unibases, to_rc );    }
+  if (BRIDGE_BETWEEN_CLOUD_UNIPATHS)
+  { GetNexts( K, unibases, unibases_next );
+    UnibaseInvolution( unibases, to_rc );
+  }
 
   // Unipath link graph
   String graph_file_infix = USE_THEO_GRAPHS ? ".theo" : "";
@@ -777,7 +792,7 @@ int main(int argc, char *argv[])
   vec<Bool> branches(n_unipaths);
   digraph AG;
   BuildUnipathAdjacencyGraph(paths, paths_rc, pathsdb,
-                              unipaths, unipathsdb, AG);
+                             unipaths, unipathsdb, AG);
   for (size_t i = 0; i < n_unipaths; i++)
     branches[i] = (AG.From(i).size() > 1 || AG.To(i).size() > 1);
 
@@ -818,7 +833,7 @@ int main(int argc, char *argv[])
     cout << Tag() << "Sending log to: " << log_fn << endl;
     ofstream log_fs(log_fn.c_str());
     PrintCommandPretty(log_fs);
-  
+
     Processor processor(seeds,
                         K, PLOIDY, MAX_COPY_NUMBER_OTHER,
                         & paths,
@@ -878,12 +893,12 @@ int main(int argc, char *argv[])
   } else {
 
     cout << "Average runtimes of important local assembly steps (wallclock seconds):\n"
-	 << "\n"
-	 << "  Pathing local reads:  " << (counters.T_pathing / counters.n_seeds_done) << " sec\n"
-	 << "  Walking inserts:      " << (counters.T_insert_walking / counters.n_seeds_done) << " sec\n"
-	 << "  Merging inserts:      " << (counters.T_insert_merging / counters.n_seeds_done) << " sec\n"
-	 << "\n";
-    
+         << "\n"
+         << "  Pathing local reads:  " << (counters.T_pathing / counters.n_seeds_done) << " sec\n"
+         << "  Walking inserts:      " << (counters.T_insert_walking / counters.n_seeds_done) << " sec\n"
+         << "  Merging inserts:      " << (counters.T_insert_merging / counters.n_seeds_done) << " sec\n"
+         << "\n";
+
     // Report success rate for insert walking.
     ReportWalkingRatesCore( cout, False, seeds.GetSeedIDs( ), counters.walks_info );
   }

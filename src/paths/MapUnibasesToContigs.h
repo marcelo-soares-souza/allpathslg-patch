@@ -16,16 +16,16 @@
 /**
  * MapUnibasesToContigs
  *
- * Generate a unibases_to_contigs map, using SearchFastb2Core to align 
+ * Generate a unibases_to_contigs map, using SearchFastb2Core to align
  * contigs to unibases. Temp files are deleted at the end.
  *
  * OUTBASE: output is saved as <OUTBASE>.{u2c} (as a UInt64VecVec)
  * log: used to log progress
  */
 void MapUnibasesToContigs( const int K,
-			   const String &unibases_file,
-			   const String &contigs_file,
-			   const String &OUTBASE,
-			   ostream *log = 0 );
+                           const String &unibases_file,
+                           const String &contigs_file,
+                           const String &OUTBASE,
+                           ostream *log = 0 );
 
 #endif

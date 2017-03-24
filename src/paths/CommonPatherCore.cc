@@ -11,15 +11,17 @@
 #include "paths/ReadsToPathsCoreX.h"
 #include "paths/CommonPatherCore.h"
 
-static inline 
-String Tag(String S = "CP") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "CP") {
+  return Date() + " (" + S + "): ";
+}
 
-void CommonPather(const int K, 
-                  const vec<String>& readsIn, 
+void CommonPather(const int K,
+                  const vec<String>& readsIn,
                   const vec<String>& pathsOut,
                   const int NUM_THREADS,
                   const String CHECKPOINT_HEAD,
-                  Bool appendKSize, 
+                  Bool appendKSize,
                   Bool verify)
 {
   bool VERBOSE = true;
@@ -40,16 +42,17 @@ void CommonPather(const int K,
   }
 
   if ( all.size( ) == 0 )
-  {    cout << "Something has gone terribly wrong.  Zero sequences were passed "
-            << "to this module, CommonPather." << endl;
-       cout << "Sorry, abort." << endl;
-       exit(1);    }
+  { cout << "Something has gone terribly wrong.  Zero sequences were passed "
+         << "to this module, CommonPather." << endl;
+    cout << "Sorry, abort." << endl;
+    exit(1);
+  }
 
   // Build paths
   cout << Tag() << "Building paths... " << endl;
   vecKmerPath all_paths;
-  ReadsToPathsCoreY(all, K, all_paths, 
-                    readsIn[0] + ".CommonPather", 
+  ReadsToPathsCoreY(all, K, all_paths,
+                    readsIn[0] + ".CommonPather",
                     NUM_THREADS, CHECKPOINT_HEAD, VERBOSE);
 
   // Write paths
@@ -67,7 +70,7 @@ void CommonPather(const int K,
       String pathFile = pathsOut[i] + (appendKSize ? ".k" + KS : "");
       ForceAssert( IsGoodFeudalFile(pathFile));
       ForceAssertEq( MastervecFileObjectCount( pathFile ),
-		     MastervecFileObjectCount( readsIn[i] ) );
+                     MastervecFileObjectCount( readsIn[i] ) );
     }
 
     vecKmerPath newAll;
@@ -81,8 +84,8 @@ void CommonPather(const int K,
       KmerPath p1 = all_paths[i];
       KmerPath p2 = newAll[i];
       if ( p1 != p2 ) {
-	cout << Tag() << "path " << i << " does not match!!" << endl;
-	mismatches++;
+        cout << Tag() << "path " << i << " does not match!!" << endl;
+        mismatches++;
       }
     }
     if ( mismatches == 0 )
@@ -96,9 +99,9 @@ void CommonPather(const int K,
 }
 
 
-void CommonPather(const int K, 
+void CommonPather(const int K,
                   const String & dirIn,
-                  const vec<const vecbvec*>& readsIn, 
+                  const vec<const vecbvec*>& readsIn,
                   const vec<vecKmerPath*>& pathsOut,
                   const int NUM_THREADS,
                   const String CHECKPOINT_HEAD)
@@ -127,8 +130,8 @@ void CommonPather(const int K,
   // Build paths
   cout << Tag() << "Building paths... " << endl;
   vecKmerPath all_paths;
-  ReadsToPathsCoreY(all, K, all_paths, 
-                    dirIn + "/CommonPather", 
+  ReadsToPathsCoreY(all, K, all_paths,
+                    dirIn + "/CommonPather",
                     NUM_THREADS, CHECKPOINT_HEAD, VERBOSE);
 
   // Split paths
@@ -141,8 +144,8 @@ void CommonPather(const int K,
 
 
 
-void CommonPather(const int K, 
-                  const String& dirIn, 
+void CommonPather(const int K,
+                  const String& dirIn,
                   const vec<String>& readsInHead,
                   const int NUM_THREADS,
                   const String CHECKPOINT_HEAD)
@@ -160,10 +163,10 @@ void CommonPather(const int K,
 }
 
 
-void CommonPather(const int K, 
-                  const String& dirIn, 
+void CommonPather(const int K,
+                  const String& dirIn,
                   const vec<String>& readsIn,
-                  const vec<String>& pathsOut, 
+                  const vec<String>& pathsOut,
                   const int NUM_THREADS,
                   const String CHECKPOINT_HEAD)
 {
@@ -177,40 +180,40 @@ void CommonPather(const int K,
     pathsOutFull[i] = dirIn + "/" + pathsOut[i];
   }
   CommonPather(K,
-               readsInFull, pathsOutFull, 
+               readsInFull, pathsOutFull,
                NUM_THREADS, CHECKPOINT_HEAD);
 }
 
 
 
-void CommonPather(const int K, 
+void CommonPather(const int K,
                   const String & dirIn,
-                  const vec<vecbvec*>& readsIn, 
+                  const vec<vecbvec*>& readsIn,
                   const vec<vecKmerPath*>& pathsOut,
                   const int NUM_THREADS,
                   const String CHECKPOINT_HEAD)
 {
   // Copy and cast vec of non-const vecbvec pointers to const vecbvec pointers
   vec<const vecbvec*> constReadsIn(readsIn.begin(),readsIn.end());
-  CommonPather(K, 
-               dirIn, 
-               constReadsIn, pathsOut, 
+  CommonPather(K,
+               dirIn,
+               constReadsIn, pathsOut,
                NUM_THREADS, CHECKPOINT_HEAD);
 }
 
 
 void CommonPather(const int K,
                   const String & dirIn,
-                  const vecbvec& readsIn1, 
-                  const vecbvec& readsIn2, 
+                  const vecbvec& readsIn1,
+                  const vecbvec& readsIn2,
                   const vecbvec& readsIn3,
-                  vecKmerPath& pathsOut1, 
-                  vecKmerPath& pathsOut2, 
+                  vecKmerPath& pathsOut1,
+                  vecKmerPath& pathsOut2,
                   vecKmerPath& pathsOut3,
                   const int NUM_THREADS,
                   const String CHECKPOINT_HEAD)
 {
-  
+
   vec<const vecbvec*> readsIn;
   vec<vecKmerPath*> pathsOut;
 
@@ -221,25 +224,25 @@ void CommonPather(const int K,
     pathsOut.push_back(&pathsOut3);
   }
 
-  CommonPather(K, 
-               dirIn, 
-               readsIn, pathsOut, 
+  CommonPather(K,
+               dirIn,
+               readsIn, pathsOut,
                NUM_THREADS, CHECKPOINT_HEAD);
-   
+
 }
 
 void CommonPather(const int K,
                   const String & dirIn,
-                  const vecbvec& readsIn1, 
+                  const vecbvec& readsIn1,
                   const vecbvec& readsIn2,
-                  vecKmerPath& pathsOut1, 
+                  vecKmerPath& pathsOut1,
                   vecKmerPath& pathsOut2,
                   const int NUM_THREADS,
                   const String CHECKPOINT_HEAD)
 {
   vecbvec dummy1;
   vecKmerPath dummy2;
-  CommonPather(K, dirIn, 
+  CommonPather(K, dirIn,
                readsIn1, readsIn2, dummy1, pathsOut1, pathsOut2, dummy2,
-	       NUM_THREADS, CHECKPOINT_HEAD);
+               NUM_THREADS, CHECKPOINT_HEAD);
 }

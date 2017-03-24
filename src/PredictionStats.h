@@ -26,30 +26,38 @@ const bool ACTUAL_YES = true;
    which kmers are <genomic kmers> or which unipaths are <unique unipaths>).
 */
 class PredictionStats {
- public:
+public:
   PredictionStats(const String& propertyYes = "Yes", const String& propertyNo = "No"):
     propertyYes_(propertyYes), propertyNo_(propertyNo) {
     (*this)( PREDICTED_NO, ACTUAL_NO ) =
       (*this)( PREDICTED_NO, ACTUAL_YES ) =
-      (*this)( PREDICTED_YES, ACTUAL_NO ) =
-      (*this)( PREDICTED_YES, ACTUAL_YES ) = 0;
+        (*this)( PREDICTED_YES, ACTUAL_NO ) =
+          (*this)( PREDICTED_YES, ACTUAL_YES ) = 0;
   }
 
   const size_t& operator()(bool predicted, bool actual) const
-    { return counts_[bool2int(predicted)][bool2int(actual)]; }
+  {
+    return counts_[bool2int(predicted)][bool2int(actual)];
+  }
   size_t& operator() (bool predicted, bool actual)
-    { return counts_[bool2int(predicted)][bool2int(actual)]; }
+  {
+    return counts_[bool2int(predicted)][bool2int(actual)];
+  }
 
-  const String& PropertyYesName() const { return propertyYes_; }
-  const String& PropertyNoName() const { return propertyNo_; }
+  const String& PropertyYesName() const {
+    return propertyYes_;
+  }
+  const String& PropertyNoName() const {
+    return propertyNo_;
+  }
 
   void Reset( const String& propertyYes, const String& propertyNo ) {
     propertyYes_ = propertyYes;
     propertyNo_ = propertyNo;
     (*this)( PREDICTED_NO, ACTUAL_NO ) =
       (*this)( PREDICTED_NO, ACTUAL_YES ) =
-      (*this)( PREDICTED_YES, ACTUAL_NO ) =
-      (*this)( PREDICTED_YES, ACTUAL_YES ) = 0;
+        (*this)( PREDICTED_YES, ACTUAL_NO ) =
+          (*this)( PREDICTED_YES, ACTUAL_YES ) = 0;
   }
 
   void Print( ostream& s = cout ) const {
@@ -59,11 +67,13 @@ class PredictionStats {
     s << "   predicted " << propertyNo_ << " actual " << propertyNo_ << ": " << (*this)( PREDICTED_NO, ACTUAL_NO )  << endl;
   }
 
- private:
+private:
   size_t counts_[2][2];
   String propertyYes_, propertyNo_;
 
-  static inline int bool2int(bool b) { return b ? 1 : 0; }
+  static inline int bool2int(bool b) {
+    return b ? 1 : 0;
+  }
 };
 
 inline ostream& operator<< ( ostream& s, const PredictionStats& ps ) {

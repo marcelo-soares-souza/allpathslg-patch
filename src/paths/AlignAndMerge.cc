@@ -13,15 +13,15 @@
 // so I'm making them private to this file.
 
 void RecursiveAlignAndMergeLeft( const KmerPathLoc& loc1orig,
-				 const KmerPathLoc& loc2orig,
-				 vec<MergedKmerPath>& ans,
-				 const NegativeGapValidator* ngv = NULL );
+                                 const KmerPathLoc& loc2orig,
+                                 vec<MergedKmerPath>& ans,
+                                 const NegativeGapValidator* ngv = NULL );
 void RecursiveAlignAndMergeRight( const KmerPathLoc& loc1orig,
-				  const KmerPathLoc& loc2orig,
-				  vec<MergedKmerPath>& ans,
-				  const NegativeGapValidator* ngv = NULL );
+                                  const KmerPathLoc& loc2orig,
+                                  vec<MergedKmerPath>& ans,
+                                  const NegativeGapValidator* ngv = NULL );
 // return value: length of the longest perfect match to the left/right.
-// MergePaths uses this to implement min_perfect_match where the long 
+// MergePaths uses this to implement min_perfect_match where the long
 // match region doesn't need to contain the original anchor point
 
 
@@ -59,19 +59,19 @@ void RecursiveAlignAndMergeRight( const KmerPathLoc& loc1orig,
 // but the NGV is too late to stop them.  Note that now the original path
 // doesn't even align  to the post-NGV version of the merger!
 
-void MergePaths( const KmerPath& p1, const KmerPath& p2, 
-		 int ind1, int ind2, 
-		 vec<MergedKmerPath>& ans,
-		 int min_perfect_match, 
-		 const NegativeGapValidator* ngv,
-		 bool DEBUG_GAP_SIZES ) {
+void MergePaths( const KmerPath& p1, const KmerPath& p2,
+                 int ind1, int ind2,
+                 vec<MergedKmerPath>& ans,
+                 int min_perfect_match,
+                 const NegativeGapValidator* ngv,
+                 bool DEBUG_GAP_SIZES ) {
 
   Assert( min_perfect_match >= 1 );  // Anything 0 or negative is nonsense
 
   ans.clear();
 
   // The given intervals must be overlapping sequence.
-  if ( !p1.isSeq(ind1) || !p2.isSeq(ind2) 
+  if ( !p1.isSeq(ind1) || !p2.isSeq(ind2)
        || !p1.Segment(ind1).Overlaps(p2.Segment(ind2)) )
     return;  // bad anchor point
 
@@ -98,7 +98,7 @@ void MergePaths( const KmerPath& p1, const KmerPath& p2,
   if(  (left1.atBegin() || left2.atBegin()) &&
        (right1.atEnd() || right2.atEnd())  ) {
 
-    if( perfect_match_len < min_perfect_match ) 
+    if( perfect_match_len < min_perfect_match )
       return;
 
     ans.resize(1);  // now ans[0] holds an empty MergedKmerPath
@@ -144,7 +144,7 @@ void MergePaths( const KmerPath& p1, const KmerPath& p2,
   // Look left:
   RecursiveAlignAndMergeLeft( left1, left2, left_ans, ngv );
   // Don't take the time to search right if there were no left alignments:
-  if( left_ans.empty() ) 
+  if( left_ans.empty() )
     return;   // no left alignments
 
   // Look right:
@@ -161,11 +161,11 @@ void MergePaths( const KmerPath& p1, const KmerPath& p2,
     for(uint j=0; j<right_ans.size(); j++) {
 
       // Check that there's a long-enough perfect match:
-      max_match_len = max( perfect_match_len, 
-			   max( left_ans[i].longest_perfect_match,
-				right_ans[j].longest_perfect_match ) );
+      max_match_len = max( perfect_match_len,
+                           max( left_ans[i].longest_perfect_match,
+                                right_ans[j].longest_perfect_match ) );
       if( max_match_len < min_perfect_match )
-	continue;
+        continue;
 
       // left:
       ans.push_back( left_ans[i] );  // sets .path and .left_end
@@ -182,7 +182,7 @@ void MergePaths( const KmerPath& p1, const KmerPath& p2,
 
   if( DEBUG_GAP_SIZES )
     for( vec<MergedKmerPath>::iterator merger = ans.begin();
-	 merger != ans.end(); merger++ )
+         merger != ans.end(); merger++ )
       VerifyGapLengths(*merger, p1, p2);
 
 }
@@ -190,9 +190,9 @@ void MergePaths( const KmerPath& p1, const KmerPath& p2,
 
 
 void RecursiveAlignAndMergeLeft( const KmerPathLoc& loc1orig,
-				 const KmerPathLoc& loc2orig,
-				 vec<MergedKmerPath>& ans,
-				 const NegativeGapValidator* ngv ) {
+                                 const KmerPathLoc& loc2orig,
+                                 vec<MergedKmerPath>& ans,
+                                 const NegativeGapValidator* ngv ) {
 
   KmerPathLoc loc1=loc1orig, loc2=loc2orig;
   // Scan perfect match; return nothing if improper.
@@ -205,7 +205,7 @@ void RecursiveAlignAndMergeLeft( const KmerPathLoc& loc1orig,
   if ( loc1.atBegin() ) {
     ans.resize(1);
     loc2.GetPath().CopyHead( loc2orig, ans[0].path );
-    ans[0].left_end = 
+    ans[0].left_end =
       make_pair( loc2.GetIndex(), 0);
     ans[0].longest_perfect_match = match_len;
     return;
@@ -213,7 +213,7 @@ void RecursiveAlignAndMergeLeft( const KmerPathLoc& loc1orig,
   if ( loc2.atBegin() ) {
     ans.resize(1);
     loc1.GetPath().CopyHead( loc1orig, ans[0].path );
-    ans[0].left_end = 
+    ans[0].left_end =
       make_pair( 0, loc1.GetIndex() );
     ans[0].longest_perfect_match = match_len;
     return;
@@ -242,14 +242,14 @@ void RecursiveAlignAndMergeLeft( const KmerPathLoc& loc1orig,
       sub_answers.clear();
       RecursiveAlignAndMergeLeft( far->loc1, far->loc2, sub_answers, ngv );
       for( vec<MergedKmerPath>::iterator sub_ans = sub_answers.begin();
-	   sub_ans != sub_answers.end(); sub_ans++ ) {
-	// recursive answer + merged gap section + perfect match
-	ans.push_back( sub_ans->path );
-	ans.back().path.AppendNoFirstKmer( far->merged );
-	ans.back().path.Append( initial_perfect_match );
-	ans.back().left_end = sub_ans->left_end;
-	ans.back().longest_perfect_match = 
-	  max( match_len, sub_ans->longest_perfect_match );
+           sub_ans != sub_answers.end(); sub_ans++ ) {
+        // recursive answer + merged gap section + perfect match
+        ans.push_back( sub_ans->path );
+        ans.back().path.AppendNoFirstKmer( far->merged );
+        ans.back().path.Append( initial_perfect_match );
+        ans.back().left_end = sub_ans->left_end;
+        ans.back().longest_perfect_match =
+          max( match_len, sub_ans->longest_perfect_match );
       }
     }
   }
@@ -258,9 +258,9 @@ void RecursiveAlignAndMergeLeft( const KmerPathLoc& loc1orig,
 
 
 void RecursiveAlignAndMergeRight( const KmerPathLoc& loc1orig,
-				  const KmerPathLoc& loc2orig,
-				  vec<MergedKmerPath>& ans,
-				  const NegativeGapValidator* ngv ) {
+                                  const KmerPathLoc& loc2orig,
+                                  vec<MergedKmerPath>& ans,
+                                  const NegativeGapValidator* ngv ) {
 
   KmerPathLoc loc1=loc1orig, loc2=loc2orig;
   // Scan perfect match; return nothing if improper.
@@ -273,7 +273,7 @@ void RecursiveAlignAndMergeRight( const KmerPathLoc& loc1orig,
   if ( loc1.atEnd() ) {
     ans.resize(1);
     loc2.GetPath().CopyTail( loc2orig, ans[0].path );
-    ans[0].right_end = 
+    ans[0].right_end =
       make_pair( loc2.GetPath().NSegments()-1 - loc2.GetIndex(), 0);
     ans[0].longest_perfect_match = match_len;
     return;
@@ -281,7 +281,7 @@ void RecursiveAlignAndMergeRight( const KmerPathLoc& loc1orig,
   if ( loc2.atEnd() ) {
     ans.resize(1);
     loc1.GetPath().CopyTail( loc1orig, ans[0].path );
-    ans[0].right_end = 
+    ans[0].right_end =
       make_pair( 0, loc1.GetPath().NSegments()-1 - loc1.GetIndex() );
     ans[0].longest_perfect_match = match_len;
     return;
@@ -306,18 +306,18 @@ void RecursiveAlignAndMergeRight( const KmerPathLoc& loc1orig,
       ans.back().path.Append( far->merged );
       ans.back().right_end = make_pair(far->stop1, far->stop2);
       ans.back().longest_perfect_match = match_len;
-    } else {      
+    } else {
       sub_answers.clear();
       RecursiveAlignAndMergeRight( far->loc1, far->loc2, sub_answers, ngv );
       for( vec<MergedKmerPath>::iterator sub_ans = sub_answers.begin();
-	   sub_ans != sub_answers.end(); sub_ans++ ) {
-	// perfect match + merged gap section + recursive answer
-	ans.push_back( initial_perfect_match );
-	ans.back().path.Append( far->merged );
-	ans.back().path.AppendNoFirstKmer( sub_ans->path );
-	ans.back().right_end = sub_ans->right_end;
-	ans.back().longest_perfect_match = 
-	  max( match_len, sub_ans->longest_perfect_match );
+           sub_ans != sub_answers.end(); sub_ans++ ) {
+        // perfect match + merged gap section + recursive answer
+        ans.push_back( initial_perfect_match );
+        ans.back().path.Append( far->merged );
+        ans.back().path.AppendNoFirstKmer( sub_ans->path );
+        ans.back().right_end = sub_ans->right_end;
+        ans.back().longest_perfect_match =
+          max( match_len, sub_ans->longest_perfect_match );
       }
     }
   }

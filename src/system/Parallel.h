@@ -16,7 +16,7 @@
 // at once. If not null, use the pointer stream pOut to show progress.
 
 void RunCommandsInParallel( const vec<String>& commands,
-			    const int max_threads,
-			    ostream *pOut = NULL );
+                            const int max_threads,
+                            ostream *pOut = NULL );
 
 #endif

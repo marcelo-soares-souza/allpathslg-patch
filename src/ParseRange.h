@@ -17,8 +17,8 @@ T ConvertFromString(const String& value);
 
 template<typename T>
 bool ParseRange(const String range, T& lower, T& upper,
-		bool& lower_inc, bool& upper_inc,
-		bool& lower_open, bool& upper_open) {
+                bool& lower_inc, bool& upper_inc,
+                bool& lower_open, bool& upper_open) {
 
   // Need a range string at least 3 charactes long with a comma.
   if (range.empty())

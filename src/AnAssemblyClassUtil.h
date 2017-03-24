@@ -14,9 +14,9 @@ extern ostream *logp, *elogp;
 
 // Load all_aligns and fill all_aligns_index.
 void LoadAllAligns( const String &aligns_file,
-		    int n_reads,
-		    vec<brief_align> &all_aligns,
-		    vec<int> &all_aligns_index );
+                    int n_reads,
+                    vec<brief_align> &all_aligns,
+                    vec<int> &all_aligns_index );
 
 // Load vec of supers (ann_supers_file: annotated supercontigs).
 void LoadVecSupers( const String &ann_supers_file, vec<super> &supers );
@@ -56,18 +56,18 @@ Bool ReadsOverlap( const assembly& a, int m1, int m2, Bool RC );
 // are saved as a vec of pairs.
 
 int OverlapUpdate( vec< StdSet<int> > &no_overlap,
-     assembly& a, int m1, int m2, allpathslg::align & al, 
-     int kmer_size = 12, int min_mutmer = 0, Bool RC = False, int mode = 1,
-     int min_align = 100, int min_align_see = 30 );
+                   assembly& a, int m1, int m2, allpathslg::align & al,
+                   int kmer_size = 12, int min_mutmer = 0, Bool RC = False, int mode = 1,
+                   int min_align = 100, int min_align_see = 30 );
 
 // Overlap: return the apparent overlap between two mtigs (else -1).  The RC
 // is set, the second mtig is treated as reversed.  If require_read_evidence = True,
 // the code is faster but a bit less sensitive.
 
-int Overlap( const assembly& a, int m1, int m2, allpathslg::align & al, 
-     int kmer_size = 12, int min_mutmer = 0, Bool RC = False, int mode = 1,
-     int min_align = 100, int min_align_see = 30, 
-     Bool require_read_evidence = False );
+int Overlap( const assembly& a, int m1, int m2, allpathslg::align & al,
+             int kmer_size = 12, int min_mutmer = 0, Bool RC = False, int mode = 1,
+             int min_align = 100, int min_align_see = 30,
+             Bool require_read_evidence = False );
 
 // Reverse: reverse an mtig m.
 
@@ -88,14 +88,14 @@ void MergeMtigs( assembly& a, int m1, int m2, allpathslg::align & al );
 // new_tig_bases.
 
 void TryMergeMtigs( const assembly& a, int m1, int m2, const allpathslg::align & al,
-     vec<read_location>& new_tig, basevector& new_tig_bases );
+                    vec<read_location>& new_tig, basevector& new_tig_bases );
 
 // RecomputeGaps: recompute gaps between mtigs in a supercontig, in a
 // rather primitive way.  However, it is not so clear what the
 // "correct" way is.
 
 void RecomputeGaps( assembly& a, int supercontig_id, Bool reorder = True,
-     Bool verbose = True );
+                    Bool verbose = True );
 
 // RecomputeGaps: recompute gaps between mtigs in all supercontigs.
 
@@ -109,8 +109,8 @@ void PrintLinkAccuracy( assembly& a );
 
 // SpreadOverHoles: for a given supercontig, compute the spread over each
 // gap.  This is what you get by looking at all the links over the gap, and
-// on each side, looking at all the read ends.  Return the minimum of the span 
-// in bases of the read ends on the left side of the gap, and the span in bases of 
+// on each side, looking at all the read ends.  Return the minimum of the span
+// in bases of the read ends on the left side of the gap, and the span in bases of
 // the read ends on the right side of the gap.  When we compute these spans, we
 // don't count gaps between contigs.
 
@@ -133,7 +133,7 @@ bool IsContigFlimsy( assembly &A, int contig_id );
 bool IsSuperDegenerate( assembly &A, int super_id, int sc_info_min_length );
 
 void MergeMtigsHead( const basevector& b1, const basevector& b2,
-     const qualvector& q1, const qualvector& q2, const allpathslg::align & al,
-     basevector& c, qualvector& q, vec<int>& to1, vec<int>& to2 );
+                     const qualvector& q1, const qualvector& q2, const allpathslg::align & al,
+                     basevector& c, qualvector& q, vec<int>& to1, vec<int>& to2 );
 
 #endif

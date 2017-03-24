@@ -45,8 +45,8 @@ int main( int argc, char *argv[] )
   CommandArgument_String( RUN );
   CommandArgument_String_OrDefault( SUBDIR, "test" );
   CommandArgument_Int_OrDefault( K, 96 );
-  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0, 
-    "Number of threads to use (use all available processors if set to 0)");
+  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0,
+      "Number of threads to use (use all available processors if set to 0)");
   CommandArgument_String_OrDefault( UNIPATHS, "all_reads" );
   CommandArgument_String_OrDefault( ALIGNS_IN, "scaffold_reads" );
   CommandArgument_String_OrDefault( ALIGNS_OUT, "scaffold_reads_filtered" );
@@ -57,7 +57,7 @@ int main( int argc, char *argv[] )
   EndCommandArguments;
 
   // Thread control
-  
+
   NUM_THREADS = configNumThreads(NUM_THREADS);
 
   // Dir and file names.
@@ -70,7 +70,7 @@ int main( int argc, char *argv[] )
   String ploidy_file = run_dir + "/ploidy";
 
   String strK = "k" + ToString( K );
-  String uni_base = run_dir + "/" + UNIPATHS; 
+  String uni_base = run_dir + "/" + UNIPATHS;
   String copynum_file = uni_base + ".unipaths.predicted_count." + strK;
   String unibases_orig_file = uni_base + ".unibases." + strK;
 
@@ -86,7 +86,7 @@ int main( int argc, char *argv[] )
   String cgpaths_file = out_dir + "/contigs.paths";
   String cgpathsdb_full_file = cgpaths_file + "db." + strK;
   String cgpathsdb_big_full_file = cgpaths_file + "db_big." + strK;
-  
+
   Mkpath( out_dir );
 
   // Link original unibases into out_dir.
@@ -103,7 +103,7 @@ int main( int argc, char *argv[] )
     // Warning! ambiguous bases will be randomized.
     GenCharToRandomBaseMapper ran;
     vecbvec contigs;
-    contigs.reserve( fasta.size( ) ); 
+    contigs.reserve( fasta.size( ) );
     for (size_t ii=0; ii<fasta.size( ); ii++)
       contigs.push_back( bvec( fasta[ii].begin( ), fasta[ii].end( ), ran ) );
 
@@ -118,37 +118,37 @@ int main( int argc, char *argv[] )
     vec<String> fastb_in;
     fastb_in.push_back( contigs_file );
     fastb_in.push_back( unibases_file );
-    
+
     vec<String> paths_out;
     paths_out.push_back( cgpaths_file );
     paths_out.push_back( unipaths_file );
-    
+
     CommonPather( K, fastb_in, paths_out, NUM_THREADS );
   }
 
   // Run MakeRcDb (logging within).
-  if ( FORCE || ( ! IsRegularFile(cgpathsdb_full_file ) 
-      && ! IsRegularFile(cgpathsdb_big_full_file)) ) {
+  if ( FORCE || ( ! IsRegularFile(cgpathsdb_full_file )
+                  && ! IsRegularFile(cgpathsdb_big_full_file)) ) {
     String theCommand
       = "MakeRcDb K=" + ToString( K )
-      + " PRE=" + PRE
-      + " DATA=" + DATA
-      + " RUN=" + RUN
-      + " READS=" + out_reldir + "/contigs";
+        + " PRE=" + PRE
+        + " DATA=" + DATA
+        + " RUN=" + RUN
+        + " READS=" + out_reldir + "/contigs";
     RunCommand( theCommand );
   }
-  
+
   // Load.
   int ploidy = FirstLineOfFile( ploidy_file ).Int( );
-  
+
   cout << Date( ) << ": loading aligns" << endl;
   vec<alignlet> aligns;
   BinaryReader::readFile( aligns_file, &aligns );
-  
+
   cout << Date( ) << ": loading index" << endl;
   vec<int> index;
   BinaryReader::readFile( index_file, &index );
-  
+
   cout << Date( ) << ": loading copy numbers" << endl;
   VecPdfEntryVec copynum( copynum_file );
 
@@ -167,7 +167,7 @@ int main( int argc, char *argv[] )
 
   cout << Date( ) << ": loading unipaths" << endl;
   vecKmerPath unipaths( unipaths_file + "." + strK );
-  
+
   // Intervals of coverage on contigs (reserve memory).
   vec<seq_interval> cov;
   size_t n_segs = 0;
@@ -180,72 +180,72 @@ int main( int argc, char *argv[] )
   for (size_t unipath_id=0; unipath_id<unipaths.size( ); unipath_id++) {
     const KmerPath &uni = unipaths[unipath_id];
     int uni_klen = uni.TotalLength( );
-    
+
     // Copy number estimate for this unipath (naive: highest probability).
     int uni_cn = copynum[unipath_id][0].first;
     double uni_cnprob = copynum[unipath_id][0].second;
     for (size_t ii=1; ii<copynum[unipath_id].size( ); ii++) {
       if ( copynum[unipath_id][ii].second > uni_cnprob ) {
-	uni_cn = copynum[unipath_id][ii].first;
-	uni_cnprob = copynum[unipath_id][ii].second;	
+        uni_cn = copynum[unipath_id][ii].first;
+        uni_cnprob = copynum[unipath_id][ii].second;
       }
     }
-    
+
     // Loop over all segments in the unipath.
     for (int segment_id=0; segment_id<uni.NSegments( ); segment_id++) {
       vec<longlong> locs;
       if(big_db)
-	Contains( cgpathsdb_big, uni.Segment( segment_id ), locs );
+        Contains( cgpathsdb_big, uni.Segment( segment_id ), locs );
       else
-	Contains( cgpathsdb, uni.Segment( segment_id ), locs );
+        Contains( cgpathsdb, uni.Segment( segment_id ), locs );
       longlong seg_start = uni.Segment( segment_id ).Start( );
       longlong seg_len = uni.Segment( segment_id ).Length( );
-      
+
       // Loop over all placements for this segment.
       for (int ii=0; ii<locs.isize( ); ii++) {
-	// make it compatable with both tagged_rprint and big_tagged_rprint
-	//const tagged_rpint& t_rpint = cgpathsdb[locs[ii]];
-	if (big_db && cgpathsdb_big[locs[ii]].Rc( )) continue;
-	if (!big_db && cgpathsdb[locs[ii]].Rc( )) continue;
+        // make it compatable with both tagged_rprint and big_tagged_rprint
+        //const tagged_rpint& t_rpint = cgpathsdb[locs[ii]];
+        if (big_db && cgpathsdb_big[locs[ii]].Rc( )) continue;
+        if (!big_db && cgpathsdb[locs[ii]].Rc( )) continue;
 
-	int contig_id = big_db ? cgpathsdb_big[locs[ii]].ReadId( ): cgpathsdb[locs[ii]].ReadId( );
-	int contig_pos =big_db ? cgpathsdb_big[locs[ii]].PathPos(): cgpathsdb[locs[ii]].PathPos( );
-	longlong contig_len = cgpaths[contig_id].TotalLength( );
-	const KmerPathInterval &kpi = cgpaths[contig_id].Segment( contig_pos );
-	ForceAssert( kpi.Overlaps( uni.Segment( segment_id ) ) );
+        int contig_id = big_db ? cgpathsdb_big[locs[ii]].ReadId( ): cgpathsdb[locs[ii]].ReadId( );
+        int contig_pos =big_db ? cgpathsdb_big[locs[ii]].PathPos(): cgpathsdb[locs[ii]].PathPos( );
+        longlong contig_len = cgpaths[contig_id].TotalLength( );
+        const KmerPathInterval &kpi = cgpaths[contig_id].Segment( contig_pos );
+        ForceAssert( kpi.Overlaps( uni.Segment( segment_id ) ) );
 
-	longlong begin = Max( (longlong)0, seg_start - kpi.Start( ) );
-	for (int jj=0; jj<contig_pos; jj++)
-	  begin += cgpaths[contig_id].Segment( jj ).Length( );
-	longlong end = Min( begin + seg_len, contig_len );
-	
-	// Add info.
-	seq_interval si( uni_cn, contig_id, (int)begin, (int)end );
-	cov.push_back( si );
+        longlong begin = Max( (longlong)0, seg_start - kpi.Start( ) );
+        for (int jj=0; jj<contig_pos; jj++)
+          begin += cgpaths[contig_id].Segment( jj ).Length( );
+        longlong end = Min( begin + seg_len, contig_len );
+
+        // Add info.
+        seq_interval si( uni_cn, contig_id, (int)begin, (int)end );
+        cov.push_back( si );
       }
     }
   }
-  
+
   // Compactify cov (merge adjacent intervals with the same copy number).
   sort( cov.begin( ), cov.end( ) );
   {
     vec<seq_interval> new_cov;
     new_cov.reserve( cov.size( ) );
-    
+
     if ( cov.size( ) > 0 ) new_cov.push_back( cov[0] );
     for (size_t ii=1; ii<cov.size( ); ii++) {
       if ( new_cov.back( ).SeqId( ) != cov[ii].SeqId( ) ||
-	   new_cov.back( ).IntervalId( ) != cov[ii].IntervalId( ) ||
-	   new_cov.back( ).End( ) < cov[ii].Begin( ) ) {
-	new_cov.push_back( cov[ii] );
-	continue;
+           new_cov.back( ).IntervalId( ) != cov[ii].IntervalId( ) ||
+           new_cov.back( ).End( ) < cov[ii].Begin( ) ) {
+        new_cov.push_back( cov[ii] );
+        continue;
       }
       new_cov[new_cov.size( )-1].SetEnd( cov[ii].End( ) );
     }
-    
+
     swap( new_cov, cov );
   }
-  
+
   // Define bad regions: intervals on contig with coverage > ploidy.
   vec<seq_interval> bad;
   bad.reserve( cov.size( ) );
@@ -256,7 +256,7 @@ int main( int argc, char *argv[] )
   // Translate bad in base coordinates (from kmer coordinates).
   for (size_t ii=0; ii<bad.size( ); ii++)
     bad[ii].SetEnd( bad[ii].End( ) + K - 1 );
-  
+
   // Update index (tally totals).
   cout << Date( ) << ": resetting index of alignments" << endl;
   longlong n_aligned = 0;
@@ -265,25 +265,25 @@ int main( int argc, char *argv[] )
   for( size_t ii=0; ii<index.size( ); ii++) {
     if ( index[ii] < 0 ) continue;
     n_aligned++;
-    
+
     const alignlet &al = aligns[ index[ii] ];
     seq_interval si( 0, al.TargetId( ), al.pos2( ), al.Pos2( ) );
     it = lower_bound( bad.begin( ), bad.end( ), si );
     if ( it != bad.end( ) ) {
       double overlap = it->HasAmountOfOverlapWith( si );
       if ( overlap > double( al.Pos2( ) - al.pos2( ) ) * RATIO_TO_EXCLUDE ) {
-	index[ii] = -1;
-	n_reset++;
-	continue;
+        index[ii] = -1;
+        n_reset++;
+        continue;
       }
     }
     if ( it != bad.begin( ) ) {
       it--;
       double overlap = it->HasAmountOfOverlapWith( si );
       if ( overlap > double( al.Pos2( ) - al.pos2( ) ) * RATIO_TO_EXCLUDE ) {
-	index[ii] = -1;
-	n_reset++;
-	continue;
+        index[ii] = -1;
+        n_reset++;
+        continue;
       }
     }
   }
@@ -298,7 +298,7 @@ int main( int argc, char *argv[] )
   longlong total_cglen = 0;
   for (size_t ii=0; ii<cgpaths.size( ); ii++)
     total_cglen += cgpaths[ii].TotalLength( );
-  
+
   longlong total_badlen = 0;
   for (size_t ii=0; ii<bad.size( ); ii++)
     total_badlen += bad[ii].Length( );
@@ -314,10 +314,10 @@ int main( int argc, char *argv[] )
     double ratio = 100.0 * SafeQuotient( n_reset, n_aligned );
     str_ratio_al = ToString( ratio, 2 ) + "%";
   }
-  
+
   vec< vec<String> > table;
   vec<String> aline;
-  
+
   aline.push_back( "Total bases in input" );
   aline.push_back( ToString( total_cglen ) );
   table.push_back( aline );
@@ -327,7 +327,7 @@ int main( int argc, char *argv[] )
   aline.push_back( ToString( total_badlen ) );
   table.push_back( aline );
   aline.clear( );
-  
+
   aline.push_back( "Fraction of high copy number bases" );
   aline.push_back( str_ratio_cg );
   table.push_back( aline );
@@ -342,24 +342,24 @@ int main( int argc, char *argv[] )
   aline.push_back( ToString( n_aligned ) );
   table.push_back( aline );
   aline.clear( );
-  
+
   aline.push_back( "Aligns deleted" );
   aline.push_back( ToString( n_reset ) );
   table.push_back( aline );
   aline.clear( );
-  
+
   aline.push_back( "Fraction deleted" );
   aline.push_back( str_ratio_al );
   table.push_back( aline );
   aline.clear( );
-  
+
   cout << "\n";
   PrintTabular( cout, table, 3, "rl" );
   cout << "\n";
 
   // Done.
   cout << Date( ) << ": done" << endl;
-  
+
 }
 
 

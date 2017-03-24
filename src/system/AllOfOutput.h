@@ -21,11 +21,12 @@
 vec<String> AllOfOutput(String const& command);
 
 inline String AllOfOutput1(String const& command)
-{    String all;
-     vec<String> line = AllOfOutput(command);
-     for ( size_t i = 0; i < line.size( ); i++ )
-          all += line[i] + "\n";
-     return all;    }
+{ String all;
+  vec<String> line = AllOfOutput(command);
+  for ( size_t i = 0; i < line.size( ); i++ )
+    all += line[i] + "\n";
+  return all;
+}
 
 
 

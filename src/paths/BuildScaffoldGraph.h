@@ -31,7 +31,7 @@
  *    . there are at least two links in the bundle, and
  *    . score <= MAX_SCORE, and
  *    . either there are MIN_LINKS links, or the score is >= MIN_SCORE
- *       
+ *
  * 2. now look at all the bundles between a super s and another super
  *    s', and between s and the rc of s'. Sort all the bundles by
  *    weight, and look at the weight of the first bundle (w1) against
@@ -51,20 +51,20 @@
  * slop: argument to AllLinks( ) in class CSuperLink
  */
 void BuildScaffoldGraph( const PairsManager &pairs,
-			 const vec<superb> &supers,
-			 const vec<alignlet> &aligns,
-			 const vec<int> &index,
-			 digraphE<sepdev> &graph,
-			 digraphE<CLinkBundle> *bgraph = 0,
-			 vec< pair<int,int> > *black_list = 0,
-			 ostream *log = 0,
-			 float MAX_SCORE = 1.65,
-			 int MIN_LINKS = 4,
-			 float MIN_SCORE = 0.5,
-			 int RATIO_MIN_LINKS = 2,
-			 double RATIO_TO_SECOND = 6.0,
-			 int MAX_OVERLAP = 10000,
-			 int LOW_WEIGHT = 6,
-			 double slop = 3.5 );
+                         const vec<superb> &supers,
+                         const vec<alignlet> &aligns,
+                         const vec<int> &index,
+                         digraphE<sepdev> &graph,
+                         digraphE<CLinkBundle> *bgraph = 0,
+                         vec< pair<int,int> > *black_list = 0,
+                         ostream *log = 0,
+                         float MAX_SCORE = 1.65,
+                         int MIN_LINKS = 4,
+                         float MIN_SCORE = 0.5,
+                         int RATIO_MIN_LINKS = 2,
+                         double RATIO_TO_SECOND = 6.0,
+                         int MAX_OVERLAP = 10000,
+                         int LOW_WEIGHT = 6,
+                         double slop = 3.5 );
 
 #endif

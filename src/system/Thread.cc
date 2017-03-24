@@ -19,16 +19,16 @@
 
 int getTid()
 {
-    return syscall(SYS_gettid);
+  return syscall(SYS_gettid);
 }
 
 bool isMainThread()
 {
-    static int gPid = getpid();
-    return getTid()==gPid;
+  static int gPid = getpid();
+  return getTid()==gPid;
 }
 
 bool inParallelSection()
 {
-    return !isMainThread() || omp_in_parallel();
+  return !isMainThread() || omp_in_parallel();
 }

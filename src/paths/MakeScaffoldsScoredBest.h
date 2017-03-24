@@ -37,14 +37,14 @@
  * VERBOSE: log verbosity
  */
 void MakeScaffoldsScoredBest( const PairsManager &pairs,
-			      vec<fastavector> &contigs,
-			      vec<superb> &supers,
-			      vec<alignlet> &aligns,
-			      vec<int> &index,
-			      ostream &out,
-			      int *MIN_LINKS = 0,
-			      int *MIN_SEP = 0,
-			      bool SUCK_SCAFFOLDS = true,
-			      bool VERBOSE = false );
+                              vec<fastavector> &contigs,
+                              vec<superb> &supers,
+                              vec<alignlet> &aligns,
+                              vec<int> &index,
+                              ostream &out,
+                              int *MIN_LINKS = 0,
+                              int *MIN_SEP = 0,
+                              bool SUCK_SCAFFOLDS = true,
+                              bool VERBOSE = false );
 
 #endif

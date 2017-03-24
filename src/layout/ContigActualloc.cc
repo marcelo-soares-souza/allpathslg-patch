@@ -10,7 +10,7 @@
 #include "layout/ContigActualloc.h"
 
 ostream& operator<<( ostream &o, const contig_actualloc &a ) {
-  o << a.Weight() << " " 
+  o << a.Weight() << " "
     << a.Start()  << " "
     << BoolToInt( a.rc_ );
   return o;
@@ -45,8 +45,8 @@ ostream& operator<<( ostream &o, const arachne_contig &a ) {
   ctg_actloc_itr end  = a.actuallocs_.end();
 
   for ( ;
-	curr != end;
-	++curr )
+        curr != end;
+        ++curr )
     o << *curr << endl;
 
   return o;
@@ -57,14 +57,14 @@ istream& operator>>( istream &in, arachne_contig &a ) {
      >> a.length_
      >> a.sc_id_
      >> a.sc_pos_;
-  
+
   int len;
   in >> len;
   Assert( len >= 0 );
 
   for ( int i = 0;
-	i < len;
-	++i ) {
+        i < len;
+        ++i ) {
     contig_actualloc cactl;
     in >> cactl;
     a.actuallocs_.insert( cactl );
@@ -74,15 +74,15 @@ istream& operator>>( istream &in, arachne_contig &a ) {
 }
 
 void contig_actualloc::Print( ostream &o ) const {
-  o << "<weight: " << weight_ 
-    << "; start,dir: " << start_ 
-    << "." << (int)rc_ 
+  o << "<weight: " << weight_
+    << "; start,dir: " << start_
+    << "." << (int)rc_
     << ">";
 }
 
 
 void arachne_contig::Print( ostream &o ) const {
-  o << "ID: " << id_ << "; SC = " << sc_id_ << ":" << sc_pos_ 
+  o << "ID: " << id_ << "; SC = " << sc_id_ << ":" << sc_pos_
     << "; l = " << length_
     << "; actlocs: { ";
 

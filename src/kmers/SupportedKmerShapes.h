@@ -26,7 +26,7 @@
    >   M(KSHAPE, arg); \
    to the definition of one of the FOR_ALL_KSHAPES_[A-I] macros below,
    where KSHAPE is the shape you want to add.
-   
+
    Please use the following macro invocations in place of KSHAPE.  These macros are defined
    in <KmerShape.h>.
 
@@ -136,7 +136,7 @@
 
 /**
    Macro: FOR_ALL_K
-   
+
    Call the specified macro for each kmer length that we support.
 */
 #define FOR_ALL_K(M, arg) \
@@ -189,7 +189,7 @@
 
 /**
    Macro: FOR_ALL_K_PLUS_1
-   
+
    Call the specified macro for each kmer+1 length that we support.
 */
 #define FOR_ALL_K_PLUS_1(M, arg) \
@@ -201,7 +201,7 @@
 
 /**
    Macro: FOR_ALL_K_WITH_K_PLUS_1
-   
+
    Call the specified macro for each kmer length that we support a
    kmer+1 length too.
 */
@@ -232,11 +232,11 @@
    M(KmerShapeMidGapType(20, 1), arg)
 
 #define FOR_ALL_KSHAPES_D(M, arg) \
-   NO_KSHAPES(D) 
+   NO_KSHAPES(D)
 
 /**
    Macro: FOR_ALL_K
-   
+
    Call the specified macro for each kmer length that we support.
 */
 #define FOR_ALL_K(M, arg) \
@@ -245,11 +245,11 @@
    M(16, arg); \
    M(20, arg); \
    M(21, arg); \
-   M(24, arg) 
+   M(24, arg)
 
 /**
    Macro: FOR_ALL_K_PLUS_1
-   
+
    Call the specified macro for each kmer+1 length that we support.
 */
 #define FOR_ALL_K_PLUS_1(M, arg) \
@@ -257,7 +257,7 @@
 
 /**
    Macro: FOR_ALL_K_WITH_K_PLUS_1
-   
+
    Call the specified macro for each kmer length that we support a
    kmer+1 length too.
 */

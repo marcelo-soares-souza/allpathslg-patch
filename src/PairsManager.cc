@@ -40,7 +40,7 @@ void writeLibraryStats( ostream & out, const vec<PM_LibraryStats> & stats)
     }
   }
   rows.push_back( row1, row2 );
-  
+
   // For each library, make a line of info.
   for ( size_t i = 0; i < stats.size(); i++ ) {
     vec<String> row;
@@ -48,20 +48,20 @@ void writeLibraryStats( ostream & out, const vec<PM_LibraryStats> & stats)
       row.push_back( stats[i].name, "-", "-", "-" );
     else
       row.push_back( stats[i].name,
-		     ToString(i),
-		     ToString( stats[i].sep ),
-		     ToString( stats[i].sd ) );
+                     ToString(i),
+                     ToString( stats[i].sep ),
+                     ToString( stats[i].sd ) );
     if (stats[0].n_reads != 0) {
       row.push_back( ToString( stats[i].n_reads ) );
       if (stats[0].n_bases != 0)
-	row.push_back( ToString(stats[i].n_bases),
-		       ToString(stats[i].min_len),
-		       ToString(stats[i].max_len),
-		       ToString(stats[i].mean_len) );
+        row.push_back( ToString(stats[i].n_bases),
+                       ToString(stats[i].min_len),
+                       ToString(stats[i].max_len),
+                       ToString(stats[i].mean_len) );
     }
     rows.push_back(row);
   }
-  
+
   // Convert the lines into a chart.
   PrintTabular( out, rows, 2, "lrrr" );
   out << endl;
@@ -73,7 +73,7 @@ void writeLibraryStats( ostream & out, const vec<PM_LibraryStats> & stats)
 // Write a PairsManager to a file. Wrapper around writeBinary method.
 // By convention, these files usually have the extension '.pairs'.
 void PairsManager::Write( const String & pairs_file ) const {
-    BinaryWriter::writeFile(pairs_file.c_str(),*this);
+  BinaryWriter::writeFile(pairs_file.c_str(),*this);
 }
 
 
@@ -129,7 +129,7 @@ void PairsManager::readBinary( BinaryReader& reader ) {
   // Sanity checks
   ForceAssertLe(_n_pairs * 2, _n_reads);
   ForceAssertEq(_ID1.size(), _ID2.size());
-  
+
   clearCache( );
 }
 
@@ -166,19 +166,19 @@ void PairsManager::ReadFromPairtoFile( const String & pairto_file, const longlon
 {
   _n_reads = n_reads;
   _n_pairs = 0; // this is brought up later by calls to addPair( )
-  
+
   if ( !IsRegularFile( pairto_file ) )
     FatalErr( "PairsManager: Can't find file: " << pairto_file );
-  
+
   fast_ifstream in( pairto_file );
-  
+
   // Read the first line of the pairto file to determine the number of pairs.
   String line;
   getline( in, line );
   longlong n_pairs_expected = line.Int( );
   ForceAssertGe( _n_pairs, 0 );
   ForceAssertLe( _n_pairs, _n_reads / 2 );
-  
+
   // Clear and reserve space for pairs
   _ID1.clear();
   _ID2.clear();
@@ -186,25 +186,25 @@ void PairsManager::ReadFromPairtoFile( const String & pairto_file, const longlon
   _ID1.reserve( _n_pairs );
   _ID2.reserve( _n_pairs );
   _lib_IDs.reserve( _n_pairs );
-  
+
   // Read the remaining lines of the pairto file to get the data for each pair.
   // If the number of lines (after the first one) is unequal to n_pairs_expected
   // there will be a failed assert.
   vec<String> tokens;
   for ( longlong i = 0; i < n_pairs_expected; i++ ) {
     getline( in, line );
-    
+
     // Each line in the pairto file has 6 tokens, each with a specific meaning.
     // Get these tokens and create the pair.
     Tokenize( line, tokens );
     ForceAssertEq( tokens.size( ), 6u );
     addPair( tokens[0].Int( ), tokens[2].Int( ), tokens[1].Int( ), tokens[3].Int( ) );
   }
-  
+
   // Verify that the file has no more lines (after a final newline.)
   getline( in, line );
   ForceAssert( in.fail( ) );
-  
+
   clearCache( );
 }
 
@@ -217,19 +217,19 @@ bool operator==( const PairsManager & pm1, const PairsManager& pm2 )
   // the smaller data structures, then the larger data structures.
   if ( pm1._n_reads != pm1._n_reads ) return false;
   if ( pm1._n_pairs != pm1._n_pairs ) return false;
-  
+
   if ( pm1.nLibraries() != pm2.nLibraries() ) return false;
   for ( size_t i = 0; i < pm1.nLibraries(); i++ )
     if ( pm1._libs[i] != pm2._libs[i] ) return false;
-  
+
   if ( pm1._lib_IDs != pm2._lib_IDs ) return false;
   if ( pm1._ID1 != pm2._ID1 ) return false;
   if ( pm1._ID2 != pm2._ID2 ) return false;
-  
+
   return true;
 }
 
-  
+
 
 // Write nicely formatted library information to an output stream.
 void
@@ -266,7 +266,7 @@ PairsManager::PairsManager( const PairsManager & pm1, const PairsManager & pm2 )
   _ID2 = pm1._ID2;
   _lib_IDs = pm1._lib_IDs;
   _libs = pm1._libs;
-  
+
   // Now append the second input PairsManager.
   Append( pm2 );
 }
@@ -281,13 +281,13 @@ void PairsManager::Append( const PairsManager & pm )
   longlong _n_reads_orig = _n_reads;
   _n_reads += pm._n_reads;
   for ( longlong i = 0; i < pm._n_pairs; i++ ) {
-    
+
     // Add an offset to the read IDs from pm2.
     longlong ID1 = pm.ID1( i ) + _n_reads_orig;
     longlong ID2 = pm.ID2( i ) + _n_reads_orig;
     int sep = pm.sep( i );
     int sd  = pm.sd ( i );
-    
+
     // For all libraries in pm but not already in this PairsManager,
     // supply the correct library name.
     String lib_name = pm.libraryName( i );
@@ -309,9 +309,9 @@ void PairsManager::clear()
 
 // Append a read pair to the list.  May require the creation of a new library.
 void PairsManager::addPair( const longlong ID1, const longlong ID2,
-			    const int sep, const int sd,
-			    const String & lib_name,
-			    const bool grow_read_count)
+                            const int sep, const int sd,
+                            const String & lib_name,
+                            const bool grow_read_count)
 {
   // Check the validity of the read IDs.  Note that we do NOT verify that these
   // IDs have not already been assigned to other pairs.
@@ -325,39 +325,39 @@ void PairsManager::addPair( const longlong ID1, const longlong ID2,
   }
   _ID1.push_back( ID1 );
   _ID2.push_back( ID2 );
-  
+
   // From the pair's separation and standard deviation, deduce the library ID.
   int lib_ID = -1;
   if (lib_name != "") {
     lib_ID = libraryID( lib_name );
     if (lib_ID != -1) // existing library (verify sep and sd are same)
-      if ( _libs[lib_ID]._sep !=  sep || _libs[lib_ID]._sd !=  sd ) 
-	FatalErr("Inconsistent sep/sd values for this library: " + lib_name);
+      if ( _libs[lib_ID]._sep !=  sep || _libs[lib_ID]._sd !=  sd )
+        FatalErr("Inconsistent sep/sd values for this library: " + lib_name);
   } else {
     lib_ID = libraryID( sep, sd );
   }
-  
+
   // Create a new library if necessary (i.e., if no read with this sep/stdev
   // has already been seen.)  Use a default-generated library name.
   if ( lib_ID == -1 ) {
     lib_ID = _libs.size();
     PM_Library new_lib( this, sep, sd, lib_name );
     _libs.push_back( new_lib );
-    
+
     ForceAssertLe( _libs.size(), numeric_limits<unsigned char>::max() );
   }
   _lib_IDs.push_back( lib_ID );
-  
+
   _n_pairs++;
   ForceAssertLe( _n_pairs * 2, _n_reads );
-  
+
   clearCache( );
 }
 
 // Append a read pair to the list using existing library.
 void PairsManager::addPairToLib( const longlong ID1, const longlong ID2,
-		   const size_t lib_ID,
-		   const bool grow_read_count ) {
+                                 const size_t lib_ID,
+                                 const bool grow_read_count ) {
 
   // Check the validity of the read IDs.  Note that we do NOT verify that these
   // IDs have not already been assigned to other pairs.
@@ -371,16 +371,16 @@ void PairsManager::addPairToLib( const longlong ID1, const longlong ID2,
   }
   _ID1.push_back( ID1 );
   _ID2.push_back( ID2 );
-  
+
   // Check validity of the library
   ForceAssertLt( lib_ID, _libs.size() );
 
   _lib_IDs.push_back( lib_ID );
-  
+
   _n_pairs++;
 
   ForceAssertLe( _n_pairs * 2, _n_reads );
-  
+
   clearCache( );
 }
 
@@ -389,7 +389,7 @@ int PairsManager::addLibrary( const int & sep, const int & sd, const String& nam
   // Create a new library
   PM_Library new_lib( this, sep, sd, name );
   _libs.push_back( new_lib );
-  
+
   ForceAssertLe( _libs.size(), numeric_limits<unsigned char>::max() );
 
   return _libs.size() - 1;  // return the new library ID
@@ -401,7 +401,7 @@ int PairsManager::addLibrary( const int & sep, const int & sd, const String& nam
 void PairsManager::removePairs( const vec<Bool> & to_remove )
 {
   ForceAssertEq( (longlong) to_remove.size(), _n_pairs );
-  
+
   EraseIf( _ID1,     to_remove );
   EraseIf( _ID2,     to_remove );
   EraseIf( _lib_IDs, to_remove );
@@ -419,7 +419,7 @@ void PairsManager::removePairs( const vec<Bool> & to_remove )
 void PairsManager::removeReads( const vec<Bool> & reads_to_remove, const bool & allow_severance )
 {
   ForceAssertEq( (longlong) reads_to_remove.size(), _n_reads );
-  
+
   // Create a mapping of old -> new read IDs.
   // Reads to be removed are mapped onto -1.
   vec<int64_t> ID_map( _n_reads, -1 );
@@ -428,31 +428,31 @@ void PairsManager::removeReads( const vec<Bool> & reads_to_remove, const bool & 
     if ( reads_to_remove[i] ) continue;
     ID_map[i] = read_ID++;
   }
-  
+
   // Reduce the number of reads.
   _n_reads = read_ID;
-  
-  
+
+
   // Re-number the reads within their pairings.
   vec<Bool> pairs_to_remove( _n_pairs, False );
   for ( int64_t i = 0; i < _n_pairs; i++ ) {
     _ID1[i] = ID_map[ _ID1[i] ];
     _ID2[i] = ID_map[ _ID2[i] ];
-    
+
     // If either of these reads are being removed, we must remove the pair.
     bool remove1 = ( _ID1[i] == -1 );
     bool remove2 = ( _ID2[i] == -1 );
-    
+
     if ( remove1 || remove2 ) {
       pairs_to_remove[i] = True;
-      
+
       // If !allow_severance, and if only one of the reads in this pair is being
       // removed, then we complain.
       if ( !allow_severance && (!remove1 || !remove2) )
-	FatalErr( "PairsManager::removeReads called with allow_severance = false, but a pair was severed." );
+        FatalErr( "PairsManager::removeReads called with allow_severance = false, but a pair was severed." );
     }
   }
-  
+
   // Remove all the pairs whose reads have been removed.
   removePairs( pairs_to_remove );
   clearCache();
@@ -520,7 +520,7 @@ int PairsManager::libraryID( const String & lib_name ) const
 {
   for ( size_t i = 0; i < nLibraries(); i++ )
     if ( _libs[i]._name == lib_name ) return i;
-  
+
   return -1; // -1 means "not found"
 }
 
@@ -546,11 +546,11 @@ PairsManager::getLibrarySizes( ) const
   vec<size_t> count( nLibraries(), 0 );
   for ( longlong i = 0; i < _n_pairs; i++ )
     count[ _lib_IDs[i] ]++;
-  
+
   return count;
 }
 
-vec<PM_LibraryStats> 
+vec<PM_LibraryStats>
 PairsManager::getLibraryStats( const String bases_filename ) const
 {
   vec<PM_LibraryStats> stats( nLibraries() + 1 ); // store unpaired info in last entry
@@ -566,7 +566,7 @@ PairsManager::getLibraryStats( const String bases_filename ) const
   if (bases_filename == "") {
     for ( longlong i = 0; i < _n_pairs; i++ )
       stats[_lib_IDs[i]].n_reads += 2;
-      stats[stats.size() - 1].n_reads = _n_reads - (_n_pairs * 2);
+    stats[stats.size() - 1].n_reads = _n_reads - (_n_pairs * 2);
   } else {
 
     // Use VirtualMasterVec to avoid loading in vecbasevector
@@ -576,27 +576,27 @@ PairsManager::getLibraryStats( const String bases_filename ) const
     // compute read stats for each library
     size_t read_no = 0;
     for (VVecBVec::const_iterator basesItr = bases.begin();
-	 basesItr != bases.end(); basesItr++) {
+         basesItr != bases.end(); basesItr++) {
       longlong pairId = getPairID(read_no);
       int lib_no = (pairId != -1 ? libraryID(pairId) : nLibraries()); // store unpaired info in last entry
       uint32_t read_len= basesItr->size( );
       if (stats[lib_no].n_reads == 0) {
-	stats[lib_no].min_len = stats[lib_no].max_len = stats[lib_no].n_bases = read_len;
+        stats[lib_no].min_len = stats[lib_no].max_len = stats[lib_no].n_bases = read_len;
       } else {
-	if (read_len < stats[lib_no].min_len) stats[lib_no].min_len = read_len;
-	if (read_len > stats[lib_no].max_len) stats[lib_no].max_len = read_len;
-	stats[lib_no].n_bases += read_len;
+        if (read_len < stats[lib_no].min_len) stats[lib_no].min_len = read_len;
+        if (read_len > stats[lib_no].max_len) stats[lib_no].max_len = read_len;
+        stats[lib_no].n_bases += read_len;
       }
       stats[lib_no].n_reads++;
       read_no++;
     }
- 
+
     // Compute additional library stats
     for ( size_t i = 0; i < stats.size(); i++ ) {
       stats[i].mean_len = (stats[i].n_reads == 0 ? 0 : stats[i].n_bases / stats[i].n_reads);
     }
   }
-  
+
   if  (_n_reads ==  _n_pairs * 2) // No unpaired reads
     stats.resize(stats.size() - 1);
 
@@ -607,21 +607,21 @@ bool PairsManager::isInterleaved( ) const
 {
   if (_n_pairs * 2 != _n_reads)  // no unpaired reads allowed
     return false;
-  for ( int i = 0; i < _n_pairs; i++ ) { 
+  for ( int i = 0; i < _n_pairs; i++ ) {
     longlong first = _ID1[i];
     longlong second = _ID2[i];
-    if ((first % 2 != 0 ) && (second - first != 1))  
+    if ((first % 2 != 0 ) && (second - first != 1))
       return false;
   }
   return true;
 }
 
-  
+
 // Convert these pairs into a vec<read_pairing> for use in legacy code.
 vec<read_pairing> PairsManager::convert_to_read_pairings( ) const
 {
   vec<read_pairing> pairings( _n_pairs );
-  
+
   for ( int i = 0; i < _n_pairs; i++ ) {
     pairings[i].id1 = _ID1[i];
     pairings[i].id2 = _ID2[i];
@@ -631,7 +631,7 @@ vec<read_pairing> PairsManager::convert_to_read_pairings( ) const
     pairings[i].t = other;
     pairings[i].weight = 1;
   }
-  
+
   return pairings;
 }
 
@@ -642,7 +642,7 @@ void PairsManager::makePairsIndexCache( ) const
 {
   if ( !_pairs_index.empty( ) ) return; // cache is already created
   _pairs_index.resize( _n_reads, -1 );
-  
+
   for ( longlong i = 0; i < _n_pairs; i++ ) {
     // Verify that no read appears in multiple pairings.  (Note that we do
     // not generally make this check!)
@@ -660,7 +660,7 @@ void PairsManager::makePartnersIndexCache( ) const
 {
   if ( !_partners_index.empty( ) ) return; // cache is already created
   _partners_index.resize( _n_reads, -1 );
-  
+
   for ( longlong i = 0; i < _n_pairs; i++ ) {
     // Verify that no read appears in multiple pairings.  (Note that we do
     // not generally make this check!)
@@ -685,7 +685,7 @@ PM_Library::PM_Library( const PairsManager * pm, const int sep, const int sd, co
     _sd ( sd )
 {
   ForceAssert( pm != NULL );
-  
+
   if ( name != "" ) _name = name;
   else {
     // Default name is based on library ID, sep, and sd.
@@ -703,7 +703,7 @@ bool operator==( const PM_Library & lib1, const PM_Library& lib2 ) {
   if ( lib1._sd   != lib2._sd   ) return false;
   return true;
 }
-  
+
 bool operator!=( const PM_Library & lib1, const PM_Library& lib2 ) {
   return !( lib1 == lib2 );
 }
@@ -712,8 +712,8 @@ bool operator!=( const PM_Library & lib1, const PM_Library& lib2 ) {
 // Read only the library information from a PairsManager file.
 // Faster than loading the entire object.
 void ReadPairsManagerLibInfo( const String & pairs_file, longlong & nreads,
-			      vec<String> & lib_names,
-			      vec<int> & lib_sep, vec<int> & lib_sd ) {
+                              vec<String> & lib_names,
+                              vec<int> & lib_sep, vec<int> & lib_sd ) {
   if ( !IsRegularFile( pairs_file ) )
     FatalErr( "ERROR: GetPairsManagerLibraryStats failed - can't find file " << pairs_file );
   BinaryReader reader(pairs_file.c_str());

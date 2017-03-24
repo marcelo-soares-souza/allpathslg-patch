@@ -19,12 +19,12 @@
 //    table << "Marvin" << Tab << 1 << EndRow;
 //    table << DoubleLine ;
 //    table.Print( std::cout, 5, "r" );
-// output: 
+// output:
 //    =========================
 //      Name     Age     Weight
 //    +++++++++++++++++++++++++
-//     Jason     3       25.3  
-//    Marvin     1  
+//     Jason     3       25.3
+//    Marvin     1
 //    =========================
 #ifndef UTIL_TEXT_TABLE_H
 #define UTIL_TEXT_TABLE_H
@@ -35,76 +35,103 @@
 
 class TextTable {
 public:
-    // == Special types to draw line and manipulate tables ==
-    // A row filled with same char to draw lines
-    struct CharLineT { char c; };               
-    // Table manipulator
-    typedef TextTable& (*TableMan) ( TextTable& ); 
+  // == Special types to draw line and manipulate tables ==
+  // A row filled with same char to draw lines
+  struct CharLineT {
+    char c;
+  };
+  // Table manipulator
+  typedef TextTable& (*TableMan) ( TextTable& );
 
-    // Default constructor
-    TextTable() { raw_line = false; };
+  // Default constructor
+  TextTable() {
+    raw_line = false;
+  };
 
-    // == Basic table operations ==
-    template< typename T >
-    TextTable& operator<< ( const T& t ) 
-    {   os << t; return *this;  }
+  // == Basic table operations ==
+  template< typename T >
+  TextTable& operator<< ( const T& t )
+  {
+    os << t;
+    return *this;
+  }
 
-    TextTable& operator<< ( const CharLineT& t ) 
-    {   AddCharLine(t.c) ; return *this; }
+  TextTable& operator<< ( const CharLineT& t )
+  {
+    AddCharLine(t.c) ;
+    return *this;
+  }
 
-    TextTable& operator<< ( const TableMan& f ) 
-    {   f(*this); return *this; }
+  TextTable& operator<< ( const TableMan& f )
+  {
+    f(*this);
+    return *this;
+  }
 
-    TextTable& AddColumn ()     
-    {   line.push_back( os.str() ); os.str(""); return *this;   }
+  TextTable& AddColumn ()
+  {
+    line.push_back( os.str() );
+    os.str("");
+    return *this;
+  }
 
-    TextTable& AddRow ()        
-    {   AddColumn(); lines.push_back( make_pair( line, raw_line ? '\0': ' ' ) ); 
-        line.clear(); raw_line = false; return *this; }
+  TextTable& AddRow ()
+  { AddColumn();
+    lines.push_back( make_pair( line, raw_line ? '\0': ' ' ) );
+    line.clear();
+    raw_line = false;
+    return *this;
+  }
 
-    TextTable& SetRawLine ()        
-    {   raw_line = true; return *this; }
+  TextTable& SetRawLine ()
+  {
+    raw_line = true;
+    return *this;
+  }
 
-    TextTable& AddCharLine (char c) 
-    {   lines.push_back( make_pair( std::vector<std::string>(), c ) ); return *this; }
+  TextTable& AddCharLine (char c)
+  {
+    lines.push_back( make_pair( std::vector<std::string>(), c ) );
+    return *this;
+  }
 
-    // Get the vec<vec<String> > copy for external prettyfier
-    vec<vec<String> > GetTable() const; 
+  // Get the vec<vec<String> > copy for external prettyfier
+  vec<vec<String> > GetTable() const;
 
-    void Print( ostream& out, int padding= 1, const string& alignments="", const bool ragged_right = false );
+  void Print( ostream& out, int padding= 1, const string& alignments="", const bool ragged_right = false );
 
-    // Sort -- sort lines by column (zero-based), with a numeric or lexicographical sort, and optionally
-    // skip some number of leading lines (e.g. for a header)
-    void Sort( size_t column, bool numeric = false, size_t header_skip_size = 0);
+  // Sort -- sort lines by column (zero-based), with a numeric or lexicographical sort, and optionally
+  // skip some number of leading lines (e.g. for a header)
+  void Sort( size_t column, bool numeric = false, size_t header_skip_size = 0);
 
 private:
-    // diable copy and assign constructors
-    TextTable(const TextTable&);
-    TextTable& operator= (const TextTable&);
+  // diable copy and assign constructors
+  TextTable(const TextTable&);
+  TextTable& operator= (const TextTable&);
 
-    enum RowType { Normal, Line, DoubleLine };
-    vec< pair< std::vector<std::string>, char > > lines;
-    std::ostringstream os;
-    std::vector<std::string> line;
-    bool raw_line;
+  enum RowType { Normal, Line, DoubleLine };
+  vec< pair< std::vector<std::string>, char > > lines;
+  std::ostringstream os;
+  std::vector<std::string> line;
+  bool raw_line;
 };
 
-// Table manipulators 
+// Table manipulators
 template< typename TableT >
-TableT& Tab( TableT& tb ) { 
-    return tb.AddColumn();
+TableT& Tab( TableT& tb ) {
+  return tb.AddColumn();
 }
 
 template< typename TableT >
-TableT& EndRow( TableT& tb ) { 
-    return tb.AddRow();
+TableT& EndRow( TableT& tb ) {
+  return tb.AddRow();
 }
 
 // Horizontal lines
 
 inline TextTable::CharLineT CharLine( char c ) {
-    TextTable::CharLineT line = { c };
-    return line;
+  TextTable::CharLineT line = { c };
+  return line;
 }
 
 static const TextTable::CharLineT SingleLine = {'-'};

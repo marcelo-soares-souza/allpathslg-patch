@@ -20,16 +20,19 @@
 class NullOStream : private std::streambuf, public std::ostream
 {
 public:
-    NullOStream() : std::ostream(this) {}
+  NullOStream() : std::ostream(this) {}
 
-    // compiler-supplied copying and destructor are OK
+  // compiler-supplied copying and destructor are OK
 
 protected:
-    virtual int overflow( int c )
-    { setp(mBuf,mBuf+sizeof(mBuf)); return 0; }
+  virtual int overflow( int c )
+  {
+    setp(mBuf,mBuf+sizeof(mBuf));
+    return 0;
+  }
 
 private:
-    char mBuf[1024];
+  char mBuf[1024];
 };
 
 #endif /* NULLOSTREAM_H_ */

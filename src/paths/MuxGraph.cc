@@ -9,14 +9,14 @@
 
 // Functions to translate pathIds to nodeIds and back.
 
-OrientedKmerPathId  PathIdFromNodeId( int nodeId ) 
+OrientedKmerPathId  PathIdFromNodeId( int nodeId )
 {
-  return OrientedKmerPathId( nodeId/2, nodeId&1 ); 
+  return OrientedKmerPathId( nodeId/2, nodeId&1 );
 }
-  
+
 int  NodeIdFromPathId( const OrientedKmerPathId& pathId )
 {
-  return pathId.GetId()*2 + pathId.IsRc(); 
+  return pathId.GetId()*2 + pathId.IsRc();
 }
 
 
@@ -28,7 +28,7 @@ MuxGraph::size() const
 
 
 // Accomodate the forward and reverse versions of numReads paths.
-void 
+void
 MuxGraph::resize( const int numReads )
 {
   m_singleEdgeNodes.resize( 2*numReads, Mux( OrientedKmerPathId(), s_empty, 0 ) );
@@ -61,10 +61,10 @@ MuxGraph::GetMuxesOf( const OrientedKmerPathId& pathId, vec<Mux>& muxes ) const
   }
 }
 
-int 
+int
 MuxGraph::NumMuxesOf( const OrientedKmerPathId& pathId ) const
 {
-  
+
   const int nodeId = NodeIdFromPathId( pathId );
   const Mux& aMux = m_singleEdgeNodes[ nodeId ];
 
@@ -78,11 +78,11 @@ void
 MuxGraph::SetMuxOf( const OrientedKmerPathId& pathId, const Mux& newMux )
 {
   Assert( ! IsSpecial( newMux ) );
-  
+
   m_singleEdgeNodes[ NodeIdFromPathId( pathId ) ] = newMux;
 }
 
-void 
+void
 MuxGraph::SetMuxesOf( const OrientedKmerPathId& pathId, const vec<Mux>& newMuxes )
 {
   // No effort is made to remove entries from the multiEdgeNodes table
@@ -138,7 +138,7 @@ bool
 MuxGraph::FilesExist( const String& filename ) const
 {
   return( IsRegularFile( filename + ".single" ) &&
-	  IsRegularFile( filename + ".multi" ) );
+          IsRegularFile( filename + ".multi" ) );
 }
 
 
@@ -172,15 +172,15 @@ MuxGraph::VerifySameAs( const MuxGraph& other ) const
       return false;
     }
   }
-  
+
   return true;
 }
 
 
-void PrintNode( ostream& out, const OrientedKmerPathId& okpid, 
+void PrintNode( ostream& out, const OrientedKmerPathId& okpid,
                 set<OrientedKmerPathId>& seen, const int partition ) {
   if ( ! seen.count( okpid ) ) {
-    out << "  " << NodeIdFromPathId( okpid ) 
+    out << "  " << NodeIdFromPathId( okpid )
         << " ["
         << "label=\"" << okpid << "\"";
     if ( okpid.GetId() < partition )
@@ -189,17 +189,17 @@ void PrintNode( ostream& out, const OrientedKmerPathId& okpid,
     seen.insert( okpid );
   }
 }
-  
+
 
 void
-MuxGraph::PrintDot( const String& filename, const int partition ) const 
+MuxGraph::PrintDot( const String& filename, const int partition ) const
 {
   ofstream out( filename.c_str() );
 
   out << "digraph MuxGraph {" << "\n";
   out << "  rankdir=LR;" << "\n";
   out << "  edge [dir=back];" << "\n";
-  
+
   set<OrientedKmerPathId> seen;
 
   vec<Mux> muxes;
@@ -212,12 +212,12 @@ MuxGraph::PrintDot( const String& filename, const int partition ) const
       for ( int m = 0; m < muxes.isize(); ++m ) {
         OrientedKmerPathId muxOkpid( muxes[m].GetPathId() );
         PrintNode( out, muxOkpid, seen, partition );
-        out << "  " << NodeIdFromPathId( muxOkpid ) 
+        out << "  " << NodeIdFromPathId( muxOkpid )
             << " -> " << NodeIdFromPathId( thisOkpid )
             << " [label=\"" << muxes[m].GetNumKmers() << "\"];" << "\n";
       }
     }
   }
-  
+
   out << "}" << "\n";
 }

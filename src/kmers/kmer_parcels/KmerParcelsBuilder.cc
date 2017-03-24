@@ -11,15 +11,17 @@
 #include "system/WorklistN.h"
 
 
-inline String Tag(String S = "KPs") { return Date() + " (" + S + "): "; } 
+inline String Tag(String S = "KPs") {
+  return Date() + " (" + S + "): ";
+}
 
 
 
 void PrintValueAndPercentage(ostream & out, const String & s, const size_t val, const double total)
 {
-  out << s 
-      << setw(12) << val 
-      << " " << setw(5) << fixed << setprecision(1) << (100.0 * val) / total << "%" 
+  out << s
+      << setw(12) << val
+      << " " << setw(5) << fixed << setprecision(1) << (100.0 * val) / total << "%"
       << endl;
 }
 
@@ -49,17 +51,18 @@ void PrintValueAndPercentage(ostream & out, const String & s, const size_t val, 
  */
 
 const char key_digit_table[] =
-  { 6, 0, 1, 4,
-    2, 7, 4, 1,
-    3, 5, 7, 0,
-    5, 3, 2, 6 };
+{ 6, 0, 1, 4,
+  2, 7, 4, 1,
+  3, 5, 7, 0,
+  5, 3, 2, 6
+};
 
 
-// ---- Computes a number in [0,7] from the bases at 
+// ---- Computes a number in [0,7] from the bases at
 //      positions 'base_ID' and 'base_ID' + 'K' - 1
-//      of the BaseVec 'bv'. 
-inline 
-size_t ComputeOctalKeyFromBaseVec(const BaseVec & bv, 
+//      of the BaseVec 'bv'.
+inline
+size_t ComputeOctalKeyFromBaseVec(const BaseVec & bv,
                                   const size_t base_ID,
                                   const size_t K)
 {
@@ -67,9 +70,9 @@ size_t ComputeOctalKeyFromBaseVec(const BaseVec & bv,
 }
 
 
-// ---- Conputes the parcel_ID of the 'K'-mer of BaseVec 'bv' 
-//      at position 'base_ID'. 
-inline 
+// ---- Conputes the parcel_ID of the 'K'-mer of BaseVec 'bv'
+//      at position 'base_ID'.
+inline
 size_t ComputeParcelIDFromBaseVec(const BaseVec & bv,
                                   const size_t base_ID,
                                   const size_t K,
@@ -81,25 +84,25 @@ size_t ComputeParcelIDFromBaseVec(const BaseVec & bv,
     return (key * n_parcels) >> 3;   // ... / 8
   }
   else if (n_parcels <= 64) {
-    const size_t key = ((ComputeOctalKeyFromBaseVec(bv, base_ID    , K    ) << 3) + 
+    const size_t key = ((ComputeOctalKeyFromBaseVec(bv, base_ID, K    ) << 3) +
                         (ComputeOctalKeyFromBaseVec(bv, base_ID + 1, K - 2)     ));
     return (key * n_parcels) >> 6;   // ... / 64
   }
   else if (n_parcels <= 512) {
-    const size_t key = ((ComputeOctalKeyFromBaseVec(bv, base_ID    , K    ) << 6) + 
+    const size_t key = ((ComputeOctalKeyFromBaseVec(bv, base_ID, K    ) << 6) +
                         (ComputeOctalKeyFromBaseVec(bv, base_ID + 1, K - 2) << 3) +
                         (ComputeOctalKeyFromBaseVec(bv, base_ID + 2, K - 4)     ));
     return (key * n_parcels) >> 9;   // ... / 512
   }
   else if (n_parcels <= 4096) {
-    const size_t key = ((ComputeOctalKeyFromBaseVec(bv, base_ID    , K    ) << 9) + 
+    const size_t key = ((ComputeOctalKeyFromBaseVec(bv, base_ID, K    ) << 9) +
                         (ComputeOctalKeyFromBaseVec(bv, base_ID + 1, K - 2) << 6) +
                         (ComputeOctalKeyFromBaseVec(bv, base_ID + 2, K - 4) << 3) +
                         (ComputeOctalKeyFromBaseVec(bv, base_ID + 3, K - 6)     ));
     return (key * n_parcels) >> 12;  // ... / 4096
   }
   else if (n_parcels <= 32768) {
-    const size_t key = ((ComputeOctalKeyFromBaseVec(bv, base_ID    , K    ) << 12) + 
+    const size_t key = ((ComputeOctalKeyFromBaseVec(bv, base_ID, K    ) << 12) +
                         (ComputeOctalKeyFromBaseVec(bv, base_ID + 1, K - 2) <<  9) +
                         (ComputeOctalKeyFromBaseVec(bv, base_ID + 2, K - 4) <<  6) +
                         (ComputeOctalKeyFromBaseVec(bv, base_ID + 3, K - 6) <<  3) +
@@ -109,7 +112,7 @@ size_t ComputeParcelIDFromBaseVec(const BaseVec & bv,
   else {
     cout << "**** n_parcels = " << n_parcels << " > 32768!" << endl;
     cout << "     Expand ComputeParcelIDFromBaseVec(...) in kmers/kmer_parcels/KmerParcelsBuilder.cc"
-      " to accomodate more parcels." << endl; 
+         " to accomodate more parcels." << endl;
   }
   ForceAssertLe(n_parcels, 32768ul);
   return 0;
@@ -121,55 +124,55 @@ size_t ComputeParcelIDFromBaseVec(const BaseVec & bv,
 // ---------------------------------------------
 
 
-// several threads might add to this class independently while 
+// several threads might add to this class independently while
 // processing a block of reads
 template<size_t K>
 void KmerParcel<K>::PushKmerRecords(const vec< KmerRecord<K> > & buf)
 {
   Locker lock(*this);   // mutex protecting this block
-  (*this).insert((*this).end(), 
-                 buf.begin(), 
+  (*this).insert((*this).end(),
+                 buf.begin(),
                  buf.end());
 }
-  
+
 
 
 // ---- sort (*this) vector so that repeated kmers end up next to each other
-//      ribeiro: Note: 
+//      ribeiro: Note:
 //      ribeiro:   first sorts over read_IDs and then over SIGNED pos
 //      ribeiro:   meaning that, for the same read_ID, we get all the RCs kmers before the FWs
-//      ribeiro:   DO WE NEED IT LIKE THIS? I DON'T KNOW/REMEMBER.  
+//      ribeiro:   DO WE NEED IT LIKE THIS? I DON'T KNOW/REMEMBER.
 template<size_t K>
 void KmerParcel<K>::SortKmerParcel()
 {
   _timer_sort.Start();
-  sort((*this).begin(), (*this).end(), KmerRecord<K>::KmerReadIDSignedPosLT); 
+  sort((*this).begin(), (*this).end(), KmerRecord<K>::KmerReadIDSignedPosLT);
   _timer_sort.Stop();
 }
 
 
 
 template<size_t K>
-void KmerParcel<K>::WriteSortedKmerParcel(const size_t thread_ID, 
-                                          const size_t parcel_ID, 
-                                          KmerParcelsStore & parcels_store,
-                                          KmerFrequencyStatistics & stats)
+void KmerParcel<K>::WriteSortedKmerParcel(const size_t thread_ID,
+    const size_t parcel_ID,
+    KmerParcelsStore & parcels_store,
+    KmerFrequencyStatistics & stats)
 {
   String tag = "WSKP " + ToString(parcel_ID);
 
   // ---- collect all kmer locations, sort them, and write them to disk as a batch
   _timer_write.Start();
-  
+
   // ---- get a writer for this parcel_ID
   KmerParcelWriter parcel_writer(parcels_store, parcel_ID);
-  
+
 
   size_t n_batches = 0;
 
   vec<const KmerLoc *> kmer_locs_p;
 
   typedef typename vec< KmerRecord<K> >::const_iterator KmerRecordIter;
-  for (KmerRecordIter it0 = (*this).begin(); 
+  for (KmerRecordIter it0 = (*this).begin();
        it0 != (*this).end(); it0 += kmer_locs_p.size()) {
     kmer_locs_p.clear();
 
@@ -187,7 +190,7 @@ void KmerParcel<K>::WriteSortedKmerParcel(const size_t thread_ID,
 
     // ---- update kmer freqeuncy stats
     stats.Update(kmer_locs_p, thread_ID, it0->GetKmerNumGC());
-      
+
     n_batches++;
   }
 
@@ -197,18 +200,18 @@ void KmerParcel<K>::WriteSortedKmerParcel(const size_t thread_ID,
   double t_write = _timer_write.GetTimer();
 
   double t_all = t_sort + t_write;
-  
-  parcels_store.Log(Tag(tag) + 
-		    "n_batches= "  + ToString(n_batches)  + 
-		    " timers(sec): " + 
-		    "sort= "  + ToString(t_sort, 1)  + 
-		    " " + ToString(100*t_sort/t_all, 1)  + "% " + 
-		    "write= " + ToString(t_write, 1) + 
-		    " " + ToString(100*t_write/t_all, 1) + "%");
-  
-  
+
+  parcels_store.Log(Tag(tag) +
+                    "n_batches= "  + ToString(n_batches)  +
+                    " timers(sec): " +
+                    "sort= "  + ToString(t_sort, 1)  +
+                    " " + ToString(100*t_sort/t_all, 1)  + "% " +
+                    "write= " + ToString(t_write, 1) +
+                    " " + ToString(100*t_write/t_all, 1) + "%");
+
+
   // ---- no longer need the parcel; "Destroy" it. (clear() alone doesn't release the memory)
-  Destroy(*this);  
+  Destroy(*this);
   Destroy(kmer_locs_p);
 
 
@@ -249,7 +252,7 @@ void KmerParcelVec<K>::Init(const size_t parcel0_ID,
                             const size_t n_parcels,
                             const size_t n_blocks)
 {
-  //cout << "Init: " 
+  //cout << "Init: "
   //     << "parcel0_ID = " << parcel0_ID << " "
   //     << "parcel1_ID = " << parcel1_ID << " "
   //     << endl;
@@ -261,10 +264,10 @@ void KmerParcelVec<K>::Init(const size_t parcel0_ID,
 
   _n_sub_parcels = parcel1_ID - parcel0_ID;
   (*this).resize(_n_sub_parcels);
-    
+
   _n_sub_parcels_started = 0;
   _n_sub_parcels_done = 0;
-    
+
   _n_blocks_started = 0;
   _n_blocks_done = 0;
 
@@ -273,18 +276,18 @@ void KmerParcelVec<K>::Init(const size_t parcel0_ID,
 
 template<size_t K>
 void KmerParcelVec<K>::ParseReadKmersForParcelIDs(const BaseVecVec & bases,
-                                                  const vec<size_t> & read1_IDs,
-                                                  const size_t block_ID) 
+    const vec<size_t> & read1_IDs,
+    const size_t block_ID)
 {
   const size_t n_reads = bases.size();
-  
+
   BaseVec kmer;
-    
+
 
   // this block only looks at a read subset
   const size_t read0_ID = (block_ID == 0) ? 0 : read1_IDs[block_ID - 1];
   const size_t read1_ID = read1_IDs[block_ID];
-  
+
   vec< vec< KmerRecord<K> > > parcel_bufs(_n_sub_parcels);
 
 
@@ -303,33 +306,33 @@ void KmerParcelVec<K>::ParseReadKmersForParcelIDs(const BaseVecVec & bases,
     if (current_read.size() >= K) {
 
       const size_t n_kmers = current_read.size() - K + 1;
-        
+
       for (size_t base_ID = 0; base_ID < n_kmers; base_ID++) {
-          
-        // ribeiro: optimization opportunity: iain suggested not calculating 
+
+        // ribeiro: optimization opportunity: iain suggested not calculating
         // the parcel_ID all the time.
         // It is enough to calculate a few bits of the parcel_ID to know if
         // the kmer belongs in the parcel or not; if it does, then we can
-        // compute the remain bits.  
+        // compute the remain bits.
         const size_t parcel_ID = ComputeParcelIDFromBaseVec(current_read, base_ID, K, _n_parcels);
-          
+
         if (parcel_ID >= _parcel0_ID && parcel_ID < _parcel1_ID) {
-            
+
           size_t sub_parcel_ID = parcel_ID - _parcel0_ID;
-            
+
           // All kmers are canonicalized currently, just to be sure.
-          // ribeiro: There is a small optimization opportunity here, since, when 
+          // ribeiro: There is a small optimization opportunity here, since, when
           // computing the parcel_IDs, we get a clue of which kmers are canonical,
           // which ones are not, and which ones are undetermined.
           // However, it's not clear that this would improve performance significantly.
-            
+
           const bool RC = (kmer.SetToSubOf(current_read, base_ID, K).Canonicalize() == CanonicalForm::REV);
-            
+
           vec< KmerRecord<K> > & parcel_buf = parcel_bufs[sub_parcel_ID];
-            
+
           // add kmer record to buffer
           parcel_buf.push_back(KmerRecord<K>(kmer, read_ID, base_ID, RC));
-        
+
         }
       }
     }
@@ -352,11 +355,11 @@ bool KmerParcelVec<K>::WaitingForBlocks()
 }
 
 
-    
+
 
 template<size_t K>
 bool KmerParcelVec<K>::RunNextTask(const size_t thread_ID,
-                                   const BaseVecVec & bases, 
+                                   const BaseVecVec & bases,
                                    const vec<size_t> & read1_IDs,
                                    KmerParcelsStore & parcels_store,
                                    KmerFrequencyStatistics & stats)
@@ -366,13 +369,13 @@ bool KmerParcelVec<K>::RunNextTask(const size_t thread_ID,
   bool run_parcel = false;
   size_t parcel_ID = 0;
   size_t sub_parcel_ID = 0;
-  
+
   // 1st run blocks; all blocks must complete before starting sub_parcels
   // 2nd run sub parcels
-  
+
   if (true) {
     Locker lock(*this);
-    
+
     if (_n_blocks_done != _n_blocks) {
 
       if (_n_blocks_started != _n_blocks) {
@@ -383,7 +386,7 @@ bool KmerParcelVec<K>::RunNextTask(const size_t thread_ID,
       }
 
     }
-    else { 
+    else {
 
       if (_n_sub_parcels_started != _n_sub_parcels) {
 
@@ -395,44 +398,44 @@ bool KmerParcelVec<K>::RunNextTask(const size_t thread_ID,
     }
 
   } // data gets unlocked here.
- 
+
 
 
 
   if (run_block) {
-    //cout << Tag("RunNextTask") 
+    //cout << Tag("RunNextTask")
     //     << "running block " << block_ID << " "
     //     << "parcel01_IDs = " << _parcel0_ID << " " << _parcel1_ID << " "
     //     << endl;
-    // parse a block of reads for kmers 
+    // parse a block of reads for kmers
     ParseReadKmersForParcelIDs(bases, read1_IDs, block_ID);
-    //cout << Tag("RunNextTask") 
+    //cout << Tag("RunNextTask")
     //     << "done with block " << block_ID << " "
     //     << "parcel01_IDs = " << _parcel0_ID << " " << _parcel1_ID << " "
     //     << endl;
-      
+
     Locker lock(*this);
     _n_blocks_done++;
-     
+
     return true;
-  } 
-    
+  }
+
 
 
 
   if (run_parcel) {
-    //cout << Tag("RunNextTask") 
+    //cout << Tag("RunNextTask")
     //     << "sorting parcel " << parcel_ID << " "
-    //     << "parcel01_IDs = " << _parcel0_ID << " " << _parcel1_ID << " " 
+    //     << "parcel01_IDs = " << _parcel0_ID << " " << _parcel1_ID << " "
     //     << endl;
     (*this)[sub_parcel_ID].SortKmerParcel();
     (*this)[sub_parcel_ID].WriteSortedKmerParcel(thread_ID,
-                                                 parcel_ID, 
-                                                 parcels_store,
-                                                 stats);
-    //cout << Tag("RunNextTask") 
+        parcel_ID,
+        parcels_store,
+        stats);
+    //cout << Tag("RunNextTask")
     //     << "done with parcel " << parcel_ID << " "
-    //     << "parcel01_IDs = " << _parcel0_ID << " " << _parcel1_ID << " " 
+    //     << "parcel01_IDs = " << _parcel0_ID << " " << _parcel1_ID << " "
     //    << endl;
     Locker lock(*this);
     _n_sub_parcels_done++;
@@ -442,7 +445,7 @@ bool KmerParcelVec<K>::RunNextTask(const size_t thread_ID,
 
 
   // nothing was done
-  // either all parcels have already started 
+  // either all parcels have already started
   // or all blocks have started but haven't finished yet
   return false;
 }
@@ -472,20 +475,20 @@ KmerParcelVecVec<K>::KmerParcelVecVec(const size_t n_parcels,
                                       const size_t n_threads)
 {
   size_t n_parcel_sets = (n_parcels + n_threads - 1) / n_threads;
-  
+
   //cout << "n_sets = " << n_parcel_sets <<endl;
   //cout << "n_parcels = " << n_parcels << endl;
   //cout << "n_threads = " << n_threads << endl;
-  
+
   (*this).resize(n_parcel_sets);
   for (size_t set_ID = 0; set_ID != n_parcel_sets; ++set_ID) {
-    
+
     size_t parcel0_ID = set_ID * n_threads;
     size_t parcel1_ID = Min(parcel0_ID + n_threads, n_parcels);
-    
-    (*this)[set_ID].Init(parcel0_ID, 
-                         parcel1_ID, 
-                         n_parcels, 
+
+    (*this)[set_ID].Init(parcel0_ID,
+                         parcel1_ID,
+                         n_parcels,
                          n_threads);
   }
 
@@ -498,14 +501,14 @@ KmerParcelVecVec<K>::KmerParcelVecVec(const size_t n_parcels,
 
 template<size_t K>
 void KmerParcelVecVec<K>::RunTasks(const size_t thread_ID,
-                                   const BaseVecVec & bases, 
+                                   const BaseVecVec & bases,
                                    const vec<size_t> & read1_IDs,
                                    KmerParcelsStore & parcels_store,
                                    KmerFrequencyStatistics & stats)
-                
+
 {
   bool done = false;
-    
+
   while (!done) {
 
     bool ran_something = false;
@@ -514,7 +517,7 @@ void KmerParcelVecVec<K>::RunTasks(const size_t thread_ID,
     size_t set_ID = 0;
     do {
       ran = it->RunNextTask(thread_ID,
-                            bases, 
+                            bases,
                             read1_IDs,
                             parcels_store,
                             stats);
@@ -522,12 +525,12 @@ void KmerParcelVecVec<K>::RunTasks(const size_t thread_ID,
       //     << "thread_ID = " << thread_ID << " "
       //     << "set_ID = " << set_ID << " "
       //     << "ran = " << ran << endl;
-        
+
       set_ID ++;
       it++;
-        
+
     } while (!ran && it != this->end());
-      
+
     if (!ran) {
       if (this->rbegin()->WaitingForBlocks()) sleep(5);
       else done = true;
@@ -566,20 +569,20 @@ void KmerParcelsBuilder::BuildTemplate()
   //cout <<  "parcel_vec_vec<K>(" << _n_parcels << ", " << _n_threads << ")" << endl;
 
   KmerParcelVecVec<K> parcel_vec_vec(_n_parcels, _n_threads);
-  
+
   ParcelProcessor<K> parcel_proc(_bases,
                                  _read1_IDs,
                                  &parcel_vec_vec,
                                  _parcels_store,
                                  _stats);
-  
+
   if ( _n_threads <= 1 )
   {
-      parcel_proc(0);
+    parcel_proc(0);
   }
   else
   {
-      parallelFor(0ul,_n_threads,parcel_proc,_n_threads);
+    parallelFor(0ul,_n_threads,parcel_proc,_n_threads);
   }
 }
 
@@ -598,14 +601,14 @@ size_t KmerParcelsBuilder::EstimateTotalMemory()
 {
 
   size_t n_bytes_kmer_record;
-# define __SIZE(__K) n_bytes_kmer_record = sizeof(KmerRecord<__K>); 
+# define __SIZE(__K) n_bytes_kmer_record = sizeof(KmerRecord<__K>);
   DISPATCH_ON_K( _K, __SIZE );
 
-  size_t n_bytes = _n_kmers_total * n_bytes_kmer_record; 
+  size_t n_bytes = _n_kmers_total * n_bytes_kmer_record;
   if (_verbose) {
     cout << Tag("EKPMB") << "n_reads = " << _bases.size() << endl;
     cout << Tag("EKPMB") << "n_kmers = " << _n_kmers_total << endl;
-    cout << Tag("EKPMB") << "total memory = " 
+    cout << Tag("EKPMB") << "total memory = "
          << static_cast<float>(n_bytes) / 1.0e9 << " GB" << endl;
   }
   return n_bytes;
@@ -618,15 +621,15 @@ size_t KmerParcelsBuilder::EstimateTotalMemory()
 void KmerParcelsBuilder::ComputeNumParcels()
 {
   const size_t n_bytes = EstimateTotalMemory();
- 
+
   // ---- minimum number of passes to process all kmers in parallel
   // the 2x factor below is necessary because, in the new (2010-03)
   // parallel scheme, data for up to 2 passes are stored in memory
-  const size_t n_passes = (2 * n_bytes + _n_bytes_max - 1) / _n_bytes_max; 
-  
-  
+  const size_t n_passes = (2 * n_bytes + _n_bytes_max - 1) / _n_bytes_max;
+
+
   _n_parcels = _n_threads * n_passes;
-  
+
 
   if (_verbose) {
     cout << Tag("KPB:CNKP") << "ComputeNumKmerParcels()" << endl;
@@ -644,10 +647,10 @@ void KmerParcelsBuilder::ComputeNumParcels()
     // K = 4,5 => np_max =  64 = 1 << 6
     // K = 6,7 => np_max = 512 = 1 << 9
     size_t n_parcels_max = 1ul << (3 * (_K >> 1));
-    ForceAssertLe(_n_parcels, n_parcels_max);  
+    ForceAssertLe(_n_parcels, n_parcels_max);
   }
 }
- 
+
 
 
 
@@ -674,7 +677,7 @@ void  KmerParcelsBuilder::ComputeRead1IDs()
 
     while (read_ID != n_reads && n_kmers < n_kmers_cum) {
       const size_t n_bases = _bases[read_ID++].size();
-      if (n_bases >= _K) 
+      if (n_bases >= _K)
         n_kmers += n_bases - _K + 1;
     }
     _read1_IDs[block_ID] = read_ID;
@@ -683,7 +686,7 @@ void  KmerParcelsBuilder::ComputeRead1IDs()
   /*
   cout << "n_blocks = " << _read1_IDs.size() << endl;
   for (size_t block_ID = 0; block_ID < _n_threads; block_ID++) {
-    cout << "read1_IDs[" << block_ID << "] = " << _read1_IDs[block_ID] 
+    cout << "read1_IDs[" << block_ID << "] = " << _read1_IDs[block_ID]
          << " (" << (_read1_IDs[block_ID] - ((block_ID == 0) ? 0 : _read1_IDs[block_ID - 1])) << ")"
          << endl;
   }
@@ -705,7 +708,7 @@ void KmerParcelsBuilder::Build(const size_t n_parcels)
 
   _n_parcels = n_parcels;
 
-  if (_n_parcels == 0) 
+  if (_n_parcels == 0)
     ComputeNumParcels();
 
   if (_verbose) {
@@ -716,57 +719,57 @@ void KmerParcelsBuilder::Build(const size_t n_parcels)
     cout << Tag("KPB:B") << "GREPABLE: num_parcels = " << _n_parcels << endl;
     cout << Tag("KPB:B") << "n_threads = " << _n_threads << endl;
   }
-  
+
   if (_n_parcels == 0) {
     if (_verbose)
       cout << Tag("KPB:B") << "n_parcels = 0, nothing to do." << endl;
   }
   else {
-  
-    if (_parcels_store.GetNumParcels() != 0) 
+
+    if (_parcels_store.GetNumParcels() != 0)
       cout << Tag("KPB:B") << "WARNING: parcels already exist! We are about to remake them!!!" << endl;
-    
-    
+
+
     ComputeRead1IDs();
-  
+
 
     // ribeiro: Templatized in K solely because of KmerRecord<K>.
     // ribeiro: sorting a vec< KmerRecord<K> > is 2 to 3 times faster than
     // ribeiro: sorting a vec< pair<BaseVec, KmerLoc> >
 
-  
+
     _parcels_store.SetNumParcels(_n_parcels);
     _parcels_store.Open();
-  
+
 # define __BKT(__K) BuildTemplate<__K>()
 
     DISPATCH_ON_K( _K, __BKT );
-  
+
     _parcels_store.Close();
-  
+
 
 
 
 
 
     // ---- collecting kmer frequency stats
-  
+
     String dir_name = _parcels_store.GetDirectoryName();
-  
+
     if (_verbose)
       cout << Tag("KPB:B") << "collecting reads min and max kmer frequency data" << endl;
-  
+
     if (_verbose || dir_name != "") {
       MapOfCounters reads_min_kmer_freq_count(_stats.reads_min_kmer_freq);
       MapOfCounters reads_max_kmer_freq_count(_stats.reads_max_kmer_freq);
-    
+
       /*
       if (dir_name != "") {
         reads_min_kmer_freq_count.Write(dir_name + "/reads_min_kmer_freq.count.dat");
         reads_max_kmer_freq_count.Write(dir_name + "/reads_max_kmer_freq.count.dat");
       }
       */
-    
+
       if (_verbose) {
         PrintValueAndPercentage(cout, Tag("KPB:B") + "GREPABLE: num_reads_min_kmer_freq_1 = ",
                                 reads_min_kmer_freq_count[1], n_reads);
@@ -778,8 +781,8 @@ void KmerParcelsBuilder::Build(const size_t n_parcels)
                                 reads_max_kmer_freq_count[2], n_reads);
       }
     }
-  
-  
+
+
     if (_verbose) {
       cout << Tag("KPB:B") << "collecting kmer frequency data" << endl;
       size_t n_distinct_kmers = _stats.AllKmerFrequencyCounters().Total();
@@ -790,21 +793,21 @@ void KmerParcelsBuilder::Build(const size_t n_parcels)
       PrintValueAndPercentage(cout, Tag("KPB:B") + "GREPABLE: num_distinct_kmers_freq_2 = ",
                               _stats.AllKmerFrequencyCounters()[2], n_distinct_kmers);
     }
-  
+
     /*
     if (dir_name != "") {
       _stats.AllKmerFrequencyCounters().Write(dir_name + "/kmer_frequencies.count.dat");
       const vec<KmerFrequencyCounters> & gc_kfc = _stats.AllKmerGCFrequencyCounters();
-      
+
       if (_write_gc_stats) {
         const size_t n = gc_kfc.size();
         for (size_t i = 0; i != n; i++) {
           gc_kfc[i].Write(dir_name + "/kmer_frequencies.count.gc=" + ToString(i) + ".dat");
-        } 
+        }
       }
     }
     */
-  
+
     if (_verbose)
       cout << Tag("KPB:B") << "end" << endl;
 

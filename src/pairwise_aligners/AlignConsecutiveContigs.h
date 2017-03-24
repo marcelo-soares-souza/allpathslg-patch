@@ -28,12 +28,12 @@
  * MAX_ERROR_RATE: do not accept aligns with too many errors
  */
 bool AlignConsecutiveContigs( const int super_id,
-			      const int cgpos,
-			      vecbvec &contigs,
-			      vec<superb> &supers,
-			      ostream *log = 0,
-			      float MAX_ERROR_RATE = 0.2 );
-  
+                              const int cgpos,
+                              vecbvec &contigs,
+                              vec<superb> &supers,
+                              ostream *log = 0,
+                              float MAX_ERROR_RATE = 0.2 );
+
 /**
  * CompactifyContigs
  *
@@ -42,6 +42,6 @@ bool AlignConsecutiveContigs( const int super_id,
  * (longest first), and contigs (sequentially).
  */
 void CompactifyContigs( vecbvec &contigs,
-			vec<superb> &supers );
+                        vec<superb> &supers );
 
 #endif

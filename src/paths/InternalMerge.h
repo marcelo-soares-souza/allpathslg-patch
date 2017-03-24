@@ -18,8 +18,8 @@
 // InternalMerge: glue internal aligning parts of a HyperKmerPath with length >=
 // min_overlap, where min_overlap is measured in kmers.
 
-void InternalMerge( HyperKmerPath& h, 
-                    const NegativeGapValidator* ngv, int min_overlap, 
+void InternalMerge( HyperKmerPath& h,
+                    const NegativeGapValidator* ngv, int min_overlap,
                     int min_proper_overlap );
 
 // GroupedInternalMerge: given a collection of HyperKmerPaths hin, first
@@ -34,10 +34,10 @@ void InternalMerge( HyperKmerPath& h,
 // HyperKmerPaths in hin.
 
 void GroupedInternalMerge( const vec<HyperKmerPath>& hin,
-     HyperKmerPath& hout, const KmerBaseBroker& kbb,
-     const int min_perfect_match_to_group, const int group_steps, 
-     const NegativeGapValidator* ngv, int min_overlap, int min_proper_overlap, 
-     const vec<tagged_rpint>& uniqdb, const Bool SHORTEST_MERGE );
+                           HyperKmerPath& hout, const KmerBaseBroker& kbb,
+                           const int min_perfect_match_to_group, const int group_steps,
+                           const NegativeGapValidator* ngv, int min_overlap, int min_proper_overlap,
+                           const vec<tagged_rpint>& uniqdb, const Bool SHORTEST_MERGE );
 
 // GroupedInternalMergeLG: Like GroupedInternalMerge, but designed for use
 // with the LG pipeline -
@@ -45,18 +45,18 @@ void GroupedInternalMerge( const vec<HyperKmerPath>& hin,
 // by RunAllPaths (via LocalizeReads.)
 void
 GroupedInternalMergeLG( const vec<HyperKmerPath>& HKPs,
-			HyperKmerPath& out_HKP,
-			const vecbasevector & bases,
-			const vec<int> & base_to_HKP_ID,
-			const String sub_dir,
-			const int n_threads,
-			int max_kmer_freq,
-		        int min_align_length, int max_group_size,
-			int min_overlap, int min_proper_overlap,
-			const int min_proper_overlap_final,
-			const int max_Q_size,
-			const NegativeGapValidator* ngv,
-			const vec<tagged_rpint>& uniqdb,
+                        HyperKmerPath& out_HKP,
+                        const vecbasevector & bases,
+                        const vec<int> & base_to_HKP_ID,
+                        const String sub_dir,
+                        const int n_threads,
+                        int max_kmer_freq,
+                        int min_align_length, int max_group_size,
+                        int min_overlap, int min_proper_overlap,
+                        const int min_proper_overlap_final,
+                        const int max_Q_size,
+                        const NegativeGapValidator* ngv,
+                        const vec<tagged_rpint>& uniqdb,
                         long checkpointInterval,
                         String const& checkpointFile,
                         bool skipFinalMerge );

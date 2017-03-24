@@ -40,126 +40,142 @@
 class MD5
 {
 public:
-    typedef unsigned int uint;
-    typedef unsigned long ulong;
+  typedef unsigned int uint;
+  typedef unsigned long ulong;
 
-    /// Make a new instance.
-    MD5()
-      : mEnd(mBuf+sizeof(mBuf))
+  /// Make a new instance.
+  MD5()
+    : mEnd(mBuf+sizeof(mBuf))
+  {
+    reInit();
+  }
+
+  MD5( MD5 const& that )
+  {
+    memcpy(this,&that,sizeof(MD5));
+    mEnd = mBuf + sizeof(mBuf);
+    mPut = mBuf + (that.mPut - that.mBuf);
+  }
+
+  MD5& operator=( MD5 const& that )
+  {
+    if ( this != &that )
     {
-        reInit();
+      memcpy(this,&that,sizeof(MD5));
+      mEnd = mBuf + sizeof(mBuf);
+      mPut = mBuf + (that.mPut - that.mBuf);
     }
+    return *this;
+  }
 
-    MD5( MD5 const& that )
-    {
-        memcpy(this,&that,sizeof(MD5));
-        mEnd = mBuf + sizeof(mBuf);
-        mPut = mBuf + (that.mPut - that.mBuf);
-    }
+  /// Re-initialize the hash.  This allows you to use the same instance
+  /// to digest a new byte sequence.  (But it's cheap to just make a
+  /// new instance, if you'd prefer.)
+  void reInit()
+  {
+    mCount = 0;
+    mState[0] = 0x67452301;
+    mState[1] = 0xefcdab89;
+    mState[2] = 0x98badcfe;
+    mState[3] = 0x10325476;
+    mPut = mBuf;
+    mFinalized = false;
+  }
 
-    MD5& operator=( MD5 const& that )
+  /// Add some bytes to be hashed.
+  void update( char const* buf, uint len )
+  {
+    if ( !mFinalized )
     {
-        if ( this != &that )
-        {
-            memcpy(this,&that,sizeof(MD5));
-            mEnd = mBuf + sizeof(mBuf);
-            mPut = mBuf + (that.mPut - that.mBuf);
-        }
-        return *this;
-    }
-
-    /// Re-initialize the hash.  This allows you to use the same instance
-    /// to digest a new byte sequence.  (But it's cheap to just make a
-    /// new instance, if you'd prefer.)
-    void reInit()
-    {
-      mCount = 0;
-      mState[0] = 0x67452301;
-      mState[1] = 0xefcdab89;
-      mState[2] = 0x98badcfe;
-      mState[3] = 0x10325476;
-      mPut = mBuf;
-      mFinalized = false;
-    }
-
-    /// Add some bytes to be hashed.
-    void update( char const* buf, uint len )
-    {
-      if ( !mFinalized )
+      if ( mPut == mBuf )
       {
-        if ( mPut == mBuf )
+        updateWholeBuffers(buf,len);
+      }
+      else
+      {
+        while ( len-- > 0 )
         {
-          updateWholeBuffers(buf,len);
-        }
-        else
-        {
-          while ( len-- > 0 )
+          *mPut++ = *buf++;
+          if ( mPut == mEnd )
           {
-            *mPut++ = *buf++;
-            if ( mPut == mEnd )
-            {
-              transform(mBuf);
-              updateWholeBuffers(buf,len);
-            }
+            transform(mBuf);
+            updateWholeBuffers(buf,len);
           }
         }
       }
     }
+  }
 
-    /// Update, adding a single byte.
-    void update( char const& chr )
+  /// Update, adding a single byte.
+  void update( char const& chr )
+  {
+    *mPut++ = chr;
+    if ( mPut == mEnd )
     {
-      *mPut++ = chr;
-      if ( mPut == mEnd )
-      {
-        transform(mBuf);
-      }
+      transform(mBuf);
     }
+  }
 
-    /// Add some bytes to be hashed.
-    template<class Itr> void update( Itr begin, Itr end )
-    { while ( begin != end ) { update(*begin++); } }
+  /// Add some bytes to be hashed.
+  template<class Itr> void update( Itr begin, Itr end )
+  {
+    while ( begin != end ) {
+      update(*begin++);
+    }
+  }
 
-    /// Returns the MD5 hash.
-    /// This is a pointer to precisely 16 bytes of memory internal to this class.  Don't delete it.
-    /// This method "freezes" the object so that further updates are ignored.
-    char* getDigest();
+  /// Returns the MD5 hash.
+  /// This is a pointer to precisely 16 bytes of memory internal to this class.  Don't delete it.
+  /// This method "freezes" the object so that further updates are ignored.
+  char* getDigest();
 
-    /// Returns the MD5 hash as a C-style string of hex digits.
-    /// This is a pointer to 32-bytes of digits + a null internal to this class.  Don't delete it.
-    /// This method "freezes" the object so that further updates are ignored.
-    char* getHexDigest();
+  /// Returns the MD5 hash as a C-style string of hex digits.
+  /// This is a pointer to 32-bytes of digits + a null internal to this class.  Don't delete it.
+  /// This method "freezes" the object so that further updates are ignored.
+  char* getHexDigest();
 
-    /// Returns the number of bytes hashed.
-    /// This method is valid both pre- and post-finalization by getDigest or getHexDigest.
-    ulong getCount() const
-    { return mCount/8 + (mPut-mBuf); }
+  /// Returns the number of bytes hashed.
+  /// This method is valid both pre- and post-finalization by getDigest or getHexDigest.
+  ulong getCount() const
+  {
+    return mCount/8 + (mPut-mBuf);
+  }
 
 private:
-    void updateWholeBuffers( char const* buf, uint len );
-    void transform( char const* block );
+  void updateWholeBuffers( char const* buf, uint len );
+  void transform( char const* block );
 
-    /* rotates x left n bits. */
-    static uint ROL( uint x, uint n ) { return (x << n) | (x >> (32-n)); }
+  /* rotates x left n bits. */
+  static uint ROL( uint x, uint n ) {
+    return (x << n) | (x >> (32-n));
+  }
 
-    static uint FF( uint a, uint b, uint c, uint d, uint x, uint s )
-    { return ROL(a+((b&c)|(~b&d))+x,s) + b; }
+  static uint FF( uint a, uint b, uint c, uint d, uint x, uint s )
+  {
+    return ROL(a+((b&c)|(~b&d))+x,s) + b;
+  }
 
-    static uint GG( uint a, uint b, uint c, uint d, uint x, uint s )
-    { return ROL(a+((b&d)|(c&~d))+x,s) + b; }
+  static uint GG( uint a, uint b, uint c, uint d, uint x, uint s )
+  {
+    return ROL(a+((b&d)|(c&~d))+x,s) + b;
+  }
 
-    static uint HH( uint a, uint b, uint c, uint d, uint x, uint s )
-    { return ROL(a+((b^c)^d)+x,s) + b; }
+  static uint HH( uint a, uint b, uint c, uint d, uint x, uint s )
+  {
+    return ROL(a+((b^c)^d)+x,s) + b;
+  }
 
-    static uint II( uint a, uint b, uint c, uint d, uint x, uint s )
-    { return ROL(a+(c^(b|~d))+x,s) + b; }
+  static uint II( uint a, uint b, uint c, uint d, uint x, uint s )
+  {
+    return ROL(a+(c^(b|~d))+x,s) + b;
+  }
 
-    uint mState[4]; /* state (ABCD) */
-    ulong mCount; /* number of bits hashed, modulo 2^64 */
-    char mBuf[64]; /* input buffer */
-    char* mPut;
-    char* mEnd;
-    bool mFinalized;
+  uint mState[4]; /* state (ABCD) */
+  ulong mCount; /* number of bits hashed, modulo 2^64 */
+  char mBuf[64]; /* input buffer */
+  char* mPut;
+  char* mEnd;
+  bool mFinalized;
 };
 
 #endif /* MD5_H_ */

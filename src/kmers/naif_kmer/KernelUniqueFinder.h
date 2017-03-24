@@ -35,7 +35,7 @@ class UniqueFinder
   const size_t             _K;
   const size_t             _how_unique;
   const BaseVecVec       & _bases;
- 
+
   vec<BOOL_t>            & _is_unique;
 
 
@@ -50,8 +50,8 @@ public:
 
   UniqueFinder(const size_t       K,
                const size_t       how_unique,
-	       const BaseVecVec & bases,
-	       vec<BOOL_t> *      p_is_unique,
+               const BaseVecVec & bases,
+               vec<BOOL_t> *      p_is_unique,
                KmerSpectrum     * p_kspec,
                const size_t       n_threads)
     : _n_threads(n_threads),
@@ -62,8 +62,8 @@ public:
       _K(K),
       _how_unique(how_unique),
       _bases(bases),
-      _is_unique(*p_is_unique), 
-      _p_kspec(p_kspec), 
+      _is_unique(*p_is_unique),
+      _p_kspec(p_kspec),
       _kspec_tmp(_K),
       _lock()
   {
@@ -72,13 +72,13 @@ public:
     for (size_t i = 0; i < n; i++)
       _is_unique[i] = false;
   }
-    
+
 
   ~UniqueFinder()
   {}
-      
 
-  
+
+
   // copy constructor for temporary kernels
   explicit UniqueFinder(const UniqueFinder & that)
     : _n_threads(that._n_threads),
@@ -94,17 +94,21 @@ public:
       _kspec_tmp(_K),
       _lock()
   {}
- 
-  // interface function needed by naif_kmerize()
-  size_t K() const { return _K; }
 
   // interface function needed by naif_kmerize()
-  const BaseVecVec & bases() const { return _bases; }
-  
-  
+  size_t K() const {
+    return _K;
+  }
 
   // interface function needed by naif_kmerize()
-  void parse_base_vec(ParcelBuffer<rec_type> * p_buf, 
+  const BaseVecVec & bases() const {
+    return _bases;
+  }
+
+
+
+  // interface function needed by naif_kmerize()
+  void parse_base_vec(ParcelBuffer<rec_type> * p_buf,
                       const size_t ibv)
   {
     ParcelBuffer<rec_type> & parcel_buf = *p_buf;
@@ -115,9 +119,9 @@ public:
         kmer.set_ibv(ibv);          // just need the read id (bv index) for uniqueness
         parcel_buf.add(kmer);
       }
-      kmer_cur.next();          
+      kmer_cur.next();
     }
-  } 
+  }
 
 
 
@@ -131,22 +135,22 @@ public:
       if (_i_read_unique[i].size() > max_buf_size)  // buffers too big? flush them!
         blocks_todo.insert(i);
 
-    
-    
+
+
     while (blocks_todo.size() > 0) {
 
       // ---- lock a subset of the data to update
 
       const size_t i_blk = _p_blocks->lock_some_block(blocks_todo);
 
-      
+
 
       // ---- set is_unique[i_read] = true
 
       vec<size_t> & uniqs = _i_read_unique[i_blk];
       const size_t n_uniqs = uniqs.size();
       for (size_t i = 0; i < n_uniqs; i++)
-	_is_unique[uniqs[i]] = true;
+        _is_unique[uniqs[i]] = true;
       uniqs.clear();
 
 
@@ -156,7 +160,7 @@ public:
       _p_blocks->unlock_block(i_blk);
       blocks_todo.erase(i_blk);
 
-    } // while (blocks_todo.size() > 0) 
+    } // while (blocks_todo.size() > 0)
 
   } // void flush_uniques(...)
 
@@ -165,15 +169,15 @@ public:
   // _is_unique[] is a vec<BOOL_t> which could be bit aligned
   // so we must make sure that every 64 entries are in the same block
   // hence the '>> 6' (i.e. '/64')
-  size_t i_block(const size_t i, const size_t n) 
-  { 
-    return ((i >> 6) * _n_blocks) / ((n + 63) >> 6);  
+  size_t i_block(const size_t i, const size_t n)
+  {
+    return ((i >> 6) * _n_blocks) / ((n + 63) >> 6);
   }
 
 
 
   // interface function needed by naif_kmerize()
-  void summarize(const vec<rec_type> & parcel, 
+  void summarize(const vec<rec_type> & parcel,
                  const size_t i0k,
                  const size_t i1k)
   {
@@ -185,15 +189,15 @@ public:
     if (kfreq <= _how_unique) {
       const size_t n_reads = _bases.size();
       for (size_t ik = i0k; ik != i1k; ik++) {
-	const size_t i_read = parcel[ik].ibv();
-	const size_t i_blk  = i_block(i_read, n_reads);
-	_i_read_unique[i_blk].push_back(i_read);
+        const size_t i_read = parcel[ik].ibv();
+        const size_t i_blk  = i_block(i_read, n_reads);
+        _i_read_unique[i_blk].push_back(i_read);
       }
       flush_uniques(5000);
     }
   }
-  
- 
+
+
 
 
 
@@ -207,7 +211,7 @@ public:
   // ---- this merges all the recommendations and confirmations
   // interface function needed by naif_kmerize()
   void merge(UniqueFinder & kernel_tmp,
-	     const size_t i_parcel)
+             const size_t i_parcel)
   {
     // final flush of uniques
     kernel_tmp.flush_uniques(0);
@@ -217,10 +221,10 @@ public:
     const size_t nkf = kernel_tmp._kspec_tmp.size();
 
     Locker lock(_lock);
-    
-    if (_p_kspec->size() < nkf) 
+
+    if (_p_kspec->size() < nkf)
       _p_kspec->resize(nkf, 0);
-    
+
     for (size_t kf = 0; kf != nkf; kf++)
       (*_p_kspec)[kf] += kernel_tmp._kspec_tmp[kf];
   }
@@ -231,7 +235,7 @@ public:
 
 
 };  // class UniqueFinder
-  
+
 
 
 

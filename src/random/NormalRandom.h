@@ -1,5 +1,5 @@
 // Copyright (c) 2004 Broad Institute of MIT and Harvard
-// 
+//
 // NormalRandom.h
 
 #ifndef NORMAL_RANDOM_H
@@ -30,9 +30,11 @@ public:
     : mean_(mean), stddev_(stddev)
   {}
 
-  void seed(const unsigned seed) const { rnd_gen_.seed(seed); }
+  void seed(const unsigned seed) const {
+    rnd_gen_.seed(seed);
+  }
 
-  // method for getting the next value of the normal random variable  
+  // method for getting the next value of the normal random variable
   double value() const;
 };
 

@@ -18,27 +18,27 @@
 
 void BinaryReader::readLoop( char* buf, size_t len )
 {
-    size_t remain = 0;
-    while ( len )
-    {
-        remain = fillBuf(BUF_SIZ);
-        if ( !remain )
-            FatalErr("BinaryReader attempted to read past the end of file "
-                      << mFR.getFilename());
+  size_t remain = 0;
+  while ( len )
+  {
+    remain = fillBuf(BUF_SIZ);
+    if ( !remain )
+      FatalErr("BinaryReader attempted to read past the end of file "
+               << mFR.getFilename());
 
-        if ( remain > len )
-            remain = len;
-        memcpy(buf, mpBuf, remain);
-        buf += remain;
-        len -= remain;
-    }
-    mpBuf += remain;
+    if ( remain > len )
+      remain = len;
+    memcpy(buf, mpBuf, remain);
+    buf += remain;
+    len -= remain;
+  }
+  mpBuf += remain;
 }
 
 void BinaryReader::testToken()
 {
-    MagicToken tok;
-    if ( !read(&tok).isValid() )
-        FatalErr("Reading binary file " << mFR.getFilename()
-                  << " failed: Initial token is invalid.");
+  MagicToken tok;
+  if ( !read(&tok).isValid() )
+    FatalErr("Reading binary file " << mFR.getFilename()
+             << " failed: Initial token is invalid.");
 }

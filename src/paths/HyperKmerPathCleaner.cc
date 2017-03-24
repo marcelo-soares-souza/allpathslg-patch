@@ -36,7 +36,7 @@ void HyperKmerPathCleaner::CleanUpGraph( HyperKmerPath& ans ) const {
 
 }
 
-// Zip together edges coming out of (or into) a HKP vertex that 
+// Zip together edges coming out of (or into) a HKP vertex that
 // start (or end) with the same kmer.  As a side effect, if vertex
 // A has an identical edge going to both edges B and C, then B and C
 // will end up associated.
@@ -46,7 +46,7 @@ void HyperKmerPathCleaner::Zip( HyperKmerPath& ans ) const {
   int n_old, n_new;
   do {
     n_old = ans.N();
-    
+
     ZipRight(ans);
 
 //     {
@@ -107,23 +107,23 @@ void HyperKmerPathCleaner::ZipRight( HyperKmerPath& ans ) const {
       int vx = to_zip.back();
       int vx_index = to_zip.isize()-1;
       if( vx >= 0 && been_zipped[vx] ) {
-	to_zip.pop_back();
-	continue;
+        to_zip.pop_back();
+        continue;
       }
 
       if( vx < 0 ) // if we've already background-checked
-	vx = -vx-1;
+        vx = -vx-1;
       else {       // vertices pointing here get zipped first, if needed
-	been_zipped[vx] = true;
-	const vec<int>& preds = ans.To(vx);
-	for( int p=0; p<preds.isize(); p++ ) {
-	  if( !been_zipped[preds[p]] )
-	    to_zip.push_back( preds[p] );
-	}
-	if( vx_index != to_zip.isize()-1 ) { // do others first
-	  to_zip[vx_index] = -vx-1;
-	  continue;
-	}
+        been_zipped[vx] = true;
+        const vec<int>& preds = ans.To(vx);
+        for( int p=0; p<preds.isize(); p++ ) {
+          if( !been_zipped[preds[p]] )
+            to_zip.push_back( preds[p] );
+        }
+        if( vx_index != to_zip.isize()-1 ) { // do others first
+          to_zip[vx_index] = -vx-1;
+          continue;
+        }
       }
 
       // okay, ready to zip this vertex!
@@ -148,13 +148,13 @@ bool HyperKmerPathCleaner::ZipVertexRight( int vx, HyperKmerPath& ans ) const {
   set<longlong> kmers_checked;
 
   int pass = 0;
-  
+
   while( 1 ) {
     ++pass;
 
     bool match = false;
     // Any time we find a match, we zip some edges together,
-    // and the whole list of edges might get reordered, so 
+    // and the whole list of edges might get reordered, so
     // we need to start checking from the beginning.
 
     // For each edge, look for later edges with same initial kmer.
@@ -168,17 +168,18 @@ bool HyperKmerPathCleaner::ZipVertexRight( int vx, HyperKmerPath& ans ) const {
       if( edge_i.NSegments()==0 || edge_i.isGap(0) ) continue;
       kmer = edge_i.Start(0);
       if( kmers_checked.insert(kmer).second == false ) // previously checked
-	continue;
+        continue;
 
       for( j=i+1; !match && j < out_degree; j++ ) {
-	const KmerPath& edge_j = ans.EdgeObjectByIndexFrom(vx,j);
-	if( edge_j.NSegments()==0 || edge_j.isGap(0) ) continue;
-	match |= ( kmer == edge_j.Start(0) );
+        const KmerPath& edge_j = ans.EdgeObjectByIndexFrom(vx,j);
+        if( edge_j.NSegments()==0 || edge_j.isGap(0) ) continue;
+        match |= ( kmer == edge_j.Start(0) );
       }
     }
     // Oops, that leaves i,j each one too big:
-    i--;j--;
-    
+    i--;
+    j--;
+
     if( !match ) // hooray!  Initial kmers of all out-edges are distinct!
       return had_some_effect;
 
@@ -202,11 +203,11 @@ bool HyperKmerPathCleaner::ZipVertexRight( int vx, HyperKmerPath& ans ) const {
     for( j++; j < out_degree; j++ ) {
       const KmerPath& edge_j = ans.EdgeObjectByIndexFrom(vx,j);
       if( !edge_j.IsEmpty() && edge_j.isSeq(0) && edge_j.Start(0) == kmer ) {
-	ref_loc = ref_path.Begin();
-	other_loc = edge_j.Begin();
-	ScanRightPerfectMatchGaps( ref_loc, other_loc);
-	if( ref_loc < end_of_match )
-	  end_of_match = ref_loc;
+        ref_loc = ref_path.Begin();
+        other_loc = edge_j.Begin();
+        ScanRightPerfectMatchGaps( ref_loc, other_loc);
+        if( ref_loc < end_of_match )
+          end_of_match = ref_loc;
       }
     }
 
@@ -217,7 +218,7 @@ bool HyperKmerPathCleaner::ZipVertexRight( int vx, HyperKmerPath& ans ) const {
     // Okay we're now ready to perform the changes to the HyperKmerPath.
 
     // Add a new vertex to the graph:
-    int branch_vx = ans.N(); 
+    int branch_vx = ans.N();
     ans.AddVertices(1);
 
     // Add edges from branch_vx where needed, just remember vertices
@@ -227,19 +228,19 @@ bool HyperKmerPathCleaner::ZipVertexRight( int vx, HyperKmerPath& ans ) const {
     for(int j = out_degree-1; j>=0; j-- ) {
       const KmerPath& edge_j = ans.EdgeObjectByIndexFrom(vx,j);
       if( !edge_j.IsEmpty() && edge_j.isSeq(0) && edge_j.Start(0) == kmer ) {
-	ref_loc = longest_common.Begin();
-	other_loc = edge_j.Begin();
-	ScanRightPerfectMatchGaps( ref_loc, other_loc);
-	
-	int far_vx = ans.From(vx)[j];
-	if( other_loc.atEnd() )
-	  to_be_identified.push_back( far_vx );
-	else {
-	  KmerPath rest_of_edge;
-	  edge_j.CopyTailNoFirstKmer( other_loc, rest_of_edge );
-	  ans.AddEdge( branch_vx, far_vx, rest_of_edge );
-	}
-	ans.DeleteEdgeFrom( vx, j );
+        ref_loc = longest_common.Begin();
+        other_loc = edge_j.Begin();
+        ScanRightPerfectMatchGaps( ref_loc, other_loc);
+
+        int far_vx = ans.From(vx)[j];
+        if( other_loc.atEnd() )
+          to_be_identified.push_back( far_vx );
+        else {
+          KmerPath rest_of_edge;
+          edge_j.CopyTailNoFirstKmer( other_loc, rest_of_edge );
+          ans.AddEdge( branch_vx, far_vx, rest_of_edge );
+        }
+        ans.DeleteEdgeFrom( vx, j );
       }
     }
 
@@ -255,7 +256,7 @@ bool HyperKmerPathCleaner::ZipVertexRight( int vx, HyperKmerPath& ans ) const {
 //     cout << "Saving HKP in " << dotfile << endl;
 //     Ofstream( dot, dotfile );
 //     ans.PrintSummaryDOT0w(dot);
-    
+
   }  // end of while(1); exited by a return within the while loop.
 }
 

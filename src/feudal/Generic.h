@@ -17,23 +17,25 @@
 class UtilizationReporter
 {
 public:
-    void report( void const* addr, size_t bits, size_t siz, size_t cap,
-                    char const* type )
-    { if ( mpOS ) writeLine(addr,bits,siz,cap,type); }
+  void report( void const* addr, size_t bits, size_t siz, size_t cap,
+               char const* type )
+  {
+    if ( mpOS ) writeLine(addr,bits,siz,cap,type);
+  }
 
-    static UtilizationReporter gInstance;
+  static UtilizationReporter gInstance;
 
 private:
-    UtilizationReporter();
-    ~UtilizationReporter();
-    UtilizationReporter( UtilizationReporter const& )=delete;
-    UtilizationReporter& operator=( UtilizationReporter const& )=delete;
+  UtilizationReporter();
+  ~UtilizationReporter();
+  UtilizationReporter( UtilizationReporter const& )=delete;
+  UtilizationReporter& operator=( UtilizationReporter const& )=delete;
 
-    void writeLine( void const* addr, size_t bits, size_t siz, size_t cap,
-                    char const* type );
+  void writeLine( void const* addr, size_t bits, size_t siz, size_t cap,
+                  char const* type );
 
-    std::ofstream mLog;
-    ThreadsafeOStream* mpOS;
+  std::ofstream mLog;
+  ThreadsafeOStream* mpOS;
 };
 
 #endif // GENERIC_H_

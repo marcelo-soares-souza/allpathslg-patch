@@ -18,13 +18,13 @@
  * ScaffoldContigsOnRef
  */
 void ScaffoldContigsOnRef( const vec<superb> &initial_supers,
-			   const vec<fastavector> &initial_contigs,
-			   const vec<look_align> &aligns,
-			   const String &ASSEMBLY_OUT,
-			   const int MAX_GAP,
-			   const int MAX_OVERLAP,
-			   const int MIN_GAP_DEV,
-			   ostream *log )
+                           const vec<fastavector> &initial_contigs,
+                           const vec<look_align> &aligns,
+                           const String &ASSEMBLY_OUT,
+                           const int MAX_GAP,
+                           const int MAX_OVERLAP,
+                           const int MIN_GAP_DEV,
+                           ostream *log )
 {
   // Make a local copy of the initial contigs (these may be rc-ed).
   vec<fastavector> contigs = initial_contigs;
@@ -34,7 +34,7 @@ void ScaffoldContigsOnRef( const vec<superb> &initial_supers,
   for (int s = 0; s < initial_supers.isize(); ++s) {
     for (int t = 0; t < initial_supers[s].Ntigs(); ++t) {
       initial[initial_supers[s].Tig(t)] = True;
-    }      
+    }
   }
 
   // Place contigs on reference (rc if needed).
@@ -51,7 +51,7 @@ void ScaffoldContigsOnRef( const vec<superb> &initial_supers,
     if ( ! initial[cid] ) continue;   // skip contig
     if ( placed[cid] ) continue;   // already placed
     if ( ! al.IsProper( ) ) continue;   // improper
-    
+
     // Place contig (eventually rc it).
     placed[cid] = true;
     placs.push_back( seq_interval( cid, tid, al.a.pos2( ), al.a.Pos2( ) ) );
@@ -59,7 +59,7 @@ void ScaffoldContigsOnRef( const vec<superb> &initial_supers,
   }
 
   sort( placs.begin( ), placs.end( ) );
-  
+
   // Create scaffolds (placed contigs).
   if ( log ) *log << Date( ) << ": creating scaffolds" << endl;
   vec<superb> supers;
@@ -82,7 +82,7 @@ void ScaffoldContigsOnRef( const vec<superb> &initial_supers,
       supers[supers.size( )-1].AppendTig( cid, clen, gap, dev );
       continue;
     }
-    
+
     // New super (gap out of allowed sizes).
     superb sup;
     sup.PlaceFirstTig( cid, clen );
@@ -98,12 +98,12 @@ void ScaffoldContigsOnRef( const vec<superb> &initial_supers,
     int clen = contigs[cid].size( );
     superb sup;
     sup.PlaceFirstTig( cid, clen );
-    supers.push_back( sup );    
+    supers.push_back( sup );
   }
 
   // Save.
   if ( log ) *log << Date( ) << ": saving assembly" << endl;
   SaveScaffoldAssembly( ASSEMBLY_OUT, supers, contigs, NULL, true );
-  
+
 }
 

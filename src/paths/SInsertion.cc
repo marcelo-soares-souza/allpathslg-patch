@@ -27,11 +27,11 @@ SInsertion::SInsertion( ) :
  * Constructor
  */
 SInsertion::SInsertion( int small_id,
-			int big_id,
-			bool small_rc,
-			int pos_in_big,
-			pair<int,int> gap_before,
-			pair<int,int> gap_after) :
+                        int big_id,
+                        bool small_rc,
+                        int pos_in_big,
+                        pair<int,int> gap_before,
+                        pair<int,int> gap_after) :
   small_id_ ( small_id ),
   big_id_ ( big_id ),
   small_rc_ ( small_rc ),
@@ -45,30 +45,30 @@ SInsertion::SInsertion( int small_id,
  * Constructor
  */
 SInsertion::SInsertion( const vec<superb> &scaffolds,
-			const CSublink &link,
-			const int gap_id,
-			const int small_start,
-			const int gap_len )
+                        const CSublink &link,
+                        const int gap_id,
+                        const int small_start,
+                        const int gap_len )
 {
   small_id_ = link.SmallId( );
   big_id_ = link.BigId( );
   small_rc_ = link.SmallRc( );
   pos_in_big_ = gap_id;
-  
+
   const superb &big_sup = scaffolds[big_id_];
   const superb &small_sup = scaffolds[small_id_];
-  
+
   double linkdev = link.Dev( ) * link.Dev( );
   double scafdev = big_sup.Dev( gap_id ) * big_sup.Dev( gap_id );
   int common_dev = sqrt( linkdev + scafdev );
-  
+
   int gap_end = 0;
   for (int ii=0; ii<=gap_id; ii++)
     gap_end += big_sup.Len( ii ) + big_sup.Gap( ii );
   int gap_begin = gap_end - big_sup.Gap( gap_id );
   int gap_size_before = small_start - gap_begin;
   gap_before_ = make_pair( gap_size_before, common_dev );
-  
+
   int gap_size_after = gap_len - small_sup.TrueLength( ) - gap_size_before;
   gap_after_ = make_pair( gap_size_after, common_dev );
 }
@@ -81,12 +81,12 @@ void SInsertion::PrintInfo( const vec<superb> &scaffolds, ostream &out ) const
 {
   const superb& ssup = scaffolds[small_id_];
   const superb& bsup = scaffolds[big_id_];
-  
+
   int gap_end = 0;
   for (int ii=0; ii<=pos_in_big_; ii++)
     gap_end += bsup.Len( ii ) + bsup.Gap( ii );
   int gap_begin = gap_end - bsup.Gap( pos_in_big_ );
-  
+
   out << "inserting s" << small_id_
       << " in s" << big_id_
       << " (" << bsup.TrueLength( )
@@ -104,14 +104,14 @@ void SInsertion::PrintInfo( const vec<superb> &scaffolds, ostream &out ) const
       << " tigs)> <" << gap_after_.first
       << " +/- " << gap_after_.second
       << ">";
-  
+
   int gap_len_1 = gap_end - gap_begin;
   int gap_len_2 = gap_before_.first + ssup.TrueLength( ) + gap_after_.first;
   ForceAssertGe( gap_len_2, gap_len_1 );
   if ( gap_len_2 > gap_len_1 )
     out << " (gap was enlarged of " << gap_len_2 - gap_len_1
-	<< " bases)";
-  
+        << " bases)";
+
   out << "\n";
 }
 

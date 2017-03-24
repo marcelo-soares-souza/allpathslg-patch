@@ -8,12 +8,12 @@
 #include "paths/ReadFillRecord.h"
 #include "feudal/BinaryStream.h"
 
-/// The file reads.{PREFIX}_fillrecords.k48 in the run_dir is a 
+/// The file reads.{PREFIX}_fillrecords.k48 in the run_dir is a
 /// vec<ReadFillRecord> (one entry per read) created by CloseAllReadGaps,
 /// CleanFills, or anything else that does filling.
 ///
-/// Hand the filename to a ReadFillDatabase to read this information in 
-/// an encapsulated way.  If you hand it a filename which does not exist, 
+/// Hand the filename to a ReadFillDatabase to read this information in
+/// an encapsulated way.  If you hand it a filename which does not exist,
 /// it will simulate the identity map.
 ///
 /// A ReadFillDatabase also knows the left and right trim of each fill,
@@ -24,17 +24,19 @@
 class ReadFillDatabase {
 public:
 
-  ReadFillDatabase() 
+  ReadFillDatabase()
     : mp_RFD( new identityRFD() ) {}
 
   // If the file exists, load data from there, otherwise get identity.
   ReadFillDatabase( const String& filename )
-    : mp_RFD( NULL )    
+    : mp_RFD( NULL )
   {
-   FillsFromFile( filename );
+    FillsFromFile( filename );
   }
-  
-  ~ReadFillDatabase() { delete mp_RFD; }
+
+  ~ReadFillDatabase() {
+    delete mp_RFD;
+  }
 
 
   // This creates a vectorRFD (if filename exists) or an identityRFD (if not),
@@ -43,15 +45,31 @@ public:
 
   // Pass these questions along to the pointed-to implementation
 
-  int FirstFilling( int read ) const { return mp_RFD->FirstFilling(read); }
-  int LastFilling( int read ) const { return mp_RFD->LastFilling(read); }
-  int NumFillings( int read ) const { return mp_RFD->NumFillings(read); }
-  int FillToRead( int read ) const { return mp_RFD->FillToRead(read); }
-  bool Exploded( int read ) const { return mp_RFD->Exploded(read); }
-  bool HitMergerLimit( int read ) const { return mp_RFD->HitMergerLimit(read); }
-  bool IsDirty( int read ) const { return(Exploded(read) || HitMergerLimit(read)); }
+  int FirstFilling( int read ) const {
+    return mp_RFD->FirstFilling(read);
+  }
+  int LastFilling( int read ) const {
+    return mp_RFD->LastFilling(read);
+  }
+  int NumFillings( int read ) const {
+    return mp_RFD->NumFillings(read);
+  }
+  int FillToRead( int read ) const {
+    return mp_RFD->FillToRead(read);
+  }
+  bool Exploded( int read ) const {
+    return mp_RFD->Exploded(read);
+  }
+  bool HitMergerLimit( int read ) const {
+    return mp_RFD->HitMergerLimit(read);
+  }
+  bool IsDirty( int read ) const {
+    return(Exploded(read) || HitMergerLimit(read));
+  }
   // Am I the trivial RFD?
-  bool IsTrivialRFD() const { return mp_RFD->IsTrivialRFD(); }
+  bool IsTrivialRFD() const {
+    return mp_RFD->IsTrivialRFD();
+  }
 
   // Answer questions about trims here:
   int LeftTrimOfFill( int fill ) const {
@@ -85,7 +103,9 @@ private:
     virtual int FillToRead( int read ) const = 0;
     virtual bool Exploded( int read ) const = 0;
     virtual bool HitMergerLimit( int read ) const = 0;
-    virtual bool IsTrivialRFD() { return false; }
+    virtual bool IsTrivialRFD() {
+      return false;
+    }
 
     RFDimplementation() {};
     virtual ~RFDimplementation() {};
@@ -95,32 +115,50 @@ private:
   class identityRFD : public RFDimplementation {
   public:
     identityRFD() : RFDimplementation() {};
-    int FirstFilling( int read ) const { return read; }
-    int LastFilling( int read ) const { return read; }
-    int NumFillings( int read ) const { return 1; }
-    int FillToRead( int read ) const { return read; }
-    bool Exploded( int read ) const { return false; }
-    bool HitMergerLimit( int read ) const { return false; }
-    bool IsTrivialRFD() { return true; }
+    int FirstFilling( int read ) const {
+      return read;
+    }
+    int LastFilling( int read ) const {
+      return read;
+    }
+    int NumFillings( int read ) const {
+      return 1;
+    }
+    int FillToRead( int read ) const {
+      return read;
+    }
+    bool Exploded( int read ) const {
+      return false;
+    }
+    bool HitMergerLimit( int read ) const {
+      return false;
+    }
+    bool IsTrivialRFD() {
+      return true;
+    }
   };
 
   // An interface to a vec<ReadFillRecord>
   class vectorRFD : public RFDimplementation {
   public:
-    vectorRFD() 
-      : RFDimplementation(), 
-	mp_fills( NULL ),
-	I_own_my_readfills( false ),
-	cached_read( 0 )
+    vectorRFD()
+      : RFDimplementation(),
+        mp_fills( NULL ),
+        I_own_my_readfills( false ),
+        cached_read( 0 )
     {}
 
     vectorRFD( const String& filename )
-      : RFDimplementation(), 
-	I_own_my_readfills( false ), // changed to true by FillsFromFile
-	cached_read( 0 )
-    { FillsFromFile(filename); }
+      : RFDimplementation(),
+        I_own_my_readfills( false ), // changed to true by FillsFromFile
+        cached_read( 0 )
+    {
+      FillsFromFile(filename);
+    }
 
-    ~vectorRFD() { if( I_own_my_readfills ) delete mp_fills; }
+    ~vectorRFD() {
+      if( I_own_my_readfills ) delete mp_fills;
+    }
 
     void FillsFromFile( String filename ) {
       if( I_own_my_readfills ) delete mp_fills;
@@ -134,24 +172,34 @@ private:
     // Queries we pass along to the appropriate ReadFillRecord.
     // These are all constant-time.
 
-    int FirstFilling( int read ) const 
-    { return (*mp_fills)[read].FirstFilling(); }
+    int FirstFilling( int read ) const
+    {
+      return (*mp_fills)[read].FirstFilling();
+    }
 
-    int LastFilling( int read ) const 
-    { return (*mp_fills)[read].LastFilling(); }
+    int LastFilling( int read ) const
+    {
+      return (*mp_fills)[read].LastFilling();
+    }
 
-    int NumFillings( int read ) const 
-    { return (*mp_fills)[read].NumFillings(); }
+    int NumFillings( int read ) const
+    {
+      return (*mp_fills)[read].NumFillings();
+    }
 
-    bool Exploded( int read ) const 
-    { return (*mp_fills)[read].Exploded(); }
+    bool Exploded( int read ) const
+    {
+      return (*mp_fills)[read].Exploded();
+    }
 
-    bool HitMergerLimit( int read ) const 
-    { return (*mp_fills)[read].HitMergerLimit(); }
+    bool HitMergerLimit( int read ) const
+    {
+      return (*mp_fills)[read].HitMergerLimit();
+    }
 
     // Which read did the ith fill come from?
     // Requires a binary search of the vector, so logarithmic time.
-    // But we cache the most recent result.  This helps when you want to get 
+    // But we cache the most recent result.  This helps when you want to get
     // the trims for all the fillings of a read whose length never changed.
 
     int FillToRead( int fill ) const;

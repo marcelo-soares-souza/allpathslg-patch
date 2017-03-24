@@ -28,48 +28,52 @@
         on the reference genome.
 */
 void PrintNhood( int v, const vec<ustart>& processed, const vec<nbases_t>& ulen,
-     Bool USE_TRUTH, const VecPlacementVec* pLocs )
-{    if ( USE_TRUTH ) { ForceAssert( pLocs != 0 ); }
-     cout << "\nneighborhood of " << v << ":\n";
-     vec< vec<String> > rows;
-     bool seed_is_copy_one = ( USE_TRUTH && (*pLocs)[v].size() == 1 );
-     for ( int j = 0; j < processed.isize( ); j++ )
-     {    int start = processed[j].Start( );
-          int w = processed[j].Uid( );
-	  vec<String> row;
-          ostringstream out0, out1, out2;
-          out0 << j+1;
-          out1 << "[" << start << "," << start + ulen[w] - 1 << "]"
-               << " +/- " << processed[j].MeanDev( );
-          out2 << w << " (" << ulen[w] << " kmers)";
-          row.push_back( out0.str( ), out1.str( ), out2.str( ) );
-          if (USE_TRUTH)
-          {    ostringstream out3;
-               for ( PlacementVec::size_type u = 0; u < (*pLocs)[w].size( ); u++ )
-               {    if ( u > 0 ) out3 << ", ";
-                    const placement& thisPlacement = (*pLocs)[w][u];
-                    out3 << thisPlacement;
-                    if ( w != v && seed_is_copy_one ) {
-                      const placement& seedPlacement = (*pLocs)[v].front();
-                      if ( thisPlacement.GenomeId() == seedPlacement.GenomeId() &&
-                           thisPlacement.Rc() == seedPlacement.Rc() ) {
-                        int actualStart = 
-                          ( thisPlacement.Rc() ? 
-                            seedPlacement.Pos() - thisPlacement.Pos() :
-                            thisPlacement.pos() - seedPlacement.pos() );
-                        int diff = start - actualStart;
-                        float devsOff = (float)diff / (float)processed[j].MeanDev();
-                        /*
-                        out3 << " [diff=" << diff
-                             << ", devs=" << setprecision(2) << devsOff << "]";
-                        */
-                      }
-                    }
-               }
-               row.push_back( out3.str( ) );
+                 Bool USE_TRUTH, const VecPlacementVec* pLocs )
+{ if ( USE_TRUTH ) {
+    ForceAssert( pLocs != 0 );
+  }
+  cout << "\nneighborhood of " << v << ":\n";
+  vec< vec<String> > rows;
+  bool seed_is_copy_one = ( USE_TRUTH && (*pLocs)[v].size() == 1 );
+  for ( int j = 0; j < processed.isize( ); j++ )
+  { int start = processed[j].Start( );
+    int w = processed[j].Uid( );
+    vec<String> row;
+    ostringstream out0, out1, out2;
+    out0 << j+1;
+    out1 << "[" << start << "," << start + ulen[w] - 1 << "]"
+         << " +/- " << processed[j].MeanDev( );
+    out2 << w << " (" << ulen[w] << " kmers)";
+    row.push_back( out0.str( ), out1.str( ), out2.str( ) );
+    if (USE_TRUTH)
+    { ostringstream out3;
+      for ( PlacementVec::size_type u = 0; u < (*pLocs)[w].size( ); u++ )
+      { if ( u > 0 ) out3 << ", ";
+        const placement& thisPlacement = (*pLocs)[w][u];
+        out3 << thisPlacement;
+        if ( w != v && seed_is_copy_one ) {
+          const placement& seedPlacement = (*pLocs)[v].front();
+          if ( thisPlacement.GenomeId() == seedPlacement.GenomeId() &&
+               thisPlacement.Rc() == seedPlacement.Rc() ) {
+            int actualStart =
+              ( thisPlacement.Rc() ?
+                seedPlacement.Pos() - thisPlacement.Pos() :
+                thisPlacement.pos() - seedPlacement.pos() );
+            int diff = start - actualStart;
+            float devsOff = (float)diff / (float)processed[j].MeanDev();
+            /*
+            out3 << " [diff=" << diff
+                 << ", devs=" << setprecision(2) << devsOff << "]";
+            */
           }
-          rows.push_back(row);    }
-     PrintTabular( cout, rows, 1 );    }
+        }
+      }
+      row.push_back( out3.str( ) );
+    }
+    rows.push_back(row);
+  }
+  PrintTabular( cout, rows, 1 );
+}
 
 
 

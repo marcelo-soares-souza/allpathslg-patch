@@ -12,15 +12,15 @@
 #include "Basevector.h"
 
 void AlignReadsOnUnibases( // input
-			   const vecbvec &jbases,
-			   const vecbvec &unibases,
-			   
-			   // output
-			   vec< triple<int64_t,int,int> > &jaligns,
-			   vec<basevector> &jbases_sorted,
-			   vec<int64_t> &jbases_sorted_id,
-			   
-			   // log stream
-			   ostream &out );
+  const vecbvec &jbases,
+  const vecbvec &unibases,
+
+  // output
+  vec< triple<int64_t,int,int> > &jaligns,
+  vec<basevector> &jbases_sorted,
+  vec<int64_t> &jbases_sorted_id,
+
+  // log stream
+  ostream &out );
 
 #endif

@@ -17,9 +17,9 @@
 
 void ReverseComplement( vecbasevector& vbv )
 {
-    vecbvec::iterator end(vbv.end());
-    for ( vecbvec::iterator itr(vbv.begin()); itr != end; ++itr )
-        itr->ReverseComplement();
+  vecbvec::iterator end(vbv.end());
+  for ( vecbvec::iterator itr(vbv.begin()); itr != end; ++itr )
+    itr->ReverseComplement();
 }
 
 #include "feudal/OuterVecDefs.h"

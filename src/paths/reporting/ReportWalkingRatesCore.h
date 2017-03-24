@@ -15,14 +15,14 @@
 
 /**
  * ReportWalkingRatesCore
- * 
+ *
  * VERBOSE: verbose log flag
  * ids: vector of seed ids
  * info: number of pairs of inserts (walked, total) for each nhood
  */
 void ReportWalkingRatesCore( ostream &out,
-			     const bool VERBOSE,
-			     const vec<int> &ids,
-			     const vec< pair<int,int> > &info);
+                             const bool VERBOSE,
+                             const vec<int> &ids,
+                             const vec< pair<int,int> > &info);
 
 #endif

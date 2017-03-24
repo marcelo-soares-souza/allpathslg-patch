@@ -50,9 +50,9 @@ int main( int argc, char *argv[] )
   CommandArgument_String( IN_HEAD );
   CommandArgument_String( OUT_HEAD );
   CommandArgument_Bool_OrDefault_Doc( USE_ADJ_GRAPH, True,
-    "Use pre-computed adj graph or else try K-1 base overlaps." );
+                                      "Use pre-computed adj graph or else try K-1 base overlaps." );
   CommandArgument_Bool_OrDefault_Doc( WRITE_LOG, False,
-    "Write a detailed log containing the location of every read on the unibases" );
+                                      "Write a detailed log containing the location of every read on the unibases" );
   CommandArgument_Int_OrDefault( CHUNK_LEN, 180 );
   EndCommandArguments;
 
@@ -89,19 +89,19 @@ int main( int argc, char *argv[] )
     for ( int id1 = 0; id1 < nuni; id1++ ) {
       vec<int> nexts = unigraph.From(id1);
       for ( size_t j = 0; j < nexts.size( ); j++ ) {
-    	int id2 = nexts[j];
-    	basevector b = bases[id1];
-    	b.resize( b.size( ) + 1 );
-    	b.Set( b.size( ) - 1, bases[id2][K-1] );
-    	all.push_back_reserve(b);
-    	KmerPath p = paths[id1];
-    	 p.Append( paths[id2] );
-    	 allp.push_back_reserve(p);
-      } 
+        int id2 = nexts[j];
+        basevector b = bases[id1];
+        b.resize( b.size( ) + 1 );
+        b.Set( b.size( ) - 1, bases[id2][K-1] );
+        all.push_back_reserve(b);
+        KmerPath p = paths[id1];
+        p.Append( paths[id2] );
+        allp.push_back_reserve(p);
+      }
     }
     bases = all;
     paths = allp;
-    
+
   } else {
     cout << Date( ) << ": computing unipath adj from k-1 mers" << endl;
     vec< vec<int> > nexts;
@@ -112,15 +112,17 @@ int main( int argc, char *argv[] )
     vecbasevector all(bases);
     vecKmerPath allp(paths);
     for ( int id1 = 0; id1 < nuni; id1++ )
-    {    for ( int j = 0; j < nexts[id1].isize( ); j++ )
-         {    int id2 = nexts[id1][j];
-              basevector b = bases[id1];
-	      b.resize( b.size( ) + 1 );
-	      b.Set( b.size( ) - 1, bases[id2][K-1] );
-	      all.push_back_reserve(b);
-	      KmerPath p = paths[id1];
-	      p.Append( paths[id2] );
-	      allp.push_back_reserve(p);    }    }
+    { for ( int j = 0; j < nexts[id1].isize( ); j++ )
+      { int id2 = nexts[id1][j];
+        basevector b = bases[id1];
+        b.resize( b.size( ) + 1 );
+        b.Set( b.size( ) - 1, bases[id2][K-1] );
+        all.push_back_reserve(b);
+        KmerPath p = paths[id1];
+        p.Append( paths[id2] );
+        allp.push_back_reserve(p);
+      }
+    }
     bases = all;
     paths = allp;
 
@@ -149,9 +151,9 @@ int main( int argc, char *argv[] )
     const KmerPath &path = paths[read_id];
     if ( (int)read.size( ) < K ) {
       log << "WARNING: read_" << read_id
-	  << " has length " << read.size( )
-	  << ", which is less than K (=" << K
-	  << ")\n";
+          << " has length " << read.size( )
+          << ", which is less than K (=" << K
+          << ")\n";
       continue;
     }
 
@@ -161,8 +163,8 @@ int main( int argc, char *argv[] )
       n_reads++;
       int end = Min( cursor + (unsigned int)CHUNK_LEN, read.size( ) );
       bvec chunk( read, cursor, end - cursor );
-      if (WRITE_LOG) 
-	log << "r_" << read_id << " [" << cursor << ", " << end << ")\n";
+      if (WRITE_LOG)
+        log << "r_" << read_id << " [" << cursor << ", " << end << ")\n";
 
       // Bases.
       bases_out.add( chunk );

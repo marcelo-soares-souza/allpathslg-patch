@@ -13,39 +13,39 @@
 #include "Qualvector.h"
 #include "PairsManager.h"
 
-ReadOriginTracker::ReadOriginTracker(const RefTraceControl& refc) 
-    : ref_control_(refc) 
+ReadOriginTracker::ReadOriginTracker(const RefTraceControl& refc)
+  : ref_control_(refc)
 {
-    const PairsManager& pm = refc.GetPM();
-    ForceAssertEq((size_t)pm.nReads(), refc.Reads().size());
-    read_dirs_.assign(pm.nReads(), UNKNOWN);
-    for (size_t i = 0; i < pm.nPairs(); i++) {
-        read_dirs_[pm.ID1(i)] = PLUS;
-        read_dirs_[pm.ID2(i)] = MINUS;
-    }
+  const PairsManager& pm = refc.GetPM();
+  ForceAssertEq((size_t)pm.nReads(), refc.Reads().size());
+  read_dirs_.assign(pm.nReads(), UNKNOWN);
+  for (size_t i = 0; i < pm.nPairs(); i++) {
+    read_dirs_[pm.ID1(i)] = PLUS;
+    read_dirs_[pm.ID2(i)] = MINUS;
+  }
 }
 
-vec<String> ReadOriginTracker::getSampleList() const 
+vec<String> ReadOriginTracker::getSampleList() const
 {
-    return ref_control_.getSampleList();
+  return ref_control_.getSampleList();
 }
 
 int ReadOriginTracker::getSampleID(size_t read_ID) const
 {
-    return ref_control_.getSampleID(read_ID);
+  return ref_control_.getSampleID(read_ID);
 }
 
 String ReadOriginTracker::getSampleName(size_t read_ID) const
 {
-    return ref_control_.getSampleName(read_ID);
+  return ref_control_.getSampleName(read_ID);
 }
-       
+
 const vecbasevector& ReadOriginTracker::Reads() const
 {
-    return ref_control_.Reads();
+  return ref_control_.Reads();
 }
 
 const vecqualvector& ReadOriginTracker::Quals() const
 {
-    return ref_control_.Quals();
+  return ref_control_.Quals();
 }

@@ -19,22 +19,22 @@
  * bigger one.
  */
 struct SInsertion {
-  
+
 public:
-  
+
   SInsertion( );
-  
+
   SInsertion( int small_id, int big_id, bool small_rc, int pos_in_big,
-	      pair<int,int> gap_before, pair<int,int> gap_after);
-  
+              pair<int,int> gap_before, pair<int,int> gap_after);
+
   SInsertion( const vec<superb> &scaffolds, const CSublink &link,
-	      const int gap_id, const int small_start, const int gap_len );
-  
+              const int gap_id, const int small_start, const int gap_len );
+
   void PrintInfo( const vec<superb> &scaffolds, ostream &out ) const;
 
   friend bool operator< ( const SInsertion &left, const SInsertion &right );
-  
-  
+
+
 public:
 
   int small_id_;              // id of small scaffold

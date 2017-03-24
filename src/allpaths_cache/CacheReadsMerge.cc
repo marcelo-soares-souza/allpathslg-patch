@@ -7,8 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 /* CacheReadsMerge
- * 
- * A module to take a set of reads and library info and 
+ *
+ * A module to take a set of reads and library info and
  * convert it into a form usable by Arachne pipelines such as RunAllPathsLG.
  *
  * WARNING: This module has not been tested with unpaired lanes.
@@ -19,7 +19,7 @@
  * Command-line arguments:
  *
  *   CACHE_DIR: Root directory for the pre-processed input data.
- * 
+ *
  *   GROUP_HEADS: list of all the file group heads to merge.
  *
  *   GROUP_READ_SIZES: list of mean read sizes in the groups.
@@ -43,7 +43,7 @@
  *   <OUT_HEAD>.source.txt
  *
  * NOTE: Most of the code was pilfered from Josh's solexa/FetchIluminaReads.cc
- * 
+ *
  *
  ******************************************************************************/
 #include "MainTools.h"
@@ -60,8 +60,10 @@ typedef VirtualMasterVec<BaseVec> VBaseVecVec;
 typedef VirtualMasterVec<QualVec> VQualVecVec;
 
 
-static inline 
-String Tag(String S = "CRM") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "CRM") {
+  return Date() + " (" + S + "): ";
+}
 
 
 
@@ -80,8 +82,8 @@ void vec_to_text_file(const vec<size_t> & v,
 
 
 
-vec<size_t> get_shuffled_read_indices(const size_t n_in_reads, 
-                                      const size_t n_out_reads, 
+vec<size_t> get_shuffled_read_indices(const size_t n_in_reads,
+                                      const size_t n_out_reads,
                                       const int LIB_PAIRED,
                                       const unsigned int SEED)
 {
@@ -90,14 +92,14 @@ vec<size_t> get_shuffled_read_indices(const size_t n_in_reads,
   if (LIB_PAIRED) {
     const size_t n_pairs_in  = n_in_reads / 2;
     const size_t n_pairs_out = n_out_reads / 2;
-    
-    // ---- get shuffled pair indices (assumes interleaved reads) 
+
+    // ---- get shuffled pair indices (assumes interleaved reads)
     vec<uint64_t> ip_shuffle;
     Shuffle64(n_pairs_in, ip_shuffle, SEED);
     ip_shuffle.resize(n_pairs_out);
     sort(ip_shuffle.begin(), ip_shuffle.end());
-    
-    // ---- get shuffled read indices (assumes interleaved reads) 
+
+    // ---- get shuffled read indices (assumes interleaved reads)
     for (size_t j = 0; j != n_pairs_out; j++) {
       const size_t ip = ip_shuffle[j];
       ir_shuffle.push_back(2 * ip);
@@ -105,7 +107,7 @@ vec<size_t> get_shuffled_read_indices(const size_t n_in_reads,
     }
   }
   else { // library is not paired
-    // ---- get shuffled reads indices 
+    // ---- get shuffled reads indices
     Shuffle64(n_in_reads, ir_shuffle, SEED);
     ir_shuffle.resize(n_out_reads);
     sort(ir_shuffle.begin(), ir_shuffle.end());
@@ -121,15 +123,15 @@ vec<size_t> get_shuffled_read_indices(const size_t n_in_reads,
 
 
 
-void merge_files(const vec<String> & in_bases_fns, 
-                 const vec<String> & in_quals_fns, 
-                 const vec<String> & FILE_HEADS, 
+void merge_files(const vec<String> & in_bases_fns,
+                 const vec<String> & in_quals_fns,
+                 const vec<String> & FILE_HEADS,
                  const vec<int> & LIB_PAIRED,
                  const vec<size_t> & n_in_reads,
                  const vec<size_t> & n_out_reads,
-                 const String & OUT_HEAD, 
+                 const String & OUT_HEAD,
                  const unsigned int SEED,
-                 const bool do_quals) 
+                 const bool do_quals)
 {
   const size_t n_files = in_bases_fns.size();
   const String out_bases_fn = OUT_HEAD + ".fastb";
@@ -141,12 +143,12 @@ void merge_files(const vec<String> & in_bases_fns,
 
 
   if (all_reads) { // ---- merge all reads
-    
+
     if (n_files == 1) {
-      Cp(in_bases_fns[0], out_bases_fn); 
+      Cp(in_bases_fns[0], out_bases_fn);
       if (do_quals)
         Cp(in_quals_fns[0], out_quals_fn);
-    } 
+    }
     else {
       MergeMastervecs(out_bases_fn, in_bases_fns);
       if (do_quals)
@@ -160,19 +162,19 @@ void merge_files(const vec<String> & in_bases_fns,
     IncrementalWriter<QualVec> qv_out(out_quals_fn.c_str());
 
     for (size_t i = 0; i != n_files; i++) {
-      cout << Tag() << "From '" << FILE_HEADS[i] << ".fastb'" 
-           << " [" << ((LIB_PAIRED[i]) ? "paired" : "unpaired") << "]" 
+      cout << Tag() << "From '" << FILE_HEADS[i] << ".fastb'"
+           << " [" << ((LIB_PAIRED[i]) ? "paired" : "unpaired") << "]"
            << ": " << n_out_reads[i] << " out of " << n_in_reads[i] << " reads"
-           << " (" << (100.0 * n_out_reads[i] / n_in_reads[i]) << " %)" 
+           << " (" << (100.0 * n_out_reads[i] / n_in_reads[i]) << " %)"
            << endl;
 
       // ---- get shuffled read indices (paired or not)
-      const vec<size_t> ir_shuffle = get_shuffled_read_indices(n_in_reads[i], n_out_reads[i], 
-                                                               LIB_PAIRED[i], SEED);
-      
+      const vec<size_t> ir_shuffle = get_shuffled_read_indices(n_in_reads[i], n_out_reads[i],
+                                     LIB_PAIRED[i], SEED);
+
       // ---- output indices of selected reads
       vec_to_text_file(ir_shuffle, OUT_HEAD + "." + FILE_HEADS[i] + ".i_reads");
-        
+
 
 
       // ---- load selected read subset and merge
@@ -192,7 +194,7 @@ void merge_files(const vec<String> & in_bases_fns,
     bv_out.close();
     qv_out.close();
   }
-  
+
 }
 
 
@@ -202,7 +204,7 @@ void merge_files(const vec<String> & in_bases_fns,
 int main(int argc, char **argv)
 {
   RunTime();
-  
+
   BeginCommandArguments;
   CommandArgument_String(CACHE_DIR);
   CommandArgument_StringSet(GROUP_HEADS);
@@ -215,14 +217,14 @@ int main(int argc, char **argv)
   CommandArgument_UnsignedInt_OrDefault( SEED, 666 );
   CommandArgument_String(OUT_HEAD);
   EndCommandArguments;
-  
 
- 
+
+
   // Sanity checks: Determine if any of the input arguments are clearly invalid.
   if (!IsDirectory(CACHE_DIR))
     FatalErr("CACHE_DIR=" << CACHE_DIR << " does not exist.");
 
-  if (!OUT_HEAD.Contains("/")) 
+  if (!OUT_HEAD.Contains("/"))
     OUT_HEAD = String(getenv("PWD")) + "/" + OUT_HEAD;
 
   const size_t n_groups = GROUP_HEADS.size();
@@ -256,15 +258,15 @@ int main(int argc, char **argv)
     in_quals_fns.push_back(in_head + ".qualb");
 
     const size_t n_r = MastervecFileObjectCount(in_bases_fns[i]);
-    
+
     if (IsRegularFile(in_quals_fns[i]))
       ForceAssertEq(n_r, MastervecFileObjectCount(in_quals_fns[i]));
-    else 
+    else
       do_quals = false;
 
     n_in_reads.push_back(n_r);
-    n_out_reads.push_back(GROUP_LIB_PAIRED[i] ? 
-                          2 * size_t((GROUP_FRACS[i] * n_r) / 2) : 
+    n_out_reads.push_back(GROUP_LIB_PAIRED[i] ?
+                          2 * size_t((GROUP_FRACS[i] * n_r) / 2) :
                           size_t((GROUP_FRACS[i] * n_r)));
   }
 
@@ -272,14 +274,14 @@ int main(int argc, char **argv)
 
 
 
- 
-   
-  
-  // ---- Actually do the merging 
+
+
+
+  // ---- Actually do the merging
 
   cout << Tag() << "Merging read set into '" << OUT_HEAD << ".{fastb,qualb}'." << endl;
 
-  merge_files(in_bases_fns, in_quals_fns, GROUP_HEADS, 
+  merge_files(in_bases_fns, in_quals_fns, GROUP_HEADS,
               GROUP_LIB_PAIRED, n_in_reads, n_out_reads,
               OUT_HEAD, SEED, do_quals);
 
@@ -288,7 +290,7 @@ int main(int argc, char **argv)
   cout << Tag() << setw(12) << n_in_reads_total << "  reads in." << endl;
   cout << Tag() << setw(12) << n_out_reads_total << "  reads out." << endl;
   cout << Tag() << setw(12) << fixed << setprecision(1)
-       << (100.0 * n_out_reads_total / n_in_reads_total) << "  % of reads included." 
+       << (100.0 * n_out_reads_total / n_in_reads_total) << "  % of reads included."
        << endl;
 
 
@@ -296,7 +298,7 @@ int main(int argc, char **argv)
 
 
 
-  
+
   // ---- Create a PairsManager
 
 
@@ -321,24 +323,24 @@ int main(int argc, char **argv)
       }
     }
   }
-  
+
 
 
 
   // For each lane of paired reads, find the read pair separation/stdev,
   // and then add a set of read pairings to the PairsManager.
-  // Here we implicitly assume that paired reads are interleaved in the 
+  // Here we implicitly assume that paired reads are interleaved in the
   // fastb: that is, reads 0 and 1 are paired, 2 and 3 are paired, etc.
-  
+
   for (size_t i = 0, i0_read = 0; i < n_groups; i0_read += n_out_reads[i++]) {
-    
+
     if (GROUP_LIB_PAIRED[i]) {  // skip unpaired libraries
 
-      const int i_lib = pairs.libraryID(GROUP_LIB_NAMES[i]);  
-      ForceAssertGe(i_lib, 0); 
-      
+      const int i_lib = pairs.libraryID(GROUP_LIB_NAMES[i]);
+      ForceAssertGe(i_lib, 0);
+
       for (size_t j = 0; j < n_out_reads[i]; j += 2)  // assume interleaving
-	pairs.addPairToLib(i0_read + j, i0_read + j + 1, i_lib);
+        pairs.addPairToLib(i0_read + j, i0_read + j + 1, i_lib);
     }
   }
 
@@ -363,7 +365,7 @@ int main(int argc, char **argv)
   // ---- write pairs stats to the summary file
   pairs.printLibraryStats(source);
   source.close();
-  
-  
+
+
   cout << Tag() << ": Done!" << endl;
 }

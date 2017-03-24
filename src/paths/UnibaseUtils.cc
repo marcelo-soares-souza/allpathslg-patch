@@ -20,24 +20,24 @@
 void UnibaseInvolution( const vecbasevector& _unibases, vec< int >& _toRc ) {
 
   vecbasevector unibases( _unibases );
-  
+
   vec<size_t> origUnibaseId( _unibases.size(), vec<size_t>::IDENTITY );
-  
+
   unibases.SortSync( origUnibaseId );
-  
+
   vec<size_t> toRc( unibases.size(), vec<size_t>::IDENTITY );
-  
+
   vecbasevector unibases_rc( unibases );
   for ( size_t u = 0; u < unibases.size(); u++ )
     unibases_rc[ u ].ReverseComplement();
-  
+
   unibases_rc.SortSync( toRc );
   for ( size_t u = 0; u < unibases.size(); u++ )
     if ( unibases[ u ] != unibases_rc[ u ] ) {
       PRINT( u );
       ForceAssertEq( unibases[ u ].ToString(), unibases_rc[ u ].ToString() );
     }
-  
+
   /*
     {
     // check the results
@@ -52,11 +52,11 @@ void UnibaseInvolution( const vecbasevector& _unibases, vec< int >& _toRc ) {
     }
     }
   */
-  
+
   _toRc.resize( unibases.size(), -1 );
   for ( size_t i = 0; i < unibases.size(); i++ )
     _toRc[ origUnibaseId[ i ] ] = origUnibaseId[ toRc[ i ] ];
-  
+
   /*
   // check the results
   basevector u_rc;
@@ -77,7 +77,7 @@ void UnibaseInvolution( const vecbasevector& _unibases, vec< int >& _toRc ) {
    Function: BuildUnibaseAdjacencyGraph
 
  */
-template < nbases_t K > 
+template < nbases_t K >
 void BuildUnibaseAdjacencyGraph( const vecbasevector& _unibases, digraph& _AG ) {
 
   _AG.Clear();
@@ -86,19 +86,19 @@ void BuildUnibaseAdjacencyGraph( const vecbasevector& _unibases, digraph& _AG ) 
   int nuni = _unibases.size();
 
   vec< vec<int> > from(nuni), to(nuni);
-  
-  for ( size_t i = 0; i < nexts.size(); i++ ){
-    for ( size_t j = 0; j < nexts[i].size(); j++ ){
+
+  for ( size_t i = 0; i < nexts.size(); i++ ) {
+    for ( size_t j = 0; j < nexts[i].size(); j++ ) {
       from[i].push_back(nexts[i][j]);
       to[ nexts[i][j] ].push_back( i );
     }
   }
-  
-  for ( size_t i = 0; i < from.size(); i++){
+
+  for ( size_t i = 0; i < from.size(); i++) {
     Sort( from[i] );
     Sort( to[i] );
   }
-  
+
   _AG.Initialize( from, to );
   ForceAssertEq( nuni, _AG.N() );
 
@@ -106,7 +106,7 @@ void BuildUnibaseAdjacencyGraph( const vecbasevector& _unibases, digraph& _AG ) 
 
 /**
    Function: BuildUnibaseAdjacencyGraph
-   
+
 */
 void BuildUnibaseAdjacencyGraph( const vecbasevector& unibases, digraph& AG, nbases_t K ) {
 #define CASE2(K) BuildUnibaseAdjacencyGraph<K>( unibases, AG )

@@ -29,74 +29,103 @@ template <class T>
 class IncrementalWriter
 {
 public:
-    IncrementalWriter( char const* filename,
-                            unsigned long estimatedSize = 1000000 )
+  IncrementalWriter( char const* filename,
+                     unsigned long estimatedSize = 1000000 )
     : mWriter(filename,sizeof(T),sizeof(typename T::value_type),
               T::fixedDataLen(),estimatedSize)
-    {}
+  {}
 
-    /// Construct from something with a c_str() member (like string or String)
-    template <class C>
-    explicit IncrementalWriter( C const& filename,
-                                    unsigned long estimatedSize = 1000000,
-                                    char const*(C::*)() const=&C::c_str )
+  /// Construct from something with a c_str() member (like string or String)
+  template <class C>
+  explicit IncrementalWriter( C const& filename,
+                              unsigned long estimatedSize = 1000000,
+                              char const*(C::*)() const=&C::c_str )
     : mWriter(filename.c_str(),sizeof(T),sizeof(typename T::value_type),
               T::fixedDataLen(),estimatedSize)
-    {}
+  {}
 
-    // compiler-supplied destructor is OK
+  // compiler-supplied destructor is OK
 
-    void add( T const& val )
-    { size_t buf;
-      void const* pBuf = &buf;
-      val.writeFeudal(mWriter.getWriter(),&pBuf);
-      mWriter.addElement(pBuf); }
+  void add( T const& val )
+  { size_t buf;
+    void const* pBuf = &buf;
+    val.writeFeudal(mWriter.getWriter(),&pBuf);
+    mWriter.addElement(pBuf);
+  }
 
-    template <class Itr>
-    void add( Itr begin, Itr end )
-    { while ( begin != end ) { add(*begin); ++begin; } }
+  template <class Itr>
+  void add( Itr begin, Itr end )
+  {
+    while ( begin != end ) {
+      add(*begin);
+      ++begin;
+    }
+  }
 
-    void checkPoint() { mWriter.checkPoint(); }
+  void checkPoint() {
+    mWriter.checkPoint();
+  }
 
-    unsigned long getNElements() const { return mWriter.getNElements(); }
+  unsigned long getNElements() const {
+    return mWriter.getNElements();
+  }
 
-    void close() { mWriter.close(); }
+  void close() {
+    mWriter.close();
+  }
 
-    class iterator : public std::iterator<std::output_iterator_tag,T>
+  class iterator : public std::iterator<std::output_iterator_tag,T>
+  {
+  public:
+    /// bit-bucket constructor
+    iterator() : mpWriter(0) {}
+
+    /// add-to-writer constructor
+    iterator( IncrementalWriter& writer ) : mpWriter(&writer) {}
+
+    // compiler-supplied copying and destructor are OK
+
+    iterator& operator=( T const& val )
     {
-    public:
-        /// bit-bucket constructor
-        iterator() : mpWriter(0) {}
+      if ( mpWriter ) mpWriter->add(val);
+      return *this;
+    }
 
-        /// add-to-writer constructor
-        iterator( IncrementalWriter& writer ) : mpWriter(&writer) {}
+    iterator& operator*() {
+      return *this;
+    }
+    iterator& operator++() {
+      return *this;
+    }
+    iterator& operator++(int) {
+      return *this;
+    }
 
-        // compiler-supplied copying and destructor are OK
+    friend bool operator==( iterator const& itr1, iterator const& itr2 )
+    {
+      return itr1.mpWriter == itr2.mpWriter;
+    }
+    friend bool operator!=( iterator const& itr1, iterator const& itr2 )
+    {
+      return !(itr1 == itr2);
+    }
 
-        iterator& operator=( T const& val )
-        { if ( mpWriter ) mpWriter->add(val); return *this; }
+  private:
+    IncrementalWriter* mpWriter;
+  };
 
-        iterator& operator*() { return *this; }
-        iterator& operator++() { return *this; }
-        iterator& operator++(int) { return *this; }
-
-        friend bool operator==( iterator const& itr1, iterator const& itr2 )
-        { return itr1.mpWriter == itr2.mpWriter; }
-        friend bool operator!=( iterator const& itr1, iterator const& itr2 )
-        { return !(itr1 == itr2); }
-
-    private:
-        IncrementalWriter* mpWriter;
-    };
-
-    iterator begin() { return iterator(*this); }
-    iterator end() { return iterator(); }
+  iterator begin() {
+    return iterator(*this);
+  }
+  iterator end() {
+    return iterator();
+  }
 
 private:
-    IncrementalWriter( IncrementalWriter const& ); // unimplemented -- no copying
-    IncrementalWriter& operator=( IncrementalWriter const& ); // unimplemented -- no copying
+  IncrementalWriter( IncrementalWriter const& ); // unimplemented -- no copying
+  IncrementalWriter& operator=( IncrementalWriter const& ); // unimplemented -- no copying
 
-    FeudalFileWriter mWriter;
+  FeudalFileWriter mWriter;
 };
 
 #endif /* FEUDAL_INCREMENTALWRITER_H_ */

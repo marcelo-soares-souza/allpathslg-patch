@@ -22,14 +22,14 @@
  *  sequence data.
  */
 void lookup_table::SetK( unsigned int K )
-{    K_ = K;
-     four_to_K_ = 1;
-     Kmask_ = KmerBitmask(K);
-     for ( unsigned int i = 0; i < K; i++ )
-          four_to_K_ *= 4;
-     lookup_.resize( four_to_K_ );
-     freq_.resize( four_to_K_, 0 );
-     control_[0] = K;
+{ K_ = K;
+  four_to_K_ = 1;
+  Kmask_ = KmerBitmask(K);
+  for ( unsigned int i = 0; i < K; i++ )
+    four_to_K_ *= 4;
+  lookup_.resize( four_to_K_ );
+  freq_.resize( four_to_K_, 0 );
+  control_[0] = K;
 }
 
 /** \brief Adds a new conting name to the lookup table.
@@ -55,27 +55,27 @@ void lookup_table::SetK( unsigned int K )
  *  @see LookupTableBuilder::BuildTableFromContigs()
  */
 void lookup_table::AddContigName( String contig_name, const String&
-     file_name, int index_in_file )
-{    if ( contig_name.size( ) >= 252 )
-          contig_name = contig_name.substr(0, 247) + " ...";
-     contig_name_.push_back(contig_name);
+                                  file_name, int index_in_file )
+{ if ( contig_name.size( ) >= 252 )
+    contig_name = contig_name.substr(0, 247) + " ...";
+  contig_name_.push_back(contig_name);
 
-     // we trim off the directory and "extension" portion of the filename
-     // to help users avoid the 256-character limit imposed below.
-     String base_file_name = file_name;
-     if (base_file_name.Contains("/")) {
-	 int index;
-	 for (index = (size_t) base_file_name.size() - 1; index >= 0; index--)
-	   if (base_file_name[index] == '/')
-	     break;
-	 base_file_name = base_file_name.substr(index + 1, base_file_name.size());
-     }
-     if ( base_file_name.Contains( "." ) ) base_file_name = base_file_name.Before( "." );
+  // we trim off the directory and "extension" portion of the filename
+  // to help users avoid the 256-character limit imposed below.
+  String base_file_name = file_name;
+  if (base_file_name.Contains("/")) {
+    int index;
+    for (index = (size_t) base_file_name.size() - 1; index >= 0; index--)
+      if (base_file_name[index] == '/')
+        break;
+    base_file_name = base_file_name.substr(index + 1, base_file_name.size());
+  }
+  if ( base_file_name.Contains( "." ) ) base_file_name = base_file_name.Before( "." );
 
-     String contig_name_alt = ToString(index_in_file) + ":" + base_file_name;
-     ForceAssertLt( contig_name_alt.size( ), 256u );
-     contig_name_alt_.push_back(contig_name_alt);
-     ++control_[2];
+  String contig_name_alt = ToString(index_in_file) + ":" + base_file_name;
+  ForceAssertLt( contig_name_alt.size( ), 256u );
+  contig_name_alt_.push_back(contig_name_alt);
+  ++control_[2];
 }
 
 /** \brief Reads in the lookup table header from disk and initializes
@@ -92,60 +92,61 @@ void lookup_table::AddContigName( String contig_name, const String&
  */
 void lookup_table::ReadHeader( )
 {
-     ForceAssert(fw_.isOpen());
-     fw_.seek(0);
-     fw_.read( &control_[0], 1024 );
-     fw_.read( &control2_[0], 1024 );
-     SetK( control_[0] );
-     nchunks_ = control_[1];
-     unsigned int& ncontigs = control_[2];
-     given_chunk_size_ = control_[3];
-     given_chunk_overlap_ = control_[4];
-     chunk_sizes_.resize(nchunks_);
+  ForceAssert(fw_.isOpen());
+  fw_.seek(0);
+  fw_.read( &control_[0], 1024 );
+  fw_.read( &control2_[0], 1024 );
+  SetK( control_[0] );
+  nchunks_ = control_[1];
+  unsigned int& ncontigs = control_[2];
+  given_chunk_size_ = control_[3];
+  given_chunk_overlap_ = control_[4];
+  chunk_sizes_.resize(nchunks_);
 
-     for ( int i = 0; i < (int) nchunks_; i++ )
-       chunk_sizes_[i] = control_[ 5 + i ]; // this is size of loc_ of chunk i
-     // note: chunk_sizes_ actually holds the sizes of locs_ for each chunk!!
+  for ( int i = 0; i < (int) nchunks_; i++ )
+    chunk_sizes_[i] = control_[ 5 + i ]; // this is size of loc_ of chunk i
+  // note: chunk_sizes_ actually holds the sizes of locs_ for each chunk!!
 
-     unsigned int max_chunk_size = Max(chunk_sizes_);
-     fw_.read( &freq_[0], FourToK( ) * 4 );
+  unsigned int max_chunk_size = Max(chunk_sizes_);
+  fw_.read( &freq_[0], FourToK( ) * 4 );
 
-     contig_name_.resize(ncontigs);
-     contig_name_alt_.resize(ncontigs);
-     contig_sizes_.resize(ncontigs);
+  contig_name_.resize(ncontigs);
+  contig_name_alt_.resize(ncontigs);
+  contig_sizes_.resize(ncontigs);
 
   for ( int i = 0; i < (int) ncontigs; i++ )
-    {
-      fw_.read( &contig_sizes_[i], 4 );
-      char cname[256];
-      fw_.read( &cname[0], 252 );
-      contig_name_[i] = String( &cname[0] );
-      char cname_alt[256];
-      fw_.read( &cname_alt[0], 256 );
-      contig_name_alt_[i] = String( &cname_alt[0] );
-    }
+  {
+    fw_.read( &contig_sizes_[i], 4 );
+    char cname[256];
+    fw_.read( &cname[0], 252 );
+    contig_name_[i] = String( &cname[0] );
+    char cname_alt[256];
+    fw_.read( &cname_alt[0], 256 );
+    contig_name_alt_[i] = String( &cname_alt[0] );
+  }
 
-     // compute contig start positions for all contigs:
-     // we have all contig sizes, so that we can calculate absolute
-     // start positions with respect to the full (concatenated) reference
-     // sequence.
-     contig_start_.resize(ncontigs);
-     unsigned int pos = 0;
-     for ( int i = 0; i < (int) ncontigs; i++ )
-     {    contig_start_[i] = pos;
-          pos += contig_sizes_[i];    }
-     locs_.reserve(max_chunk_size);
+  // compute contig start positions for all contigs:
+  // we have all contig sizes, so that we can calculate absolute
+  // start positions with respect to the full (concatenated) reference
+  // sequence.
+  contig_start_.resize(ncontigs);
+  unsigned int pos = 0;
+  for ( int i = 0; i < (int) ncontigs; i++ )
+  { contig_start_[i] = pos;
+    pos += contig_sizes_[i];
+  }
+  locs_.reserve(max_chunk_size);
 
-     // Initialize chunk_start_ vector:
-     // we have enough info to compute start positions of all chunks right away
-     chunk_start_.resize(nchunks_);
-     off_t offset = fw_.tell();
-     for ( unsigned int i=0; i < nchunks_; ++i ) {
-       chunk_start_[i] = offset;
-       offset += off_t(FourToK())*4;       // size of the lookup table
-       offset += off_t(chunk_sizes_[i])*4; // size of the locs_ table
-       offset += off_t( ( NBasesInChunk(i) + 15 ) / 16 )*4; // size of bases
-     }
+  // Initialize chunk_start_ vector:
+  // we have enough info to compute start positions of all chunks right away
+  chunk_start_.resize(nchunks_);
+  off_t offset = fw_.tell();
+  for ( unsigned int i=0; i < nchunks_; ++i ) {
+    chunk_start_[i] = offset;
+    offset += off_t(FourToK())*4;       // size of the lookup table
+    offset += off_t(chunk_sizes_[i])*4; // size of the locs_ table
+    offset += off_t( ( NBasesInChunk(i) + 15 ) / 16 )*4; // size of bases
+  }
 }
 
 /** \brief Writes complete header of the lookup table file to disk.
@@ -190,22 +191,22 @@ void lookup_table::ReadHeader( )
  *  @see WriteChunk()
  */
 void lookup_table::WriteHeader( ) const
-{    fw_.seek( 0 );
-     fw_.write( &control_[0], 1024 );
-     fw_.write( &control2_[0], 1024 );
-     fw_.write( &freq_[0], FourToK( ) * 4 );
-     vec<char> cname;
-     for ( int i = 0; i < (int) contig_name_.size( ); i++ )
-     {    fw_.write( &contig_sizes_[i], 4 );
-          cname.resize_and_set( 252, 0 );
-          for ( int j = 0; j < (int) contig_name_[i].size( ); j++ )
-               cname[j] = contig_name_[i][j];
-          fw_.write( &cname[0], 252 );
-          cname.resize_and_set( 256, 0 );
-          for ( int j = 0; j < (int) contig_name_alt_[i].size( ); j++ )
-               cname[j] = contig_name_alt_[i][j];
-          fw_.write( &cname[0], 256 );
-     }
+{ fw_.seek( 0 );
+  fw_.write( &control_[0], 1024 );
+  fw_.write( &control2_[0], 1024 );
+  fw_.write( &freq_[0], FourToK( ) * 4 );
+  vec<char> cname;
+  for ( int i = 0; i < (int) contig_name_.size( ); i++ )
+  { fw_.write( &contig_sizes_[i], 4 );
+    cname.resize_and_set( 252, 0 );
+    for ( int j = 0; j < (int) contig_name_[i].size( ); j++ )
+      cname[j] = contig_name_[i][j];
+    fw_.write( &cname[0], 252 );
+    cname.resize_and_set( 256, 0 );
+    for ( int j = 0; j < (int) contig_name_alt_[i].size( ); j++ )
+      cname[j] = contig_name_alt_[i][j];
+    fw_.write( &cname[0], 256 );
+  }
 }
 
 /** \brief Appends chunk data to the file and updates the corresponding
@@ -238,32 +239,32 @@ void lookup_table::WriteHeader( ) const
  */
 
 void lookup_table::WriteChunk( const vec<char>& bases )
-{    fw_.write( &lookup_[0], FourToK( ) * 4 );
-     fw_.write( &locs_[0], ( (longlong) NLocs( ) ) * LLCONST(4) );
-     ForceAssert( control_[1] + 5 < 256 );
-     control_[ control_[1] + 5 ] = locs_.size( );
+{ fw_.write( &lookup_[0], FourToK( ) * 4 );
+  fw_.write( &locs_[0], ( (longlong) NLocs( ) ) * LLCONST(4) );
+  ForceAssert( control_[1] + 5 < 256 );
+  control_[ control_[1] + 5 ] = locs_.size( );
 
-     unsigned int start = Min(locs_);
-     vec<char>::const_iterator itr(bases.begin()+start);
-     vec<char>::const_iterator end(bases.begin()+Max(locs_)+K());
-     basevector b(end-itr);
-     for ( unsigned int idx = 0; itr != end; ++idx, ++itr )
-     {
-         char base = *itr;
-         if ( !Base::isBase(base) ) base = 'A';
-         b.Set(idx,Base::char2Val(base));
-     }
+  unsigned int start = Min(locs_);
+  vec<char>::const_iterator itr(bases.begin()+start);
+  vec<char>::const_iterator end(bases.begin()+Max(locs_)+K());
+  basevector b(end-itr);
+  for ( unsigned int idx = 0; itr != end; ++idx, ++itr )
+  {
+    char base = *itr;
+    if ( !Base::isBase(base) ) base = 'A';
+    b.Set(idx,Base::char2Val(base));
+  }
 
-     int byte_count = ( ( b.size( ) + 15 ) / 16 ) * 4;
-     off_t fd_pos = fw_.tell();
-     int c2start = control_[1] * 4;
-     ForceAssertLt( c2start, 252 ); // will fail if > 62 chunks
-     control2_[ c2start ] = *( (unsigned int*) (&fd_pos) );
-     control2_[ c2start + 1 ] = *( (unsigned int*) (&fd_pos) + 1 );
-     control2_[ c2start + 2 ] = start;
-     control2_[ c2start + 3 ] = b.size();
-     b.writeContent(fw_);
-     ++control_[1];
+  int byte_count = ( ( b.size( ) + 15 ) / 16 ) * 4;
+  off_t fd_pos = fw_.tell();
+  int c2start = control_[1] * 4;
+  ForceAssertLt( c2start, 252 ); // will fail if > 62 chunks
+  control2_[ c2start ] = *( (unsigned int*) (&fd_pos) );
+  control2_[ c2start + 1 ] = *( (unsigned int*) (&fd_pos) + 1 );
+  control2_[ c2start + 2 ] = start;
+  control2_[ c2start + 3 ] = b.size();
+  b.writeContent(fw_);
+  ++control_[1];
 }
 
 /** \brief Organizes, in memory, lookup and locations data for the new chunk;
@@ -359,8 +360,8 @@ lookup_table::MakeChunk( vec< pair<unsigned int, unsigned int> >& index_loc )
  *  @see WriteHeader()
  */
 void lookup_table::DumpChunk(
-		       vec< pair<unsigned int, unsigned int> >& index_loc,
-		       const vec<char>& bases )
+  vec< pair<unsigned int, unsigned int> >& index_loc,
+  const vec<char>& bases )
 {
   MakeChunk( index_loc );
   WriteChunk(bases);
@@ -370,31 +371,32 @@ void lookup_table::DumpChunk(
 
 
 void lookup_table::FetchBasesFromDisk( unsigned int start, unsigned int stop,
-     basevector& b )
-{   ForceAssert(fw_.isOpen());
-    basevector b0;
-    for ( unsigned int i = 0; i < NChunks( ); i++ )
-     {    if ( start < StartBaseInChunk(i) ) continue;
-          if ( stop > StopBaseInChunk(i) ) continue;
-          unsigned int bases_offset = start - StartBaseInChunk(i);
-          off_t d = DiskStartOfChunkBases(i) + off_t( bases_offset/4 );
-          unsigned int before_bases = bases_offset - 4 * (bases_offset/4);
-          b0.resize( stop - start + before_bases );
+                                       basevector& b )
+{ ForceAssert(fw_.isOpen());
+  basevector b0;
+  for ( unsigned int i = 0; i < NChunks( ); i++ )
+  { if ( start < StartBaseInChunk(i) ) continue;
+    if ( stop > StopBaseInChunk(i) ) continue;
+    unsigned int bases_offset = start - StartBaseInChunk(i);
+    off_t d = DiskStartOfChunkBases(i) + off_t( bases_offset/4 );
+    unsigned int before_bases = bases_offset - 4 * (bases_offset/4);
+    b0.resize( stop - start + before_bases );
 
-          // Note: the following was originally done with pread, but it did not
-          // perform correctly on ia32 machines.
+    // Note: the following was originally done with pread, but it did not
+    // perform correctly on ia32 machines.
 
-          off_t current = fw_.tell();
-          fw_.seek( d );
-          b0.readContent(fw_);
-          fw_.seek( current );
+    off_t current = fw_.tell();
+    fw_.seek( d );
+    b0.readContent(fw_);
+    fw_.seek( current );
 
-          b.resize( stop - start );
-          for ( unsigned int j = start; j < stop; j++ )
-               b.Set( j - start, b0[ j - start + before_bases ] );
-          return;    }
-     FatalErr( "Internal error.  Requested start = " << start << " and stop = "
-          << stop << " do not exist in a base chunk on disk." );
+    b.resize( stop - start );
+    for ( unsigned int j = start; j < stop; j++ )
+      b.Set( j - start, b0[ j - start + before_bases ] );
+    return;
+  }
+  FatalErr( "Internal error.  Requested start = " << start << " and stop = "
+            << stop << " do not exist in a base chunk on disk." );
 }
 
 /** \brief Reads in i-th chunk from disk.
@@ -415,9 +417,10 @@ void lookup_table::ReadChunk( int i )
 
   int64_t chunk_start_i = chunk_start_[0];
   for ( int j = 0; j < i; j++ )
-  {    chunk_start_i += FourToK( ) * 4;
-       chunk_start_i += ( (longlong) chunk_sizes_[j] ) * LLCONST(4);
-       chunk_start_i += BaseVec::physicalSize( NBasesInChunk(j) );    }
+  { chunk_start_i += FourToK( ) * 4;
+    chunk_start_i += ( (longlong) chunk_sizes_[j] ) * LLCONST(4);
+    chunk_start_i += BaseVec::physicalSize( NBasesInChunk(j) );
+  }
 
   if (i!=1+chunk_) {
     // Seek to right place
@@ -472,22 +475,22 @@ void lookup_table::ReadChunk( int i )
  */
 String lookup_table::ContigNameBasic(int i)
 {
-     String alt = ContigNameAlt(i);
-     String id = alt.Before( ":" ), rest = alt.After( ":" );
+  String alt = ContigNameAlt(i);
+  String id = alt.Before( ":" ), rest = alt.After( ":" );
 
-     // the following strips off the leading pathname and extension from the filename
-     // this is now performed during lookup table construction in AddContigName
-     // (when contig_name_alt_ is manufactured), but is kept here so that older
-     // lookup tables still work.
-     if ( rest.Contains( "/" ) )
-     {    int index;
-          for ( index = (int) rest.size( ) - 1; index >= 0; index-- )
-               if ( rest[index] == '/' ) break;
-          rest = rest.substr( index + 1, rest.size( ) );
-     }
-     if ( rest.Contains( "." ) ) rest = rest.Before( "." );
-     //
-     return rest + "[" + id + "]";
+  // the following strips off the leading pathname and extension from the filename
+  // this is now performed during lookup table construction in AddContigName
+  // (when contig_name_alt_ is manufactured), but is kept here so that older
+  // lookup tables still work.
+  if ( rest.Contains( "/" ) )
+  { int index;
+    for ( index = (int) rest.size( ) - 1; index >= 0; index-- )
+      if ( rest[index] == '/' ) break;
+    rest = rest.substr( index + 1, rest.size( ) );
+  }
+  if ( rest.Contains( "." ) ) rest = rest.Before( "." );
+  //
+  return rest + "[" + id + "]";
 }
 
 
@@ -556,97 +559,97 @@ void lookup_table::InitializeFromContig( const String &name, const basevector &b
 /// > maxFreq (i.e. the read will be effectively discarded)
 
 void lookup_table::BasesToQueries(const vecbasevector &bases, vec<Query> &queries,
-		      int maxFreq, unsigned int npasses,
-				  int firstRead, int lastRead, bool maxFreqDiscardRead)
-  {
-    const unsigned int B = (maxFreq<0) ? -maxFreq : 0; // only used if maxFreq<0
-    const unsigned int MF = (maxFreq>0) ? maxFreq : 0; // only used if maxFreq>0
-    const unsigned int infinite=numeric_limits<unsigned int>::max();
-                     // only used if maxFreq<0
+                                  int maxFreq, unsigned int npasses,
+                                  int firstRead, int lastRead, bool maxFreqDiscardRead)
+{
+  const unsigned int B = (maxFreq<0) ? -maxFreq : 0; // only used if maxFreq<0
+  const unsigned int MF = (maxFreq>0) ? maxFreq : 0; // only used if maxFreq>0
+  const unsigned int infinite=numeric_limits<unsigned int>::max();
+  // only used if maxFreq<0
 
-    int v;
-    unsigned int q=0;
-    if (-1 == lastRead) lastRead = bases.size();
-    for (v=firstRead; v < lastRead; ++v)
-      q += max(0, bases[v].isize() - int(K_-1));
-    queries.reserve(q);
+  int v;
+  unsigned int q=0;
+  if (-1 == lastRead) lastRead = bases.size();
+  for (v=firstRead; v < lastRead; ++v)
+    q += max(0, bases[v].isize() - int(K_-1));
+  queries.reserve(q);
 
-    KmerIndexSeq next(K_);
-    unsigned int pos = 0;
-    basevector b;
-    for (v=firstRead; v<lastRead; ++v) {
-      if (bases[v].size()>=K_) {
-	b = bases[v];
-	for (unsigned int pass = 0; pass < npasses; ++pass) {
-	  if (1==pass)
-	    b.ReverseComplement();
-	  const unsigned int last = b.size()-K_+1;
-	  next.Reset(b);
-	  if (maxFreq==0) {
-	    // No need to test frequencies
-	    for (unsigned int i=0; i<last; ++i) {
-	      queries.push_back(Query(pos+i, next(b), pass>0));
-	    }
-	  } else if (maxFreq>0) {
-	    if ( maxFreqDiscardRead ) {
+  KmerIndexSeq next(K_);
+  unsigned int pos = 0;
+  basevector b;
+  for (v=firstRead; v<lastRead; ++v) {
+    if (bases[v].size()>=K_) {
+      b = bases[v];
+      for (unsigned int pass = 0; pass < npasses; ++pass) {
+        if (1==pass)
+          b.ReverseComplement();
+        const unsigned int last = b.size()-K_+1;
+        next.Reset(b);
+        if (maxFreq==0) {
+          // No need to test frequencies
+          for (unsigned int i=0; i<last; ++i) {
+            queries.push_back(Query(pos+i, next(b), pass>0));
+          }
+        } else if (maxFreq>0) {
+          if ( maxFreqDiscardRead ) {
 
-	      unsigned int index, freq;
-	      for (unsigned int i=0; i<last; ++i) {
-		index = next(b);
-		freq = freq_[index];
-		if ( freq > MF ) {
-		  vec<Query>::iterator from = queries.end();
-		  from -= i;
-		  queries.erase(from, queries.end());
-		  break; // erase all queries accumulated for this read so far and abort: go get next read
-		}
-		queries.push_back(Query(pos+i, index, pass>0));
-	      }
+            unsigned int index, freq;
+            for (unsigned int i=0; i<last; ++i) {
+              index = next(b);
+              freq = freq_[index];
+              if ( freq > MF ) {
+                vec<Query>::iterator from = queries.end();
+                from -= i;
+                queries.erase(from, queries.end());
+                break; // erase all queries accumulated for this read so far and abort: go get next read
+              }
+              queries.push_back(Query(pos+i, index, pass>0));
+            }
 
-	    } else {
+          } else {
 
-	      unsigned int index, freq;
-	      for (unsigned int i=0; i<last; ++i) {
-		index = next(b);
-		freq = freq_[index];
-		if (0 < freq && freq <= MF)
-		  queries.push_back(Query(pos+i, index, pass>0));
-	      }
+            unsigned int index, freq;
+            for (unsigned int i=0; i<last; ++i) {
+              index = next(b);
+              freq = freq_[index];
+              if (0 < freq && freq <= MF)
+                queries.push_back(Query(pos+i, index, pass>0));
+            }
 
-	    }
+          }
 
-	  } else { //HACK: find lowest nonzero freqs in blocks
-	    // For pass 0 start at beginning, pass 1 start at end of read
-	    int blockFirst = (0==pass) ? 0 : (max(B,last) - B);
-	    int blockLast = (0==pass) ? min(B, last) : last;
-	    unsigned int index, freq;
-	    while ( 0 <= blockFirst && blockFirst < blockLast ) {
-	      unsigned int minFreq = infinite, bestIndex=infinite, bestI=infinite;
-	      for (int i=blockFirst; i<blockLast; ++i) {
-		index = Index(b, i, K_);
-		freq = freq_[index];
-		if (0 < freq && freq < minFreq) {
-		  minFreq = freq;
-		  bestIndex = index;
-		  bestI = i;
-		}
-	      }
-	      if (minFreq<infinite)
-		queries.push_back(Query(pos+bestI, bestIndex, pass>0));
-	      if (0==pass) {
-		blockFirst = blockLast;
-		blockLast = min(B+blockLast, last);
-	      } else {
-		blockLast = blockFirst;
-		blockFirst -= B;
-	      }
-	    }
-	  }
-	}
+        } else { //HACK: find lowest nonzero freqs in blocks
+          // For pass 0 start at beginning, pass 1 start at end of read
+          int blockFirst = (0==pass) ? 0 : (max(B,last) - B);
+          int blockLast = (0==pass) ? min(B, last) : last;
+          unsigned int index, freq;
+          while ( 0 <= blockFirst && blockFirst < blockLast ) {
+            unsigned int minFreq = infinite, bestIndex=infinite, bestI=infinite;
+            for (int i=blockFirst; i<blockLast; ++i) {
+              index = Index(b, i, K_);
+              freq = freq_[index];
+              if (0 < freq && freq < minFreq) {
+                minFreq = freq;
+                bestIndex = index;
+                bestI = i;
+              }
+            }
+            if (minFreq<infinite)
+              queries.push_back(Query(pos+bestI, bestIndex, pass>0));
+            if (0==pass) {
+              blockFirst = blockLast;
+              blockLast = min(B+blockLast, last);
+            } else {
+              blockLast = blockFirst;
+              blockFirst -= B;
+            }
+          }
+        }
       }
-      pos += bases[v].size(); // advance pos even if skipping over the read
     }
+    pos += bases[v].size(); // advance pos even if skipping over the read
   }
+}
 
 
 

@@ -20,31 +20,35 @@
  * HyperFastavector.
  */
 class CLinFastavec {
-  
+
 public:
-  
+
   CLinFastavec( HyperFastavector &hyper, ostream *plog = 0 );
 
-  void SetNewAlgorithm( ) { new_algorithm_ = True; }
+  void SetNewAlgorithm( ) {
+    new_algorithm_ = True;
+  }
 
-  Bool NewAlgorithm( ) const { return new_algorithm_; }
-  
+  Bool NewAlgorithm( ) const {
+    return new_algorithm_;
+  }
+
   // Save all intermediate steps as base_name.<iter_>
   void SetBaseInterSave( const String &base_name );
 
   // Find and collapse cells (see graph/FindCells.h for details).
   int FlattenCells( const int MAX_CELL_SIZE );
-  
+
   // Flatten frayed ends (multiple sources or sinks).
   int FlattenFrayedEnds( );
-  
+
   // Flatten bubbles.
   int FlattenBubbles( );
 
   // Report info on existing bubbles.
   void ReportBubbles( );
-  
-  
+
+
 private:
 
   // Save intermediate assembly.
@@ -55,14 +59,14 @@ private:
 
   // Similar to Combine in Fastavector, but it allows for some slack (see .cc).
   fastavector CombineSlack( const vec<fastavector> &fvec ) const;
-  
+
   // Find all bubbles (pairs of vertices with exactly two edges between them).
   void FindBubbles( vec< pair<int,int> > &bubbles) const;
-  
+
   // Clean up graph, and increment iter_ by 1.
   void CleanUp( bool alt = false );
-  
-  
+
+
 private:
 
   HyperFastavector &hyper_;   // HyperFastavector
@@ -70,7 +74,7 @@ private:
   ostream *log_;              // log stream (may be null)
   int iter_;                  // iteration counter
   Bool new_algorithm_;        // use new algorithm?
-  
+
 };
 
 #endif

@@ -9,33 +9,33 @@
    Class: KmerPathDatabaseTemplate
 
    A <path iterval database>.
-   
+
    An encapsulated vec<TAG>, which allows per-database
    caching for lookups.
 */
 template <class TAG>
 class KmerPathDatabaseTemplate
 {
- public:
+public:
   KmerPathDatabaseTemplate();
 
   KmerPathDatabaseTemplate( const String& filename );
   KmerPathDatabaseTemplate( const KmerPathDatabaseTemplate<TAG>& other );
   KmerPathDatabaseTemplate( const vec<TAG>* p_vecOfTaggedRpints );
   KmerPathDatabaseTemplate( const vecKmerPath& fwdPaths,
-                    const vecKmerPath& revPaths );
+                            const vecKmerPath& revPaths );
   KmerPathDatabaseTemplate( const vec<KmerPath>& fwdPaths,
-                    const vec<KmerPath>& revPaths );
-  
+                            const vec<KmerPath>& revPaths );
+
   KmerPathDatabaseTemplate& operator= ( const KmerPathDatabaseTemplate<TAG>& other );
-  
+
   ~KmerPathDatabaseTemplate();
 
 
   // MethodDecl: Contains
   // Find all occurrences of the given kmer.  Return an array of indices
   // of the path intervals in the database that contain this kmer.
-  void Contains( kmer_id_t kmerId, 
+  void Contains( kmer_id_t kmerId,
                  vec<path_interval_id_t>& answer, bool append = false ) const;
 
 
@@ -48,22 +48,30 @@ class KmerPathDatabaseTemplate
     return (*mp_taggedRpints)[ index ];
   }
 
-  const vec<TAG>& ConstRef() const { return *mp_taggedRpints; }
+  const vec<TAG>& ConstRef() const {
+    return *mp_taggedRpints;
+  }
 
-  typename vec<TAG>::const_iterator Begin() const { return mp_taggedRpints->begin(); }
-  typename vec<TAG>::const_iterator End()   const { return mp_taggedRpints->end(); }
+  typename vec<TAG>::const_iterator Begin() const {
+    return mp_taggedRpints->begin();
+  }
+  typename vec<TAG>::const_iterator End()   const {
+    return mp_taggedRpints->end();
+  }
 
-  longlong size() const { return mp_taggedRpints->size(); }
+  longlong size() const {
+    return mp_taggedRpints->size();
+  }
 
   // The mp_rpints vector is written out to or read in from the given filename.
   void Write( const String& filename ) const;
   void Read( const String& filename );
 
 
- private:
+private:
   template <class KmerPathVector>
   void ConstructFromKmerPaths( const KmerPathVector& fwPaths, const KmerPathVector& rcPaths );
-  
+
   void CopyFrom( const KmerPathDatabaseTemplate<TAG>& other );
 
   const vec<TAG>* mp_taggedRpints;

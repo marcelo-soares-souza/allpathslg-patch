@@ -16,9 +16,9 @@ const char *DOC =
  * Input files required:
  *
  * <READS>.readtrack
- * 
+ *
  * Other Arguments:
- * 
+ *
  * READ_IDS
  * A set of read IDs in braces (e.g., "{2345,123132,3454363}").
  *
@@ -48,11 +48,11 @@ int main( int argc, char **argv )
   BeginCommandArguments;
   CommandDoc(DOC);
   CommandArgument_String_Doc(READS,
-    "Track read IDS in this file (requires a <READS>.readtrack file)");
+                             "Track read IDS in this file (requires a <READS>.readtrack file)");
   CommandArgument_String_OrDefault_Doc(READ_IDS, "",
-    "Read IDs to track {id1,id2,id3,...} or track all by default.");
+                                       "Read IDs to track {id1,id2,id3,...} or track all by default.");
   CommandArgument_Bool_OrDefault_Doc(TRACK_BACK, True,
-    "Track read IDs back to their origin, and not just the most recent change.")
+                                     "Track read IDs back to their origin, and not just the most recent change.")
   EndCommandArguments;
 
   // Trim off file extension if one was supplied
@@ -89,11 +89,11 @@ int main( int argc, char **argv )
     n_reads = read_ids.size();
   }
 
-  
+
   // Display read ID history
 
   for (size_t i = 0; i < n_reads; ++i) {
-    
+
     uint32_t r = (track_all_reads ? i : read_ids[i]);
     ForceAssertLt((uint32_t)r, rt.size());
     String source = rt.GetReadSource(r);
@@ -106,44 +106,44 @@ int main( int argc, char **argv )
 
       // Get next read tracker if already loaded, or else look for it on disk
       TrackMap::iterator pos = tracks.find(source);
-      if (pos == tracks.end()) { 
+      if (pos == tracks.end()) {
 
-	// Only look on disk once, if we can't find it mark it in missing.
-	if (missing.find(source) == missing.end()) { 
+        // Only look on disk once, if we can't find it mark it in missing.
+        if (missing.find(source) == missing.end()) {
 
-	  // Attempt to load the next read tracker (stripping off path if required)
-	  ReadTracker rt_next;
-	  if ( IsRegularFile( source + ".readtrack") )
-	    rt_next.Load(source);
-	  else
-	    rt_next.Load(basename(source));
+          // Attempt to load the next read tracker (stripping off path if required)
+          ReadTracker rt_next;
+          if ( IsRegularFile( source + ".readtrack") )
+            rt_next.Load(source);
+          else
+            rt_next.Load(basename(source));
 
-	  // Add read tracker to list or mark it as missing
-	  if (rt_next.size() == 0) {
-	    missing.insert(source); 
-	  } else {
-	    pos = tracks.insert(TrackMap::value_type(source, rt_next)).first;
-	  }
-	}
+          // Add read tracker to list or mark it as missing
+          if (rt_next.size() == 0) {
+            missing.insert(source);
+          } else {
+            pos = tracks.insert(TrackMap::value_type(source, rt_next)).first;
+          }
+        }
       }
 
       // If we found another tracker then write the ID history it contains
       if (pos != tracks.end()) {
-	ReadTracker& rt_next = pos->second;
-	ForceAssertLt((uint32_t)index, rt_next.size());
-	source = rt_next.GetReadSource(index);
-	index = rt_next.GetReadIndex(index);
-	cout << " " << basename(source) << ":" << index;
+        ReadTracker& rt_next = pos->second;
+        ForceAssertLt((uint32_t)index, rt_next.size());
+        source = rt_next.GetReadSource(index);
+        index = rt_next.GetReadIndex(index);
+        cout << " " << basename(source) << ":" << index;
       } else {
-	// No more read trackers available - the history ends here
-	break;
+        // No more read trackers available - the history ends here
+        break;
       }
     }
 
     cout << endl;
   }
 
-  
+
 }
 
 

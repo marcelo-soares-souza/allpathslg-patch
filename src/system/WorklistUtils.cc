@@ -34,83 +34,83 @@
 
 namespace
 {
-    pthread_t gMainThread;
-    CRD::HOOKFUNC gOldHook;
+pthread_t gMainThread;
+CRD::HOOKFUNC gOldHook;
 
-    void exitHook( int status )
-    {
-        if ( !pthread_equal(gMainThread,pthread_self()) )
-            pthread_exit( reinterpret_cast<void*>(status) );
-    }
+void exitHook( int status )
+{
+  if ( !pthread_equal(gMainThread,pthread_self()) )
+    pthread_exit( reinterpret_cast<void*>(status) );
+}
 }
 
 WorklistParameterizer::WorklistParameterizer( size_t nUnits,
-                                              size_t bytesPerUnit,
-                                              size_t minBatchSize,
-                                              unsigned nThreads )
+    size_t bytesPerUnit,
+    size_t minBatchSize,
+    unsigned nThreads )
 {
-    if ( nUnits < minBatchSize )
-        minBatchSize = nUnits;
+  if ( nUnits < minBatchSize )
+    minBatchSize = nUnits;
 
-    if ( !nThreads || nThreads > processorsOnline() )
-        nThreads = processorsOnline();
+  if ( !nThreads || nThreads > processorsOnline() )
+    nThreads = processorsOnline();
 
-    size_t maxSimultaneous = .9*MemAvailable()/bytesPerUnit;
-    if ( maxSimultaneous < minBatchSize )
-        FatalErr("Not enough memory.");
+  size_t maxSimultaneous = .9*MemAvailable()/bytesPerUnit;
+  if ( maxSimultaneous < minBatchSize )
+    FatalErr("Not enough memory.");
 
-    size_t maxThreads = maxSimultaneous/minBatchSize;
-    if ( nThreads > maxThreads )
-        nThreads = maxThreads;
+  size_t maxThreads = maxSimultaneous/minBatchSize;
+  if ( nThreads > maxThreads )
+    nThreads = maxThreads;
 
-    size_t maxBatchSize = maxSimultaneous/nThreads;
-    if ( maxBatchSize > nUnits )
-        maxBatchSize = nUnits;
+  size_t maxBatchSize = maxSimultaneous/nThreads;
+  if ( maxBatchSize > nUnits )
+    maxBatchSize = nUnits;
 
-    size_t minBatches = (nUnits+maxBatchSize-1)/maxBatchSize;
-    size_t maxBatches = nUnits / minBatchSize;
+  size_t minBatches = (nUnits+maxBatchSize-1)/maxBatchSize;
+  size_t maxBatches = nUnits / minBatchSize;
 
-    if ( maxBatches <= nThreads )
-        nThreads = minBatches = maxBatches;
+  if ( maxBatches <= nThreads )
+    nThreads = minBatches = maxBatches;
+  else
+  {
+    // round up minBatches to an even divisor of nThreads, subject to
+    // remaining less than maxBatches
+    size_t nCycles = (minBatches+nThreads-1)/nThreads;
+    size_t batches = nCycles * nThreads;
+    if ( batches <= maxBatches )
+      minBatches = batches;
     else
-    {
-        // round up minBatches to an even divisor of nThreads, subject to
-        // remaining less than maxBatches
-        size_t nCycles = (minBatches+nThreads-1)/nThreads;
-        size_t batches = nCycles * nThreads;
-        if ( batches <= maxBatches )
-            minBatches = batches;
-        else
-            minBatches = maxBatches;
-    }
-    mNBatches = minBatches;
-    mNThreads = nThreads;
-    mBatchSize = (nUnits+minBatches-1)/minBatches;
+      minBatches = maxBatches;
+  }
+  mNBatches = minBatches;
+  mNThreads = nThreads;
+  mBatchSize = (nUnits+minBatches-1)/minBatches;
 
-    ForceAssertLe(mNThreads*mBatchSize,maxSimultaneous);
+  ForceAssertLe(mNThreads*mBatchSize,maxSimultaneous);
 }
 
 QueueStateManipulator::~QueueStateManipulator()
 {
-    size_t size = mQS.getSize();
-    bool done = mQS.isDone();
+  size_t size = mQS.getSize();
+  bool done = mQS.isDone();
 
-    if ( !mDone && done )
-    {
-        mQS.mCondNotEmpty.broadcast();
-    }
-    else if ( size > mSize )
-    {
-        if ( size-mSize == 1 )
-            mQS.mCondNotEmpty.signal();
-        else
-            mQS.mCondNotEmpty.broadcast();
-    }
+  if ( !mDone && done )
+  {
+    mQS.mCondNotEmpty.broadcast();
+  }
+  else if ( size > mSize )
+  {
+    if ( size-mSize == 1 )
+      mQS.mCondNotEmpty.signal();
+    else
+      mQS.mCondNotEmpty.broadcast();
+  }
 
-    if ( mSize && !size )
-    {
-        mQS.mCondEmpty.broadcast();
-    }
+  if ( mSize && !size )
+  {
+    mQS.mCondEmpty.broadcast();
+  }
 }
 
 // populate_cpu_affinity - parse environment variable GOMP_CPU_AFFINITY and populate mGompCpuAffinity
@@ -118,49 +118,49 @@ QueueStateManipulator::~QueueStateManipulator()
 
 static void populate_cpu_affinity( vector<int>& cpu_list )
 {
-    size_t nprocs = processorsOnline();
-    const char *affp= getenv("GOMP_CPU_AFFINITY");
-    if ( affp  ) {
-	istringstream buff(affp);
-	istream_iterator<std::string> item_begin(buff);
-	istream_iterator<std::string> item_end;
+  size_t nprocs = processorsOnline();
+  const char *affp= getenv("GOMP_CPU_AFFINITY");
+  if ( affp  ) {
+    istringstream buff(affp);
+    istream_iterator<std::string> item_begin(buff);
+    istream_iterator<std::string> item_end;
 
-	bool good=false;
-	for ( auto item = item_begin; item != item_end; ++item ) {
-	    size_t start = 0, stop = 0, stride = 1;
-	    good = false;
+    bool good=false;
+    for ( auto item = item_begin; item != item_end; ++item ) {
+      size_t start = 0, stop = 0, stride = 1;
+      good = false;
 
-	    istringstream sitem(*item);
-	    if  (!(sitem >> start)) break;		// expect start
-	    if ( sitem.good() ) {
-		if ( sitem.peek() != '-' ) break;	// if more, must be dash (-)
-		sitem.ignore();
-		if (!(sitem >> stop)) break;		// expect stop
-		if ( sitem.good() ) {
-		    if ( sitem.peek() != ':' ) break;	// if more, must be colon (:)
-		    sitem.ignore();
-		    if (!(sitem >> stride)) break;	// expect stride
-		}
-	    }
-	    good = true;
+      istringstream sitem(*item);
+      if  (!(sitem >> start)) break;		// expect start
+      if ( sitem.good() ) {
+        if ( sitem.peek() != '-' ) break;	// if more, must be dash (-)
+        sitem.ignore();
+        if (!(sitem >> stop)) break;		// expect stop
+        if ( sitem.good() ) {
+          if ( sitem.peek() != ':' ) break;	// if more, must be colon (:)
+          sitem.ignore();
+          if (!(sitem >> stride)) break;	// expect stride
+        }
+      }
+      good = true;
 
-	    ForceAssertGt(nprocs,0U);
-	    ForceAssertGt(stride,0U);
-	    start = min( nprocs-1, start );		// clamp [0,nprocs)
-	    stop = min( nprocs-1, stop );
+      ForceAssertGt(nprocs,0U);
+      ForceAssertGt(stride,0U);
+      start = min( nprocs-1, start );		// clamp [0,nprocs)
+      stop = min( nprocs-1, stop );
 
-	    size_t i = start;
-	    do {
-		cpu_list.push_back(i);
-		i += stride;
-	    } while ( i <= stop );	// test at end, so that if only start is set, we still get one value
-	}
-
-	if (!good) {
-	    cpu_list.clear();
-	    cout << "Warning: apparent nonsense in GOMP_CPU_AFFINITY: " << affp << endl;
-	}
+      size_t i = start;
+      do {
+        cpu_list.push_back(i);
+        i += stride;
+      } while ( i <= stop );	// test at end, so that if only start is set, we still get one value
     }
+
+    if (!good) {
+      cpu_list.clear();
+      cout << "Warning: apparent nonsense in GOMP_CPU_AFFINITY: " << affp << endl;
+    }
+  }
 }
 
 // setThreadAffinity() -- assigns cpu affinities for threads round-robin (across subsequent calls to this function) based
@@ -169,190 +169,190 @@ static void populate_cpu_affinity( vector<int>& cpu_list )
 // Does nothing if mGompCpuAffinity is empty.
 //
 void ThreadPool::setThreadAffinity() {
-    if ( mGompCpuAffinity.size() ) {
-	size_t procno = mGompCpuAffinity[mNextAffinity];
-	mNextAffinity = ( mNextAffinity + 1 ) % mGompCpuAffinity.size();
-	cpu_set_t cpuset;
-	CPU_ZERO(&cpuset);
-	CPU_SET(procno, &cpuset);
-	checkThreadOp(pthread_attr_setaffinity_np(&mAttr, sizeof(cpuset), &cpuset), "failed setting CPU affinity for threads: ");
-    }
+  if ( mGompCpuAffinity.size() ) {
+    size_t procno = mGompCpuAffinity[mNextAffinity];
+    mNextAffinity = ( mNextAffinity + 1 ) % mGompCpuAffinity.size();
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(procno, &cpuset);
+    checkThreadOp(pthread_attr_setaffinity_np(&mAttr, sizeof(cpuset), &cpuset), "failed setting CPU affinity for threads: ");
+  }
 }
 
 
 ThreadPool::ThreadPool( size_t nThreads, size_t threadStackSize,
                         void* (*threadFunc)(void*), void* threadFuncArg,
                         bool use_gomp_affinity )
-: mThreadFunc(threadFunc), mThreadFuncArg(threadFuncArg),
-  mNThreads(validateNThreads(nThreads)), mThreads(new pthread_t[mNThreads]),
-  mNextAffinity(0), mCondExit(*this), mMonitorInterval(0),
-  mReportRestarts(false)
+  : mThreadFunc(threadFunc), mThreadFuncArg(threadFuncArg),
+    mNThreads(validateNThreads(nThreads)), mThreads(new pthread_t[mNThreads]),
+    mNextAffinity(0), mCondExit(*this), mMonitorInterval(0),
+    mReportRestarts(false)
 {
-    omp_set_num_threads(1);
-    checkThreadOp(pthread_attr_init(&mAttr),
-                  "ThreadAttr initialization failed: ");
+  omp_set_num_threads(1);
+  checkThreadOp(pthread_attr_init(&mAttr),
+                "ThreadAttr initialization failed: ");
 
-    if ( use_gomp_affinity ) populate_cpu_affinity( mGompCpuAffinity );
+  if ( use_gomp_affinity ) populate_cpu_affinity( mGompCpuAffinity );
 
-    if ( !threadStackSize )
+  if ( !threadStackSize )
+  {
+    struct rlimit rl;
+    if ( getrlimit(RLIMIT_STACK,&rl) )
     {
-        struct rlimit rl;
-        if ( getrlimit(RLIMIT_STACK,&rl) )
-        {
-            ErrNo err;
-            FatalErr("Unable to determine current stack size" << err);
-        }
-
-        if ( rl.rlim_cur == RLIM_INFINITY )
-            threadStackSize = DEFAULT_THREAD_STACK_SIZE;
-        else
-            threadStackSize = rl.rlim_cur;
+      ErrNo err;
+      FatalErr("Unable to determine current stack size" << err);
     }
-    checkThreadOp(pthread_attr_setstacksize(&mAttr,threadStackSize),
-                  "Unable to set stack size for threads: ");
 
-    setThreadAffinity();	// one for the main thread
-    pthread_t* pThread = mThreads + mNThreads;
-    while ( pThread-- > mThreads )
-    {
-	setThreadAffinity();
-        checkThreadOp(pthread_create(pThread,&mAttr,threadFunc,threadFuncArg),
-                      "Thread creation failed: ");
-    }
+    if ( rl.rlim_cur == RLIM_INFINITY )
+      threadStackSize = DEFAULT_THREAD_STACK_SIZE;
+    else
+      threadStackSize = rl.rlim_cur;
+  }
+  checkThreadOp(pthread_attr_setstacksize(&mAttr,threadStackSize),
+                "Unable to set stack size for threads: ");
+
+  setThreadAffinity();	// one for the main thread
+  pthread_t* pThread = mThreads + mNThreads;
+  while ( pThread-- > mThreads )
+  {
+    setThreadAffinity();
+    checkThreadOp(pthread_create(pThread,&mAttr,threadFunc,threadFuncArg),
+                  "Thread creation failed: ");
+  }
 }
 
 ThreadPool::~ThreadPool()
 {
-    shutdown();
-    checkThreadOp(pthread_attr_destroy(&mAttr),
-                    "ThreadAttr destruction failed: ");
-    omp_set_num_threads(getConfiguredNumThreads());
+  shutdown();
+  checkThreadOp(pthread_attr_destroy(&mAttr),
+                "ThreadAttr destruction failed: ");
+  omp_set_num_threads(getConfiguredNumThreads());
 }
 
 void ThreadPool::threadDeathMonitor( long newInterval,
                                      bool reportRestarts )
 {
-    if ( mNThreads )
+  if ( mNThreads )
+  {
+    long oldInterval;
+    if ( true )
     {
-        long oldInterval;
-        if ( true )
-        {
-            Locker ml(*this);
+      Locker ml(*this);
 
-            oldInterval = mMonitorInterval;
-            mMonitorInterval = newInterval;
-            mReportRestarts = reportRestarts;
-        }
-
-        if ( !oldInterval && newInterval )
-        {
-            gMainThread = pthread_self();
-            gOldHook = CRD::installExitHook(&exitHook);
-            checkThreadOp(pthread_create(&mMonitorThread,0,threadFunc,this),
-                          "Can't create ThreadPool monitor: ");
-        }
-        else if ( oldInterval && !newInterval )
-        {
-            mCondExit.signal();
-            checkThreadOp(pthread_join(mMonitorThread,0),
-                          "ThreadPool monitor join failed: ");
-            CRD::installExitHook(gOldHook);
-        }
+      oldInterval = mMonitorInterval;
+      mMonitorInterval = newInterval;
+      mReportRestarts = reportRestarts;
     }
+
+    if ( !oldInterval && newInterval )
+    {
+      gMainThread = pthread_self();
+      gOldHook = CRD::installExitHook(&exitHook);
+      checkThreadOp(pthread_create(&mMonitorThread,0,threadFunc,this),
+                    "Can't create ThreadPool monitor: ");
+    }
+    else if ( oldInterval && !newInterval )
+    {
+      mCondExit.signal();
+      checkThreadOp(pthread_join(mMonitorThread,0),
+                    "ThreadPool monitor join failed: ");
+      CRD::installExitHook(gOldHook);
+    }
+  }
 }
 
 size_t ThreadPool::findThreadIndex( pthread_t handle )
 {
-    Locker ml(*this);
-    pthread_t* pThread = mThreads + mNThreads;
-    while ( pThread-- > mThreads )
-    {
-        if ( pthread_equal(handle,*pThread) )
-            return pThread - mThreads;
-    }
-    FatalErr("Unable to find thread's index.");
+  Locker ml(*this);
+  pthread_t* pThread = mThreads + mNThreads;
+  while ( pThread-- > mThreads )
+  {
+    if ( pthread_equal(handle,*pThread) )
+      return pThread - mThreads;
+  }
+  FatalErr("Unable to find thread's index.");
 }
 
 void ThreadPool::shutdown()
 {
-    threadDeathMonitor(0);
+  threadDeathMonitor(0);
 
-    bool somebodyDied = false;
-    pthread_t* pThread = mThreads + mNThreads;
-    while ( pThread-- > mThreads )
+  bool somebodyDied = false;
+  pthread_t* pThread = mThreads + mNThreads;
+  while ( pThread-- > mThreads )
+  {
+    void* retVal = 0;
+    checkThreadOp(pthread_join(*pThread,&retVal),"Thread join failed: ");
+    if ( reinterpret_cast<long>(retVal) )
     {
-        void* retVal = 0;
-        checkThreadOp(pthread_join(*pThread,&retVal),"Thread join failed: ");
-        if ( reinterpret_cast<long>(retVal) )
-        {
-            std::cout << "Thread #" << (pThread-mThreads)
-                        << " died with a return value of "
-                        << reinterpret_cast<long>(retVal) << std::endl;
-            somebodyDied = true;
-        }
+      std::cout << "Thread #" << (pThread-mThreads)
+                << " died with a return value of "
+                << reinterpret_cast<long>(retVal) << std::endl;
+      somebodyDied = true;
     }
-    if ( somebodyDied )
-        FatalErr("Quitting due to failure of child threads.");
+  }
+  if ( somebodyDied )
+    FatalErr("Quitting due to failure of child threads.");
 
-    delete [] mThreads;
-    mThreads = 0;
-    mNThreads = 0;
+  delete [] mThreads;
+  mThreads = 0;
+  mNThreads = 0;
 }
 
 void ThreadPool::monitorThreads()
 {
-    Locker ml(*this);
-    while ( true )
-    {
-        ml.timedWait(mCondExit,mMonitorInterval);
-        if ( !mMonitorInterval )
-            break;
+  Locker ml(*this);
+  while ( true )
+  {
+    ml.timedWait(mCondExit,mMonitorInterval);
+    if ( !mMonitorInterval )
+      break;
 
-        pthread_t* pThread = mThreads + mNThreads;
-        setNextAffinity(0);	// restart the list
-        setThreadAffinity();	// one for the main thread
-        while ( pThread-- > mThreads )
-        {
-	    setThreadAffinity();	// jump past each element just in case we re-create the thread
-            if ( pthread_kill(*pThread,0) ==  ESRCH )
-            {
-                void* retVal;
-                checkThreadOp(pthread_join(*pThread,&retVal),
-                              "Can't join to dead thread: ");
-                if ( mReportRestarts )
-                    std::cout << "Restarting dead thread #" <<
-                                 (pThread-mThreads) <<
-                                 " which died with a return value of "
-                                 << reinterpret_cast<long>(retVal) << std::endl;
-                checkThreadOp(pthread_create(pThread,&mAttr,mThreadFunc,mThreadFuncArg),
-                              "Can't create replacement thread: ");
-            }
-        }
+    pthread_t* pThread = mThreads + mNThreads;
+    setNextAffinity(0);	// restart the list
+    setThreadAffinity();	// one for the main thread
+    while ( pThread-- > mThreads )
+    {
+      setThreadAffinity();	// jump past each element just in case we re-create the thread
+      if ( pthread_kill(*pThread,0) ==  ESRCH )
+      {
+        void* retVal;
+        checkThreadOp(pthread_join(*pThread,&retVal),
+                      "Can't join to dead thread: ");
+        if ( mReportRestarts )
+          std::cout << "Restarting dead thread #" <<
+                    (pThread-mThreads) <<
+                    " which died with a return value of "
+                    << reinterpret_cast<long>(retVal) << std::endl;
+        checkThreadOp(pthread_create(pThread,&mAttr,mThreadFunc,mThreadFuncArg),
+                      "Can't create replacement thread: ");
+      }
     }
+  }
 }
 
 size_t ThreadPool::validateNThreads( size_t nThreads )
 {
-    size_t nProcs = processorsOnline();
-    if ( nThreads > 3*nProcs )
-        FatalErr("Trying to start a thread pool with " << nThreads <<
-                 " threads, but there are only " << nProcs <<
-                 " processors, which probably isn't going to work out well.");
+  size_t nProcs = processorsOnline();
+  if ( nThreads > 3*nProcs )
+    FatalErr("Trying to start a thread pool with " << nThreads <<
+             " threads, but there are only " << nProcs <<
+             " processors, which probably isn't going to work out well.");
 
-    return nThreads;
+  return nThreads;
 }
 
 void* ThreadPool::threadFunc( void* ptr )
 {
-    reinterpret_cast<ThreadPool*>(ptr)->monitorThreads();
-    return 0;
+  reinterpret_cast<ThreadPool*>(ptr)->monitorThreads();
+  return 0;
 }
 
 
 void ThreadPool::die( int errNo, char const* msg )
 {
-    ErrNo err(errNo);
-    FatalErr(msg << err);
+  ErrNo err(errNo);
+  FatalErr(msg << err);
 }
 
 

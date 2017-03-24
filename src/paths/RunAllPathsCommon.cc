@@ -19,12 +19,12 @@
 
 
 void UpdateRefGenomeSize(String ref_dir) {
-  if (!IsRegularFile(ref_dir + "/genome.size") || 
+  if (!IsRegularFile(ref_dir + "/genome.size") ||
       IsOlder(ref_dir + "/genome.size", ref_dir + "/genome.fastb") ) {
     longlong genome_size = 0;
     vecbasevector genome(ref_dir + "/genome.fastb");
     for ( size_t i = 0; i < genome.size( ); i++ )
-      genome_size += genome[i].size( ); 
+      genome_size += genome[i].size( );
     Ofstream( genomeSizeFile, ref_dir + "/genome.size" );
     genomeSizeFile << genome_size;
   }
@@ -33,7 +33,7 @@ void UpdateRefGenomeSize(String ref_dir) {
 
 // Set module thread count to global value or override with module value
 
-void SetThreadValue(int& module_value , const int global_value) {
+void SetThreadValue(int& module_value, const int global_value) {
   module_value = (-1 == module_value ? global_value : module_value);
 }
 
@@ -41,19 +41,19 @@ void SetThreadValue(int& module_value , const int global_value) {
 // Sets threading values for each module
 
 int ParseThreadArgs(const String& THREADS,
-		    int& LR_THREADS, 
-		    int& CP_THREADS, 
-		    int& FF_THREADS,
-		    int& ECJ_THREADS,
-		    int& KP_THREADS,
-		    int& CUG_THREADS, 
-		    int& RDR_THREADS, 
-		    int& FE_THREADS,
-		    int &MN_THREADS,
-		    int &PR_THREADS,
-		    int &PC_THREADS) 
+                    int& LR_THREADS,
+                    int& CP_THREADS,
+                    int& FF_THREADS,
+                    int& ECJ_THREADS,
+                    int& KP_THREADS,
+                    int& CUG_THREADS,
+                    int& RDR_THREADS,
+                    int& FE_THREADS,
+                    int &MN_THREADS,
+                    int &PR_THREADS,
+                    int &PC_THREADS)
 {
-   // Determine global thread count and set special cases
+  // Determine global thread count and set special cases
 
   int global_thread_count = 1;
   if (THREADS == "max") {      // use all cpus/cores
@@ -80,7 +80,7 @@ int ParseThreadArgs(const String& THREADS,
   SetThreadValue(MN_THREADS, global_thread_count);
   SetThreadValue(PR_THREADS, global_thread_count);
   SetThreadValue(PC_THREADS, global_thread_count);
-  
+
   return global_thread_count;
 }
 
@@ -89,7 +89,7 @@ void DisplaySystemStatus() {
 
   const int giga = 1024 * 1024 * 1024;
   cout << endl;
-  cout << "Hostname                  : " << StringOfOutput( "hostname" ) << endl; 
+  cout << "Hostname                  : " << StringOfOutput( "hostname" ) << endl;
   cout << "Available processors      : " << processorsOnline() << endl;
   cout << "Total physical memory     : " << physicalMemory() / giga << " GB" << endl;
   cout << endl;

@@ -30,7 +30,7 @@ void KmerPathDatabaseTemplate<TAG>::CopyFrom( const KmerPathDatabaseTemplate<TAG
     mp_taggedRpints = other.mp_taggedRpints;
     m_ownRpints = false;
   }
-  
+
   m_to = 0;
   m_hits = 0;
   m_misses = 0;
@@ -72,8 +72,8 @@ KmerPathDatabaseTemplate<TAG>::KmerPathDatabaseTemplate( const vec<TAG>* p_vecOf
 
 template <class TAG>
 template <class KmerPathVector>
-void KmerPathDatabaseTemplate<TAG>::ConstructFromKmerPaths( const KmerPathVector& fwdPaths, 
-							    const KmerPathVector& revPaths )
+void KmerPathDatabaseTemplate<TAG>::ConstructFromKmerPaths( const KmerPathVector& fwdPaths,
+    const KmerPathVector& revPaths )
 {
   vec<TAG>* p_taggedRpints = new vec<TAG>();
   unsigned int numSegs = 0;
@@ -94,8 +94,8 @@ void KmerPathDatabaseTemplate<TAG>::ConstructFromKmerPaths( const KmerPathVector
               ForceAssertLe( (unsigned int)segIdx,      TAG::POSITION_MAX );
               int idx = ( rc==0 ? pathIdx : -pathIdx-1 );
               p_taggedRpints->push_back( TAG( I.Start(),
-                                                       I.Length(),
-                                                       idx, segIdx ) );
+                                              I.Length(),
+                                              idx, segIdx ) );
             }
           }
         }
@@ -104,14 +104,14 @@ void KmerPathDatabaseTemplate<TAG>::ConstructFromKmerPaths( const KmerPathVector
       p_taggedRpints->reserve( numSegs );
     }
   }
-  
+
   Prepare( *p_taggedRpints );
   mp_taggedRpints = p_taggedRpints;
 }
 
 template <class TAG>
 KmerPathDatabaseTemplate<TAG>::KmerPathDatabaseTemplate( const vecKmerPath& fwdPaths,
-					 const vecKmerPath& revPaths )
+    const vecKmerPath& revPaths )
   : mp_taggedRpints( 0 ),
     m_ownRpints( true ),
     m_to( 0 ),
@@ -124,7 +124,7 @@ KmerPathDatabaseTemplate<TAG>::KmerPathDatabaseTemplate( const vecKmerPath& fwdP
 
 template <class TAG>
 KmerPathDatabaseTemplate<TAG>::KmerPathDatabaseTemplate( const vec<KmerPath>& fwdPaths,
-					 const vec<KmerPath>& revPaths )
+    const vec<KmerPath>& revPaths )
   : mp_taggedRpints( 0 ),
     m_ownRpints( true ),
     m_to( 0 ),
@@ -143,16 +143,16 @@ KmerPathDatabaseTemplate<TAG>& KmerPathDatabaseTemplate<TAG>::operator= ( const 
 }
 
 template <class TAG>
-KmerPathDatabaseTemplate<TAG>::~KmerPathDatabaseTemplate() 
+KmerPathDatabaseTemplate<TAG>::~KmerPathDatabaseTemplate()
 {
   if ( m_ownRpints && mp_taggedRpints )
     delete mp_taggedRpints;
 }
 
 template <class TAG>
-void KmerPathDatabaseTemplate<TAG>::Contains( kmer_id_t kmerId, 
-				      vec<path_interval_id_t>& answer, 
-				      bool append ) const
+void KmerPathDatabaseTemplate<TAG>::Contains( kmer_id_t kmerId,
+    vec<path_interval_id_t>& answer,
+    bool append ) const
 {
   if ( ! append )
     answer.clear( );
@@ -160,7 +160,7 @@ void KmerPathDatabaseTemplate<TAG>::Contains( kmer_id_t kmerId,
   // Find index of first interval that starts with a kmer greater than the given kmer.
   TAG target;
   target.Set( kmerId, 0, 0, 0 );
-  
+
   // Convenience:
   const vec<TAG>& segs = *mp_taggedRpints;
 
@@ -170,7 +170,7 @@ void KmerPathDatabaseTemplate<TAG>::Contains( kmer_id_t kmerId,
   // Here we use the prior value of "m_to" to restrict the area of our
   // search.  After this set of statements, "m_to" will hold the index
   // of the first interval starting with a kmer greater than "kmerId".
-  
+
   if ( segs[m_to].Start() > kmerId )
   {
     const unsigned int lowCheckRange = 32;
@@ -184,35 +184,8 @@ void KmerPathDatabaseTemplate<TAG>::Contains( kmer_id_t kmerId,
     {
       ++m_hits;
       m_to = distance( segs.begin(),
-                       upper_bound( segs.begin() + lowCheck, 
-                                    segs.begin() + m_to + 1, 
-                                    target ) );
-    }
-    else
-    {
-      ++m_misses;
-      longlong to = distance( segs.begin(),
-                              upper_bound( segs.begin(),
-                                           segs.end(), 
-                                           target ) );
-      m_missDistance += abs( to - m_to );
-      m_to = to;
-    }
-  }
-  
-  else // segs[m_to].Start() <= kmerId 
-  {
-    const unsigned int highCheckRange = 32;
-    unsigned int highCheck = m_to + highCheckRange;
-    if ( highCheck >= segs.size() )
-      highCheck = segs.size()-1;
-
-    if ( segs[highCheck].Start() > kmerId )
-    {
-      ++m_hits;
-      m_to = distance( segs.begin(),
-                       upper_bound( segs.begin() + m_to, 
-                                    segs.begin() + highCheck + 1, 
+                       upper_bound( segs.begin() + lowCheck,
+                                    segs.begin() + m_to + 1,
                                     target ) );
     }
     else
@@ -226,7 +199,34 @@ void KmerPathDatabaseTemplate<TAG>::Contains( kmer_id_t kmerId,
       m_to = to;
     }
   }
-    
+
+  else // segs[m_to].Start() <= kmerId
+  {
+    const unsigned int highCheckRange = 32;
+    unsigned int highCheck = m_to + highCheckRange;
+    if ( highCheck >= segs.size() )
+      highCheck = segs.size()-1;
+
+    if ( segs[highCheck].Start() > kmerId )
+    {
+      ++m_hits;
+      m_to = distance( segs.begin(),
+                       upper_bound( segs.begin() + m_to,
+                                    segs.begin() + highCheck + 1,
+                                    target ) );
+    }
+    else
+    {
+      ++m_misses;
+      longlong to = distance( segs.begin(),
+                              upper_bound( segs.begin(),
+                                           segs.end(),
+                                           target ) );
+      m_missDistance += abs( to - m_to );
+      m_to = to;
+    }
+  }
+
 #else
   // Simple way with no caching.
   m_to = distance( segs.begin(),
@@ -237,11 +237,11 @@ void KmerPathDatabaseTemplate<TAG>::Contains( kmer_id_t kmerId,
 
   // If it's the first interval, there are no intervals containing the given kmer.
   if ( m_to == 0 ) return;
-  
+
   // Otherwise, decrement "to" so it points to the last interval that
   // starts with a kmer less than or equal to the given kmer.
   --m_to;
-  
+
   // Use lookback to find the first interval that contains the "to"
   // interval's last kmer (which may be further back than we really
   // need to go).
@@ -259,12 +259,12 @@ void KmerPathDatabaseTemplate<TAG>::Contains( kmer_id_t kmerId,
 
 template <class TAG>
 void KmerPathDatabaseTemplate<TAG>::GetHighFrequencyKmers( vec<kmer_id_t>& hiFreqKmers,
-						   const copy_num_t minFreq ) const
+    const copy_num_t minFreq ) const
 {
   map<kmer_id_t,copy_num_t> kmerCount;
 
   const size_t passSize = 1000000;
-  cout << "Finding high frequency kmers in " 
+  cout << "Finding high frequency kmers in "
        << mp_taggedRpints->size()/passSize
        << " passes." << endl;
 

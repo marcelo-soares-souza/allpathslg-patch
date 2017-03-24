@@ -116,7 +116,9 @@ public:
     control_(256, 0),
     control2_( 256, 0 ),
     chunk_(-1)
-  { ReadHeader(); }
+  {
+    ReadHeader();
+  }
 
 
   /// Copy constructor - takes an existing table and duplicates it, but opens
@@ -147,12 +149,16 @@ public:
 
   /// The K value.  You need this to compute kmer numbers using
   /// Index, the nonmember function in KmerIndex.h
-  unsigned int K( ) const { return K_; }
+  unsigned int K( ) const {
+    return K_;
+  }
 
   /// Number of chunks in lookup table.  The reference is broken
   /// into chunks to limit the total memory used.  Note chunk
   /// boundaries have nothing to do with contig boundaries.
-  unsigned int NChunks( ) const { return chunk_sizes_.size( ); }
+  unsigned int NChunks( ) const {
+    return chunk_sizes_.size( );
+  }
 
   /** \breaf Reads in i-th chunk from disk.
    *
@@ -166,15 +172,21 @@ public:
   /// The number of times the kmer numbered index occurs in the reference
   /// (this is a global counter across all chunks!)
   inline unsigned int Freq( const unsigned int index ) const
-    { return freq_[index]; }
+  {
+    return freq_[index];
+  }
 
   /// First index into the offsets table locs_ coorresponding to kmer l
   /// (for the currently loaded chunk only!).
-  inline unsigned int Lookup( unsigned int l ) const { return lookup_[l]; }
+  inline unsigned int Lookup( unsigned int l ) const {
+    return lookup_[l];
+  }
 
   /// First index into the offsets table locs_ coorresponding to the
   /// specified kmer index (for currently loaded chunk only!).
-  inline unsigned int StartLocs( unsigned int index ) const { return Lookup(index); }
+  inline unsigned int StartLocs( unsigned int index ) const {
+    return Lookup(index);
+  }
 
   /// One-past-last index into the offsets table locs_ coorresponding to
   /// the specified kmer index (for currently loaded chunk only!).
@@ -194,7 +206,9 @@ public:
   /// NOTE: this is \e not an iterator into the reference sequence (bases)
   /// itself, the returned iterator steps over offset \e values (if any).
   locs_iterator StartLocsIterator(unsigned int index) const
-    { return locs_.begin()+Lookup(index); }
+  {
+    return locs_.begin()+Lookup(index);
+  }
 
   /// Returns iterator pointing to the last location offset value for the
   /// specified
@@ -209,10 +223,14 @@ public:
   /// The (start, stop) pair of indices into the offsets table locs_
   /// that coorrespond to kmer index.
   LocSeq LookupSeq( unsigned int index )
-  { return LocSeq(StartLocs(index), StopLocs(index)); }
+  {
+    return LocSeq(StartLocs(index), StopLocs(index));
+  }
 
   /// Returns an offset into the concatenated reference.
-  unsigned int Locs( unsigned int index ) const { return locs_[index]; }
+  unsigned int Locs( unsigned int index ) const {
+    return locs_[index];
+  }
 
   /** \brief Translate absolute base offset in the reference sequence into a
    *   contig number and base offset from the start of that contig.
@@ -234,7 +252,7 @@ public:
 
     ForceAssertGe( pos, contig_start_.front( ) );
     c = upper_bound( contig_start_.begin( ), contig_start_.end( ), pos )
-      - contig_start_.begin( ) - 1;
+        - contig_start_.begin( ) - 1;
     cpos = pos - ContigStart(c);
     if ( !( cpos < ContigSize(c) ) ) {
       PRINT3( pos, c, ContigStart(c) );
@@ -247,7 +265,7 @@ public:
   {
     ForceAssertGe( pos, contig_start_.front( ) );
     c = (int)(upper_bound( contig_start_.begin( ), contig_start_.end( ), pos )
-	      - contig_start_.begin( ) - 1);
+              - contig_start_.begin( ) - 1);
     cpos = pos - ContigStart(c);
     if ( !( cpos < ContigSize(c) ) ) {
       PRINT3( pos, c, ContigStart(c) );
@@ -286,8 +304,8 @@ public:
   /// which they are forwarded to.
   template<typename HitReceiver>
   void FindHits(const vecbasevector &queries, HitReceiver &transmit,
-		int maxFreq = 0, unsigned int npasses = 2,
-		int firstRead=0, int lastRead = -1, bool maxFreqDiscardRead = false)
+                int maxFreq = 0, unsigned int npasses = 2,
+                int firstRead=0, int lastRead = -1, bool maxFreqDiscardRead = false)
   {
     // TODO: Write an implementation of FindHits that avoids making
     // the q vector for single-chunk lookup tables.
@@ -300,9 +318,9 @@ public:
   }
 
   template<typename HitReceiver>
-   void FindAmbiguousHits(const vecbasevector &queries, HitReceiver &transmit,
-			 int maxFreq = 0, unsigned int npasses = 2,
-			 int firstRead=0, int lastRead = -1)
+  void FindAmbiguousHits(const vecbasevector &queries, HitReceiver &transmit,
+                         int maxFreq = 0, unsigned int npasses = 2,
+                         int firstRead=0, int lastRead = -1)
   {
     vec<Query> q;
     BasesToQueries(queries, q, maxFreq, npasses, firstRead, lastRead,false);
@@ -318,30 +336,44 @@ public:
   //// Contig information...
 
   /// The number of contigs in table.
-  unsigned int NContigs( ) const { return contig_name_.size( ); }
+  unsigned int NContigs( ) const {
+    return contig_name_.size( );
+  }
 
   /// Returns size (in bases) of the i-th contig
-  unsigned int ContigSize( unsigned int i ) const { return contig_sizes_[i]; }
+  unsigned int ContigSize( unsigned int i ) const {
+    return contig_sizes_[i];
+  }
 
   /// Returns absolute start position (with respect to the full
   /// concatenated sequence of the reference genome) of the i-th contig
-  unsigned int ContigStart( unsigned int i ) const { return contig_start_[i]; }
+  unsigned int ContigStart( unsigned int i ) const {
+    return contig_start_[i];
+  }
 
   /// Returns absolute offset (with respect to the full concatenated
   /// sequence of the reference genome) of the next base after the
   /// last base of the i-th contig
   unsigned int ContigStop( unsigned int i ) const
-  {    return ContigStart(i) + ContigSize(i);    }
+  {
+    return ContigStart(i) + ContigSize(i);
+  }
 
   /// Returns start position (absolute, with respect to the full
   /// concatenated sequence of the reference genome) of the last contig
-  unsigned int LastContigStart( ) const { return contig_start_.back( ); }
+  unsigned int LastContigStart( ) const {
+    return contig_start_.back( );
+  }
 
   /// Returns name of the i-th contig
-  String ContigName( int i ) const { return contig_name_[i]; }
+  String ContigName( int i ) const {
+    return contig_name_[i];
+  }
 
   /// Returns alternative name of the i-th contig
-  String ContigNameAlt( int i ) const { return contig_name_alt_[i]; }
+  String ContigNameAlt( int i ) const {
+    return contig_name_alt_[i];
+  }
 
   /** Builds a "basic" contig name of the form <name>[<id>], where
    *  <id> is the same as used in alternative name (<id>:<path_string>),
@@ -351,20 +383,28 @@ public:
   String ContigNameBasic( int i );
 
   /// Returns name of the last contig in this reference genome
-  String LastContigName( ) const { return contig_name_.back( ); }
+  String LastContigName( ) const {
+    return contig_name_.back( );
+  }
 
   /// Which contigs and bases are in the chunk...
 
   /// The number of contigs in currently-loaded chunk.
-  unsigned int ContigsInChunk() { return stop_base_of_contig_in_chunk.size(); }
+  unsigned int ContigsInChunk() {
+    return stop_base_of_contig_in_chunk.size();
+  }
 
   /// The overall index of the first contig in currently-loaded chunk.
-  unsigned int FirstContigInChunk() { return first_contig_in_chunk; }
+  unsigned int FirstContigInChunk() {
+    return first_contig_in_chunk;
+  }
 
   /// The stop position of contigOffset (that is, relative to first
   /// contig in chunk) in currently-loaded chunk.
   unsigned int StopBaseOfContigInChunk(unsigned int contigOffset)
-  { return stop_base_of_contig_in_chunk[contigOffset]; }
+  {
+    return stop_base_of_contig_in_chunk[contigOffset];
+  }
 
   /// Whether this range of offsets falls in a single chunk.
   Bool CanFetchBasesFromDisk( unsigned int start, unsigned int stop )
@@ -378,22 +418,30 @@ public:
   }
 
   void FetchBasesFromDisk( unsigned int start, unsigned int stop,
-			   basevector& b );
+                           basevector& b );
 
   /// The currently-available chunk of genome, all bases concatenated.
-  const basevector& Bases( ) const { return b_; }
+  const basevector& Bases( ) const {
+    return b_;
+  }
 
   /// The absolute start offset of Bases() in complete concatenated
   /// reference sequence.
-  unsigned int BasesStart( ) const { return b_start_; }
+  unsigned int BasesStart( ) const {
+    return b_start_;
+  }
 
   /// The absolute offset of one past the last base in Bases()
   /// (with respect to the complete concatenated reference sequence).
-  unsigned int BasesStop( ) const { return b_start_ + b_.size( ); }
+  unsigned int BasesStop( ) const {
+    return b_start_ + b_.size( );
+  }
 
   /// Whether this offset is within the current chunk
   Bool BaseInMemory( unsigned int m )
-  { return BasesStart( ) <= m && m < BasesStop( ); }
+  {
+    return BasesStart( ) <= m && m < BasesStop( );
+  }
 
   /** \brief Translates an absolute offset (with respect to complete
    *  concatenated reference sequence)into the base (i.e. ACTG). \e UNCHECKED
@@ -401,33 +449,49 @@ public:
    *  "array index out of bound" error will occur.
    */
   unsigned char Base( unsigned int m ) const
-    { return b_[ m - BasesStart( ) ]; }
+  {
+    return b_[ m - BasesStart( ) ];
+  }
 
   //// Less vital header information
   //////////////////////////////////////////////////////////////////////
 
   /// The number of entries in the frequencies table -- mostly internal use
-  unsigned int FourToK( ) const { return four_to_K_; }
+  unsigned int FourToK( ) const {
+    return four_to_K_;
+  }
 
   /// The number of kmers in the currently loaded chunk of reference genome.
-  unsigned int NLocs( ) const { return locs_.size( ); }
+  unsigned int NLocs( ) const {
+    return locs_.size( );
+  }
 
   /// I don't think these accessors are used by any code, but the
   /// information is present in the header.
-  unsigned int GivenChunkSize( ) { return given_chunk_size_; }
-  unsigned int GivenChunkOverlap( ) { return given_chunk_overlap_; }
+  unsigned int GivenChunkSize( ) {
+    return given_chunk_size_;
+  }
+  unsigned int GivenChunkOverlap( ) {
+    return given_chunk_overlap_;
+  }
 
   /// The absolute offset (in the full concatenated reference sequence)
   /// of the first base in chunk c
-  unsigned int StartBaseInChunk( int c ) { return control2_[ (c * 4) + 2 ]; }
+  unsigned int StartBaseInChunk( int c ) {
+    return control2_[ (c * 4) + 2 ];
+  }
 
   /// The number of bases stored in chunk c
-  unsigned int NBasesInChunk( int c ) { return control2_[ (c * 4) + 3 ]; }
+  unsigned int NBasesInChunk( int c ) {
+    return control2_[ (c * 4) + 3 ];
+  }
 
   /// Absolute offset (with respect to the complete concatenated reference sequence)
   /// of the one past the last base in this chunk
   unsigned int StopBaseInChunk( int c )
-  {    return StartBaseInChunk(c) + NBasesInChunk(c);    }
+  {
+    return StartBaseInChunk(c) + NBasesInChunk(c);
+  }
 
 
   //////////////////////////////////////////////////////////////////////
@@ -444,20 +508,20 @@ public:
   /// This constructor is used for creating a new lookup table.
   lookup_table( String const& filename, bool ) : fw_(filename), chunk_(-1)
   {
-    STATIC_ASSERT_M(sizeof(unsigned int) == 4 , bad_uint_size );
+    STATIC_ASSERT_M(sizeof(unsigned int) == 4, bad_uint_size );
     STATIC_ASSERT_M( sizeof(off_t) == 8, bad_off_t_size );
     control_.resize( 256, 0 ), control2_.resize( 256, 0 );
   }
 
- /** \brief Sets the size of the lookup table's K-mer to \c k.
-  *
-  *  This method sets the K-mer size and automatically performs
-  *  all required synchronization (internally maintained constants
-  *  \c four_to_K, \c Kmask_ are updated; \c lookup and \c freq tables are
-  *  resized - but \i not initialized, there is no data yet). Use this method
-  *  only when creating new lookup tables and only prior to adding
-  *  sequence data.
-  */
+  /** \brief Sets the size of the lookup table's K-mer to \c k.
+   *
+   *  This method sets the K-mer size and automatically performs
+   *  all required synchronization (internally maintained constants
+   *  \c four_to_K, \c Kmask_ are updated; \c lookup and \c freq tables are
+   *  resized - but \i not initialized, there is no data yet). Use this method
+   *  only when creating new lookup tables and only prior to adding
+   *  sequence data.
+   */
   void SetK( unsigned int K );
 
   /** \brief Adds a new conting name to the lookup table.
@@ -483,7 +547,7 @@ public:
    *  @see LookupTableBuilder::BuildTableFromContigs()
    */
   void AddContigName( String contig_name, const String& file_name,
-		      int index_in_file );
+                      int index_in_file );
 
   /** \brief Adds a new contig start position to the table of start positions.
    *
@@ -502,7 +566,9 @@ public:
    *  @see DumpChunk()
    *  @see LookupTableBuilder::BuildTableFromContigs()
    */
-  void AddContigStart( unsigned int start ) { contig_start_.push_back(start); }
+  void AddContigStart( unsigned int start ) {
+    contig_start_.push_back(start);
+  }
 
   /** \brief Adds a new contig size to the table of sizes.
    *
@@ -521,7 +587,9 @@ public:
    *  @see DumpChunk()
    *  @see LookupTableBuilder::BuildTableFromContigs()
    */
-  void AddContigSize( unsigned int count ) { contig_sizes_.push_back(count); }
+  void AddContigSize( unsigned int count ) {
+    contig_sizes_.push_back(count);
+  }
 
   /** \brief Writes complete header of the lookup table file to disk.
    *
@@ -621,18 +689,23 @@ public:
    *  @see WriteHeader()
    */
   void DumpChunk( vec< pair<unsigned int, unsigned int> >& index_loc,
-		  const vec<char>& bases );
+                  const vec<char>& bases );
 
   /** \brief Sets chunk size and overlap between chunks (both measured in
    *  bases) for ths lookup table.
    */
   void SetChunkParams( unsigned int chunk_size, unsigned int chunk_overlap )
-  { control_[3] = chunk_size; control_[4] = chunk_overlap; }
+  {
+    control_[3] = chunk_size;
+    control_[4] = chunk_overlap;
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   /// Destructor closes the open file.
   /////////////////////////////////////////////////////////////////////////////
-  ~lookup_table() { fw_.close(); }
+  ~lookup_table() {
+    fw_.close();
+  }
 
   /// Other odd stuff
   /////////////////////////////////////////////////////////////////////////
@@ -648,8 +721,12 @@ public:
 
 
   // we don't align  ambiguous reads
-  void SetAmbiguousReads(vec<int> &amb) { ambiguous_reads_ = amb; }
-  void SetStartRead(int s) { start_read_=s; }
+  void SetAmbiguousReads(vec<int> &amb) {
+    ambiguous_reads_ = amb;
+  }
+  void SetStartRead(int s) {
+    start_read_=s;
+  }
 
   //////////////////////////////////////////////////////////////////////
   /// Member variables
@@ -770,8 +847,8 @@ private:
   /// lowest (nonzero) frequency kmer in that chunk, and put only
   /// those kmers into the query set.
   void BasesToQueries(const vecbasevector &bases, vec<Query> &queries,
-		      int maxFreq, unsigned int npasses,
-		      int firstRead=0, int lastRead=-1, bool maxFreqDiscardRead = false);
+                      int maxFreq, unsigned int npasses,
+                      int firstRead=0, int lastRead=-1, bool maxFreqDiscardRead = false);
 
   /// Find all hits in the current chunk for the interval of query
   /// kmers.  Returned hits, expressed as a vector of RawHits, are in
@@ -779,16 +856,16 @@ private:
   /// QueryPos's indicated in the query kmers, supporting
   /// concatenation of multiple queries.
   void FindHits(vec<Query>::const_iterator query,
-		vec<Query>::const_iterator lastQuery,
-		int posOffset,
-		vec<RawHit> &hits) {
+                vec<Query>::const_iterator lastQuery,
+                int posOffset,
+                vec<RawHit> &hits) {
     hits.clear();
     unsigned int j;
     LocSeq locseq;
     for ( ; query != lastQuery; ++query) {
       locseq = LookupSeq(query->Kmer());
       for (j=locseq.first; j!=locseq.second; ++j) {
-	hits.push_back(RawHit(locs_[j], query->QueryPos()-posOffset, query->IsRc()));
+        hits.push_back(RawHit(locs_[j], query->QueryPos()-posOffset, query->IsRc()));
       }
     }
   }
@@ -799,9 +876,9 @@ private:
   /// FindHits above.
   template<typename HitReceiver>
   void FindHits(const vecbasevector &bases, ///< Used for lengths only!
-		const vec<Query> &queries, ///< Sorted by query position.
-		HitReceiver &transmit,
-		int firstRead=0, int lastRead=-1)
+                const vec<Query> &queries, ///< Sorted by query position.
+                HitReceiver &transmit,
+                int firstRead=0, int lastRead=-1)
   {
     if (-1 == lastRead) lastRead = bases.size();
     CompareQueriesByPos compareQueriesByPos;
@@ -822,134 +899,134 @@ private:
       firstQuery = queries.begin();
       for (int i=firstRead; i< lastRead; ++i, startpos=stoppos) {
 
-	// Determine which of the queries are from this sequence
-	stoppos = startpos + bases[i].size();
-	lastQuery = lower_bound(firstQuery, queries.end(), Query(stoppos), compareQueriesByPos);
+        // Determine which of the queries are from this sequence
+        stoppos = startpos + bases[i].size();
+        lastQuery = lower_bound(firstQuery, queries.end(), Query(stoppos), compareQueriesByPos);
 
-	// don't bother with reads declared ambiguous
-	if ( !ambiguous_reads_.empty() &&
-	     BinMember(ambiguous_reads_,(i+start_read_)) ) {
-	  firstQuery=lastQuery;
-	  continue;
-	}
+        // don't bother with reads declared ambiguous
+        if ( !ambiguous_reads_.empty() &&
+             BinMember(ambiguous_reads_,(i+start_read_)) ) {
+          firstQuery=lastQuery;
+          continue;
+        }
 
-	FindHits(firstQuery, lastQuery, startpos, hits); // get the RawHits
+        FindHits(firstQuery, lastQuery, startpos, hits); // get the RawHits
 
-	// separate into fw, rc and process each independently as [firstHit, lastHit)
-	firstRcHit = partition(hits.begin(), hits.end(), RawHitIsFw());
-	firstHit = hits.begin();
-	lastHit = firstRcHit;
-	while (firstHit != hits.end()) {
-	  sort(firstHit, lastHit, compareRawHitsByQueryStartOffset);
-	  it = firstHit;
-	  for (j=0; j<ncontigs; ++j) {
-	    // Separate hits by target contig, creating subseq [it, last) of hits.
-	    if (j+1 < ncontigs) { // More than one contig remains: find junction
-	      // As an optimization, first locate where the junction
-	      // falls in the hits sorted by start position.  The
-	      // start position is no larger than the offset, so there
-	      // can't be any hits for this contig to the right of
-	      // that point.  As an optimization, skip to next contig
-	      // if there isn't at least one hit for this one.
-	      RawHit contigEnd(StopBaseOfContigInChunk(j), 0, true);
-	      if (it->QueryStartOnTarget() > contigEnd.Offset()) continue;
-	      last = lower_bound(it, lastHit, contigEnd,
-				 compareRawHitsByQueryStartOffset);
-	      // Then partition those by their actual offsets.
-	      last = stable_partition(it, last, RawHitOffsetIsBefore(contigEnd));
-	    } else { // Only one contig left, so all hits belong to it
-	      last = lastHit;
-	    }
-	    // Now transmit each run of hits with same query start in this contig group.
-	    for ( ; it!=last; it = runLast) {
-	      // one past end of the *it run
-	      runLast = it;
-	      startOnTarget = it->QueryStartOnTarget();
-	      do
-		++runLast;
-	      while (runLast!=last && runLast->QueryStartOnTarget()==startOnTarget);
-	      transmit(i, it->QueryPos(), it->IsRc(), it->Offset(), firstcontig+j,
-		       distance(it, runLast));
-	    }
-	  }
-	  // Now advance to rc part of hits, if any
-	  firstHit = lastHit;
-	  lastHit = hits.end();
-	}
-	firstQuery = lastQuery;
+        // separate into fw, rc and process each independently as [firstHit, lastHit)
+        firstRcHit = partition(hits.begin(), hits.end(), RawHitIsFw());
+        firstHit = hits.begin();
+        lastHit = firstRcHit;
+        while (firstHit != hits.end()) {
+          sort(firstHit, lastHit, compareRawHitsByQueryStartOffset);
+          it = firstHit;
+          for (j=0; j<ncontigs; ++j) {
+            // Separate hits by target contig, creating subseq [it, last) of hits.
+            if (j+1 < ncontigs) { // More than one contig remains: find junction
+              // As an optimization, first locate where the junction
+              // falls in the hits sorted by start position.  The
+              // start position is no larger than the offset, so there
+              // can't be any hits for this contig to the right of
+              // that point.  As an optimization, skip to next contig
+              // if there isn't at least one hit for this one.
+              RawHit contigEnd(StopBaseOfContigInChunk(j), 0, true);
+              if (it->QueryStartOnTarget() > contigEnd.Offset()) continue;
+              last = lower_bound(it, lastHit, contigEnd,
+                                 compareRawHitsByQueryStartOffset);
+              // Then partition those by their actual offsets.
+              last = stable_partition(it, last, RawHitOffsetIsBefore(contigEnd));
+            } else { // Only one contig left, so all hits belong to it
+              last = lastHit;
+            }
+            // Now transmit each run of hits with same query start in this contig group.
+            for ( ; it!=last; it = runLast) {
+              // one past end of the *it run
+              runLast = it;
+              startOnTarget = it->QueryStartOnTarget();
+              do
+                ++runLast;
+              while (runLast!=last && runLast->QueryStartOnTarget()==startOnTarget);
+              transmit(i, it->QueryPos(), it->IsRc(), it->Offset(), firstcontig+j,
+                       distance(it, runLast));
+            }
+          }
+          // Now advance to rc part of hits, if any
+          firstHit = lastHit;
+          lastHit = hits.end();
+        }
+        firstQuery = lastQuery;
       }
       transmit.ChunkDone();
     }
   }
 
 
-template<typename HitReceiver>
-void FindAmbiguousHits(const vecbasevector &bases, ///< Used for lengths only!
-		  const vec<Query> &queries, ///< Sorted by query position.
-		  HitReceiver &transmit,
-		  int firstRead=0, int lastRead=-1)
-{
-  if (-1 == lastRead) lastRead = bases.size();
-   CompareQueriesByPos compareQueriesByPos;
-  vec<Query>::const_iterator firstQuery, lastQuery;
-  unsigned int j, startpos, stoppos, contig, pos, firstcontig, ncontigs;
-  longlong startOnTarget;
-
-
-  vec<bool> done_ovlp(NChunks(),false);
-
-  for (unsigned int chunk=0; chunk<nchunks_; ++chunk)
+  template<typename HitReceiver>
+  void FindAmbiguousHits(const vecbasevector &bases, ///< Used for lengths only!
+                         const vec<Query> &queries, ///< Sorted by query position.
+                         HitReceiver &transmit,
+                         int firstRead=0, int lastRead=-1)
   {
-    ReadChunk(chunk);
-    ncontigs = ContigsInChunk();
-    firstcontig = FirstContigInChunk();
-    startpos=0;
-    firstQuery = queries.begin();
+    if (-1 == lastRead) lastRead = bases.size();
+    CompareQueriesByPos compareQueriesByPos;
+    vec<Query>::const_iterator firstQuery, lastQuery;
+    unsigned int j, startpos, stoppos, contig, pos, firstcontig, ncontigs;
+    longlong startOnTarget;
 
-    for (int i=firstRead; i< lastRead; ++i, startpos=stoppos)
+
+    vec<bool> done_ovlp(NChunks(),false);
+
+    for (unsigned int chunk=0; chunk<nchunks_; ++chunk)
     {
-       // Determine which of the queries are from this sequence
-      stoppos = startpos + bases[i].size();
-      lastQuery = lower_bound(firstQuery, queries.end(), Query(stoppos), compareQueriesByPos);
+      ReadChunk(chunk);
+      ncontigs = ContigsInChunk();
+      firstcontig = FirstContigInChunk();
+      startpos=0;
+      firstQuery = queries.begin();
 
-      if ( transmit.IsAmbiguous(i) ) {
-	firstQuery=lastQuery;
-	continue;
-      }
-
-      set<longlong> startPos;
-      for ( ; firstQuery != lastQuery; ++firstQuery )
+      for (int i=firstRead; i< lastRead; ++i, startpos=stoppos)
       {
-	LocSeq locseq = LookupSeq(firstQuery->Kmer());
-	unsigned int k(0);
+        // Determine which of the queries are from this sequence
+        stoppos = startpos + bases[i].size();
+        lastQuery = lower_bound(firstQuery, queries.end(), Query(stoppos), compareQueriesByPos);
+
+        if ( transmit.IsAmbiguous(i) ) {
+          firstQuery=lastQuery;
+          continue;
+        }
+
+        set<longlong> startPos;
+        for ( ; firstQuery != lastQuery; ++firstQuery )
+        {
+          LocSeq locseq = LookupSeq(firstQuery->Kmer());
+          unsigned int k(0);
 
 // 	cout << "\t\t#matches this query: " << distance(queries.begin(),firstQuery) <<" "
 // 	     <<  locseq.second-locseq.first << " "<<startPos.size() << endl;
 
-	for ( k=locseq.first; k != locseq.second; ++k )
-	{
-	  if ( transmit.IsAmbiguous(i) )
-	    break;
+          for ( k=locseq.first; k != locseq.second; ++k )
+          {
+            if ( transmit.IsAmbiguous(i) )
+              break;
 
-	  RawHit h(locs_[k], firstQuery->QueryPos()-startpos, firstQuery->IsRc());
+            RawHit h(locs_[k], firstQuery->QueryPos()-startpos, firstQuery->IsRc());
 
-	  // only transmit each start position one time
-	  longlong min_pos(std::max(longlong(0),h.QueryStartOnTarget()-transmit.Bandwidth()));
-	  longlong max_pos(h.QueryStartOnTarget()+transmit.Bandwidth());
-	  for ( ; min_pos <= max_pos; ++min_pos )
-	    if ( ! startPos.insert(min_pos).second )
-	      break;
+            // only transmit each start position one time
+            longlong min_pos(std::max(longlong(0),h.QueryStartOnTarget()-transmit.Bandwidth()));
+            longlong max_pos(h.QueryStartOnTarget()+transmit.Bandwidth());
+            for ( ; min_pos <= max_pos; ++min_pos )
+              if ( ! startPos.insert(min_pos).second )
+                break;
 
-	  if ( min_pos != max_pos+1 )
-	    continue;
+            if ( min_pos != max_pos+1 )
+              continue;
 
-	  // find this contig
+            // find this contig
 
-	  unsigned int j(0);
-	  while ( j<ncontigs &&
-		  h.Offset() >= StopBaseOfContigInChunk(j) ) {
-	    ++j;
-	  }
+            unsigned int j(0);
+            while ( j<ncontigs &&
+                    h.Offset() >= StopBaseOfContigInChunk(j) ) {
+              ++j;
+            }
 
 // 	  cout << "transmitting: "
 // 	       << i <<" "
@@ -958,27 +1035,27 @@ void FindAmbiguousHits(const vecbasevector &bases, ///< Used for lengths only!
 // 	       << h.QueryPos() << " "
 // 	       << h.Offset() << endl;
 
-	  if ( chunk>0 &&
-	       locs_[k] < (StartBaseInChunk(chunk)+GivenChunkOverlap()) &&
-	       done_ovlp[chunk-1] ) {
-	    continue;
-	  }
+            if ( chunk>0 &&
+                 locs_[k] < (StartBaseInChunk(chunk)+GivenChunkOverlap()) &&
+                 done_ovlp[chunk-1] ) {
+              continue;
+            }
 
-	  // Now transmit each run of hits with same query start in this contig group.
-	  transmit(i, h.QueryPos(), h.IsRc(), h.Offset(), firstcontig+j,1);
-	}
+            // Now transmit each run of hits with same query start in this contig group.
+            transmit(i, h.QueryPos(), h.IsRc(), h.Offset(), firstcontig+j,1);
+          }
 
-	if ( transmit.IsAmbiguous(i) ) {
-	  firstQuery=lastQuery;
-	  break;
-	}
-     }  //queries
-    } // reads
+          if ( transmit.IsAmbiguous(i) ) {
+            firstQuery=lastQuery;
+            break;
+          }
+        }  //queries
+      } // reads
 
-    done_ovlp[chunk]=true;
-  } // chunks
+      done_ovlp[chunk]=true;
+    } // chunks
 
-}
+  }
 
 
 
@@ -993,7 +1070,9 @@ void FindAmbiguousHits(const vecbasevector &bases, ///< Used for lengths only!
 
 
 inline Bool AmbiguousBase( char base )
-{ return !Base::isBase(base); }
+{
+  return !Base::isBase(base);
+}
 
 
 #endif

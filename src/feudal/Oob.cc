@@ -19,5 +19,5 @@
 
 void OutOfBoundsReporter::oob( char const* className, size_t idx, size_t siz )
 {
-    FatalErr(className << " access out of bounds.  Tried to access " << idx << " when there were only " << siz << " elements.");
+  FatalErr(className << " access out of bounds.  Tried to access " << idx << " when there were only " << siz << " elements.");
 }

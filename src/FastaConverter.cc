@@ -14,30 +14,30 @@
 
 template<typename sequenceT>
 void FastaConverter<sequenceT>::extractNameFromBuffer( char* buffer, String &name )
-{ 
+{
   name_parser_->extractNameFromBuffer( buffer, name );
 }
 
 template<typename sequenceT>
-void FastaConverter<sequenceT>::extractAllFromBuffer( char* buffer, 
-                                                      String &name, sequenceT &sequence )
+void FastaConverter<sequenceT>::extractAllFromBuffer( char* buffer,
+    String &name, sequenceT &sequence )
 {
   //  get first line of buffer
   char* end_of_first_line = buffer;
-  while ( *end_of_first_line != '\n' && 
+  while ( *end_of_first_line != '\n' &&
           *end_of_first_line != 0 )
     ++end_of_first_line;
-  
+
   char* beginning_of_second_line = end_of_first_line+1;
   // ensure we haven't overrun the buffer.
   if ( *end_of_first_line == 0 )
     --beginning_of_second_line;
-  
+
   // terminate the name portion of the buffer
   *end_of_first_line = 0;
   // pass this shortened buffer to extractNameFromBuffer
-  extractNameFromBuffer( buffer, name ); 
-  
+  extractNameFromBuffer( buffer, name );
+
   // pass the rest of the buffer to extractDatumFromBuffer
   if ( ! extractDatumFromBuffer( beginning_of_second_line, sequence ) )
   {
@@ -63,7 +63,7 @@ FastaConverter<CharVec>::extractDatumFromBuffer( char* buffer, CharVec &sequence
 template<>
 bool
 FastaConverter<CompressedSequence>::extractDatumFromBuffer( char* buffer,
-                                                            CompressedSequence &sequence )
+    CompressedSequence &sequence )
 {
   static bool initialized = false;
   static int is_valid[256];
@@ -73,7 +73,7 @@ FastaConverter<CompressedSequence>::extractDatumFromBuffer( char* buffer,
       is_valid[c] = ( isspace( c ) ? 0 : 1 );
     initialized = true;
   }
-    
+
   char *valid_buffer = buffer;
   char *valid_buffer_walk = buffer;
 
@@ -85,7 +85,7 @@ FastaConverter<CompressedSequence>::extractDatumFromBuffer( char* buffer,
   *valid_buffer_walk = 0;
 
   sequence = CompressedSequence( valid_buffer );
-  
+
   return true;
 }
 
@@ -93,7 +93,7 @@ FastaConverter<CompressedSequence>::extractDatumFromBuffer( char* buffer,
 template<>
 bool
 FastaConverter<qualvector>::extractDatumFromBuffer( char* buffer,
-                                                    qualvector &sequence )
+    qualvector &sequence )
 {
   static bool initialized = false;
   static int is_number[256];
@@ -115,7 +115,7 @@ FastaConverter<qualvector>::extractDatumFromBuffer( char* buffer,
   // skip leading whitespace
   while ( is_not_number_nor_null[ static_cast<unsigned char>( *buffer ) ] )
     ++buffer;
-  
+
   if ( *buffer == 0 )
     return true;
 
@@ -134,7 +134,7 @@ FastaConverter<qualvector>::extractDatumFromBuffer( char* buffer,
     }
     // if it's not a number, we've just read in
     // a quality score, so we save it and reset
-    else 
+    else
     {
       // if q is too big or the delimiter is not a whitespace char,
       // we inform the user that their file seems to be screwy
@@ -145,7 +145,7 @@ FastaConverter<qualvector>::extractDatumFromBuffer( char* buffer,
       }
       sequence.push_back( static_cast<unsigned char>( q ) );
       q = 0;
-      
+
       // before we continue, we scan up to the next digit
       while ( is_not_number_nor_null[ static_cast<unsigned char>( *buffer ) ] )
         ++buffer;

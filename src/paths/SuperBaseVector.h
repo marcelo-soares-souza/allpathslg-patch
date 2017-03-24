@@ -11,7 +11,7 @@
 #include <functional>
 
 /// A simple class which holds a series of basevectors with
-/// (possibly negative) gaps between them.  This is what a 
+/// (possibly negative) gaps between them.  This is what a
 /// KmerPath logically maps to in sequence space.  The function
 /// KmerBaseBroker::ToSequence() returns an object of this type.
 ///
@@ -23,36 +23,53 @@ public:
   // using constructor/destructor defaults
 
   // Data accessors.  If you want a non-const basevector, copy it yourself.
-  const basevector& Seq( int i ) const { return seqs[i]; }
-  const basevector& operator[]( int i ) const { return seqs[i]; }
-  
-  pair<int,int> Gap( int i ) const { return make_pair(mingaps[i],maxgaps[i]); }
-  int MinGap( int i ) const { return mingaps[i]; }
-  int MaxGap( int i ) const { return maxgaps[i]; }
-  int MinGap() const { return accumulate( mingaps.begin(), mingaps.end(), 0 ); }
-  int MaxGap() const { return accumulate( maxgaps.begin(), maxgaps.end(), 0 ); }
+  const basevector& Seq( int i ) const {
+    return seqs[i];
+  }
+  const basevector& operator[]( int i ) const {
+    return seqs[i];
+  }
 
-  int size() const { return seqs.size(); }
+  pair<int,int> Gap( int i ) const {
+    return make_pair(mingaps[i],maxgaps[i]);
+  }
+  int MinGap( int i ) const {
+    return mingaps[i];
+  }
+  int MaxGap( int i ) const {
+    return maxgaps[i];
+  }
+  int MinGap() const {
+    return accumulate( mingaps.begin(), mingaps.end(), 0 );
+  }
+  int MaxGap() const {
+    return accumulate( maxgaps.begin(), maxgaps.end(), 0 );
+  }
+
+  int size() const {
+    return seqs.size();
+  }
 
   // Replace *this by its reverse complement.
   void ReverseComplement( ) {
     mingaps.ReverseMe();
     maxgaps.ReverseMe();
     seqs.ReverseMe();
-    for_each( seqs.begin(), seqs.end(), 
+    for_each( seqs.begin(), seqs.end(),
 //            This also works -- the ambiguity is in the template resolution
 // 	      mem_fun_ref_t<void,basevector>( &basevector::ReverseComplement) );
-	      mem_fun_ref( (basevector & (basevector::*)()) 
-			   &basevector::ReverseComplement) );
+              mem_fun_ref( (basevector & (basevector::*)())
+                           &basevector::ReverseComplement) );
   }
 
-  
+
 
   int ReducedLength( ) const
-  {    int total = 0;
-       for ( int i = 0; i < seqs.isize( ); i++ )
-            total += seqs[i].size( );
-       return total;    }
+  { int total = 0;
+    for ( int i = 0; i < seqs.isize( ); i++ )
+      total += seqs[i].size( );
+    return total;
+  }
 
 
   /// You need a pair of ints to specify a base in a SuperBaseVector.
@@ -73,7 +90,7 @@ public:
     ForceAssertEq( seqs.size(), mingaps.size() );
     seqs.push_back( seq );
   }
-  
+
   void PushGap( pair<int,int> gap ) {
     ForceAssertEq( seqs.size(), mingaps.size()+1 );
     mingaps.push_back( gap.first );
@@ -100,19 +117,24 @@ public:
   // PrintN: print, showing Ns for gaps.
 
   void PrintN( ostream& out )
-  {    int count = 0;
-       for ( int i = 0; i < size( ); i++ )
-       {    for ( int j = 0; j < (int) Seq(i).size( ); j++ )
-            {    if ( count > 0 && count % 80 == 0 ) out << "\n";
-                 out << as_base( Seq(i)[j] );
-                 ++count;    }
-            if ( i < size( ) - 1 )
-            {    int g = Max( 0, ( MinGap(i) + MaxGap(i) ) / 2 );
-                 for ( int j = 0; j < g; j++ )
-                 {    if ( count > 0 && count % 80 == 0 ) out << "\n";
-                      out << "N";
-                      ++count;    }    }    }
-      out << "\n";    }
+  { int count = 0;
+    for ( int i = 0; i < size( ); i++ )
+    { for ( int j = 0; j < (int) Seq(i).size( ); j++ )
+      { if ( count > 0 && count % 80 == 0 ) out << "\n";
+        out << as_base( Seq(i)[j] );
+        ++count;
+      }
+      if ( i < size( ) - 1 )
+      { int g = Max( 0, ( MinGap(i) + MaxGap(i) ) / 2 );
+        for ( int j = 0; j < g; j++ )
+        { if ( count > 0 && count % 80 == 0 ) out << "\n";
+          out << "N";
+          ++count;
+        }
+      }
+    }
+    out << "\n";
+  }
 
 private:
   vec<basevector> seqs;

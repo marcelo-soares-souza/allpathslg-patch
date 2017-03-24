@@ -39,15 +39,17 @@ class vec_alignment_plus {
 public:
 
   vec_alignment_plus( const String &alignments_file,
-		      const vec<int> &read_lengths );
-  
+                      const vec<int> &read_lengths );
+
   vec_alignment_plus( const vec<alignment_plus> &orig_aligns,
-		      const vec<int> &read_lengths );
-  
-  unsigned int GetNumberAlignments() const { return all_aligns_ids_.size(); }
-  
+                      const vec<int> &read_lengths );
+
+  unsigned int GetNumberAlignments() const {
+    return all_aligns_ids_.size();
+  }
+
   void GetAlignment( alignment_plus &al_plus, int align_id ) const;
-  
+
   int GetAlignsIndex( int read_id ) const;
 
   int GetAlignmentId1( int align_id ) const;
@@ -63,19 +65,19 @@ public:
   Bool Rc2( int align_id ) const;
 
   void SaveAlignments( const String &filename );
-  
+
   // Set the alignment in all_aligns[ align_id ].
   void SetPlainAlignment( int align_id,
-			  int pos1,
-			  int pos2,
-			  int errors,
-			  const avector<int>& gaps,
-			  const avector<int>& lengths,
-			  int nblocks );
-  
+                          int pos1,
+                          int pos2,
+                          int errors,
+                          const avector<int>& gaps,
+                          const avector<int>& lengths,
+                          int nblocks );
+
   // Set the alignment in all_aligns[ align_id ].
   void SetPlainAlignment( int align_id, alignment &plain_al );
-  
+
   // Set the align  in all_aligns[ align_id ] (beware: align  != alignment).
   void SetPlainAlign( int align_id, allpathslg::align  &plain_al );
 
@@ -83,13 +85,13 @@ public:
   int KillImproperAligns( );
 
   void SetAlignmentScore( int align_id, float score );
-  
+
 
 private:
-  
+
   void Load( const String &alignments_file );
-  
-  
+
+
 private:
   /*
    * Convention: call all_al the hypothetical vector with all the
@@ -98,7 +100,7 @@ private:
    * one for rd2-rd1).
    *
    * alignments_: all and only the entries of all_al with rd_id1<rd_id2;
-   * all_aligns_ids_[ii] = jj, plus 
+   * all_aligns_ids_[ii] = jj, plus
    * all_aligns_flip_[ii] = true (resp. false) means:
    *  all_al[ii] is equal to flipped (resp. not flipped) alignments_[jj];
    * all_aligns_index_[read_jj] = ii means:
@@ -106,7 +108,7 @@ private:
    */
   const vec<int> *read_lengths_;
   vec<alignment_plus> alignments_;
-  mutable vec<Bool> all_aligns_flip_;  
+  mutable vec<Bool> all_aligns_flip_;
   mutable vec<int> all_aligns_ids_;
   mutable vec<int> all_aligns_index_;
 
@@ -121,11 +123,11 @@ private:
 // determine which reads a given read is known to align  to.
 
 void BuildAlignsIndex( const String& run_dir,
-		       const vec_alignment_plus& all_aligns,
-		       int n_reads );
+                       const vec_alignment_plus& all_aligns,
+                       int n_reads );
 void BuildAlignsIndex( const String& run_dir,
-		       const vec<alignment_plus>& all_aligns,
-		       int n_reads );
+                       const vec<alignment_plus>& all_aligns,
+                       int n_reads );
 
 // Note that there is a main program util/BuildAlignmentsMain.cc which
 // calls BuildAlignsIndex.  Ultimately, we should instead incorporate
@@ -134,19 +136,19 @@ void BuildAlignsIndex( const String& run_dir,
 class AlignsIndexReader
 {
 public:
-    // assuming that BuildAlignsIndex has been run for this run_dir
-    AlignsIndexReader( String const& run_dir, size_t nReads )
+  // assuming that BuildAlignsIndex has been run for this run_dir
+  AlignsIndexReader( String const& run_dir, size_t nReads )
     : mFR( (run_dir + "/aligns.index").c_str() ), mNReads(nReads) {}
 
-    // compiler-supplied destructor is OK
-    // copying OK if mFR can be copied (which it currently can't be)
+  // compiler-supplied destructor is OK
+  // copying OK if mFR can be copied (which it currently can't be)
 
-    // return as "to" all the read ids which read id1 is known to align  to
-    void readIndex( int id1, vec<int>& to ) const;
+  // return as "to" all the read ids which read id1 is known to align  to
+  void readIndex( int id1, vec<int>& to ) const;
 
 private:
-    FileReader mFR;
-    size_t mNReads;
+  FileReader mFR;
+  size_t mNReads;
 };
 
 #endif // VEC_ALIGNMENT_PLUS

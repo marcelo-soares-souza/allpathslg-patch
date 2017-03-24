@@ -32,7 +32,7 @@
 String QUERY("QUERY");
 
 void look_align::ResetFromAlign(const allpathslg::align  & al, const basevector & b1,
-				const basevector & b2) {
+                                const basevector & b2) {
   a = al;
   vec<int> errs = a.MutationsGap1Gap2(b1, b2);
   mutations = errs[0];
@@ -41,22 +41,22 @@ void look_align::ResetFromAlign(const allpathslg::align  & al, const basevector 
 
 
 look_align look_align::TrimmedTo1(int startOn1, int len,
-				    const basevector & b1,
-				    const basevector & b2) const {
-    look_align ret(*this);
-    ret.a = a.TrimmedTo1(startOn1, len);
-    ret.query_length = len;
-    basevector btrimmed;
-    btrimmed.SetToSubOf(b1, startOn1, len);
-    vec<int> errs = ret.a.MutationsGap1Gap2(btrimmed, b2);
-    ret.mutations = errs[0];
-    ret.indels = errs[1] + errs[2];
-    return ret;
+                                  const basevector & b1,
+                                  const basevector & b2) const {
+  look_align ret(*this);
+  ret.a = a.TrimmedTo1(startOn1, len);
+  ret.query_length = len;
+  basevector btrimmed;
+  btrimmed.SetToSubOf(b1, startOn1, len);
+  vec<int> errs = ret.a.MutationsGap1Gap2(btrimmed, b2);
+  ret.mutations = errs[0];
+  ret.indels = errs[1] + errs[2];
+  return ret;
 }
 
 look_align_plus look_align::TrimmedTo1Plus(int startOn1, int len,
-				    const basevector & b1,
-				    const basevector & b2) const {
+    const basevector & b1,
+    const basevector & b2) const {
   look_align temp= TrimmedTo1(startOn1, len, b1, b2);
   ostringstream os;
   basevector btrimmed;
@@ -97,8 +97,8 @@ void look_align::PrintParseable( ostream& out, const basevector& query,
 }
 
 void look_align::PrintParseable( ostream& out,
-				 const basevector *query,
-				 const basevector *target, bool endl  ) const
+                                 const basevector *query,
+                                 const basevector *target, bool endl  ) const
 {
   // Warning: if query or target are null, then the sum of all mutations
   // is saved in the first block. This is not ideal, but is better than
@@ -125,25 +125,25 @@ void look_align::PrintParseable( ostream& out,
       if ( a.Gaps(j) > 0 ) p2 += a.Gaps(j);
       if ( a.Gaps(j) < 0 ) p1 -= a.Gaps(j);
       for ( int x = 0; x < a.Lengths(j); x++ ) {
-	if ( !rc1 && (*query)[p1] != (*target)[ p2 - start_on_target ] )
-	  ++mismatches;
+        if ( !rc1 && (*query)[p1] != (*target)[ p2 - start_on_target ] )
+          ++mismatches;
 
-	if ( rc1 && (query_length > static_cast<unsigned int>(p1)) && 3 - (*query)[query_length - p1 - 1]
-	     != (*target)[ p2 - start_on_target ] ) {
-	  ++mismatches;
-	}
-	++p1, ++p2;
+        if ( rc1 && (query_length > static_cast<unsigned int>(p1)) && 3 - (*query)[query_length - p1 - 1]
+             != (*target)[ p2 - start_on_target ] ) {
+          ++mismatches;
+        }
+        ++p1, ++p2;
       }
       out << "\t" << a.Gaps(j)
-	  << "\t" << a.Lengths(j)
-	  << "\t"  << mismatches;
+          << "\t" << a.Lengths(j)
+          << "\t"  << mismatches;
     }
   }
   else {
     for (int ii=0; ii<a.Nblocks( ); ii++) {
       out << "\t" << a.Gaps(ii)
-	  << "\t" << a.Lengths(ii)
-	  << "\t" << (0 == ii ? mutations : 0);//save on first block.
+          << "\t" << a.Lengths(ii)
+          << "\t" << (0 == ii ? mutations : 0);//save on first block.
     }
   }
 
@@ -261,7 +261,7 @@ void look_align::PrintParseableBrief( ostream& out, const basevector& query,
 }
 
 void look_align::PrintReadableBrief( ostream& out, const String & query_name,
-				     const String & target_name ) const {
+                                     const String & target_name ) const {
   out << query_name << ( rc1 ? "rc" : "fw" ) << " vs "
       << target_name << ", " << mutations << " mismatches/"
       << indels << " indels (of " << query_length << "), from "
@@ -271,9 +271,9 @@ void look_align::PrintReadableBrief( ostream& out, const String & query_name,
 
 void look_align::PrintReadableBrief( ostream& out, const basevector& query,
                                      const qualvector& query_qual,
-				     const basevector& target,
+                                     const basevector& target,
                                      int start_on_target,
-				     const vec<String>& seq_names,
+                                     const vec<String>& seq_names,
                                      const vec<String>& target_names ) const
 {
   PrintReadableBrief(out, seq_names[query_id], target_names[target_id]);
@@ -336,11 +336,11 @@ int look_align::CountNqs( const basevector& query, const qualvector& query_qual,
 }
 
 int look_align::CountNqsWithReturns( const basevector& query, const qualvector& query_qual,
-				     const basevector& target, int start_on_target,
-				     const vec<String>& seq_names,
-				     const vec<String>& target_names,
-				     int &qualSnpBase,
-				     int &targetSnpBase )
+                                     const basevector& target, int start_on_target,
+                                     const vec<String>& seq_names,
+                                     const vec<String>& target_names,
+                                     int &qualSnpBase,
+                                     int &targetSnpBase )
 {
   const int NQS_floor1 = 30;
   const int NQS_floor2 = 25;
@@ -548,197 +548,216 @@ void look_align::PrintRmrByBlock( ostream& out, const basevector& query,
 
 void look_align::PrintVisual( ostream& out, const basevector & query,
                               const basevector& target, const Bool abbr ) const
-{    if (rc1)
-     {    basevector b = query;
-          b.ReverseComplement( );
-          PrintVisualAlignment( abbr, out, b, target, a );    }
-     else PrintVisualAlignment( abbr, out, query, target, a );    }
+{ if (rc1)
+  { basevector b = query;
+    b.ReverseComplement( );
+    PrintVisualAlignment( abbr, out, b, target, a );
+  }
+  else PrintVisualAlignment( abbr, out, query, target, a );
+}
 
 void look_align::PrintVisual( ostream& out, const fastavector & query,
                               const basevector& target, const Bool abbr ) const
-{    if (rc1)
-     {    fastavector b = query;
-          b.ReverseComplement( );
-          PrintVisualAlignment( abbr, out, b, target, a );    }
-     else PrintVisualAlignment( abbr, out, query, target, a );    }
+{ if (rc1)
+  { fastavector b = query;
+    b.ReverseComplement( );
+    PrintVisualAlignment( abbr, out, b, target, a );
+  }
+  else PrintVisualAlignment( abbr, out, query, target, a );
+}
 
 void look_align::PrintVisual( ostream& out, const basevector& query,
                               const qualvector& query_qual, const basevector& target,
                               int start_on_target, const Bool abbr ) const
-{    basevector rd1;
-     rd1 = query;
-     if (rc1) rd1.ReverseComplement( );
-     qualvector q1;
-     q1 = query_qual;
-     if (rc1) q1.ReverseMe( );
-     allpathslg::align  ar;
-     ar = a;
-     ar.Setpos2( a.pos2( ) - start_on_target );
-     PrintVisualAlignment( abbr, out, rd1, target, ar, q1 );     }
+{ basevector rd1;
+  rd1 = query;
+  if (rc1) rd1.ReverseComplement( );
+  qualvector q1;
+  q1 = query_qual;
+  if (rc1) q1.ReverseMe( );
+  allpathslg::align  ar;
+  ar = a;
+  ar.Setpos2( a.pos2( ) - start_on_target );
+  PrintVisualAlignment( abbr, out, rd1, target, ar, q1 );
+}
 
 void look_align::PrintVisual( ostream& out, const fastavector& query,
                               const qualvector& query_qual, const basevector& target,
                               int start_on_target, const Bool abbr ) const
-{    fastavector rd1;
-     rd1 = query;
-     if (rc1) rd1.ReverseComplement( );
-     qualvector q1;
-     q1 = query_qual;
-     if (rc1) q1.ReverseMe( );
-     allpathslg::align  ar;
-     ar = a;
-     ar.Setpos2( a.pos2( ) - start_on_target );
-     PrintVisualAlignment( abbr, out, rd1, fastavector(target), ar, q1 );     }
+{ fastavector rd1;
+  rd1 = query;
+  if (rc1) rd1.ReverseComplement( );
+  qualvector q1;
+  q1 = query_qual;
+  if (rc1) q1.ReverseMe( );
+  allpathslg::align  ar;
+  ar = a;
+  ar.Setpos2( a.pos2( ) - start_on_target );
+  PrintVisualAlignment( abbr, out, rd1, fastavector(target), ar, q1 );
+}
 
 void look_align::PrintVisual( ostream& out, const basevector& query,
-     const qualvector& query_qual, const fastavector& target,
-     int start_on_target, const Bool abbr ) const
-{    basevector rd1;
-     rd1 = query;
-     if (rc1) rd1.ReverseComplement( );
-     qualvector q1;
-     q1 = query_qual;
-     if (rc1) q1.ReverseMe( );
-     allpathslg::align  ar;
-     ar = a;
-     ar.Setpos2( a.pos2( ) - start_on_target );
-     PrintVisualAlignment( abbr, out, fastavector(rd1), target, ar, q1 );     }
+                              const qualvector& query_qual, const fastavector& target,
+                              int start_on_target, const Bool abbr ) const
+{ basevector rd1;
+  rd1 = query;
+  if (rc1) rd1.ReverseComplement( );
+  qualvector q1;
+  q1 = query_qual;
+  if (rc1) q1.ReverseMe( );
+  allpathslg::align  ar;
+  ar = a;
+  ar.Setpos2( a.pos2( ) - start_on_target );
+  PrintVisualAlignment( abbr, out, fastavector(rd1), target, ar, q1 );
+}
 
 void look_align::PrintVisual( ostream& out, const fastavector& query,
-     const qualvector& query_qual, const fastavector& target,
-     int start_on_target, const Bool abbr ) const
-{    fastavector rd1;
-     rd1 = query;
-     if (rc1) rd1.ReverseComplement( );
-     qualvector q1;
-     q1 = query_qual;
-     if (rc1) q1.ReverseMe( );
-     allpathslg::align  ar;
-     ar = a;
-     ar.Setpos2( a.pos2( ) - start_on_target );
-     PrintVisualAlignment( abbr, out, fastavector(rd1), target, ar, q1 );     }
+                              const qualvector& query_qual, const fastavector& target,
+                              int start_on_target, const Bool abbr ) const
+{ fastavector rd1;
+  rd1 = query;
+  if (rc1) rd1.ReverseComplement( );
+  qualvector q1;
+  q1 = query_qual;
+  if (rc1) q1.ReverseMe( );
+  allpathslg::align  ar;
+  ar = a;
+  ar.Setpos2( a.pos2( ) - start_on_target );
+  PrintVisualAlignment( abbr, out, fastavector(rd1), target, ar, q1 );
+}
 
 void look_align::PrintVisual( ostream& out, const basevector& query,
-                              const qualvector& query_qual, 
-                              const qualvector& target_qual, 
+                              const qualvector& query_qual,
+                              const qualvector& target_qual,
                               const basevector& target,
                               int start_on_target, const Bool abbr ) const
-{    basevector rd1;
-     rd1 = query;
-     if (rc1) rd1.ReverseComplement( );
-     qualvector q1;
-     q1 = query_qual;
-     if (rc1) q1.ReverseMe( );
-     allpathslg::align  ar;
-     ar = a;
-     ar.Setpos2( a.pos2( ) - start_on_target );
-     PrintVisualAlignment( abbr, out, rd1, target, ar, q1, target_qual );     }
+{ basevector rd1;
+  rd1 = query;
+  if (rc1) rd1.ReverseComplement( );
+  qualvector q1;
+  q1 = query_qual;
+  if (rc1) q1.ReverseMe( );
+  allpathslg::align  ar;
+  ar = a;
+  ar.Setpos2( a.pos2( ) - start_on_target );
+  PrintVisualAlignment( abbr, out, rd1, target, ar, q1, target_qual );
+}
 
 void look_align::PrintVisual( ostream& out, const fastavector& query,
-                              const qualvector& query_qual, 
-                              const qualvector& target_qual, 
+                              const qualvector& query_qual,
+                              const qualvector& target_qual,
                               const basevector& target,
                               int start_on_target, const Bool abbr ) const
-{    fastavector rd1;
-     rd1 = query;
-     if (rc1) rd1.ReverseComplement( );
-     qualvector q1;
-     q1 = query_qual;
-     if (rc1) q1.ReverseMe( );
-     allpathslg::align  ar;
-     ar = a;
-     ar.Setpos2( a.pos2( ) - start_on_target );
-     PrintVisualAlignment( abbr, out, rd1, fastavector(target), ar, q1, target_qual );     }
+{ fastavector rd1;
+  rd1 = query;
+  if (rc1) rd1.ReverseComplement( );
+  qualvector q1;
+  q1 = query_qual;
+  if (rc1) q1.ReverseMe( );
+  allpathslg::align  ar;
+  ar = a;
+  ar.Setpos2( a.pos2( ) - start_on_target );
+  PrintVisualAlignment( abbr, out, rd1, fastavector(target), ar, q1, target_qual );
+}
 
 void look_align::PrintVisual( ostream& out, const basevector& query,
-                              const qualvector& query_qual, 
-                              const qualvector& target_qual, 
+                              const qualvector& query_qual,
+                              const qualvector& target_qual,
                               const fastavector& target,
                               int start_on_target, const Bool abbr ) const
-{    basevector rd1;
-     rd1 = query;
-     if (rc1) rd1.ReverseComplement( );
-     qualvector q1;
-     q1 = query_qual;
-     if (rc1) q1.ReverseMe( );
-     allpathslg::align  ar;
-     ar = a;
-     ar.Setpos2( a.pos2( ) - start_on_target );
-     PrintVisualAlignment( abbr, out, fastavector(rd1), target, ar, q1, target_qual );     }
+{ basevector rd1;
+  rd1 = query;
+  if (rc1) rd1.ReverseComplement( );
+  qualvector q1;
+  q1 = query_qual;
+  if (rc1) q1.ReverseMe( );
+  allpathslg::align  ar;
+  ar = a;
+  ar.Setpos2( a.pos2( ) - start_on_target );
+  PrintVisualAlignment( abbr, out, fastavector(rd1), target, ar, q1, target_qual );
+}
 
 void look_align::PrintVisual( ostream& out, const fastavector& query,
-                              const qualvector& query_qual, 
-                              const qualvector& target_qual, 
+                              const qualvector& query_qual,
+                              const qualvector& target_qual,
                               const fastavector& target,
                               int start_on_target, const Bool abbr ) const
-{    fastavector rd1;
-     rd1 = query;
-     if (rc1) rd1.ReverseComplement( );
-     qualvector q1;
-     q1 = query_qual;
-     if (rc1) q1.ReverseMe( );
-     allpathslg::align  ar;
-     ar = a;
-     ar.Setpos2( a.pos2( ) - start_on_target );
-     PrintVisualAlignment( abbr, out, rd1, target, ar, q1, target_qual );     }
+{ fastavector rd1;
+  rd1 = query;
+  if (rc1) rd1.ReverseComplement( );
+  qualvector q1;
+  q1 = query_qual;
+  if (rc1) q1.ReverseMe( );
+  allpathslg::align  ar;
+  ar = a;
+  ar.Setpos2( a.pos2( ) - start_on_target );
+  PrintVisualAlignment( abbr, out, rd1, target, ar, q1, target_qual );
+}
 
 void look_align::PrintVisual( ostream& out, const basevector & query,
                               const basevector& target, const basevector& target_rc,
                               const Bool abbr, const Bool reverse_display ) const
-{    if (rc1)
-     {    basevector b = query;
-          if ( !reverse_display )
-          {    b.ReverseComplement( );
-               PrintVisualAlignment( abbr, out, b, target, a );    }
-          else
-          {    allpathslg::align  arc = a;
-               arc.ReverseThis( query.size( ), target.size( ) );
-               PrintVisualAlignment( abbr, out, query, target_rc, arc );    }    }
-     else PrintVisualAlignment( abbr, out, query, target, a );    }
+{ if (rc1)
+  { basevector b = query;
+    if ( !reverse_display )
+    { b.ReverseComplement( );
+      PrintVisualAlignment( abbr, out, b, target, a );
+    }
+    else
+    { allpathslg::align  arc = a;
+      arc.ReverseThis( query.size( ), target.size( ) );
+      PrintVisualAlignment( abbr, out, query, target_rc, arc );
+    }
+  }
+  else PrintVisualAlignment( abbr, out, query, target, a );
+}
 
 void look_align::PrintVisual( ostream& out, const basevector& query,
                               const qualvector& query_qual, const basevector& target,
                               const basevector& target_rc, int start_on_target,
                               const Bool abbr, const Bool reverse_display ) const
-{    basevector rd1;
-     qualvector q1;
-     rd1 = query, q1 = query_qual;
-     allpathslg::align  ar;
-     ar = a;
-     if ( !reverse_display || !rc1 )
-     {    if (rc1) rd1.ReverseComplement( );
-          if (rc1) q1.ReverseMe( );
-          ar.Setpos2( a.pos2( ) - start_on_target );
-          PrintVisualAlignment( abbr, out, rd1, target, ar, q1 );    }
-     else
-     {    ar.Setpos2( a.pos2( ) - start_on_target );
-          ar.ReverseThis( query.size( ), target.size( ) );
-          PrintVisualAlignment( abbr, out, rd1, target_rc, ar, q1 );    }    }
+{ basevector rd1;
+  qualvector q1;
+  rd1 = query, q1 = query_qual;
+  allpathslg::align  ar;
+  ar = a;
+  if ( !reverse_display || !rc1 )
+  { if (rc1) rd1.ReverseComplement( );
+    if (rc1) q1.ReverseMe( );
+    ar.Setpos2( a.pos2( ) - start_on_target );
+    PrintVisualAlignment( abbr, out, rd1, target, ar, q1 );
+  }
+  else
+  { ar.Setpos2( a.pos2( ) - start_on_target );
+    ar.ReverseThis( query.size( ), target.size( ) );
+    PrintVisualAlignment( abbr, out, rd1, target_rc, ar, q1 );
+  }
+}
 
 void look_align::writeBinary( BinaryWriter& writer ) const
 {
-    writer.write(query_id);
-    writer.write(target_id);
-    writer.write(query_length);
-    writer.write(target_length);
-    writer.write(nhits);
-    writer.write(mutations);
-    writer.write(indels);
-    writer.write(a);
-    writer.write(rc1);
+  writer.write(query_id);
+  writer.write(target_id);
+  writer.write(query_length);
+  writer.write(target_length);
+  writer.write(nhits);
+  writer.write(mutations);
+  writer.write(indels);
+  writer.write(a);
+  writer.write(rc1);
 }
 
 void look_align::readBinary( BinaryReader& reader )
 {
-    reader.read(&query_id);
-    reader.read(&target_id);
-    reader.read(&query_length);
-    reader.read(&target_length);
-    reader.read(&nhits);
-    reader.read(&mutations);
-    reader.read(&indels);
-    reader.read(&a);
-    reader.read(&rc1);
+  reader.read(&query_id);
+  reader.read(&target_id);
+  reader.read(&query_length);
+  reader.read(&target_length);
+  reader.read(&nhits);
+  reader.read(&mutations);
+  reader.read(&indels);
+  reader.read(&a);
+  reader.read(&rc1);
 }
 
 void look_align_plus::WriteParseable( ostream& out ) const
@@ -758,9 +777,9 @@ void look_align_plus::WriteParseable( ostream& out ) const
  * LoadLookAlignPlus
  */
 void LoadLookAlignPlus( const String &file_name,
-			vec<look_align_plus> &hits,
-			const vec<int> *q_ids,
-			const vec<int> *t_ids )
+                        vec<look_align_plus> &hits,
+                        const vec<int> *q_ids,
+                        const vec<int> *t_ids )
 {
   if ( !IsRegularFile( file_name ) )
     FatalErr ( "LoadLookAlignPlus: Can't find LookAlign file '" << file_name << "'.  Exiting.\n" );
@@ -785,10 +804,10 @@ void LoadLookAlignPlus( const String &file_name,
     hit.ReadParseable( a_line );
     if ( q_ids )
       if ( ! binary_search( q_ids->begin( ), q_ids->end( ), hit.query_id ) )
-	continue;
+        continue;
     if ( t_ids )
       if ( ! binary_search( t_ids->begin( ), t_ids->end( ), hit.target_id ) )
-	continue;
+        continue;
     hits.push_back( hit );
   }
 }
@@ -811,8 +830,8 @@ int LookAlignOffset( const look_align_plus &hit )
 }
 
 bool LookAlignOffset( const look_align_plus &hit1,
-		      const look_align_plus &hit2,
-		      int &offset )
+                      const look_align_plus &hit2,
+                      int &offset )
 {
   // int len1, int len2, const allpathslg::align  &al1, const allpathslg::align  &al2, int &amt )
   offset = 0;
@@ -864,11 +883,11 @@ bool LookAlignOffset( const look_align_plus &hit1,
     for (int jj=0; jj<(int)b_al2.size( ); jj++) {
       int loc_overlap = BlocksOverlap( b_al1[ii], b_al2[jj] );
       if ( loc_overlap > best_overlap ) {
-	int offset_begin2 = b_al2[jj].Begin2( ) - b_al2[jj].Begin1( );
-	int offset_begin1 = b_al1[ii].Begin2( ) - b_al1[ii].Begin1( );
-	offset = offset_begin2 - offset_begin1;
-	best_overlap = loc_overlap;
-	if_overlap = true;
+        int offset_begin2 = b_al2[jj].Begin2( ) - b_al2[jj].Begin1( );
+        int offset_begin1 = b_al1[ii].Begin2( ) - b_al1[ii].Begin1( );
+        offset = offset_begin2 - offset_begin1;
+        best_overlap = loc_overlap;
+        if_overlap = true;
       }
     }
   }
@@ -888,7 +907,7 @@ bool LookAlignOffset( const look_align_plus &hit1,
 }
 
 int LookAlignOffsetOverlap( const look_align_plus &hit1,
-			    const look_align_plus &hit2 )
+                            const look_align_plus &hit2 )
 {
   int offset;
 
@@ -976,7 +995,7 @@ int MaxGap( const look_align &hit )
 
 // a pair is logical iff hits belong to same target and have different orient.
 bool IsLogicalPair( const look_align &hit1,
-		    const look_align &hit2 )
+                    const look_align &hit2 )
 {
   // Hits belong to different targets.
   if ( ! ( hit1.target_id == hit2.target_id ) )
@@ -1000,10 +1019,10 @@ bool IsLogicalPair( const look_align &hit1,
 // * At least one of (t1) and (t2) must be run, if both are run, then a
 //   pair is declared valid if it satisfies (t1) and/or (t2).
 bool IsValidPair( const look_align &hit1,
-		  const look_align &hit2,
-		  const read_pairing &pair,
-		  double max_stretch,
-		  double max_mult )
+                  const look_align &hit2,
+                  const read_pairing &pair,
+                  double max_stretch,
+                  double max_mult )
 {
   ForceAssert( max_mult > 1.0 || max_stretch > 0 );
 
@@ -1028,7 +1047,7 @@ bool IsValidPair( const look_align &hit1,
 // return observed separation (warning! If pair fails IsLogicalPair
 // Stretch will assert)
 int ObservedSeparation( const look_align &hit1,
-			const look_align &hit2 )
+                        const look_align &hit2 )
 {
   // Check input.
   ForceAssert( IsLogicalPair( hit1, hit2 ) );
@@ -1052,9 +1071,9 @@ int ObservedSeparation( const look_align &hit1,
 
 // return stretch (warning! If pair fails IsLogicalPair Stretch will assert)
 float Stretch ( const look_align &hit1,
-		const look_align &hit2,
-		const read_pairing &pair,
-		bool as_multiplier )
+                const look_align &hit2,
+                const read_pairing &pair,
+                bool as_multiplier )
 {
   // Observed separation (will also check input).
   int sep_observ = ObservedSeparation( hit1, hit2 );
@@ -1074,15 +1093,15 @@ float Stretch ( const look_align &hit1,
 }
 
 void Trim1Together(const basevector & b1, const basevector & b2,
-		   const look_align & la, int startOn1, int len,
-	      basevector & trimmedb1, look_align & trimmedla) {
+                   const look_align & la, int startOn1, int len,
+                   basevector & trimmedb1, look_align & trimmedla) {
   trimmedb1.SetToSubOf(b1,startOn1, len);
   trimmedla = la.TrimmedTo1(startOn1, len, b1, b2);
 }
 
 void Trim1Together(const basevector & b1, const basevector & b2,
-		   const look_align & la, int startOn1, int len,
-		   basevector & trimmedb1, look_align_plus & trimmedla){
+                   const look_align & la, int startOn1, int len,
+                   basevector & trimmedb1, look_align_plus & trimmedla) {
   trimmedb1.SetToSubOf(b1,startOn1, len);
   trimmedla = la.TrimmedTo1Plus(startOn1, len, b1, b2);
 }
@@ -1099,7 +1118,7 @@ uint CountLookAligns( const String & fname ) {
 }
 
 void LoadLookAligns( const String& file_name, vec<look_align>& aligns,
-		      vec< vec<align_id_t> >& aligns_index, unsigned long nqueries ) {
+                     vec< vec<align_id_t> >& aligns_index, unsigned long nqueries ) {
   aligns.resize(CountLookAligns(file_name));
   aligns_index.clear( );
   aligns_index.resize(nqueries);
@@ -1108,7 +1127,7 @@ void LoadLookAligns( const String& file_name, vec<look_align>& aligns,
   fast_ifstream in(file_name);
   bool good = false;
   while(1) {
-    good = getline_if_match( in, line , QUERY);
+    good = getline_if_match( in, line, QUERY);
     if ( in.fail( ) ) break;
     if ( good ) {
       aligns[aligns_count].ReadParseable(line);
@@ -1121,7 +1140,7 @@ void LoadLookAligns( const String& file_name, vec<look_align>& aligns,
 }
 
 void LoadLookAligns( const String& file_name, vec<look_align>& aligns,
-     const Bool ignore_bads ) 
+                     const Bool ignore_bads )
 {
   aligns.resize(CountLookAligns(file_name));
   String line;
@@ -1131,11 +1150,13 @@ void LoadLookAligns( const String& file_name, vec<look_align>& aligns,
   while(1) {
     good = getline_if_match( in, line, QUERY );
     if ( in.fail( ) ) break;
-    if ( good ) 
-    {    if ( !ignore_bads ) aligns[aligns_count++].ReadParseable(line);
-         else
-         {    Bool read_ok = aligns[aligns_count].ReadParseableOrFail(line);
-              if (read_ok) aligns_count++;    }    }
+    if ( good )
+    { if ( !ignore_bads ) aligns[aligns_count++].ReadParseable(line);
+      else
+      { Bool read_ok = aligns[aligns_count].ReadParseableOrFail(line);
+        if (read_ok) aligns_count++;
+      }
+    }
   }
   aligns.resize(aligns_count);
 }
@@ -1150,15 +1171,15 @@ void SetWritePrettyLookAligns(ofstream & os)
 }
 
 
-void WriteLookAligns( const String& file_name, const vec<look_align>& aligns ) 
+void WriteLookAligns( const String& file_name, const vec<look_align>& aligns )
 {
   Ofstream(impltout, file_name );
 
   SetWritePrettyLookAligns(impltout);
 
   for ( align_id_t i=0; i != aligns.isize(); ++i ) {
-      aligns[i].PrintParseable(impltout);
-      aligns[i].PrintReadableBrief(impltout);
+    aligns[i].PrintParseable(impltout);
+    aligns[i].PrintReadableBrief(impltout);
   }
 }
 
@@ -1171,19 +1192,19 @@ ofstream & operator << (ofstream & os, const look_align & la)
 }
 
 void LoadLookAlignBinary( String const& file_name,
-                                vec<look_align>& hits,
-                                std::set<int> const& readNumberSet )
+                          vec<look_align>& hits,
+                          std::set<int> const& readNumberSet )
 {
-    std::set<int>::iterator notFound = readNumberSet.end();
-    BinaryIteratingReader< vec<look_align> > br(file_name);
-    typedef BinaryIteratingReader< vec<look_align> >::iterator Itr;
-    for ( Itr itr(br.begin()), end(br.end()); itr != end; ++itr )
-        if ( readNumberSet.find(itr->query_id) != notFound )
-            hits.push_back(*itr);
+  std::set<int>::iterator notFound = readNumberSet.end();
+  BinaryIteratingReader< vec<look_align> > br(file_name);
+  typedef BinaryIteratingReader< vec<look_align> >::iterator Itr;
+  for ( Itr itr(br.begin()), end(br.end()); itr != end; ++itr )
+    if ( readNumberSet.find(itr->query_id) != notFound )
+      hits.push_back(*itr);
 }
 
 void BuildLookAlignsIndex( const vec<look_align>& aligns,
-			   vec< vec<align_id_t> >& aligns_index, int nqueries ) {
+                           vec< vec<align_id_t> >& aligns_index, int nqueries ) {
   aligns_index.clear( );
   aligns_index.resize(nqueries);
   for (int i = 0; i < aligns.isize(); i++ ) {
@@ -1199,9 +1220,9 @@ void RemoveOverlap(look_align & la1, look_align & la2, bool verbose) {
     la2.PrintParseable(cout);
   }
   int startOn1 = la1.rc1 ? la1.query_length - la1.a.Pos1()
-    : la1.a.pos1();
+                 : la1.a.pos1();
   int startOn2 = la2.rc1 ? la2.query_length - la2.a.Pos1()
-    : la2.a.pos1();
+                 : la2.a.pos1();
 
   if (startOn1 == startOn2 ) { //remove the shorter of the two alignments.
     if (la1.a.extent1() < la2.a.extent1()) swap(la1,la2);
@@ -1240,7 +1261,7 @@ void RemoveOverlap(look_align & la1, look_align & la2, bool verbose) {
 }
 
 look_align FromAlignmentPlus(const alignment_plus & alp, int query_length,
-			     int target_length) {
+                             int target_length) {
   int tid = alp.Id1();
   int qid = alp.Id2();
   alignment alg = alp.a;
@@ -1257,11 +1278,11 @@ look_align FromAlignmentPlus(const alignment_plus & alp, int query_length,
 
 void GetBestAligns
 (
- const vecbasevector& bases,             // the reads
- const vec<look_align>& aligns,          // alignments of reads to reference
- const vec< vec<int> >& aligns_index,    // index by read of alignments
- vec<int>& best                          // index of best alignment (returned)
- )
+  const vecbasevector& bases,             // the reads
+  const vec<look_align>& aligns,          // alignments of reads to reference
+  const vec< vec<int> >& aligns_index,    // index by read of alignments
+  vec<int>& best                          // index of best alignment (returned)
+)
 {
   best.resize_and_set( bases.size( ), -1 );
   for ( size_t id = 0; id < bases.size( ); id++ ) {

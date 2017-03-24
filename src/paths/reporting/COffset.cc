@@ -21,7 +21,7 @@ COffset::COffset( ) :
   super2_ ( 0 ),
   slen1_ ( 0 ),
   slen2_ ( 0 ) { }
-  
+
 /**
  * COffset
  * Constructor
@@ -30,7 +30,7 @@ COffset::COffset( int s1, int s2, bool rc2, int slen1, int slen2 )
 {
   this->SetSupers( s1, s2, rc2, slen1, slen2 );
 }
-  
+
 /**
  * COffset
  * SetSupers
@@ -145,14 +145,14 @@ NormalDistribution COffset::Offset( int cluster_id ) const
  * links from lib_id in bundle.
  */
 NormalDistribution COffset::Offset( int cluster_id,
-				     const PairsManager &pairs,
-				     vec<NormalDistribution> &lib_nds ) const
+                                    const PairsManager &pairs,
+                                    vec<NormalDistribution> &lib_nds ) const
 {
   if ( offsets_.size( ) < 1 ) this->ClusterLinks( );
 
   lib_nds.clear( );
   lib_nds.resize( pairs.nLibraries( ), NormalDistribution( -1.0, -1.0 ) );
-  
+
   vec< vec<NormalDistribution> > lib_offsets( pairs.nLibraries( ) );
   for (int ii=0; ii<links_[cluster_id].isize( ); ii++) {
     const SLink &link = links_[cluster_id][ii];
@@ -164,7 +164,7 @@ NormalDistribution COffset::Offset( int cluster_id,
     if ( lib_offsets.size( ) < 1 ) continue;
     lib_nds[ii] = CombineNormalDistributions( lib_offsets[ii] );
   }
-  
+
   return offsets_[cluster_id];
 }
 
@@ -180,10 +180,10 @@ NormalDistribution COffset::Offset( int cluster_id,
  * HEURISTICS: use RATIO to define the error rate of a library.
  */
 int COffset::DevErrorEstimate( int cluster_id,
-			       const PairsManager &pairs ) const
+                               const PairsManager &pairs ) const
 {
   if ( offsets_.size( ) < 1 ) this->ClusterLinks( );
-  
+
   const double RATIO = 0.03;
 
   vec<int> involved( pairs.nLibraries( ), false );
@@ -199,7 +199,7 @@ int COffset::DevErrorEstimate( int cluster_id,
     }
   }
   ForceAssertGt( select, -1 );
-  
+
   return Max( 1, int( double( pairs.getLibrarySD( select ) ) * RATIO ) );
 }
 
@@ -236,13 +236,13 @@ pair<double,double> COffset::SpreadWin2( int cluster_id ) const
 pair<int,int> COffset::SpreadWinBases1( int cluster_id ) const
 {
   if ( offsets_.size( ) < 1 ) this->ClusterLinks( );
-  
+
   const vec<SLink> &clust = links_[cluster_id];
   vec<int> lens;
   lens.reserve( clust.size( ) );
   for (size_t ii=0; ii<clust.size( ); ii++)
     lens.push_back( clust[ii].win1_.Start( ) );
-  
+
   return this->CoreSpread( lens );
 }
 
@@ -253,13 +253,13 @@ pair<int,int> COffset::SpreadWinBases1( int cluster_id ) const
 pair<int,int> COffset::SpreadWinBases2( int cluster_id ) const
 {
   if ( offsets_.size( ) < 1 ) this->ClusterLinks( );
-  
+
   const vec<SLink> &clust = links_[cluster_id];
   vec<int> lens;
   lens.reserve( clust.size( ) );
   for (size_t ii=0; ii<clust.size( ); ii++)
     lens.push_back( clust[ii].win2_.Start( ) );
-  
+
   return this->CoreSpread( lens );
 }
 
@@ -297,9 +297,9 @@ bool COffset::MatchesSupersWith( const COffset &other ) const
  * if MIN_MAX_GAP: accept a cluster only if implied sep is in the given window
  */
 bool COffset::IsValid( int cluster_id,
-		       const size_t *MIN_LINKS,
-		       const int *MAX_SPREAD,
-		       const pair<int,int> *MIN_MAX_GAP ) const
+                       const size_t *MIN_LINKS,
+                       const int *MAX_SPREAD,
+                       const pair<int,int> *MIN_MAX_GAP ) const
 {
   if ( MIN_LINKS ) {
     if ( this->NLinks( cluster_id ) < *MIN_LINKS )
@@ -320,8 +320,8 @@ bool COffset::IsValid( int cluster_id,
     if ( nd.mu_ < MIN_MAX_GAP->first || nd.mu_ > MIN_MAX_GAP->second )
       return false;
   }
-      
-  return true;  
+
+  return true;
 }
 
 /**
@@ -333,8 +333,8 @@ bool COffset::IsValid( int cluster_id,
  * above with a "reasonable" selection of arguments.
  */
 void COffset::Print( ostream &out,
-		     const PairsManager *pairs,
-		     const bool smart ) const
+                     const PairsManager *pairs,
+                     const bool smart ) const
 {
   // Only used if smart = true.
   const size_t MIN_LINKS = 3;
@@ -342,9 +342,9 @@ void COffset::Print( ostream &out,
   const pair<int,int> MIN_MAX_GAP = make_pair( -6000, 25000 );
 
   if ( this->NLinksTotal( ) < 1 ) return;
-  
+
   ForceAssert( offsets_.size( ) > 0 );
-  
+
   String str_or = this->Rc2( ) ? "[-]" : "[+]";
   out << "s" << super1_ << " (" << slen1_ << " bp)"
       << "  --->  s" << this->Super2( ) << str_or << " (" << slen2_ << " bp)"
@@ -352,20 +352,20 @@ void COffset::Print( ostream &out,
 
   int n_links = links_.size( );
   String str_sup = this->ToStringSupers( );
-  
+
   for (size_t cluster_id=0; cluster_id<links_.size( ); cluster_id++) {
     if ( smart ) {
       if ( ! IsValid( cluster_id, &MIN_LINKS, &MAX_SPREAD, &MIN_MAX_GAP ) )
-	continue;
+        continue;
     }
-    
+
     out << "  " << this->ToStringCluster( cluster_id ) << "\n";
 
     if ( ! pairs ) continue;
-    
+
     vec< vec<String> > table;
     vec<String> tline;
-  
+
     String str_clu = "cl_" + ToString( cluster_id ) + "/" + ToString( n_links );
     int n_clinks = links_[cluster_id].size( );
     for (size_t ii=0; ii<links_[cluster_id].size( ); ii++) {
@@ -395,16 +395,16 @@ void COffset::Print( ostream &out,
       tline.push_back( str_pos1 + ToString( start1 ) );
       tline.push_back( str_pos2 + ToString( start2 ) );
       tline.push_back( str_id + " = " + str_name + " " + str_sep + ")" );
-      
+
       table.push_back( tline );
     }
 
     PrintTabular( out, table, 2, "rrrrrrrl" );
   }
   out << endl;
-  
+
 }
-  
+
 /**
  * COffset
  * ClusterLinks
@@ -428,7 +428,7 @@ void COffset::ClusterLinks( const float stretch ) const
       links_.resize( links_.size( ) + 1 );
     links_[links_.size( )-1].push_back( all_links[ii] );
   }
-  
+
   offsets_.resize( links_.size( ) );
   scores_.resize( links_.size( ), -1.0 );
   for (size_t ii=0; ii<links_.size( ); ii++) {
@@ -438,7 +438,7 @@ void COffset::ClusterLinks( const float stretch ) const
       nds.push_back( links_[ii][jj].offset_ );
     offsets_[ii] = CombineNormalDistributions( nds, &( scores_[ii] ) );
   }
-  
+
 }
 
 /**
@@ -482,7 +482,7 @@ pair<int,int> COffset::CoreSpread( const vec<int> &starts ) const
     win_min = Min( win_min, starts[ii] );
     win_max = Max( win_max, starts[ii] );
   }
-  
+
   return make_pair( win_min, 1 + win_max );
 }
 
@@ -493,7 +493,7 @@ pair<int,int> COffset::CoreSpread( const vec<int> &starts ) const
  */
 String COffset::ToStringSupers( ) const
 {
-  return 
+  return
     "s" + ToString( super1_ )
     + " s" + ToString( this->Super2( ) )
     + "[" + ( this->Rc2( ) ? "-" : "+" ) + "]";
@@ -504,20 +504,20 @@ String COffset::ToStringSupers( ) const
  * ToStringCluster
  * private
  */
-String COffset::ToStringCluster( const int cluster_id ) const  
+String COffset::ToStringCluster( const int cluster_id ) const
 {
   pair<int,int> win1 = this->SpreadWinBases1( cluster_id );
   pair<int,int> win2 = this->SpreadWinBases2( cluster_id );
   int spread1 = win1.second - win1.first;
   int spread2 = win2.second - win2.first;
   String str1
-    = ToString( spread1 ) + " @[" + ToString( win1.first ) + 
-    "," + ToString( win1.second ) + ")_" + ToString( slen1_ );
+    = ToString( spread1 ) + " @[" + ToString( win1.first ) +
+      "," + ToString( win1.second ) + ")_" + ToString( slen1_ );
   String str2
-    = ToString( spread2 ) + " @[" + ToString( win2.first ) + 
-    "," + ToString( win2.second ) + ")_" + ToString( slen2_ );
-  
-  return 
+    = ToString( spread2 ) + " @[" + ToString( win2.first ) +
+      "," + ToString( win2.second ) + ")_" + ToString( slen2_ );
+
+  return
     "cl=" + ToString( cluster_id ) + "." + ToString( links_.size( ) )
     + " w=" + ToString( links_[cluster_id].size( ) )
     + " score=" + ToString( scores_[cluster_id], 2 )

@@ -23,8 +23,8 @@
 /// the selected HBVs into pHBVs. Warning messages can be turned off
 /// setting verbose to false.
 void readHBVs( String const& sub_dir,
-	       vec<bool> const& selected,
-	       vec<HyperBasevector>* pHBVs,
-	       bool verbose = true );
+               vec<bool> const& selected,
+               vec<HyperBasevector>* pHBVs,
+               bool verbose = true );
 
 #endif /* PATHS_READHBVS_H_ */

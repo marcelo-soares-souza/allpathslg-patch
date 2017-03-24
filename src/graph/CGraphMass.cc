@@ -44,7 +44,7 @@ int CGraphMass::DirectedKMass( int edge_id, bool fw ) const
   int mass = 0 ;
   vec<int> seen;
   if ( this->AddEdge( edge_id, mass, seen ) ) return mass;
-  
+
   // Add edges "parallel" to edge_id to the seen list.
   int vertex_id = fw ? toright_idx_[edge_id] : toleft_idx_[edge_id];
   vec<int> from_edge_ids = hkp_->FromEdgeObj( vertex_id );
@@ -56,7 +56,7 @@ int CGraphMass::DirectedKMass( int edge_id, bool fw ) const
   const vec<int> &edge_ids = fw ? from_edge_ids : to_edge_ids;
   for (int ii=0; ii<edge_ids.isize( ); ii++)
     if ( this->KMass( edge_ids[ii], mass, seen ) ) return mass;
-  
+
   // Done, return.
   return mass;
 }
@@ -82,11 +82,11 @@ bool CGraphMass::KMass( int edge_id, int &mass, vec<int> &seen ) const
 {
   // Leave now if mass is already over cap_.
   if ( mass >= cap_ ) return true;
-  
+
   // This edge has already been added to the current mass.
   vec<int>::iterator it = find( seen.begin( ), seen.end( ), edge_id );
   bool skip = ( it != seen.end( ) );
-  
+
   // All edges connected with this edge (both fw and bw).
   vec<int> fw_edges = FindAllEdges( toright_idx_[edge_id] );
   vec<int> bw_edges = FindAllEdges( toleft_idx_[edge_id] );
@@ -99,17 +99,17 @@ bool CGraphMass::KMass( int edge_id, int &mass, vec<int> &seen ) const
     for (int ii=0; ii<current.isize( ); ii++) {
       vec<int>::iterator it = find( seen.begin( ), seen.end( ), current[ii] );
       if ( it == seen.end( ) )
-	edges.push_back( current[ii] );
+        edges.push_back( current[ii] );
     }
   }
-  
+
   // Add mass of each of the connecting edges (recursive).
   for (int ii=0; ii<edges.isize( ); ii++) {
     if ( mass >= cap_ ) return true;
     if ( this->AddEdge( edges[ii], mass, seen ) ) return true;
     if ( this->KMass( edges[ii], mass, seen ) ) return true;
   }
-  
+
   // Return.
   return ( mass >= cap_ );
 }
@@ -153,7 +153,7 @@ vec<int> CGraphMass::FindAllEdges( int vertex_id ) const
 
   sort( edges.begin( ), edges.end( ) );
   edges.erase( unique( edges.begin( ), edges.end( ) ), edges.end( ) );
-  
+
   return edges;
 }
 

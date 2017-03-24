@@ -19,7 +19,7 @@ typedef VecIntVec vecUnipathSeq;
 inline
 ostream& operator<< ( ostream& out, const UnipathSeq& unipathSeq ) {
   for ( UnipathSeq::size_type i = 0; i < unipathSeq.size(); ++i ) {
-    if ( i > 0 ) 
+    if ( i > 0 )
       out << ".";
     out << BaseAlpha( unipathSeq[i] );
   }

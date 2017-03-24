@@ -78,14 +78,14 @@ int main( int argc, char *argv[] )
   String head_out = sub_dir + "/" + ASSEMBLY_OUT;
   String out_rings_file = head_out + ".rings";
   String out_readlocs_file = head_out + ".readlocs";
-  
+
   // Load.
   read_locs_on_disk locs_file( head, run_dir );
 
   cout << Date( ) << ": loading contigs fasta" << endl;
   vec<fastavector> contigs;
   LoadFromFastaFile( contigs_file, contigs );
-  
+
   VecEFasta efastas;
   if ( IsRegularFile( efasta_file ) ) {
     cout << Date( ) << ": loading contigs efasta" << endl;
@@ -119,14 +119,14 @@ int main( int argc, char *argv[] )
       FatalErr( "Unable to find pairs file for: " + pairs_files[ii] );
     pairs.push_back( PairsManager( full_pairs_file ) );
   }
-  
+
   cout << Date( ) << ": done loading\n" << endl;
-  
+
   // Run code.
   vec<CRing> rings;
   IdentifyCircularScaffolds( pairs, contigs, supers, locs_file, rings,
-			     &cout, MIN_LINKS );
-  
+                             &cout, MIN_LINKS );
+
   // Test for perfect overlaps.
   int nclip = 0;
   vec<int> clippers( contigs.size( ), 0 );
@@ -144,35 +144,35 @@ int main( int argc, char *argv[] )
       int max_overlap = gap + 3 * dev;
       if ( (int)contigs[left_cid].size( ) < min_overlap ) continue;
       if ( (int)contigs[right_cid].size( ) < min_overlap ) continue;
-      
+
       const bvec lb = contigs[left_cid].ToBasevector( );
       const bvec rb = contigs[right_cid].ToBasevector( );
-      
+
       int offset = Min( (int)lb.size( ) + gap, (int)lb.size( ) );
       int band = 3 * dev;
       int errors = 0;
       allpathslg::align  al;
       SmithWatBandedA2<unsigned int>( lb, rb, offset, band, al, errors );
-      
+
       // Align is not perfect.
       if ( errors > 0 ) continue;
-      
+
       // Align is too short.
       int al_len = al.Pos2( ) - al.pos2( );
       if ( al_len < MIN_TO_CLIP ) continue;
-      
+
       // Align would clip away the whole contig (this should not happen).
       if ( al.pos1( ) < 1 ) continue;
-      
+
       // Make sure there are no ambiguous bases in the clipped portion.
       bool amb_found = false;
       size_t clip_size = contigs[left_cid].size( ) - al.pos1( );
       const efasta &theE = efastas[left_cid];
       for (size_t ii=theE.size( ) - clip_size; ii<=theE.size( ); ii++) {
-	if ( theE[ii] == '{' || theE[ii] == '}' ) {
-	  amb_found = true;
-	  break;
-	}
+        if ( theE[ii] == '{' || theE[ii] == '}' ) {
+          amb_found = true;
+          break;
+        }
       }
       if ( amb_found ) continue;
 
@@ -183,22 +183,22 @@ int main( int argc, char *argv[] )
       supers[super_id].SetLen( supers[super_id].Ntigs( )-1, al.pos1( ) );
       cout << " s" << super_id << ": perfect match of " << al_len << " bases\n";
     }
-    
+
     // Report clipping events, and resize contigs.
     if ( nclip < 1 )
       cout << Date( ) << ": no valid perfect overlap found\n" << endl;
     else {
       cout << Date( ) << ": clipping " << nclip << " contig(s)\n" << endl;
       for (size_t cid=0; cid<clippers.size( ); cid++) {
-	if ( clippers[cid] > 0 ) {
-	  size_t clip_amt = contigs[cid].size( ) - clippers[cid];
-	  efastas[cid].resize( efastas[cid].size( ) - clip_amt );
-	  contigs[cid].resize( clippers[cid] );
-	}
+        if ( clippers[cid] > 0 ) {
+          size_t clip_amt = contigs[cid].size( ) - clippers[cid];
+          efastas[cid].resize( efastas[cid].size( ) - clip_amt );
+          contigs[cid].resize( clippers[cid] );
+        }
       }
     }
   }
-  
+
   // Save rings.
   cout << Date( ) << ": saving rings file" << endl;
   ofstream out( out_rings_file.c_str( ) );
@@ -218,7 +218,7 @@ int main( int argc, char *argv[] )
     PrintTabular( out, table, 3, "rrrr" );
     out.close( );
   }
-  
+
   // Save readlocs.
   if ( CLIP && nclip > 0 ) {
     cout << Date( ) << ": saving readlocs... " << flush;
@@ -229,22 +229,22 @@ int main( int argc, char *argv[] )
     for (size_t cid=0; cid<contigs.size( ); cid++) {
       locs_file.LoadContig( cid, locs );
       if ( clippers[cid] < 1 )
-	copy( locs.begin( ), locs.end( ), back_inserter( all_locs ) );
+        copy( locs.begin( ), locs.end( ), back_inserter( all_locs ) );
       else {
-	for (int loc_id=0; loc_id<locs.isize( ); loc_id++) {
-	  const read_loc &rloc = locs[loc_id];
-	  if ( rloc.Stop( ) > clippers[cid] ) {
-	    n_removed++;
-	    continue;
-	  }
-	  all_locs.push_back( rloc );
-	}
+        for (int loc_id=0; loc_id<locs.isize( ); loc_id++) {
+          const read_loc &rloc = locs[loc_id];
+          if ( rloc.Stop( ) > clippers[cid] ) {
+            n_removed++;
+            continue;
+          }
+          all_locs.push_back( rloc );
+        }
       }
     }
     double ratio = 10000. * SafeQuotient( n_removed, locs_file.getLocsSize( ) );
     cout << "(" << n_removed
-	 << " readlocs removed, ie " << ToString( ratio, 1 )
-	 << "%%)" << endl;
+         << " readlocs removed, ie " << ToString( ratio, 1 )
+         << "%%)" << endl;
     WriteReadLocs( head_out, contigs.size( ), all_locs );
   }
   else {
@@ -256,9 +256,9 @@ int main( int argc, char *argv[] )
   Assembly theAssembly( supers, efastas );
   theAssembly.check_integrity( );
   theAssembly.WriteAll( head_out );
-  
+
   // Done.
   cout << Date( ) << ": done" << endl;
-  
+
 }
 

@@ -20,27 +20,39 @@
  * separation, standard deviation, weight (ie number of links) and
  * score (as defined in CombineNormalDistributions).
  */
-struct CLinkBundle { 
+struct CLinkBundle {
 
 public:
-  
+
   CLinkBundle( );
-  
+
   CLinkBundle( int sep, int dev, int weight, float score,
-	       pair<double,double> win1,
-	       pair<double,double> win2 );
-  
+               pair<double,double> win1,
+               pair<double,double> win2 );
+
   void Set( int sep, int dev, int weight, float score,
-	    pair<double,double> win1,
-	    pair<double,double> win2 );
-  
-  int Sep( ) const { return sep_; }
-  int Dev( ) const { return dev_; }
-  int Weight( ) const { return weight_; }
-  float Score( ) const { return score_; }
-  pair<double,double> Win1( ) const { return win1_; }
-  pair<double,double> Win2( ) const { return win2_; }
-  
+            pair<double,double> win1,
+            pair<double,double> win2 );
+
+  int Sep( ) const {
+    return sep_;
+  }
+  int Dev( ) const {
+    return dev_;
+  }
+  int Weight( ) const {
+    return weight_;
+  }
+  float Score( ) const {
+    return score_;
+  }
+  pair<double,double> Win1( ) const {
+    return win1_;
+  }
+  pair<double,double> Win2( ) const {
+    return win2_;
+  }
+
   String AsString( bool brief = false ) const;
 
   // Returns a combined score of Score and Weight (higher is better, see .cc).
@@ -56,17 +68,17 @@ public:
     return ( left.Score( ) < right.Score( ) );
     // Do not bother with win1_, win2_ (should do for completeness).
   }
-  
-  
+
+
 public:
-  
+
   int sep_;
   int dev_;
   int weight_;
   float score_;
   pair<double,double> win1_;
   pair<double,double> win2_;
-  
+
 };
 TRIVIALLY_SERIALIZABLE(CLinkBundle);
 extern template class digraphE<CLinkBundle>;

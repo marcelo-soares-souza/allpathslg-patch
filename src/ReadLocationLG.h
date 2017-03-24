@@ -19,7 +19,7 @@
  * of all such locations among a set of reads and contigs.  Here the 'reads' are
  * query sequences, while the 'contigs' are target sequences; typically the
  * contigs are either a set of unipaths or a reference genome.
- * 
+ *
  * Note that any read and any contig may appear in more than one ReadLocationLG,
  * or in no ReadLocationLG's.
  *
@@ -44,70 +44,84 @@
  *
  ******************************************************************************/
 class ReadLocationLG {
-  
+
 public:
-  
+
   // -------- CONSTRUCTORS
   ReadLocationLG( ) { }
-  
-  ReadLocationLG( longlong read_id, int contig, 
-		  int start_on_contig, Bool orientation_on_contig ) {
+
+  ReadLocationLG( longlong read_id, int contig,
+                  int start_on_contig, Bool orientation_on_contig ) {
     read_id_ = read_id;
     if ( orientation_on_contig == ORIENT_FW ) contig_rc_ = contig;
     else contig_rc_ = -contig - 1;
     start_ = start_on_contig;
   }
-  
-  
+
+
   // -------- MODIFIERS
-  void SetReadId( longlong new_id ) { read_id_ = new_id; }
-  
-  
+  void SetReadId( longlong new_id ) {
+    read_id_ = new_id;
+  }
+
+
   // -------- QUERY FUNCTIONS
-  longlong ReadId( ) const { return read_id_; }
-  Bool Rc( ) const { return contig_rc_ < 0; }
-  Bool Fw( ) const { return contig_rc_ >= 0; }
-  Bool Orient() const { return Fw() ? ORIENT_FW : ORIENT_RC; }
-  int StartOnContig( ) const { return start_; }
-  int Start( ) const { return start_; }
+  longlong ReadId( ) const {
+    return read_id_;
+  }
+  Bool Rc( ) const {
+    return contig_rc_ < 0;
+  }
+  Bool Fw( ) const {
+    return contig_rc_ >= 0;
+  }
+  Bool Orient() const {
+    return Fw() ? ORIENT_FW : ORIENT_RC;
+  }
+  int StartOnContig( ) const {
+    return start_;
+  }
+  int Start( ) const {
+    return start_;
+  }
   int Contig( ) const {
     if ( Fw( ) ) return contig_rc_;
     else return -contig_rc_ - 1;
   }
-  
-  friend Bool operator<( const ReadLocationLG& r1, 
-			 const ReadLocationLG& r2 ) {
+
+  friend Bool operator<( const ReadLocationLG& r1,
+                         const ReadLocationLG& r2 ) {
     return r1.Contig( ) < r2.Contig( ) ||
-      (r1.Contig( ) == r2.Contig( ) && r1.Start( ) < r2.Start( ) );
+           (r1.Contig( ) == r2.Contig( ) && r1.Start( ) < r2.Start( ) );
   }
-  
+
   friend bool operator==( const ReadLocationLG & r1, const ReadLocationLG & r2 ) {
     if ( r1.Contig() != r2.Contig() ) return false;
     if ( r1.Start()  != r2.Start()  ) return false;
     return true;
   }
-  
-  
+
+
   // -------- MEMBER VARIABLES
 private:
-  
+
   longlong read_id_;
   int contig_rc_;
   int start_;
-  
+
 };
 TRIVIALLY_SERIALIZABLE(ReadLocationLG);
 
-inline Bool cmp_contig_read( const ReadLocationLG& r1, 
-			     const ReadLocationLG& r2 )
+inline Bool cmp_contig_read( const ReadLocationLG& r1,
+                             const ReadLocationLG& r2 )
 {
   return r1.Contig( ) < r2.Contig( ) ||
-    ( r1.Contig( ) == r2.Contig( ) && r1.ReadId( ) < r2.ReadId( ) );
+         ( r1.Contig( ) == r2.Contig( ) && r1.ReadId( ) < r2.ReadId( ) );
 }
 
 
 
-inline bool contig_read_start_lt(const ReadLocationLG & r1, 
+inline bool contig_read_start_lt(const ReadLocationLG & r1,
                                  const ReadLocationLG & r2)
 {
   if (r1.Contig() < r2.Contig()) return true;
@@ -119,7 +133,7 @@ inline bool contig_read_start_lt(const ReadLocationLG & r1,
   return false;
 }
 
-inline bool contig_read_start_eq(const ReadLocationLG & r1, 
+inline bool contig_read_start_eq(const ReadLocationLG & r1,
                                  const ReadLocationLG & r2)
 {
   if (r1.Contig() != r2.Contig()) return false;

@@ -30,13 +30,13 @@
  * MIN_GAP_DEV: min threshold for gap dev (usually set to gap_size / 4 )
  */
 void ScaffoldContigsOnRef( const vec<superb> &initial_supers,
-			   const vec<fastavector> &initial_contigs,
-			   const vec<look_align> &aligns,
-			   const String &ASSEMBLY_OUT,
-			   const int MAX_GAP,
-			   const int MAX_OVERLAP,
-			   const int MIN_GAP_DEV,
-			   ostream *log = 0 );
+                           const vec<fastavector> &initial_contigs,
+                           const vec<look_align> &aligns,
+                           const String &ASSEMBLY_OUT,
+                           const int MAX_GAP,
+                           const int MAX_OVERLAP,
+                           const int MIN_GAP_DEV,
+                           ostream *log = 0 );
 
 #endif
 

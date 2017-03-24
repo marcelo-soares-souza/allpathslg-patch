@@ -60,9 +60,9 @@ PathEmbedding ComposeEmbeddings( const PathEmbedding& embedAB,
 /// for this or other related embeddings.
 
 PathEmbedding SubpathEmbedding( const KmerPath& path,
-				const KmerPathLoc& begin,
-				const KmerPathLoc& end,
-				KmerPath* subpath_storage_spot ) {  
+                                const KmerPathLoc& begin,
+                                const KmerPathLoc& end,
+                                KmerPath* subpath_storage_spot ) {
 
   KmerPath& subpath = *subpath_storage_spot;
   subpath.Clear();
@@ -88,9 +88,9 @@ PathEmbedding SubpathEmbedding( const KmerPath& path,
 
 
 void RecursiveFindEmbeddings( const KmerPath& sub, const KmerPath& super,
-			      int sub_seg, int super_seg, 
-			      PathEmbedding& embedding,
-			      vec<PathEmbedding>& ans );
+                              int sub_seg, int super_seg,
+                              PathEmbedding& embedding,
+                              vec<PathEmbedding>& ans );
 
 /// Find the embeddings of a subpath inside a superpath.
 /// It's only an embedding if every kmer of the sub appears in
@@ -98,13 +98,13 @@ void RecursiveFindEmbeddings( const KmerPath& sub, const KmerPath& super,
 /// For instance, after a merger, each of the merged paths is
 /// embedded in the result.
 ///
-/// It is possible (due to stretchy gaps or duplicated regions) 
+/// It is possible (due to stretchy gaps or duplicated regions)
 /// that there will be multiple embeddings; this pushes all of
 /// them onto the vector ans.  The return value is just !ans.empty().
 
 bool FindPathEmbeddings( const KmerPath& sub, const KmerPath& super,
-			 vec<PathEmbedding>& ans, 
-			 int start_of_sub_on_super, int end_of_sub_on_super ) {
+                         vec<PathEmbedding>& ans,
+                         int start_of_sub_on_super, int end_of_sub_on_super ) {
   ans.clear();
 
   // Definition: the empty path has no embeddings into anything.
@@ -113,7 +113,7 @@ bool FindPathEmbeddings( const KmerPath& sub, const KmerPath& super,
   PathEmbedding embedding( &sub, &super );
 
   longlong sub_first_kmer = sub.Start(0);
-  
+
   if( start_of_sub_on_super != -1 ) {
     int seg = start_of_sub_on_super;
     if( super.Segment(seg).Contains(sub_first_kmer) )
@@ -122,7 +122,7 @@ bool FindPathEmbeddings( const KmerPath& sub, const KmerPath& super,
   else {
     for( int seg=0; seg < super.NSegments(); seg++ )
       if( super.isSeq(seg) && super.Segment(seg).Contains(sub_first_kmer) )
-	RecursiveFindEmbeddings( sub, super, 0, seg, embedding, ans );
+        RecursiveFindEmbeddings( sub, super, 0, seg, embedding, ans );
   }
 
   // Remove ones with wrong end_of_sub_on_super:
@@ -130,7 +130,7 @@ bool FindPathEmbeddings( const KmerPath& sub, const KmerPath& super,
     int good_count = 0;
     for( vec<PathEmbedding>::iterator i=ans.begin(); i!=ans.end(); i++ )
       if( i->block_stop_on_super.back() == end_of_sub_on_super )
-	ans[good_count++] = *i;
+        ans[good_count++] = *i;
     ans.erase( ans.begin()+good_count, ans.end() );
   }
 
@@ -144,19 +144,19 @@ bool FindPathEmbeddings( const KmerPath& sub, const KmerPath& super,
 // onto ans, and those make up our return values.
 
 void RecursiveFindEmbeddings( const KmerPath& sub, const KmerPath& super,
-			      int sub_seg, int super_seg, 
-			      PathEmbedding& embedding,
-			      vec<PathEmbedding>& ans ) {
-  pair<KmerPathLoc,KmerPathLoc> locs = CreateAlignedLocs( sub, super, 
-							  sub_seg, super_seg );
+                              int sub_seg, int super_seg,
+                              PathEmbedding& embedding,
+                              vec<PathEmbedding>& ans ) {
+  pair<KmerPathLoc,KmerPathLoc> locs = CreateAlignedLocs( sub, super,
+                                       sub_seg, super_seg );
   KmerPathLoc& sub_loc = locs.first;
   KmerPathLoc& super_loc = locs.second;
 
   if( ! ScanRightPerfectMatch( sub_loc, super_loc ) // if improper or
       || (super_loc.atEnd() && !sub_loc.atEnd())    // sub extends past super or
       || (super_loc.GapToRight()                    // unexpected gap in super
-	  && !sub_loc.GapToRight()
-	  && !sub_loc.atEnd()) )
+          && !sub_loc.GapToRight()
+          && !sub_loc.atEnd()) )
     return;
 
   // update the embedding to reflect the block we just aligned
@@ -165,7 +165,7 @@ void RecursiveFindEmbeddings( const KmerPath& sub, const KmerPath& super,
 
   // If we've reached the end of the subread, we win!
   // (Also in the weird case where sub ends with a gap.)
-  if( sub_loc.atEnd()  ||  sub.NSegments() == sub_loc.GetIndex()+2 ) { 
+  if( sub_loc.atEnd()  ||  sub.NSegments() == sub_loc.GetIndex()+2 ) {
     ans.push_back( embedding );
     // Pop the state of the current embedding:
     embedding.block_start_on_super.pop_back();
@@ -187,22 +187,22 @@ void RecursiveFindEmbeddings( const KmerPath& sub, const KmerPath& super,
       sub_seek_kmer - sub_loc.GetKmer() - 1 >= min_gap &&
       sub_seek_kmer - sub_loc.GetKmer() - 1 <= max_gap ) {
     RecursiveFindEmbeddings( sub, super, sub_new_seg, seg,
-			     embedding, ans );
+                             embedding, ans );
   }
   // Now search forward for any other places where the gap might end
   int min_kmers_skipped = super_loc.Stop()-super_loc.GetKmer();
   int max_kmers_skipped = super_loc.Stop()-super_loc.GetKmer();
 
-  for( seg++; seg < super.NSegments(); 
-         min_kmers_skipped += super.MinLength(seg),
-	 max_kmers_skipped += super.MaxLength(seg), 
-	 seg++ ) {
-    if( super.isSeq(seg) 
-	&& super.Segment(seg).Contains( sub_seek_kmer )
-	&& sub_seek_kmer - super.Start(seg) + max_kmers_skipped >= min_gap
-	&& sub_seek_kmer - super.Start(seg) + min_kmers_skipped <= max_gap ) {
+  for( seg++; seg < super.NSegments();
+       min_kmers_skipped += super.MinLength(seg),
+       max_kmers_skipped += super.MaxLength(seg),
+       seg++ ) {
+    if( super.isSeq(seg)
+        && super.Segment(seg).Contains( sub_seek_kmer )
+        && sub_seek_kmer - super.Start(seg) + max_kmers_skipped >= min_gap
+        && sub_seek_kmer - super.Start(seg) + min_kmers_skipped <= max_gap ) {
       RecursiveFindEmbeddings( sub, super, sub_new_seg, seg,
-			       embedding, ans );
+                               embedding, ans );
     }
   }
 
@@ -238,7 +238,7 @@ KmerPathLoc PathEmbedding::PushLoc(const KmerPathLoc& sub_loc) const {
 
   // How many segments into the block are we?
   int seg_in_block = sub_loc.GetIndex();
-  if( block > 0 ) 
+  if( block > 0 )
     seg_in_block -= sub_gap[block-1] + 1;
 
   // What segment in the super path does that correspond to?
@@ -266,7 +266,7 @@ int PathEmbedding::PushSegment( int sub_seg ) const {
     block++;
 
   if( block > 0 ) sub_seg -= sub_gap[block-1] + 1;
-  
+
   return( block_start_on_super[block] + sub_seg );
 }
 
@@ -285,7 +285,7 @@ int PathEmbedding::PushSegment( int sub_seg ) const {
 /// RPL with index set to -1.
 
 KmerPathLoc PathEmbedding::Preimage(const KmerPathLoc& super_loc) const {
-  
+
   if( IsIdentity() ) return super_loc;
 
   const int super_index = super_loc.GetIndex();
@@ -299,29 +299,29 @@ KmerPathLoc PathEmbedding::Preimage(const KmerPathLoc& super_loc) const {
   }
 
   unsigned int block = lower_bound( block_stop_on_super.begin(),
-				    block_stop_on_super.end(),
-				    super_index )- block_stop_on_super.begin();
+                                    block_stop_on_super.end(),
+                                    super_index )- block_stop_on_super.begin();
   for( ; block < block_stop_on_super.size(); block++ ) {
     // Is the preimage in the preceding gap?
     if( block > 0 ) {
       if( (super_index > block_stop_on_super[block-1] ||
-	   (super_index == block_stop_on_super[block-1] &&
-	    super_kmer > last_kmer_in_sub_block(block-1)))
-	  &&
-	  (super_index < block_start_on_super[block] ||
-	   (super_index == block_start_on_super[block] &&
-	    super_kmer < first_kmer_in_sub_block(block))) ) {
-	return( KmerPathLoc( sub_path, sub_gap[block-1] ) ); // no loc in gaps
+           (super_index == block_stop_on_super[block-1] &&
+            super_kmer > last_kmer_in_sub_block(block-1)))
+          &&
+          (super_index < block_start_on_super[block] ||
+           (super_index == block_start_on_super[block] &&
+            super_kmer < first_kmer_in_sub_block(block))) ) {
+        return( KmerPathLoc( sub_path, sub_gap[block-1] ) ); // no loc in gaps
       }
     }
     // Is the preimage in the current block?
     if( (super_index > block_start_on_super[block] ||
-	 (super_index == block_start_on_super[block] &&
-	  super_kmer >= first_kmer_in_sub_block(block)))
-	&&
-	(super_index < block_stop_on_super[block] ||
-	 (super_index == block_stop_on_super[block] &&
-	  super_kmer <= last_kmer_in_sub_block(block))) ) {
+         (super_index == block_start_on_super[block] &&
+          super_kmer >= first_kmer_in_sub_block(block)))
+        &&
+        (super_index < block_stop_on_super[block] ||
+         (super_index == block_stop_on_super[block] &&
+          super_kmer <= last_kmer_in_sub_block(block))) ) {
       int index = ( super_index - block_start_on_super[block]
                     + (block == 0 ? 0 : sub_gap[block-1]+1) );
       KmerPathLoc sub_loc(sub_path,index);
@@ -343,10 +343,10 @@ bool PathEmbedding::InImage(const KmerPathLoc& super_loc) const {
   const unsigned int last_block = sub_gap.size();
 
   return( (super_index > block_start_on_super[0] ||
-	   (super_index == block_start_on_super[0] &&
-	    super_kmer >= first_kmer_in_sub_block(0)))
-	  &&
-	  (super_index < block_stop_on_super[last_block] ||
-	   (super_index == block_stop_on_super[last_block] &&
-	    super_kmer <= last_kmer_in_sub_block(last_block))) );
+           (super_index == block_start_on_super[0] &&
+            super_kmer >= first_kmer_in_sub_block(0)))
+          &&
+          (super_index < block_stop_on_super[last_block] ||
+           (super_index == block_stop_on_super[last_block] &&
+            super_kmer <= last_kmer_in_sub_block(last_block))) );
 }

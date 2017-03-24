@@ -46,9 +46,9 @@ public:
   // The policy's opportunity to record any information about
   // the insert to be walked.  Most policies ignore this.
   virtual void Setup( int minExtLength, int maxExtLength,
-		      const vec<OrientedKmerPathId>& closers,
-		      const map< OrientedKmerPathId,vec<SubsumptionRecord> >& 
-		        closers_I_subsume ) {}
+                      const vec<OrientedKmerPathId>& closers,
+                      const map< OrientedKmerPathId,vec<SubsumptionRecord> >&
+                      closers_I_subsume ) {}
 
   // Return value indicates whether this policy thinks the given mux
   // is good.  In either case, the policy should update any internal
@@ -59,9 +59,9 @@ public:
   // along this branch of the search is good, so prune the search now.
   // This has no effect on the search result, but may save time.
 
-  virtual Opinion PushAndGiveOpinion( const Mux& final_mux, 
-				      const MuxSearchState& search,
-				      const vec<Bool>& is_good ) = 0;
+  virtual Opinion PushAndGiveOpinion( const Mux& final_mux,
+                                      const MuxSearchState& search,
+                                      const vec<Bool>& is_good ) = 0;
 
   virtual void Pop() {}
 
@@ -77,9 +77,11 @@ public:
   /// Any value other than 1 will be incorporated into the hash directly.
 
   virtual longlong HashOfPosition( const MuxSearchState& search,
-				   const int& dist_to_here,
-				   const Mux& final_mux,
-				   const vec<Bool>& is_good ) { return 0; }
+                                   const int& dist_to_here,
+                                   const Mux& final_mux,
+                                   const vec<Bool>& is_good ) {
+    return 0;
+  }
 };
 
 ////////////////////////////////////////////////////////////////////////////
@@ -91,10 +93,12 @@ public:
 /// The trivial policy (accept everything).  For testing purposes.
 class MSP_Trivial : public MuxSearchPolicy {
 public:
-  Opinion PushAndGiveOpinion( const Mux& final_mux, 
-			      const MuxSearchState& search,
-			      const vec<Bool>& is_good )
-  { return GOOD; }
+  Opinion PushAndGiveOpinion( const Mux& final_mux,
+                              const MuxSearchState& search,
+                              const vec<Bool>& is_good )
+  {
+    return GOOD;
+  }
 };
 
 /// The trivial policy (accept everything), but use the good_reads_hash.
@@ -102,10 +106,12 @@ public:
 class MSP_GoodReadsHash : public MSP_Trivial {
 public:
   longlong HashOfPosition( const MuxSearchState& search,
-			   const int& dist_to_here,
-			   const Mux& final_mux,
-			   const vec<Bool>& is_good ) 
-  { return 1; }
+                           const int& dist_to_here,
+                           const Mux& final_mux,
+                           const vec<Bool>& is_good )
+  {
+    return 1;
+  }
 };
 
 
@@ -123,9 +129,9 @@ class MSP_PairedPairs : public MSP_GoodReadsHash {
 public:
 
   MSP_PairedPairs( const vecKmerPath* pathsFw,
-		   const vecKmerPath* pathsRc,
-		   const phandler* pairs_handler,
-		   int verbosity=0 )
+                   const vecKmerPath* pathsRc,
+                   const phandler* pairs_handler,
+                   int verbosity=0 )
     : mp_pathsFw( pathsFw ),
       mp_pathsRc( pathsRc ),
       mp_pairs_handler( pairs_handler ),
@@ -133,15 +139,15 @@ public:
   { }
 
   // This MSP maintains no state, so PAGO just tests whether a read is good
-  Opinion PushAndGiveOpinion( const Mux& final_mux, 
-			      const MuxSearchState& search,
-			      const vec<Bool>& is_good );
+  Opinion PushAndGiveOpinion( const Mux& final_mux,
+                              const MuxSearchState& search,
+                              const vec<Bool>& is_good );
 
 private:
   // helper function for PushAndGiveOpinion:
   bool PairedPairsPerfectMatch( const OrientedKmerPathId& okpid1,
-				const OrientedKmerPathId& okpid2,
-				const int segoff = -1) const;
+                                const OrientedKmerPathId& okpid2,
+                                const int segoff = -1) const;
 
 private:
   const vecKmerPath* mp_pathsFw;
@@ -161,15 +167,15 @@ class MSP_TheseReadsOnly : public MuxSearchPolicy {
 public:
 
   MSP_TheseReadsOnly( const vec<int>& theseReads )
-    : m_good_reads( theseReads.begin(), theseReads.end(), 
-		    2*theseReads.size() )
-                    // Keep hash table load factor under 50%.
+    : m_good_reads( theseReads.begin(), theseReads.end(),
+                    2*theseReads.size() )
+      // Keep hash table load factor under 50%.
   {}
 
   // This MSP maintains no state, so PAGO just tests whether a read is good
-  Opinion PushAndGiveOpinion( const Mux& final_mux, 
-			      const MuxSearchState& search,
-			      const vec<Bool>& is_good ) {
+  Opinion PushAndGiveOpinion( const Mux& final_mux,
+                              const MuxSearchState& search,
+                              const vec<Bool>& is_good ) {
     if( m_good_reads.count(final_mux.GetPathId().GetId()) )
       return GOOD;
     else
@@ -189,22 +195,22 @@ class MSP_TheseOrientedReadsOnly : public MuxSearchPolicy {
 public:
 
   MSP_TheseOrientedReadsOnly( const vec<int>& opener_direction_reads,
-			      const vec<int>& closer_direction_reads )
-    : m_good_reads_fw( closer_direction_reads.begin(), 
-		       closer_direction_reads.end(), 
-		       2*closer_direction_reads.size() ),
-      m_good_reads_rc( opener_direction_reads.begin(), 
-		       opener_direction_reads.end(), 
-		       2*opener_direction_reads.size() )
+                              const vec<int>& closer_direction_reads )
+    : m_good_reads_fw( closer_direction_reads.begin(),
+                       closer_direction_reads.end(),
+                       2*closer_direction_reads.size() ),
+      m_good_reads_rc( opener_direction_reads.begin(),
+                       opener_direction_reads.end(),
+                       2*opener_direction_reads.size() )
   {}
 
   // This MSP maintains no state, so PAGO just tests whether a read is good
-  Opinion PushAndGiveOpinion( const Mux& final_mux, 
-			      const MuxSearchState& search,
-			      const vec<Bool>& is_good ) {
+  Opinion PushAndGiveOpinion( const Mux& final_mux,
+                              const MuxSearchState& search,
+                              const vec<Bool>& is_good ) {
     bool found = final_mux.GetPathId().IsFw()
-      ? m_good_reads_fw.count( final_mux.GetPathId().GetId() )
-      : m_good_reads_rc.count( final_mux.GetPathId().GetId() );
+                 ? m_good_reads_fw.count( final_mux.GetPathId().GetId() )
+                 : m_good_reads_rc.count( final_mux.GetPathId().GetId() );
     return( found ? GOOD : BAD );
   }
 
@@ -219,19 +225,23 @@ private:
 /// All paths are accepted; this is only useful if derived from
 class MSP_TrackPath : public MuxSearchPolicy {
 public:
-  MSP_TrackPath( const vecKmerPath* pathsFw, 
-		 const vecKmerPath* pathsRc )
+  MSP_TrackPath( const vecKmerPath* pathsFw,
+                 const vecKmerPath* pathsRc )
     : m_pathifier( pathsFw, pathsRc ),
       m_kmerpaths( 1 )  // seed with an empty kmer path
   { }
 
-  Opinion PushAndGiveOpinion( const Mux& final_mux, 
-			      const MuxSearchState& search,
-			      const vec<Bool>& is_good );
-  
-  void Pop() { m_kmerpaths.pop_back(); }
+  Opinion PushAndGiveOpinion( const Mux& final_mux,
+                              const MuxSearchState& search,
+                              const vec<Bool>& is_good );
 
-  const KmerPath& CurrentPath() { return m_kmerpaths.back(); }
+  void Pop() {
+    m_kmerpaths.pop_back();
+  }
+
+  const KmerPath& CurrentPath() {
+    return m_kmerpaths.back();
+  }
 
 protected:
   MuxToPath m_pathifier;
@@ -246,9 +256,9 @@ public:
   MSP_PrintEachPath( const vecKmerPath* pathsFw, const vecKmerPath* pathsRc )
     : MSP_TrackPath( pathsFw, pathsRc ) { }
 
-  Opinion PushAndGiveOpinion( const Mux& final_mux, 
-			      const MuxSearchState& search,
-			      const vec<Bool>& is_good ) {
+  Opinion PushAndGiveOpinion( const Mux& final_mux,
+                              const MuxSearchState& search,
+                              const vec<Bool>& is_good ) {
     MSP_TrackPath::PushAndGiveOpinion( final_mux, search, is_good );
     cout << CurrentPath() << endl;
     return( GOOD );
@@ -260,10 +270,10 @@ public:
 /// search); policy points out why we didn't find it.
 class MSP_FateOfClosure : public MSP_TrackPath {
 public:
-  MSP_FateOfClosure( const KmerPath& closure, 
-		     const vecKmerPath* pathsFw, 
-		     const vecKmerPath* pathsRc,
-		     const MuxGraph* theMuxGraph )
+  MSP_FateOfClosure( const KmerPath& closure,
+                     const vecKmerPath* pathsFw,
+                     const vecKmerPath* pathsRc,
+                     const MuxGraph* theMuxGraph )
     : MSP_TrackPath( pathsFw, pathsRc ),
       m_closure( closure ),
       mp_pathsFw( pathsFw ),
@@ -271,14 +281,14 @@ public:
       mp_muxGraph( theMuxGraph ),
       m_verbose( false )
   {
-    cout << "MSP_FateOfClosure: Tracking fate of putative closure " 
-	 << m_closure << endl;
+    cout << "MSP_FateOfClosure: Tracking fate of putative closure "
+         << m_closure << endl;
   }
 
-  MSP_FateOfClosure( const String& closure_string, 
-		     const vecKmerPath* pathsFw, 
-		     const vecKmerPath* pathsRc,
-		     const MuxGraph* theMuxGraph )
+  MSP_FateOfClosure( const String& closure_string,
+                     const vecKmerPath* pathsFw,
+                     const vecKmerPath* pathsRc,
+                     const MuxGraph* theMuxGraph )
     : MSP_TrackPath( pathsFw, pathsRc ),
       m_closure( KmerPath(closure_string) ),
       mp_pathsFw( pathsFw ),
@@ -286,17 +296,19 @@ public:
       mp_muxGraph( theMuxGraph ),
       m_verbose( false )
   {
-    cout << "MSP_FateOfClosure: Tracking fate of putative closure " 
-	 << m_closure << endl;
+    cout << "MSP_FateOfClosure: Tracking fate of putative closure "
+         << m_closure << endl;
     if( closure_string[closure_string.size()-1] == 'v' )
       SetVerbose( true );
   }
 
-  void SetVerbose( bool verbose ) { m_verbose = verbose; }
+  void SetVerbose( bool verbose ) {
+    m_verbose = verbose;
+  }
 
-  Opinion PushAndGiveOpinion( const Mux& final_mux, 
-			      const MuxSearchState& search,
-			      const vec<Bool>& is_good ); 
+  Opinion PushAndGiveOpinion( const Mux& final_mux,
+                              const MuxSearchState& search,
+                              const vec<Bool>& is_good );
 
 private:
   const KmerPath m_closure;
@@ -305,7 +317,7 @@ private:
   const MuxGraph* mp_muxGraph;
 
   bool m_verbose;
-  
+
   vec<Mux> muxes;
 };
 
@@ -322,14 +334,14 @@ public:
     : mp_offsetTracker( offsetTracker ) { }
 
   void Setup( int minExtLength, int maxExtLength,
-	      const vec<OrientedKmerPathId>& closers,
-	      const map< OrientedKmerPathId,vec<SubsumptionRecord> >& 
-	        closers_I_subsume );
+              const vec<OrientedKmerPathId>& closers,
+              const map< OrientedKmerPathId,vec<SubsumptionRecord> >&
+              closers_I_subsume );
 
 
-  Opinion PushAndGiveOpinion( const Mux& final_mux, 
-			      const MuxSearchState& search,
-			      const vec<Bool>& is_good );
+  Opinion PushAndGiveOpinion( const Mux& final_mux,
+                              const MuxSearchState& search,
+                              const vec<Bool>& is_good );
 
 private:
 
@@ -347,8 +359,8 @@ private:
   vec<endpoint> m_endpoints;
 
   bool IsReachable( const endpoint& goal,
-		    const ImplicitOffsetVec& can_get_here,
-		    int dist_so_far );
+                    const ImplicitOffsetVec& can_get_here,
+                    int dist_so_far );
 
   // Should we look into offset information for this read?
   // We could instead require a constructor argument telling it

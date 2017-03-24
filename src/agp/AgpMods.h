@@ -1,5 +1,5 @@
 // Copyright (c) 2000-2003 Whitehead Institute for Biomedical Research
-// 
+//
 
 #ifndef AGPMODS_H
 #define AGPMODS_H
@@ -14,41 +14,51 @@
 
 class contig_range
 {
- private:
+private:
   int begin_pos_;
   int end_pos_;
 
- public:
+public:
 
-  int BeginPos() const { return ( this->IsReversed() ? end_pos_ : begin_pos_ ); }
-  int EndPos() const { return ( this->IsReversed() ? begin_pos_ : end_pos_ ); }
+  int BeginPos() const {
+    return ( this->IsReversed() ? end_pos_ : begin_pos_ );
+  }
+  int EndPos() const {
+    return ( this->IsReversed() ? begin_pos_ : end_pos_ );
+  }
 
-  bool IsReversed() const { return ( begin_pos_ > end_pos_ ); }
+  bool IsReversed() const {
+    return ( begin_pos_ > end_pos_ );
+  }
   void Reverse()
-    {
-      swap( begin_pos_, end_pos_ );
-    }
+  {
+    swap( begin_pos_, end_pos_ );
+  }
 
   int RcBeginPos( int contig_length ) const
-    {
-      Assert( this->IsReversed() );
-      return contig_length - begin_pos_ - 1;
-    }
+  {
+    Assert( this->IsReversed() );
+    return contig_length - begin_pos_ - 1;
+  }
 
   int RcEndPos( int contig_length ) const
-    {
-      Assert( this->IsReversed() );
-      return contig_length - end_pos_ - 1;
-    }
+  {
+    Assert( this->IsReversed() );
+    return contig_length - end_pos_ - 1;
+  }
 
-  void SetBeginPos( const int begin_pos ) { begin_pos_ = begin_pos; }
-  void SetEndPos( const int end_pos ) { end_pos_ = end_pos; }
+  void SetBeginPos( const int begin_pos ) {
+    begin_pos_ = begin_pos;
+  }
+  void SetEndPos( const int end_pos ) {
+    end_pos_ = end_pos;
+  }
 
   bool Overlap( const contig_range& other ) const
-    {
-      return ( this->EndPos() >= other.BeginPos() &&
-	       this->BeginPos() <= other.EndPos() );
-    }
+  {
+    return ( this->EndPos() >= other.BeginPos() &&
+             this->BeginPos() <= other.EndPos() );
+  }
 
   friend ostream& operator<< ( ostream& out, const contig_range& anchor );
 };
@@ -64,43 +74,57 @@ class contig_range
 
 class insertion_anchor
 {
- private:
+private:
   int anchor_id_;
   contig_range anchor_range_;
   contig_range replacement_range_;
 
- public:
-  int Id() const { return anchor_id_; }
-  contig_range AnchorRange() const { return anchor_range_; }
-  contig_range ReplacementRange() const { return replacement_range_; }
-  
+public:
+  int Id() const {
+    return anchor_id_;
+  }
+  contig_range AnchorRange() const {
+    return anchor_range_;
+  }
+  contig_range ReplacementRange() const {
+    return replacement_range_;
+  }
+
   void SetId( const int id )
-    { anchor_id_ = id; }
-  void SetAnchorRange( const contig_range& anchor_range ) 
-    { anchor_range_ = anchor_range; }
-  void SetReplacementRange( const contig_range& replacement_range ) 
-    { replacement_range_ = replacement_range; }
+  {
+    anchor_id_ = id;
+  }
+  void SetAnchorRange( const contig_range& anchor_range )
+  {
+    anchor_range_ = anchor_range;
+  }
+  void SetReplacementRange( const contig_range& replacement_range )
+  {
+    replacement_range_ = replacement_range;
+  }
 
   bool SameOrientation() const
-    {
-      return ( ( anchor_range_.IsReversed() && replacement_range_.IsReversed() ) ||
-	       ( ! anchor_range_.IsReversed() && ! replacement_range_.IsReversed() ) );
-    }
+  {
+    return ( ( anchor_range_.IsReversed() && replacement_range_.IsReversed() ) ||
+             ( ! anchor_range_.IsReversed() && ! replacement_range_.IsReversed() ) );
+  }
 
   bool AnchorIsReversed() const
-    { return anchor_range_.IsReversed(); }
+  {
+    return anchor_range_.IsReversed();
+  }
 
   bool ShouldRemoveAnchor( int anchor_length ) const
-    {
-      return ( anchor_range_.BeginPos() == 0 && 
-	       anchor_range_.EndPos() == anchor_length - 1 );
-    }
+  {
+    return ( anchor_range_.BeginPos() == 0 &&
+             anchor_range_.EndPos() == anchor_length - 1 );
+  }
 
   void Reverse()
-    {
-      anchor_range_.Reverse();
-      replacement_range_.Reverse();
-    }
+  {
+    anchor_range_.Reverse();
+    replacement_range_.Reverse();
+  }
 
   friend istream& operator>> ( istream& in, insertion_anchor& anchor );
   friend ostream& operator<< ( ostream& out, const insertion_anchor& anchor );
@@ -114,32 +138,48 @@ class insertion_anchor
 
 class insertion
 {
- private:
+private:
   String id_;
   insertion_anchor first_anchor_;
   insertion_anchor last_anchor_;
 
- public:
-  String Id() const { return id_; }
-  insertion_anchor FirstAnchor() const { return first_anchor_; }
-  insertion_anchor LastAnchor() const { return last_anchor_; }
-  
-  void SetId( const String& id ) { id_ = id; }
-  void SetFirstAnchor( const insertion_anchor& anchor ) { first_anchor_ = anchor; }
-  void SetLastAnchor( const insertion_anchor& anchor ) { last_anchor_ = anchor; }
+public:
+  String Id() const {
+    return id_;
+  }
+  insertion_anchor FirstAnchor() const {
+    return first_anchor_;
+  }
+  insertion_anchor LastAnchor() const {
+    return last_anchor_;
+  }
+
+  void SetId( const String& id ) {
+    id_ = id;
+  }
+  void SetFirstAnchor( const insertion_anchor& anchor ) {
+    first_anchor_ = anchor;
+  }
+  void SetLastAnchor( const insertion_anchor& anchor ) {
+    last_anchor_ = anchor;
+  }
 
   void Reverse()
-    {
-      first_anchor_.Reverse();
-      last_anchor_.Reverse();
-      swap( first_anchor_, last_anchor_ );
-    }
+  {
+    first_anchor_.Reverse();
+    last_anchor_.Reverse();
+    swap( first_anchor_, last_anchor_ );
+  }
 
   bool IsFirstAnchor( const int contig_id ) const
-    { return ( contig_id == first_anchor_.Id() ); }
-  
+  {
+    return ( contig_id == first_anchor_.Id() );
+  }
+
   bool IsLastAnchor( const int contig_id ) const
-    { return ( contig_id == last_anchor_.Id() ); }
+  {
+    return ( contig_id == last_anchor_.Id() );
+  }
 
   friend istream& operator>> ( istream& in, insertion& the_insertion );
   friend ostream& operator<< ( ostream& out, const insertion& the_insertion );
@@ -151,26 +191,42 @@ class insertion
 
 class contig_trim
 {
- private:
+private:
   int id_;
   int amount_;
   bool front_;
 
- public:
+public:
   contig_trim()
     : id_(-1) { }
   contig_trim( const int id, const int amount, const bool trim_front )
     : id_(id), amount_(amount), front_(trim_front) { }
 
-  int Id() const { return id_; }
-  int Amount() const { return amount_; }
-  bool TrimFront() const { return front_; }
-  bool TrimBack() const { return ! front_; }
+  int Id() const {
+    return id_;
+  }
+  int Amount() const {
+    return amount_;
+  }
+  bool TrimFront() const {
+    return front_;
+  }
+  bool TrimBack() const {
+    return ! front_;
+  }
 
-  void SetId( const int id ) { id_ = id; }
-  void SetAmount( const int amount ) { amount_ = amount; }
-  void SetTrimFront( const bool trim_front ) { front_ = trim_front; }
-  void SetTrimBack( const bool trim_back ) { front_ = ! trim_back; }
+  void SetId( const int id ) {
+    id_ = id;
+  }
+  void SetAmount( const int amount ) {
+    amount_ = amount;
+  }
+  void SetTrimFront( const bool trim_front ) {
+    front_ = trim_front;
+  }
+  void SetTrimBack( const bool trim_back ) {
+    front_ = ! trim_back;
+  }
 
   friend istream& operator>> ( istream& in, contig_trim& trim );
   friend ostream& operator<< ( ostream& out, const contig_trim& trim );
@@ -181,28 +237,36 @@ class contig_trim
 
 class agp_mods
 {
- public:
+public:
   bool SuperShouldBeRemoved( int super_id ) const;
-  const vec<int>& GetSupersToRemove() const { return supers_to_remove_; }
+  const vec<int>& GetSupersToRemove() const {
+    return supers_to_remove_;
+  }
 
   bool ContigShouldBeUnplaced( int contig_id ) const;
-  const vec<int>& GetContigsToUnplace() const { return contigs_to_unplace_; }
+  const vec<int>& GetContigsToUnplace() const {
+    return contigs_to_unplace_;
+  }
 
-  const vec<insertion>& GetInsertions() const { return insertions_; }
-  
-  const vec<contig_trim>& GetTrims() const { return trims_; }
+  const vec<insertion>& GetInsertions() const {
+    return insertions_;
+  }
+
+  const vec<contig_trim>& GetTrims() const {
+    return trims_;
+  }
 
   void Read( const String& filename );
   void Write( const String& filename ) const;
 
- private:
+private:
   vec<int> supers_to_remove_;
   vec<int> contigs_to_unplace_;
   vec<insertion> insertions_;
   vec<contig_trim> trims_;
 };
 
-#endif  
+#endif
 
 
 

@@ -48,27 +48,27 @@
 ///
 class PerfStat
 {
-    typedef std::istream istream;
-    typedef std::ostream ostream;
-    typedef std::string string;
+  typedef std::istream istream;
+  typedef std::ostream ostream;
+  typedef std::string string;
 
 public:
-    PerfStat() : mVal(0.) {}
+  PerfStat() : mVal(0.) {}
 
-    PerfStat( string const& name, string const& gloss, long double val )
+  PerfStat( string const& name, string const& gloss, long double val )
     : mName(name), mGloss(gloss), mVal(val) {}
 
-    // compiler-supplied copying and destructor is OK
+  // compiler-supplied copying and destructor is OK
 
-    friend istream& operator>>( istream& is, PerfStat& perfStat );
-    friend ostream& operator<<( ostream& os, PerfStat const& perfStat );
+  friend istream& operator>>( istream& is, PerfStat& perfStat );
+  friend ostream& operator<<( ostream& os, PerfStat const& perfStat );
 
-    static ostream& log();
+  static ostream& log();
 
 private:
-    string mName;
-    string mGloss;
-    long double mVal;
+  string mName;
+  string mGloss;
+  long double mVal;
 };
 
 
@@ -79,7 +79,7 @@ private:
 // ...
 // cout << "whatever" << endl;
 // ...
-// 
+//
 // PerfStat::log() << PerfStatBlockStop();
 //
 std::string PerfStatBlockStart(const std::string & block_name);

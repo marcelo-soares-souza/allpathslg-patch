@@ -26,17 +26,17 @@ void LinkingPairs::Init(int nlibs_, const vec<int>& lens )
 
 
 // Add a link that starts from pos x1 at contig u1 and stops at pos x2 at contig u2
-void LinkingPairs::AddPair( int ilib, int u1, int start1, int u2, int stop2 ) { 
+void LinkingPairs::AddPair( int ilib, int u1, int start1, int u2, int stop2 ) {
   ForceAssert( ilib >= 0 && ilib < nlibs );
   bool aligned1 = ( u1 >= 0 && u1 < ntigs );
   bool aligned2 = ( u2 >= 0 && u2 < ntigs );
   if ( aligned1 && aligned2 && u1 != u2 ) {
-    all_links[ make_pair(u1,u2) ].resize(nlibs); 
+    all_links[ make_pair(u1,u2) ].resize(nlibs);
     all_links[ make_pair(u1,u2) ][ilib].push( start1, stop2 );
   }
-  if ( aligned1 ) 
+  if ( aligned1 )
     AddStart( ilib, u1, start1, u2, stop2 );
-  if ( aligned2 ) 
+  if ( aligned2 )
     AddStop ( ilib, u2, stop2, u1, start1 );
 }
 
@@ -71,12 +71,12 @@ void LinkingPairs::GetStartsSampled( int u1, vec< StdMap<int,double> >& x1s ) co
       // find the prev and next position
       int prev = - it->first, next = len + it->first;
       if ( it != x1s[ilib].begin() ) {
-	prev = (--it)->first;
-	++it;
+        prev = (--it)->first;
+        ++it;
       }
       ++it;
       if ( it != x1s[ilib].end() ) {
-	next = it->first;
+        next = it->first;
       }
       --it;
       x1s[ilib][it->first] = count * 2.0 / ( next - prev );
@@ -96,12 +96,12 @@ void LinkingPairs::GetStopsSampled( int u1, vec< StdMap<int,double> >& x1s ) con
       // find the prev and next position
       int prev = - it->first, next = len + it->first;
       if ( it != x1s[ilib].begin() ) {
-	prev = (--it)->first;
-	++it;
+        prev = (--it)->first;
+        ++it;
       }
       ++it;
       if ( it != x1s[ilib].end() ) {
-	next = (++it)->first;
+        next = (++it)->first;
       }
       --it;
       x1s[ilib][it->first] = count * 2.0 / ( next - prev );
@@ -114,27 +114,27 @@ void LinkingPairs::DumpInfo( ostream& out, int u1, int u2, int delta ) const
   vec< StdMap<int, double > > x1s( nlibs );
   vec< StdMap<int, double > > x2s( nlibs );
   for ( int ilib = 0; ilib < nlibs; ilib++ ) {
-       GetStartsSmoothed( u1, x1s, delta );
-       GetStopsSmoothed( u1, x1s, delta );
-       SmoothArrayGaussian( x1s[ilib], delta );
-       SmoothArrayGaussian( x2s[ilib], delta );
+    GetStartsSmoothed( u1, x1s, delta );
+    GetStopsSmoothed( u1, x1s, delta );
+    SmoothArrayGaussian( x1s[ilib], delta );
+    SmoothArrayGaussian( x2s[ilib], delta );
   }
   DumpLinkingInfo( out, x1s, x2s, this->GetLinks(u1,u2) );
 }
 
 int LinkingPairs::GetNStarts ( int libid, int u ) const {
-     ForceAssertLt( libid, nlibs );
-     return starts[u][libid].size();
+  ForceAssertLt( libid, nlibs );
+  return starts[u][libid].size();
 }
 
 int LinkingPairs::GetNStops ( int libid, int u ) const {
-     ForceAssertLt( libid, nlibs );
-     return stops[u][libid].size();
+  ForceAssertLt( libid, nlibs );
+  return stops[u][libid].size();
 }
 
-void DumpLinkingInfo( ostream& out, 
-   const vec< StdMap<int,double> > & x1s, const vec< StdMap<int,double> > & x2s,
-   const vec< vec< pair<int,int> > > & links, int step, bool flip, int len1 ) 
+void DumpLinkingInfo( ostream& out,
+                      const vec< StdMap<int,double> > & x1s, const vec< StdMap<int,double> > & x2s,
+                      const vec< vec< pair<int,int> > > & links, int step, bool flip, int len1 )
 {
   int nlibs = links.size();
   ForceAssertEq( nlibs, x1s.isize() );
@@ -142,22 +142,22 @@ void DumpLinkingInfo( ostream& out,
   // output diagnostic information
   for ( int libid = 0; libid < nlibs; libid++ )
     for ( int i = 0; i < links[libid].isize(); i++ )
-	out <<"link "<< libid  << " " << links[libid][i].first - (flip ? len1 : 0 ) 
-	  << " "  <<  links[libid][i].second << endl;
+      out <<"link "<< libid  << " " << links[libid][i].first - (flip ? len1 : 0 )
+          << " "  <<  links[libid][i].second << endl;
   // coverage data
   for( int libId=0; libId < nlibs; libId++) {
     for ( map<int,double>::const_iterator it = x1s[libId].begin(); it!= x1s[libId].end(); it++ )
       if ( it->first % step == 0 )
-	out << "counter1_"<<libId<<" " << it->first - (flip ? len1 : 0 )  << " " << it->second << endl;
+        out << "counter1_"<<libId<<" " << it->first - (flip ? len1 : 0 )  << " " << it->second << endl;
     for ( map<int,double>::const_iterator it = x2s[libId].begin(); it!= x2s[libId].end(); it++ )
       if ( it->first % step == 0 )
         out << "counter2_"<<libId<<" " << it->first  << " " << it->second << endl;
   }
 }
 
-void DumpLinkingInfo( ostream& out, 
-   const vec< vec<double> > & x1s, const vec< vec<double> > & x2s,
-   const vec< vec< pair<int,int> > > & links, int step, bool flip, int len1 ) 
+void DumpLinkingInfo( ostream& out,
+                      const vec< vec<double> > & x1s, const vec< vec<double> > & x2s,
+                      const vec< vec< pair<int,int> > > & links, int step, bool flip, int len1 )
 {
   int nlibs = links.size();
   ForceAssertEq( nlibs, x1s.isize() );
@@ -170,17 +170,17 @@ void DumpLinkingInfo( ostream& out,
   for( int libId=0; libId < nlibs; libId++) {
     for( int i = 0; i < x1s[libId].isize(); i++ )
       if ( i % step == 0 )
-	out << "counter1_"<<libId<<" " << i - (flip ? len1 : 0 ) << " " << x1s[libId][i]<< endl;
+        out << "counter1_"<<libId<<" " << i - (flip ? len1 : 0 ) << " " << x1s[libId][i]<< endl;
     for( int i = 0; i < x2s[libId].isize(); i++ )
       if ( i % step == 0 )
-	out << "counter1_"<<libId<<" " << i << " " << x2s[libId][i]<< endl;
+        out << "counter1_"<<libId<<" " << i << " " << x2s[libId][i]<< endl;
   }
 }
 
-// Every read should have unique alignment.  
+// Every read should have unique alignment.
 //
 // The position of one end of the read (PER) is recorded ( usually the invariant, i.e., the
-// sequencing starting end ). Of course you can choose any end, as long as the 
+// sequencing starting end ). Of course you can choose any end, as long as the
 // choice is consistent when calculating the pair separation distributions.
 // We make sure PER is in [0, tig_length ).
 //
@@ -194,20 +194,20 @@ void DumpLinkingInfo( ostream& out,
 // and innies are nonjumps. The symbol '@' marks the invarant read end position.
 // Only the left cases are recorded.
 //
-// |<-x1->|<------y1------>                          |<------y1------>|<-x1->      
+// |<-x1->|<------y1------>                          |<------y1------>|<-x1->
 //        @----> r1                                              <----@ r1*
-// ------------------------ tig1                     ------------------------ tig1*    
-//                                      equiv to                                     
-// |<-x2->|<------y2------>                          |<------y2------>|<-x2->      
+// ------------------------ tig1                     ------------------------ tig1*
+//                                      equiv to
+// |<-x2->|<------y2------>                          |<------y2------>|<-x2->
 //        @----> r2                                              <----@ r2*
-// ------------------------ tig2                     ------------------------ tig2*    
+// ------------------------ tig2                     ------------------------ tig2*
 //
 // We record the starting and stopping positions on each contigs, counted from the
-// beginning of the contig. The links are also counted in the same way. 
-// 
-void GatherLinks( const PairsManager& pairs, const vec< pair<int,int> > aligns, 
-    const vec<int>& to_rc, 
-     LinkingPairs &linking)
+// beginning of the contig. The links are also counted in the same way.
+//
+void GatherLinks( const PairsManager& pairs, const vec< pair<int,int> > aligns,
+                  const vec<int>& to_rc,
+                  LinkingPairs &linking)
 {
   int nlibs = pairs.nLibraries();
   int ntigs = to_rc.size();
@@ -219,12 +219,12 @@ void GatherLinks( const PairsManager& pairs, const vec< pair<int,int> > aligns,
 
   const int cutoff_nonjump = 1000; // Maximium allowed nonjump distance
   const int cutoff_smalljump = 5;  // remove spurious peak of near-zero sized jumps
-  // putative cutoffs 
+  // putative cutoffs
   vec <int> cutoffs( nlibs, 0 );
-  for ( int i = 0; i < nlibs; i++ ) 
+  for ( int i = 0; i < nlibs; i++ )
     cutoffs[i] = pairs.getLibrarySep(i) + pairs.getLibrarySD(i) * 10;
 
-  for ( size_t i = 0; i < pairs.nPairs( ); i++ ){    
+  for ( size_t i = 0; i < pairs.nPairs( ); i++ ) {
     longlong id1 = pairs.ID1(i), id2 = pairs.ID2(i);
     int libid = pairs.libraryID(i);
     int u1 = aligns[id1].first;
@@ -245,18 +245,18 @@ void GatherLinks( const PairsManager& pairs, const vec< pair<int,int> > aligns,
     linking.AddPair(libid, ru2, y2, u1, x1 );
     if ( u1 >= 0 && u2 >= 0 && u1 == to_rc[u2] ) {
       // pairs aligned in the same contig
-      // |<-x1->|<--------------- y1 ---------------------------->        
-      //        @----> r1  
-      // -------------------------------------------------------- tig1 
-      // -------------------------------------------------------- tig2*  
-      //                                             <-----@ r2*                                 
-      // <--------------------- y2 ----------------------->|<-x2->      
-      // The diagram above actually illustrates a nonjump (innie) case, where x1 < y2;                
+      // |<-x1->|<--------------- y1 ---------------------------->
+      //        @----> r1
+      // -------------------------------------------------------- tig1
+      // -------------------------------------------------------- tig2*
+      //                                             <-----@ r2*
+      // <--------------------- y2 ----------------------->|<-x2->
+      // The diagram above actually illustrates a nonjump (innie) case, where x1 < y2;
       int d = x1 - y2; // remember that the pair starts from y2 and stops at x1
       if ( ( d > 0 && d < cutoffs[libid] && d > cutoff_smalljump )  // valid jumps
-	  || ( d < 0 && -d < cutoff_nonjump && -d > cutoff_smalljump)  // valid nonjumps
-	 ) 
-	linking.AddDist( libid, d, u1, u2 );
+           || ( d < 0 && -d < cutoff_nonjump && -d > cutoff_smalljump)  // valid nonjumps
+         )
+        linking.AddDist( libid, d, u1, u2 );
     }
   }
 }

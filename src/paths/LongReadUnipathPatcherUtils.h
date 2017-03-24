@@ -13,15 +13,15 @@
 #include "paths/LongReadTools.h"
 
 void BuildGLocs( const int LG,
-		 const vecbasevector &genome,
-		 vec< vec< pair<int,int> > > &Glocs );
+                 const vecbasevector &genome,
+                 vec< vec< pair<int,int> > > &Glocs );
 
 void AlignToGenome( const int LG,
-		    const bool COMPUTE_TRUE_READ_LENGTH,
-		    const basevector &r,
-		    const vecbasevector &genome,
-		    const vec< vec< pair<int,int> > > &Glocs,
-		    vec<align_data> &adata,
-		    ostream &out );
+                    const bool COMPUTE_TRUE_READ_LENGTH,
+                    const basevector &r,
+                    const vecbasevector &genome,
+                    const vec< vec< pair<int,int> > > &Glocs,
+                    vec<align_data> &adata,
+                    ostream &out );
 
 #endif

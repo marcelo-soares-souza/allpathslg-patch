@@ -17,42 +17,42 @@
 
 int PosDel( int x )
 {
-  return (x < 0) ? x : (x - 1);    
+  return (x < 0) ? x : (x - 1);
 }
 
 int PosDel2( int x )
 {
-  return PosDel(x) & Bits2;    
+  return PosDel(x) & Bits2;
 }
 
 int PosDel4( int x )
 {
-  return PosDel(x) & Bits4;    
+  return PosDel(x) & Bits4;
 }
 
 int PosAdd( int x )
 {
-  return (x < 0) ? x : (x + 1);    
+  return (x < 0) ? x : (x + 1);
 }
 
 int PosAdd2( int x )
 {
   if ( x <= 1 ) return x + 1;
-  return x - 4;    
+  return x - 4;
 }
 
-void packalign::ConstructorCore( int pos1, int pos2, 
-                                 const avector<int>& gaps, const avector<int>& lengths, 
+void packalign::ConstructorCore( int pos1, int pos2,
+                                 const avector<int>& gaps, const avector<int>& lengths,
                                  int nblocks )
 {
-    
+
   int n = gaps.length;
   if ( nblocks >= 0 ) n = nblocks;
 
 #ifndef NDEBUG
   {
     for ( int i = 0; i < n; i++ )
-      Assert( lengths(i) >= 0 );    
+      Assert( lengths(i) >= 0 );
   }
 #endif
 
@@ -64,10 +64,10 @@ void packalign::ConstructorCore( int pos1, int pos2,
     if ( gaps(i) == 0 )
     {
       zero_gap = True;
-      break;    
+      break;
     }
 
-  if ( pos1 <= 1023 && pos2 <= 1023 && n <= 6 && n >= 1 
+  if ( pos1 <= 1023 && pos2 <= 1023 && n <= 6 && n >= 1
        && gaps(0) == 0 && pos1 >= 0 && pos2 >= 0 && !zero_gap )
   {
     int i;
@@ -77,11 +77,11 @@ void packalign::ConstructorCore( int pos1, int pos2,
     {
       ConvertToType0( pos1, pos2, gaps, lengths, nblocks );
       Assert( Control( ) == 0 ); // XXX
-      return;    
-    }   
+      return;
+    }
   }
 
-  if ( pos1 <= 4095 && pos2 <= 4095 && n >= 1 && gaps(0) == 0 
+  if ( pos1 <= 4095 && pos2 <= 4095 && n >= 1 && gaps(0) == 0
        && pos1 >= 0 && pos2 >= 0 && !zero_gap )
   {
     int i;
@@ -91,23 +91,23 @@ void packalign::ConstructorCore( int pos1, int pos2,
     {
       ConvertToType1( pos1, pos2, gaps, lengths, nblocks );
       Assert( Control( ) == 1 ); // XXX
-      return;    
-    }   
+      return;
+    }
   }
 
-  ConvertToType2( pos1, pos2, gaps, lengths, nblocks );    
+  ConvertToType2( pos1, pos2, gaps, lengths, nblocks );
   Assert( Control( ) == 2 ); // XXX
 
 }
 
-packalign::packalign( int pos1, int pos2, 
+packalign::packalign( int pos1, int pos2,
                       const avector<int>& gaps, const avector<int>& lengths )
 {
   ForceAssert( gaps.x != 0 );
   ForceAssert( lengths.x != 0 );
   ForceAssert( gaps.length <= 65535 );
   ForceAssert( gaps.length == lengths.length );
-  ConstructorCore( pos1, pos2, gaps, lengths );    
+  ConstructorCore( pos1, pos2, gaps, lengths );
   /* // XXX
      int actual_pos1, actual_pos2; // XXX
      avector<int> actual_gaps, actual_lengths; // XXX
@@ -117,21 +117,21 @@ packalign::packalign( int pos1, int pos2,
      {
      cout << "packalign constructor failure\n"; // XXX
      PRINT3( i, gaps(i), actual_gaps(i) ); // XXX
-     exit(1);    
+     exit(1);
      } // XXX
      for ( unsigned int i = 0; i < lengths.length; i++ ) // XXX
      if ( lengths(i) != actual_lengths(i) ) // XXX
      {
      cout << "packalign constructor failure\n"; // XXX
      PRINT3( i, lengths(i), actual_lengths(i) ); // XXX
-     exit(1);    
+     exit(1);
      } // XXX
      if ( pos1 != actual_pos1 || pos2 != actual_pos2 ) // XXX
      {
      cout << "packalign constructor failure\n"; // XXX
      PRINT2( pos1, actual_pos1 ); // XXX
      PRINT2( pos2, actual_pos2 ); // XXX
-     exit(1);    
+     exit(1);
      } // XXX
   */ // XXX
 
@@ -140,20 +140,20 @@ packalign::packalign( int pos1, int pos2,
 /* Debugando Gambiarra
 packalign::packalign( const allpathslg::align & a )
 {
-  ConstructorCore( a.pos1( ), a.pos2( ), a.Gaps( ), a.Lengths( ), 
-                   a.Nblocks( ) );    
+  ConstructorCore( a.pos1( ), a.pos2( ), a.Gaps( ), a.Lengths( ),
+                   a.Nblocks( ) );
 }
 */
 
 packalign::packalign( const packalign& p )
 {
-    
+
   word_[0] = p.word_[0];
   int control = p.Control( );
   if ( control == 0 )
   {
     word_[1] = p.word_[1];
-    word_[2] = p.word_[2];    
+    word_[2] = p.word_[2];
   }
   else if ( control == 1 )
   {
@@ -168,7 +168,7 @@ packalign::packalign( const packalign& p )
     pw_new.p = ptr_new;
 #ifdef IS_32_BIT
     word_[1] = (unsigned int) ptr_new;
-#else 
+#else
     word_[1] = pw_new.x[0];
     word_[2] = pw_new.x[1];
 #endif
@@ -186,12 +186,12 @@ packalign::packalign( const packalign& p )
     pw_new.p = ptr_new;
 #ifdef IS_32_BIT
     word_[1] = (unsigned int) ptr_new;
-#else 
+#else
     word_[1] = pw_new.x[0];
     word_[2] = pw_new.x[1];
 #endif
   }
-  else if ( control == 7 ) word_[0] = 7u << 29;    
+  else if ( control == 7 ) word_[0] = 7u << 29;
 }
 
 // int pos1, pos2;
@@ -199,7 +199,7 @@ packalign::packalign( const packalign& p )
 // p.Unpack( pos1, pos2, gaps, lengths );
 // ConstructorCore( pos1, pos2, gaps, lengths );    }
 
-void packalign::Set( int pos1, int pos2, 
+void packalign::Set( int pos1, int pos2,
                      const avector<int>& gaps, const avector<int>& lengths, int nblocks )
 {
   int n = gaps.length;
@@ -222,7 +222,7 @@ void packalign::Set( int pos1, int pos2,
   else if ( control == 1 ) DeleteType1( );
   else if ( control == 2 ) DeleteType2( );
 
-  ConstructorCore( pos1, pos2, gaps, lengths, n );    
+  ConstructorCore( pos1, pos2, gaps, lengths, n );
 }
 
 packalign::~packalign( )
@@ -230,15 +230,15 @@ packalign::~packalign( )
   int control = Control( );
   if ( control == 0 )      DeleteType0( );
   else if ( control == 1 ) DeleteType1( );
-  else if ( control == 2 ) DeleteType2( );    
+  else if ( control == 2 ) DeleteType2( );
 }
 
 packalign& packalign::operator=( const packalign& p )
 {
-  // Check for the dangerous case where *this == p, when control = 1 or 2. 
+  // Check for the dangerous case where *this == p, when control = 1 or 2.
   // Also deal with the harmless case of equality in case control = 0.
 
-  if ( word_[0] == p.word_[0] && word_[1] == p.word_[1] 
+  if ( word_[0] == p.word_[0] && word_[1] == p.word_[1]
        && word_[2] == p.word_[2] ) return *this;
 
   // Here's the simple version.  The fancy version is only a little bit faster.
@@ -259,7 +259,7 @@ packalign& packalign::operator=( const packalign& p )
   if ( control == 0 )
   {
     word_[1] = p.word_[1];
-    word_[2] = p.word_[2];    
+    word_[2] = p.word_[2];
   }
   else if ( control == 1 )
   {
@@ -274,7 +274,7 @@ packalign& packalign::operator=( const packalign& p )
     pw_new.p = ptr_new;
 #ifdef IS_32_BIT
     word_[1] = (unsigned int) ptr_new;
-#else 
+#else
     word_[1] = pw_new.x[0];
     word_[2] = pw_new.x[1];
 #endif
@@ -298,11 +298,11 @@ packalign& packalign::operator=( const packalign& p )
 #endif
   }
 
-  return *this;    
+  return *this;
 }
 
-void packalign::ConvertToType0( int pos1, int pos2, 
-                                const avector<int>& gaps, const avector<int>& lengths, 
+void packalign::ConvertToType0( int pos1, int pos2,
+                                const avector<int>& gaps, const avector<int>& lengths,
                                 int nblocks )
 {
   int n = gaps.length;
@@ -310,7 +310,7 @@ void packalign::ConvertToType0( int pos1, int pos2,
   if ( nblocks >= 0 ) n = nblocks;
 
   word_[0] = (pos1 << (10 + 3 + 2 + 2 + 2)) ^ (pos2 << (3 + 2 + 2 + 2)) ^
-    (n << (2 + 2 + 2));
+             (n << (2 + 2 + 2));
   if ( n > 1 ) word_[0] ^= ( PosDel2(gaps(1)) << (2 + 2) );
   if ( n > 2 ) word_[0] ^= ( PosDel2(gaps(2)) << 2 );
   if ( n > 3 ) word_[0] ^= PosDel2(gaps(3));
@@ -322,96 +322,96 @@ void packalign::ConvertToType0( int pos1, int pos2,
   if ( n > 5 ) word_[2] ^= ( PosDel2(gaps(5)) << (10 + 10 + 10) );
   if ( n > 3 ) word_[2] ^= ( lengths(3) << (10 + 10) );
   if ( n > 4 ) word_[2] ^= ( lengths(4) << 10 );
-  if ( n > 5 ) word_[2] ^= lengths(5);    
+  if ( n > 5 ) word_[2] ^= lengths(5);
 }
 
-void packalign::Unpack( int& pos1, int& pos2, avector<int>& gaps, 
+void packalign::Unpack( int& pos1, int& pos2, avector<int>& gaps,
                         avector<int>& lengths ) const
 {
   int control = Control( );
   int n = -1;
   Assert( control == 0 || control == 1 || control == 2 || control == 7 );
-  if ( control == 7 ) 
+  if ( control == 7 )
   {
     pos1 = 0;
     pos2 = 0;
     gaps.Setsize(0);
-    lengths.Setsize(0);    
+    lengths.Setsize(0);
   }
   else if ( control == 0 ) Unpack0( pos1, pos2, gaps, lengths, n );
   else if ( control == 1 ) Unpack1( pos1, pos2, gaps, lengths, n );
-  else if ( control == 2 ) Unpack2( pos1, pos2, gaps, lengths, n );    
+  else if ( control == 2 ) Unpack2( pos1, pos2, gaps, lengths, n );
 }
 
-void packalign::Unpack( int& pos1, int& pos2, avector<int>& gaps, 
+void packalign::Unpack( int& pos1, int& pos2, avector<int>& gaps,
                         avector<int>& lengths, int& nblocks ) const
 {
   int control = Control( );
   nblocks = 0;
   Assert( control == 0 || control == 1 || control == 2 || control == 7 );
-  if ( control == 7 ) 
+  if ( control == 7 )
   {
     pos1 = 0;
     pos2 = 0;
-    nblocks = 0;    
+    nblocks = 0;
   }
   else if ( control == 0 ) Unpack0( pos1, pos2, gaps, lengths, nblocks );
   else if ( control == 1 ) Unpack1( pos1, pos2, gaps, lengths, nblocks );
-  else if ( control == 2 ) Unpack2( pos1, pos2, gaps, lengths, nblocks );    
+  else if ( control == 2 ) Unpack2( pos1, pos2, gaps, lengths, nblocks );
 }
 
-void packalign::Unpack0( int& pos1, int& pos2, avector<int>& gaps, 
+void packalign::Unpack0( int& pos1, int& pos2, avector<int>& gaps,
                          avector<int>& lengths, int& n ) const
 {
-    
+
   pos1 = word_[0] >> (10 + 3 + 2 + 2 + 2);
   pos2 = (word_[0] >> (3 + 2 + 2 + 2)) & Bits10;
   int nblocks = (word_[0] >> (2 + 2 + 2)) & Bits3;
   if ( n < 0 )
   {
     gaps.Setsize(nblocks);
-    lengths.Setsize(nblocks);    
+    lengths.Setsize(nblocks);
   }
   else
   {
     if ( gaps.x == 0 || nblocks > (int) gaps.length )
     {
       gaps.Setsize(nblocks);
-      lengths.Setsize(nblocks);    
+      lengths.Setsize(nblocks);
     }
-    n = nblocks;    
+    n = nblocks;
   }
   gaps(0) = 0;
   lengths(0) = (word_[1] >> (10 + 10)) & Bits10;
   if ( nblocks > 1 )
   {
     gaps(1) = PosAdd2((word_[0] >> (2 + 2)) & Bits2);
-    lengths(1) = (word_[1] >> 10) & Bits10;    
+    lengths(1) = (word_[1] >> 10) & Bits10;
   }
   if ( nblocks > 2 )
   {
     gaps(2) = PosAdd2((word_[0] >> 2) & Bits2);
-    lengths(2) = word_[1] & Bits10;    
+    lengths(2) = word_[1] & Bits10;
   }
   if ( nblocks > 3 )
   {
     gaps(3) = PosAdd2(word_[0] & Bits2);
-    lengths(3) = (word_[2] >> (10 + 10)) & Bits10;    
+    lengths(3) = (word_[2] >> (10 + 10)) & Bits10;
   }
   if ( nblocks > 4 )
   {
     gaps(4) = PosAdd2((word_[1] >> (10 + 10 + 10)) & Bits2);
-    lengths(4) = (word_[2] >> 10) & Bits10;    
+    lengths(4) = (word_[2] >> 10) & Bits10;
   }
   if ( nblocks > 5 )
   {
     gaps(5) = PosAdd2((word_[2] >> (10 + 10 + 10)) & Bits2);
-    lengths(5) = word_[2] & Bits10;    
-  }    
+    lengths(5) = word_[2] & Bits10;
+  }
 }
 
-void packalign::ConvertToType1( int pos1, int pos2, 
-                                const avector<int>& gaps, const avector<int>& lengths, 
+void packalign::ConvertToType1( int pos1, int pos2,
+                                const avector<int>& gaps, const avector<int>& lengths,
                                 int nblocks )
 {
   int n = gaps.length;
@@ -426,17 +426,17 @@ void packalign::ConvertToType1( int pos1, int pos2,
 
 #ifdef IS_32_BIT
   word_[1] = (unsigned int) ptr;
-#else 
+#else
   word_[1] = pw.x[0];
-  word_[2] = pw.x[1];    
+  word_[2] = pw.x[1];
 #endif
 
   ptr[0] = n;
   for ( int i = 0; i < n; i++ )
-    ptr[ 1 + i ] = (PosDel4(gaps(i)) << 12) + lengths(i);    
+    ptr[ 1 + i ] = (PosDel4(gaps(i)) << 12) + lengths(i);
 }
 
-void packalign::Unpack1( int& pos1, int& pos2, avector<int>& gaps, 
+void packalign::Unpack1( int& pos1, int& pos2, avector<int>& gaps,
                          avector<int>& lengths, int& n ) const
 {
   pos1 = (word_[0] >> 12) & Bits12;
@@ -451,28 +451,28 @@ void packalign::Unpack1( int& pos1, int& pos2, avector<int>& gaps,
   if ( n < 0 )
   {
     gaps.Setsize(nblocks);
-    lengths.Setsize(nblocks);    
+    lengths.Setsize(nblocks);
   }
   else
   {
     if ( gaps.x == 0 || nblocks > (int) gaps.length )
     {
       gaps.Setsize(nblocks);
-      lengths.Setsize(nblocks);    
+      lengths.Setsize(nblocks);
     }
-    n = nblocks;    
+    n = nblocks;
   }
 
   for ( int i = 0; i < nblocks; i++ )
   {
     if ( i == 0 ) gaps(i) = 0;
     else gaps(i) = PosAdd( ((short) ptr[1 + i]) >> 12);
-    lengths(i) = ptr[1 + i] & Bits12;    
-  }    
+    lengths(i) = ptr[1 + i] & Bits12;
+  }
 }
 
-void packalign::ConvertToType2( int pos1, int pos2, 
-                                const avector<int>& gaps, const avector<int>& lengths, 
+void packalign::ConvertToType2( int pos1, int pos2,
+                                const avector<int>& gaps, const avector<int>& lengths,
                                 int nblocks )
 {
   int n = gaps.length;
@@ -483,20 +483,20 @@ void packalign::ConvertToType2( int pos1, int pos2,
   pw.p = ptr;
 #ifdef IS_32_BIT
   word_[1] = (unsigned int) ptr;
-#else 
+#else
   word_[1] = pw.x[0];
-  word_[2] = pw.x[1];    
+  word_[2] = pw.x[1];
 #endif
   ptr[0] = pos1;
   ptr[1] = pos2;
   for ( int i = 0; i < n; i++ )
   {
     ptr[ 2 + 2*i ] = lengths(i);
-    ptr[ 3 + 2*i ] = gaps(i);    
-  }    
+    ptr[ 3 + 2*i ] = gaps(i);
+  }
 }
 
-void packalign::Unpack2( int& pos1, int& pos2, avector<int>& gaps, 
+void packalign::Unpack2( int& pos1, int& pos2, avector<int>& gaps,
                          avector<int>& lengths, int& n ) const
 {
   int_pointer_or_words pw;
@@ -510,23 +510,23 @@ void packalign::Unpack2( int& pos1, int& pos2, avector<int>& gaps,
   if ( n < 0 )
   {
     gaps.Setsize(nblocks);
-    lengths.Setsize(nblocks);    
+    lengths.Setsize(nblocks);
   }
   else
   {
     if ( gaps.x == 0 || nblocks > (int) gaps.length )
     {
       gaps.Setsize(nblocks);
-      lengths.Setsize(nblocks);    
+      lengths.Setsize(nblocks);
     }
-    n = nblocks;    
+    n = nblocks;
   }
 
   for ( int i = 0; i < nblocks; i++ )
   {
     lengths(i) = ptr[ 2 + 2*i ];
-    gaps(i) = ptr[ 3 + 2*i ];    
-  }    
+    gaps(i) = ptr[ 3 + 2*i ];
+  }
 }
 
 Bool packalign::Dead( ) const
@@ -538,44 +538,44 @@ Bool packalign::Dead( ) const
     short_pointer_or_words pw;
     pw.x[0] = word_[1];
     pw.x[1] = word_[2];
-    return *pw.p == 0;    
+    return *pw.p == 0;
   }
   if ( control == 2 ) return (word_[0] & Bits16) == 0;
-  return True;    
+  return True;
 }
 
 int packalign::pos1( ) const
 {
   allpathslg::align  a;
   a.UnpackFrom(*this);
-  return a.pos1( );    
+  return a.pos1( );
 }
 
 int packalign::pos2( ) const
 {
   allpathslg::align  a;
   a.UnpackFrom(*this);
-  return a.pos2( );    
+  return a.pos2( );
 }
 
 int packalign::Pos1( ) const
 {
   allpathslg::align  a;
   a.UnpackFrom(*this);
-  return a.Pos1( );    
+  return a.Pos1( );
 }
 
 int packalign::Pos2( ) const
 {
   allpathslg::align  a;
   a.UnpackFrom(*this);
-  return a.Pos2( );    
+  return a.Pos2( );
 }
 
 void packalign::Kill( )
 {
   avector<int> gaps(0), lengths(0);
-  Set( 0, 0, gaps, lengths );    
+  Set( 0, 0, gaps, lengths );
 }
 
 void packalign::Flip( )
@@ -585,7 +585,7 @@ void packalign::Flip( )
   Unpack( pos1, pos2, gaps, lengths );
   for ( unsigned int i = 0; i < gaps.length; i++ )
     gaps(i) = -gaps(i);
-  Set( pos2, pos1, gaps, lengths );    
+  Set( pos2, pos1, gaps, lengths );
 }
 
 packalign packalign::Reverse( int b1_len, int b2_len ) const
@@ -597,36 +597,36 @@ packalign packalign::Reverse( int b1_len, int b2_len ) const
   int n = lengths.length;
   for ( int i = n-1; i >= 0; i-- )
   {
-    if ( i == n-1 ) 
+    if ( i == n-1 )
     {
       gaps_new.Append(0);
-      lengths_new.Append( lengths(n-1) );    
+      lengths_new.Append( lengths(n-1) );
     }
-    else 
+    else
     {
       gaps_new.Append( gaps(i+1) );
-      lengths_new.Append( lengths(i) );    
-    }    
+      lengths_new.Append( lengths(i) );
+    }
   }
-  if ( n > 0 && gaps(0) != 0 ) 
+  if ( n > 0 && gaps(0) != 0 )
   {
     gaps_new.Append( gaps(0) );
-    lengths_new.Append(0);    
+    lengths_new.Append(0);
   }
   int Pos1 = pos1, Pos2 = pos2;
   for ( int j = 0; j < n; j++ )
   {
     if ( gaps(j) > 0 ) Pos2 += gaps(j);
     else if ( gaps(j) < 0 ) Pos1 -= gaps(j);
-    Pos1 += lengths(j); 
-    Pos2 += lengths(j);    
+    Pos1 += lengths(j);
+    Pos2 += lengths(j);
   }
-  return packalign( b1_len - Pos1, b2_len - Pos2, gaps_new, lengths_new );    
+  return packalign( b1_len - Pos1, b2_len - Pos2, gaps_new, lengths_new );
 }
 
 void packalign::ReverseThis( int b1_len, int b2_len )
 {
-  *this = Reverse( b1_len, b2_len );    
+  *this = Reverse( b1_len, b2_len );
 }
 
 void packalign::SetToFlipOf( const packalign& p )
@@ -636,14 +636,14 @@ void packalign::SetToFlipOf( const packalign& p )
   p.Unpack( pos1, pos2, gaps, lengths );
   for ( unsigned int i = 0; i < gaps.length; i++ )
     gaps(i) = -gaps(i);
-  Set( pos2, pos1, gaps, lengths );    
+  Set( pos2, pos1, gaps, lengths );
 }
 
 void packalign::SetToFlipOf( allpathslg::align  a )
 {
   for ( int i = 0; i < a.Nblocks( ); i++ )
     a.SetGap( i, -a.Gaps(i) );
-  Set( a.pos2( ), a.pos1( ), a.Gaps( ), a.Lengths( ), a.Nblocks( ) );    
+  Set( a.pos2( ), a.pos1( ), a.Gaps( ), a.Lengths( ), a.Nblocks( ) );
 }
 
 void packalign::SetToReverseFlipOf( const packalign& p, int b1_len, int b2_len )
@@ -659,32 +659,32 @@ void packalign::SetToReverseFlipOf( const packalign& p, int b1_len, int b2_len )
   avector<int> gaps_new(new_length), lengths_new(new_length);
   for ( int i = n-1; i >= 0; i-- )
   {
-    if ( i == n-1 ) 
+    if ( i == n-1 )
     {
       gaps_new(ptr) = 0;
-      lengths_new(ptr) = lengths(n-1);    
+      lengths_new(ptr) = lengths(n-1);
     }
-    else 
+    else
     {
       gaps_new(ptr) = gaps(i+1);
-      lengths_new(ptr) = lengths(i);    
+      lengths_new(ptr) = lengths(i);
     }
-    ++ptr;    
+    ++ptr;
   }
-  if ( n > 0 && gaps(0) != 0 ) 
+  if ( n > 0 && gaps(0) != 0 )
   {
     gaps_new(ptr) = gaps(0);
-    lengths_new(ptr) = 0;    
+    lengths_new(ptr) = 0;
   }
   int Pos1 = pos1, Pos2 = pos2;
   for ( int j = 0; j < n; j++ )
   {
     if ( gaps(j) > 0 ) Pos2 += gaps(j);
     else if ( gaps(j) < 0 ) Pos1 -= gaps(j);
-    Pos1 += lengths(j); 
-    Pos2 += lengths(j);    
+    Pos1 += lengths(j);
+    Pos2 += lengths(j);
   }
-  Set( b1_len - Pos1, b2_len - Pos2, gaps_new, lengths_new );    
+  Set( b1_len - Pos1, b2_len - Pos2, gaps_new, lengths_new );
 }
 
 /* Debugando Gambiarra */
@@ -699,38 +699,38 @@ void packalign::SetToReverseFlipOf( allpathslg::align  a, int b1_len, int b2_len
   avector<int> gaps_new(new_length), lengths_new(new_length);
   for ( int i = n-1; i >= 0; i-- )
   {
-    if ( i == n-1 ) 
+    if ( i == n-1 )
     {
       gaps_new(ptr) = 0;
-      lengths_new(ptr) = a.Lengths(n-1);    
+      lengths_new(ptr) = a.Lengths(n-1);
     }
-    else 
+    else
     {
       gaps_new(ptr) = a.Gaps(i+1);
-      lengths_new(ptr) = a.Lengths(i);    
+      lengths_new(ptr) = a.Lengths(i);
     }
-    ++ptr;    
+    ++ptr;
   }
-  if ( n > 0 && a.Gaps(0) != 0 ) 
+  if ( n > 0 && a.Gaps(0) != 0 )
   {
     gaps_new(ptr) = a.Gaps(0);
-    lengths_new(ptr) = 0;    
+    lengths_new(ptr) = 0;
   }
   int Pos1 = pos1, Pos2 = pos2;
   for ( int j = 0; j < n; j++ )
   {
     if ( a.Gaps(j) > 0 ) Pos2 += a.Gaps(j);
     else if ( a.Gaps(j) < 0 ) Pos1 -= a.Gaps(j);
-    Pos1 += a.Lengths(j); 
-    Pos2 += a.Lengths(j);    
+    Pos1 += a.Lengths(j);
+    Pos2 += a.Lengths(j);
   }
-  Set( b1_len - Pos1, b2_len - Pos2, gaps_new, lengths_new );    
+  Set( b1_len - Pos1, b2_len - Pos2, gaps_new, lengths_new );
 }
 
 Bool operator==( const packalign& x, const packalign& y )
 {
   int xpos1, xpos2, ypos1, ypos2;
-  avector<int> xgaps, ygaps; 
+  avector<int> xgaps, ygaps;
   avector<int> xlengths, ylengths;
   x.Unpack( xpos1, xpos2, xgaps, xlengths );
   y.Unpack( ypos1, ypos2, ygaps, ylengths );
@@ -739,14 +739,14 @@ Bool operator==( const packalign& x, const packalign& y )
   for ( int i = 0; i < (int) xlengths.length; i++ )
   {
     if ( xlengths(i) != ylengths(i) ) return False;
-    if ( i >= 1 && xgaps(i) != ygaps(i) ) return False;    
+    if ( i >= 1 && xgaps(i) != ygaps(i) ) return False;
   }
-  return True;    
+  return True;
 }
 
 void allpathslg::align ::Compactify( int len1, int len2 )
 {
-    
+
   int ni;
 
   // Clean up alignments that start with gaps.  This should be very rare.
@@ -768,7 +768,7 @@ check_first_gap:
     {
       pos2_ -= first_gap;
       lengths_(0) += first_gap;
-      gaps_(0) = 0;    
+      gaps_(0) = 0;
     }
     else
     {
@@ -777,11 +777,11 @@ check_first_gap:
       if ( pos2_ > 0 )
       {
         lengths_.Prepend(pos2_);
-	gaps_.Prepend(0);
-	++nblocks_;    
+        gaps_.Prepend(0);
+        ++nblocks_;
       }
-      pos2_ = 0;    
-    }    
+      pos2_ = 0;
+    }
   }
   else if ( first_gap > 0 )
   {
@@ -789,7 +789,7 @@ check_first_gap:
     {
       pos1_ -= first_gap;
       lengths_(0) += first_gap;
-      gaps_(0) = 0;    
+      gaps_(0) = 0;
     }
     else
     {
@@ -798,52 +798,52 @@ check_first_gap:
       if ( pos1_ > 0 )
       {
         lengths_.Prepend(pos1_);
-	gaps_.Prepend(0);
-	++nblocks_;    
+        gaps_.Prepend(0);
+        ++nblocks_;
       }
-      pos1_ = 0;    
-    }    
+      pos1_ = 0;
+    }
   }
-  
+
   // Remove an initial length of zero, if it exists.
-  
-  if ( lengths_(0) == 0 ) {    
+
+  if ( lengths_(0) == 0 ) {
     if (gaps_(0) > 0)
       add_gap_plus += gaps_(0);
     if (gaps_(0) < 0)
       add_gap_minus += -gaps_(0);
 
-    for ( int i = 1; i < nblocks_; i++ ) { 
+    for ( int i = 1; i < nblocks_; i++ ) {
       gaps_(i-1) = gaps_(i);
-      lengths_(i-1) = lengths_(i);    
-    }    
+      lengths_(i-1) = lengths_(i);
+    }
     --nblocks_;
-    goto check_first_gap;    
+    goto check_first_gap;
   }
-  
+
   for ( int i = 1; i < nblocks_; i++ )
   {
     if ( lengths_(ni) != 0 && gaps_(i) != 0 )
     {
       ++ni;
       gaps_(ni) = gaps_(i);
-      lengths_(ni) = lengths_(i);    
+      lengths_(ni) = lengths_(i);
     }
     else
     {
       lengths_(ni) += lengths_(i);
       if ( gaps_(ni) * gaps_(i) < 0 )
-	lengths_(ni) += Min( Abs(gaps_(ni)), Abs(gaps_(i)) );
-      gaps_(ni) += gaps_(i);    
-    }    
+        lengths_(ni) += Min( Abs(gaps_(ni)), Abs(gaps_(i)) );
+      gaps_(ni) += gaps_(i);
+    }
   }
-  
-  if ( lengths_(ni) == 0 ) 
+
+  if ( lengths_(ni) == 0 )
   {
     if ( ni == 0 )
     {
       nblocks_ = 0;
-      return;    
+      return;
     }
     if ( gaps_(ni) < 0 )
     {
@@ -851,7 +851,7 @@ check_first_gap:
       for ( int j = 0; j < ni; j++ )
       {
         if ( gaps_(j) > 0 ) Pos2 += gaps_(j);
-	Pos2 += lengths_(j);    
+        Pos2 += lengths_(j);
       }
       int npos2 = len2 - Pos2;
       Assert( npos2 >= 0 ); // XXX
@@ -859,21 +859,21 @@ check_first_gap:
       else if ( npos2 >= -gaps_(ni) )
       {
         lengths_(ni-1) -= gaps_(ni);
-	--ni;    
+        --ni;
       }
       else
       {
         gaps_(ni) += npos2;
-	lengths_(ni) = npos2;    
-      }    
+        lengths_(ni) = npos2;
+      }
     }
-    else 
+    else
     {
       int Pos1 = pos1_;
       for ( int j = 0; j < ni; j++ )
       {
         if ( gaps_(j) < 0 ) Pos1 -= gaps_(j);
-	Pos1 += lengths_(j);    
+        Pos1 += lengths_(j);
       }
       int npos1 = len1 - Pos1;
       Assert( npos1 >= 0 ); // XXX
@@ -881,57 +881,57 @@ check_first_gap:
       else if ( npos1 >= gaps_(ni) )
       {
         lengths_(ni-1) += gaps_(ni);
-	--ni;    
+        --ni;
       }
       else
       {
         gaps_(ni) -= npos1;
-	lengths_(ni) = npos1;    
-      }    
-    }    
+        lengths_(ni) = npos1;
+      }
+    }
   }
-  
+
   nblocks_ = ni + 1;
   if ( gaps_(0) > 0 ) // shouldn't happen
   {
     pos2_ += gaps_(0);
-    gaps_(0) = 0;    
+    gaps_(0) = 0;
   }
   else if ( gaps_(0) < 0 ) // shouldn't happen
   {
     pos1_ -= gaps_(0);
-    gaps_(0) = 0;    
+    gaps_(0) = 0;
   }
-  
- finish:
-  
+
+finish:
+
   // Make alignments proper if only off by one base at the beginning.
   // (This is really covering up a bug in some other piece of code.)
-  
+
   if ( (pos1_ == 1 && pos2_ > 0) || (pos1_ > 0 && pos2_ == 1) )
   {
     --pos1_;
     --pos2_;
-    ++lengths_(0);    
+    ++lengths_(0);
   }
-  
+
 
   pos2_ += add_gap_plus;
   // Not sure about this one...
   //pos1_ += add_gap_minus;
-  
+
 
   Bool zero_gap = False;
   for ( int i = 1; i < nblocks_; i++ )
     if ( gaps_(i) == 0 ) zero_gap = True;
-  if (zero_gap) goto check_first_gap;    
+  if (zero_gap) goto check_first_gap;
 
 }
 
 
 void allpathslg::align ::UnpackFrom( const packalign& p )
 {
-  p.Unpack( pos1_, pos2_, gaps_, lengths_, nblocks_ );    
+  p.Unpack( pos1_, pos2_, gaps_, lengths_, nblocks_ );
 }
 
 // Proper tests an align  to see if it is proper.  It does not flag "dead"
@@ -952,15 +952,15 @@ Bool Proper( const allpathslg::align & a, int len1, int len2 )
           || (pos1 == 0 && Pos1 == (int) len1)
           || (pos2 == 0 && Pos2 == (int) len2) ) )
   {
-    return False;    
+    return False;
   }
-  return True;    
+  return True;
 }
 
 // RequireProper tests an alignment_plus to see if it is proper.  It does not
 // object to "dead" alignments, those with no gaps or lengths.
 
-void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2, 
+void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2,
                     const vecbasevector& EE, int test_no, Bool fatal )
 {
   if ( Proper( a, EE[id1].size( ), EE[id2].size( ) ) ) return;
@@ -970,21 +970,21 @@ void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2,
   PRINT2( EE[id1].size( ), EE[id2].size( ) );
   cout << "actual errors = " << flush;
   if ( !rc2 ) cout << ActualErrors( EE[id1], EE[id2], a ) << "\n";
-  else 
+  else
   {
     basevector EErcid2 = EE[id2];
     EErcid2.ReverseComplement( );
-    cout << ActualErrors( EE[id1], EErcid2, a ) << "\n";    
+    cout << ActualErrors( EE[id1], EErcid2, a ) << "\n";
   }
   cout << "gaps/lengths:" << flush;
   for ( int i = 0; i < a.Nblocks( ); i++ )
     cout << " " << a.Gaps(i) << "/" << a.Lengths(i);
   cout << "\n";
   PRINT(test_no);
-  if (fatal) ForceAssert( 0 == 1 );    
+  if (fatal) ForceAssert( 0 == 1 );
 }
 
-void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2, 
+void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2,
                     const vec<int>& EE_length, int test_no, Bool fatal )
 {
   if ( Proper( a, EE_length[id1], EE_length[id2] ) ) return;
@@ -997,140 +997,190 @@ void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2,
     cout << " " << a.Gaps(i) << "/" << a.Lengths(i);
   cout << "\n";
   PRINT(test_no);
-  if (fatal) ForceAssert( 0 == 1 );    
+  if (fatal) ForceAssert( 0 == 1 );
 }
 
-int ActualErrors( const basevector& rd1, const basevector& rd2, 
+int ActualErrors( const basevector& rd1, const basevector& rd2,
                   const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
-{    int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
-     for ( int j = 0; j < a.Nblocks( ); j++ )
-     {    if ( a.Gaps(j) > 0 )
-          {    p2 += a.Gaps(j);
-               answer += gap_penalty * a.Gaps(j);    }
-          if ( a.Gaps(j) < 0 )
-          {    p1 -= a.Gaps(j);
-               answer -= gap_penalty * a.Gaps(j);    }
-          for ( int x = 0; x < a.Lengths(j); x++ )
-          {    if ( rd1[p1] != rd2[p2] ) answer += mismatch_penalty;
-               ++p1; ++p2;    }    }
-     return answer;    }
+{ int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
+  for ( int j = 0; j < a.Nblocks( ); j++ )
+  { if ( a.Gaps(j) > 0 )
+    { p2 += a.Gaps(j);
+      answer += gap_penalty * a.Gaps(j);
+    }
+    if ( a.Gaps(j) < 0 )
+    { p1 -= a.Gaps(j);
+      answer -= gap_penalty * a.Gaps(j);
+    }
+    for ( int x = 0; x < a.Lengths(j); x++ )
+    { if ( rd1[p1] != rd2[p2] ) answer += mismatch_penalty;
+      ++p1;
+      ++p2;
+    }
+  }
+  return answer;
+}
 
-int ActualErrors( const vec<char>& rd1, const basevector& rd2, 
+int ActualErrors( const vec<char>& rd1, const basevector& rd2,
                   const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
-{    int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
-     for ( int j = 0; j < a.Nblocks( ); j++ )
-     {    if ( a.Gaps(j) > 0 )
-          {    p2 += a.Gaps(j);
-               answer += gap_penalty * a.Gaps(j);    }
-          if ( a.Gaps(j) < 0 )
-          {    p1 -= a.Gaps(j);
-               answer -= gap_penalty * a.Gaps(j);    }
-          for ( int x = 0; x < a.Lengths(j); x++ )
-          {    if ( toupper(rd1[p1]) != as_base(rd2[p2]) ) 
-                    answer += mismatch_penalty;
-               ++p1; ++p2;    }    }
-     return answer;    }
+{ int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
+  for ( int j = 0; j < a.Nblocks( ); j++ )
+  { if ( a.Gaps(j) > 0 )
+    { p2 += a.Gaps(j);
+      answer += gap_penalty * a.Gaps(j);
+    }
+    if ( a.Gaps(j) < 0 )
+    { p1 -= a.Gaps(j);
+      answer -= gap_penalty * a.Gaps(j);
+    }
+    for ( int x = 0; x < a.Lengths(j); x++ )
+    { if ( toupper(rd1[p1]) != as_base(rd2[p2]) )
+        answer += mismatch_penalty;
+      ++p1;
+      ++p2;
+    }
+  }
+  return answer;
+}
 
-int ActualErrors( const fastavector& rd1, const basevector& rd2, 
+int ActualErrors( const fastavector& rd1, const basevector& rd2,
                   const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
-{    int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
-     for ( int j = 0; j < a.Nblocks( ); j++ )
-     {    if ( a.Gaps(j) > 0 )
-          {    p2 += a.Gaps(j);
-               answer += gap_penalty * a.Gaps(j);    }
-          if ( a.Gaps(j) < 0 )
-          {    p1 -= a.Gaps(j);
-               answer -= gap_penalty * a.Gaps(j);    }
-          for ( int x = 0; x < a.Lengths(j); x++ )
-          {    if ( !GeneralizedBase::fromChar(rd1[p1])
-                    .matches( GeneralizedBase::fromChar( as_base(rd2[p2]) ) ) )
-               {    answer += mismatch_penalty;    }
-               ++p1; ++p2;    }    }
-     return answer;    }
+{ int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
+  for ( int j = 0; j < a.Nblocks( ); j++ )
+  { if ( a.Gaps(j) > 0 )
+    { p2 += a.Gaps(j);
+      answer += gap_penalty * a.Gaps(j);
+    }
+    if ( a.Gaps(j) < 0 )
+    { p1 -= a.Gaps(j);
+      answer -= gap_penalty * a.Gaps(j);
+    }
+    for ( int x = 0; x < a.Lengths(j); x++ )
+    { if ( !GeneralizedBase::fromChar(rd1[p1])
+           .matches( GeneralizedBase::fromChar( as_base(rd2[p2]) ) ) )
+      {
+        answer += mismatch_penalty;
+      }
+      ++p1;
+      ++p2;
+    }
+  }
+  return answer;
+}
 
-int ActualErrors( const fastavector& rd1, const fastavector& rd2, 
+int ActualErrors( const fastavector& rd1, const fastavector& rd2,
                   const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
-{    int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
-     for ( int j = 0; j < a.Nblocks( ); j++ )
-     {    if ( a.Gaps(j) > 0 )
-          {    p2 += a.Gaps(j);
-               answer += gap_penalty * a.Gaps(j);    }
-          if ( a.Gaps(j) < 0 )
-          {    p1 -= a.Gaps(j);
-               answer -= gap_penalty * a.Gaps(j);    }
-          for ( int x = 0; x < a.Lengths(j); x++ )
-          {    if ( !GeneralizedBase::fromChar(rd1[p1])
-                    .matches( GeneralizedBase::fromChar(rd2[p2]) ) ) 
-               {    answer += mismatch_penalty;    }
-               ++p1; ++p2;    }    }
-     return answer;    }
+{ int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
+  for ( int j = 0; j < a.Nblocks( ); j++ )
+  { if ( a.Gaps(j) > 0 )
+    { p2 += a.Gaps(j);
+      answer += gap_penalty * a.Gaps(j);
+    }
+    if ( a.Gaps(j) < 0 )
+    { p1 -= a.Gaps(j);
+      answer -= gap_penalty * a.Gaps(j);
+    }
+    for ( int x = 0; x < a.Lengths(j); x++ )
+    { if ( !GeneralizedBase::fromChar(rd1[p1])
+           .matches( GeneralizedBase::fromChar(rd2[p2]) ) )
+      {
+        answer += mismatch_penalty;
+      }
+      ++p1;
+      ++p2;
+    }
+  }
+  return answer;
+}
 
-int ActualErrorsRc( const basevector& rd1, const basevector& rd2, 
+int ActualErrorsRc( const basevector& rd1, const basevector& rd2,
                     const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
-{    int n2 = rd2.size( );
-     int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
-     for ( int j = 0; j < a.Nblocks( ); j++ )
-     {    if ( a.Gaps(j) > 0 )
-          {    p2 += a.Gaps(j);
-               answer += gap_penalty * a.Gaps(j);    }
-          if ( a.Gaps(j) < 0 )
-          {    p1 -= a.Gaps(j);
-               answer -= gap_penalty * a.Gaps(j);    }
-          for ( int x = 0; x < a.Lengths(j); x++ )
-          {    if ( rd1[p1] != 3 - rd2[n2-p2-1] ) answer += mismatch_penalty;
-               ++p1; ++p2;    }    }
-     return answer;    }
+{ int n2 = rd2.size( );
+  int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
+  for ( int j = 0; j < a.Nblocks( ); j++ )
+  { if ( a.Gaps(j) > 0 )
+    { p2 += a.Gaps(j);
+      answer += gap_penalty * a.Gaps(j);
+    }
+    if ( a.Gaps(j) < 0 )
+    { p1 -= a.Gaps(j);
+      answer -= gap_penalty * a.Gaps(j);
+    }
+    for ( int x = 0; x < a.Lengths(j); x++ )
+    { if ( rd1[p1] != 3 - rd2[n2-p2-1] ) answer += mismatch_penalty;
+      ++p1;
+      ++p2;
+    }
+  }
+  return answer;
+}
 
-int ActualErrorsRc( const fastavector& rd1, const basevector& rd2, 
+int ActualErrorsRc( const fastavector& rd1, const basevector& rd2,
                     const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
-{    int n2 = rd2.size( );
-     int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
-     for ( int j = 0; j < a.Nblocks( ); j++ )
-     {    if ( a.Gaps(j) > 0 )
-          {    p2 += a.Gaps(j);
-               answer += gap_penalty * a.Gaps(j);    }
-          if ( a.Gaps(j) < 0 )
-          {    p1 -= a.Gaps(j);
-               answer -= gap_penalty * a.Gaps(j);    }
-          for ( int x = 0; x < a.Lengths(j); x++ )
-          {    if ( !GeneralizedBase::fromChar(rd1[p1]).complement( )
-                    .matches( GeneralizedBase::fromChar( as_base(rd2[n2-p2-1]) ) ) ) 
-               {    answer += mismatch_penalty;    }
-               ++p1; ++p2;    }    }
-     return answer;    }
+{ int n2 = rd2.size( );
+  int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
+  for ( int j = 0; j < a.Nblocks( ); j++ )
+  { if ( a.Gaps(j) > 0 )
+    { p2 += a.Gaps(j);
+      answer += gap_penalty * a.Gaps(j);
+    }
+    if ( a.Gaps(j) < 0 )
+    { p1 -= a.Gaps(j);
+      answer -= gap_penalty * a.Gaps(j);
+    }
+    for ( int x = 0; x < a.Lengths(j); x++ )
+    { if ( !GeneralizedBase::fromChar(rd1[p1]).complement( )
+           .matches( GeneralizedBase::fromChar( as_base(rd2[n2-p2-1]) ) ) )
+      {
+        answer += mismatch_penalty;
+      }
+      ++p1;
+      ++p2;
+    }
+  }
+  return answer;
+}
 
-int ActualErrorsRc( const fastavector& rd1, const fastavector& rd2, 
+int ActualErrorsRc( const fastavector& rd1, const fastavector& rd2,
                     const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
-{    int n2 = rd2.size( );
-     int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
-     for ( int j = 0; j < a.Nblocks( ); j++ )
-     {    if ( a.Gaps(j) > 0 )
-          {    p2 += a.Gaps(j);
-               answer += gap_penalty * a.Gaps(j);    }
-          if ( a.Gaps(j) < 0 )
-          {    p1 -= a.Gaps(j);
-               answer -= gap_penalty * a.Gaps(j);    }
-          for ( int x = 0; x < a.Lengths(j); x++ )
-          {    if ( !GeneralizedBase::fromChar(rd1[p1]).complement( )
-                    .matches( GeneralizedBase::fromChar(rd2[n2-p2-1]) ) ) 
-               {    answer += mismatch_penalty;    }
-               ++p1; ++p2;    }    }
-     return answer;    }
+{ int n2 = rd2.size( );
+  int p1 = a.pos1( ), p2 = a.pos2( ), answer = 0;
+  for ( int j = 0; j < a.Nblocks( ); j++ )
+  { if ( a.Gaps(j) > 0 )
+    { p2 += a.Gaps(j);
+      answer += gap_penalty * a.Gaps(j);
+    }
+    if ( a.Gaps(j) < 0 )
+    { p1 -= a.Gaps(j);
+      answer -= gap_penalty * a.Gaps(j);
+    }
+    for ( int x = 0; x < a.Lengths(j); x++ )
+    { if ( !GeneralizedBase::fromChar(rd1[p1]).complement( )
+           .matches( GeneralizedBase::fromChar(rd2[n2-p2-1]) ) )
+      {
+        answer += mismatch_penalty;
+      }
+      ++p1;
+      ++p2;
+    }
+  }
+  return answer;
+}
 
 template<class BASEVEC1, class BASEVEC2>
-int ActualErrors( Bool rc, const BASEVEC1& rd1, const BASEVEC2& rd2, 
+int ActualErrors( Bool rc, const BASEVEC1& rd1, const BASEVEC2& rd2,
                   const allpathslg::align & a, int mismatch_penalty, int gap_penalty )
 {
   if ( !rc ) return ActualErrors( rd1, rd2, a, mismatch_penalty, gap_penalty );
-  else return ActualErrorsRc( rd1, rd2, a, mismatch_penalty, gap_penalty );    
+  else return ActualErrorsRc( rd1, rd2, a, mismatch_penalty, gap_penalty );
 }
 
-template int ActualErrors( Bool rc, const basevector& rd1, const basevector& rd2, 
-                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty );
-template int ActualErrors( Bool rc, const fastavector& rd1, const basevector& rd2, 
-                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty );
-template int ActualErrors( Bool rc, const fastavector& rd1, const fastavector& rd2, 
-                  const allpathslg::align & a, int mismatch_penalty, int gap_penalty );
+template int ActualErrors( Bool rc, const basevector& rd1, const basevector& rd2,
+                           const allpathslg::align & a, int mismatch_penalty, int gap_penalty );
+template int ActualErrors( Bool rc, const fastavector& rd1, const basevector& rd2,
+                           const allpathslg::align & a, int mismatch_penalty, int gap_penalty );
+template int ActualErrors( Bool rc, const fastavector& rd1, const fastavector& rd2,
+                           const allpathslg::align & a, int mismatch_penalty, int gap_penalty );
 
 int Bandwidth( allpathslg::align & a )
 {
@@ -1140,9 +1190,9 @@ int Bandwidth( allpathslg::align & a )
   {
     gap_total += a.Gaps(l);
     low = Min( low, gap_total );
-    high = Max( high, gap_total );    
+    high = Max( high, gap_total );
   }
-  return Max( Abs(low), Abs(high) ) + add_to_bandwidth;    
+  return Max( Abs(low), Abs(high) ) + add_to_bandwidth;
 }
 
 void allpathslg::align ::Read( istream& in, int& errors, int& id1, int& id2, Bool& rc )
@@ -1160,11 +1210,11 @@ void allpathslg::align ::Read( istream& in, int& errors, int& id1, int& id2, Boo
     BinRead( in, gap );
     SetGap( i, gap );
     BinRead( in, len );
-    SetLength( i, len );    
+    SetLength( i, len );
   }
   BinRead( in, id1 );
   BinRead( in, id2 );
-  BinRead( in, rc );    
+  BinRead( in, rc );
 }
 
 int CorrelatePositions( const allpathslg::align & a, int x1 )
@@ -1180,15 +1230,15 @@ int CorrelatePositions( const allpathslg::align & a, int x1 )
     if ( gaps(j) > 0 ) pos2 += gaps(j);
     if ( gaps(j) < 0 )
       for ( int x = 0; x < -gaps(j); x++ )
-	if ( x1 == pos1++ ) return AtGap;
+        if ( x1 == pos1++ ) return AtGap;
     if ( x1 < pos1 + lengths(j) ) return pos2 + x1 - pos1;
     else
     {
       pos1 += lengths(j);
-      pos2 += lengths(j);    
-    }    
+      pos2 += lengths(j);
+    }
   }
-  return OffTheEnd;    
+  return OffTheEnd;
 }
 
 void allpathslg::align ::ReverseThis( int b1_len, int b2_len )
@@ -1199,29 +1249,29 @@ void allpathslg::align ::ReverseThis( int b1_len, int b2_len )
   int n = Nblocks( );
   for ( int i = n-1; i >= 0; i-- )
   {
-    if ( i == n-1 ) 
+    if ( i == n-1 )
     {
       gaps_new.push_back(0);
-      lengths_new.push_back( lengths_(n-1) );    
+      lengths_new.push_back( lengths_(n-1) );
     }
-    else 
+    else
     {
       gaps_new.push_back( gaps_(i+1) );
-      lengths_new.push_back( lengths_(i) );    
-    }    
+      lengths_new.push_back( lengths_(i) );
+    }
   }
-  if ( n > 0 && gaps_(0) != 0 ) 
+  if ( n > 0 && gaps_(0) != 0 )
   {
     gaps_new.push_back( gaps_(0) );
-    lengths_new.push_back(0);    
+    lengths_new.push_back(0);
   }
   int Pos1 = pos1_, Pos2 = pos2_;
   for ( int j = 0; j < n; j++ )
   {
     if ( gaps_(j) > 0 ) Pos2 += gaps_(j);
     else if ( gaps_(j) < 0 ) Pos1 -= gaps_(j);
-    Pos1 += lengths_(j); 
-    Pos2 += lengths_(j);    
+    Pos1 += lengths_(j);
+    Pos2 += lengths_(j);
   }
   pos1_ = b1_len - Pos1;
   pos2_ = b2_len - Pos2;
@@ -1229,8 +1279,8 @@ void allpathslg::align ::ReverseThis( int b1_len, int b2_len )
   for ( int i = 0; i < nblocks_; i++ )
   {
     gaps_(i) = gaps_new[i];
-    lengths_(i) = lengths_new[i];    
-  }    
+    lengths_(i) = lengths_new[i];
+  }
 }
 
 
@@ -1238,7 +1288,7 @@ void allpathslg::align ::Flip( )
 {
   swap( pos1_, pos2_ );
   for ( int i = 0; i < nblocks_; i++ )
-    gaps_(i) = -gaps_(i);    
+    gaps_(i) = -gaps_(i);
 }
 
 
@@ -1248,10 +1298,10 @@ allpathslg::align allpathslg::align ::TrimmedTo1(const int start, const int len)
   int startOn1 = start;
   //if the trimming goes beyond the alignment, reduce it to alignment size.
   if (endOn1 >= Pos1()) {
-    endOn1 = Pos1()-1; 
+    endOn1 = Pos1()-1;
   }
   if (startOn1 < pos1()) {
-    startOn1 = pos1(); 
+    startOn1 = pos1();
   }
   align  ret;
   ret.pos1_ = ret.pos2_ = ret.nblocks_ = 0;
@@ -1271,25 +1321,25 @@ allpathslg::align allpathslg::align ::TrimmedTo1(const int start, const int len)
     if (local == currentSize) {
       //switching blocks: save the upcoming one and reset counters.
       if (started) {
-	if (!onGap) {
-	  gaps.push_back(Gaps(block+1));
-	  //cout << "added gap " << gaps.size()-1 << "of size " << gaps.back() << endl;
+        if (!onGap) {
+          gaps.push_back(Gaps(block+1));
+          //cout << "added gap " << gaps.size()-1 << "of size " << gaps.back() << endl;
         }
-	else {
-	  blocks.push_back(Lengths(block));
-	  //cout << "added block " << blocks.size()-1 << "of size " << blocks.back() << endl;
+        else {
+          blocks.push_back(Lengths(block));
+          //cout << "added block " << blocks.size()-1 << "of size " << blocks.back() << endl;
         }
       }
       if (!onGap) {
-        ++block; 
+        ++block;
       }
       onGap = !onGap;
       local = 0;
       currentSize = onGap ? abs(Gaps(block)) : Lengths(block);
     }
-    if (p1 >= startOn1 
-	&& !started //start only once!
-	&& !onGap) {
+    if (p1 >= startOn1
+        && !started //start only once!
+        && !onGap) {
       //We do not want to start on a gap!
       //so we just wait until we are in a block to turn started to true.
       started = true;
@@ -1311,12 +1361,12 @@ allpathslg::align allpathslg::align ::TrimmedTo1(const int start, const int len)
       //note that it is possible to come to the end and not have started if
       //the whole extent of b1 we are interested in is within an insertion.
       if (started) {
-	if (onGap) {
-	  //remove the ending gap.
-	  gaps.resize(gaps.size()-1);
+        if (onGap) {
+          //remove the ending gap.
+          gaps.resize(gaps.size()-1);
         } else {
-	  int bsize=(blocks.size()) == 1 ? endOn1 - startOn1 : local;
-	  blocks.back() = bsize;
+          int bsize=(blocks.size()) == 1 ? endOn1 - startOn1 : local;
+          blocks.back() = bsize;
         }
       }
       //cout << "ending at " << (onGap ? "gap " : "block ")
@@ -1331,10 +1381,10 @@ allpathslg::align allpathslg::align ::TrimmedTo1(const int start, const int len)
     //advance local, p1 and p2 appropriately.
     if (onGap) {
       if (Gaps(block) > 0) {
-	++p2;
+        ++p2;
       }
       else if (Gaps(block) < 0) {
-	++p1;    
+        ++p1;
       }
     } else {
       ++p1;
@@ -1354,12 +1404,12 @@ allpathslg::align allpathslg::align ::TrimmedTo1(const int start, const int len)
     ret.lengths_ = avector<int>(blocks.begin(), blocks.end());
   }
   //PRINT4(ret.pos1_, ret.pos2_, gaps, blocks);
-  return ret;    
-}  
+  return ret;
+}
 
-void Trim1Together(const basevector & b1, const basevector & b2, 
-		   const allpathslg::align  & a, int startOn1, int len, 
-		   basevector & trimmedb1, allpathslg::align  & trimmeda) {
+void Trim1Together(const basevector & b1, const basevector & b2,
+                   const allpathslg::align  & a, int startOn1, int len,
+                   basevector & trimmedb1, allpathslg::align  & trimmeda) {
   trimmeda = a.TrimmedTo1(startOn1, len);
   trimmedb1.SetToSubOf(b1, startOn1, len);
 }
@@ -1370,35 +1420,38 @@ int allpathslg::align ::Errors( const basevector& rd1, const basevector& rd2 ) c
   return accumulate(errs.begin(), errs.end(), 0);
 }
 
-Bool allpathslg::align ::Perfect( const basevector& rd1, const basevector& rd2 ) const 
-{    if ( Nblocks( ) != 1 ) return False;
-     if ( Gaps(0) != 0 ) return False; // would be weird
-     int p1 = pos1( ), p2 = pos2( );
-     for ( int x = 0; x < Lengths(0); x++ ) 
-     {    if ( rd1[p1] != rd2[p2] ) return False;
-          ++p1; ++p2;    }
-     return True;    }
+Bool allpathslg::align ::Perfect( const basevector& rd1, const basevector& rd2 ) const
+{ if ( Nblocks( ) != 1 ) return False;
+  if ( Gaps(0) != 0 ) return False; // would be weird
+  int p1 = pos1( ), p2 = pos2( );
+  for ( int x = 0; x < Lengths(0); x++ )
+  { if ( rd1[p1] != rd2[p2] ) return False;
+    ++p1;
+    ++p2;
+  }
+  return True;
+}
 
-vector<int> allpathslg::align ::MutationsGap1Gap2( const basevector& rd1, 
-                                      const basevector& rd2 ) const {
+vector<int> allpathslg::align ::MutationsGap1Gap2( const basevector& rd1,
+    const basevector& rd2 ) const {
   vector<int> answer(3, 0);
   int p1 = pos1( ), p2 = pos2( );
   for ( int j = 0; j < Nblocks( ); j++ ) {
     if ( Gaps(j) > 0 )  {
       answer[1] += Gaps(j);
-      p2 += Gaps(j);    
+      p2 += Gaps(j);
     }
     if ( Gaps(j) < 0 ) {
       answer[2] -= Gaps(j);
-      p1 -= Gaps(j);    
+      p1 -= Gaps(j);
     }
     for ( int x = 0; x < Lengths(j); x++ ) {
       if ( rd1[p1] != rd2[p2] ) ++answer[0];
-      ++p1; 
-      ++p2;    
-    }    
+      ++p1;
+      ++p2;
+    }
   }
-  return answer;    
+  return answer;
 }
 
 int allpathslg::align ::PosOn1(int on2) const {
@@ -1445,18 +1498,18 @@ pair<int, int> allpathslg::align ::Gap1Gap2( ) const {
   pair<int, int> ret(0,0);
   for ( int j = 0; j < Nblocks( ); j++ ) {
     if ( Gaps(j) > 0 )  {
-      ret.first += Gaps(j);  
+      ret.first += Gaps(j);
     }
     else if ( Gaps(j) < 0 ) {
-      ret.second -= Gaps(j);   
+      ret.second -= Gaps(j);
     }
   }
-  return ret;    
+  return ret;
 }
 
 void allpathslg::align ::Sync_to_TACG( const basevector & seq1,
-                     const basevector & seq2,
-                     Bool  isRC )
+                                       const basevector & seq2,
+                                       Bool  isRC )
 {
   // Adjust the align  object to synchronize with the 454-cycles of TACG.
   //
@@ -1505,8 +1558,8 @@ void allpathslg::align ::Sync_to_TACG( const basevector & seq1,
       while ( base_index1 < end1 &&
               seq1[base_index1] == flow_base )
       {
-	base_index1++;
-	freq++;
+        base_index1++;
+        freq++;
       }
       flow1[ flow_index ] = freq;
 
@@ -1514,14 +1567,14 @@ void allpathslg::align ::Sync_to_TACG( const basevector & seq1,
       while ( base_index2 < end2 &&
               seq2[base_index2] == flow_base )
       {
-	base_index2++;
-	freq++;
+        base_index2++;
+        freq++;
       }
       flow2[ flow_index ] = freq;
 
       flow_index++;
     }
-  }      
+  }
   else // if ( isRC == True )
   {
     // If  isRC == True,  then the synchronization of cycles starts with
@@ -1539,8 +1592,8 @@ void allpathslg::align ::Sync_to_TACG( const basevector & seq1,
       while ( base_index1 >= start1 &&
               seq1[base_index1] == flow_base )
       {
-	base_index1--;
-	freq++;
+        base_index1--;
+        freq++;
       }
       flow1[ flow_index ] = freq;
 
@@ -1548,8 +1601,8 @@ void allpathslg::align ::Sync_to_TACG( const basevector & seq1,
       while ( base_index2 >= start2 &&
               seq2[base_index2] == flow_base )
       {
-	base_index2--;
-	freq++;
+        base_index2--;
+        freq++;
       }
       flow2[ flow_index ] = freq;
 
@@ -1659,13 +1712,13 @@ void allpathslg::align ::Sync_to_TACG( const basevector & seq1,
 
       if (gaps[i] > 0)
       {
-	newstart2 -= gaps[i];
+        newstart2 -= gaps[i];
       }
       else if (gaps[i] < 0)
       {
 
-	newstart1 += gaps[i];
-      
+        newstart1 += gaps[i];
+
       }
     }
     SetLength(0, lengths[num_blocks-1]);
@@ -1679,7 +1732,7 @@ void allpathslg::align ::Sync_to_TACG( const basevector & seq1,
 }
 
 int allpathslg::align ::Mutations( const basevector& rd1, const basevector& rd2,
-                      const qualvector& q1, int min_score ) const
+                                   const qualvector& q1, int min_score ) const
 {
   int answer = 0, j, p1 = pos1( ), p2 = pos2( );
   for ( j = 0; j < Nblocks( ); j++ )
@@ -1689,11 +1742,11 @@ int allpathslg::align ::Mutations( const basevector& rd1, const basevector& rd2,
     for ( int x = 0; x < Lengths(j); x++ )
     {
       if ( rd1[p1] != rd2[p2] && q1[p1] >= min_score ) ++answer;
-      ++p1; 
-      ++p2;    
-    }    
+      ++p1;
+      ++p2;
+    }
   }
-  return answer;    
+  return answer;
 }
 
 void allpathslg::align ::PrintMutations( const basevector& rd1, const basevector& rd2, ostream& log, const bool zero_based) const
@@ -1706,7 +1759,7 @@ void allpathslg::align ::PrintMutations( const basevector& rd1, const basevector
     if ( Gaps(j) > 0 ) {
       log << loc1 << " insertion " << loc2 << " ";
       for (int i = 0; i < Gaps(j); ++i)
-	log << Base::val2Char(rd2[p2+i]);
+        log << Base::val2Char(rd2[p2+i]);
       log << endl;
       p2 += Gaps(j);
       loc2 += Gaps(j);
@@ -1714,7 +1767,7 @@ void allpathslg::align ::PrintMutations( const basevector& rd1, const basevector
     if ( Gaps(j) < 0 ) {
       log << loc1 << " ";
       for (int i = 0; i < -Gaps(j); ++i)
-	log << Base::val2Char(rd1[p1+i]);
+        log << Base::val2Char(rd1[p1+i]);
       log << " "  << loc2 << " deletion" << endl;
       p1 -= Gaps(j);
       loc1 -= Gaps(j);
@@ -1722,15 +1775,15 @@ void allpathslg::align ::PrintMutations( const basevector& rd1, const basevector
     for ( int x = 0; x < Lengths(j); x++ )
     {
       if ( rd1[p1] != rd2[p2] ) {
-	// base mismatch
-	log << loc1 << " " << Base::val2Char(rd1[p1])
-	    << " " << loc2 << " " << Base::val2Char(rd2[p2]) << endl;
+        // base mismatch
+        log << loc1 << " " << Base::val2Char(rd1[p1])
+            << " " << loc2 << " " << Base::val2Char(rd2[p2]) << endl;
       }
-      ++p1; 
+      ++p1;
       ++p2;
       ++loc1;
       ++loc2;
-    }    
+    }
   }
 }
 
@@ -1744,126 +1797,140 @@ int allpathslg::align ::MatchingBases( const basevector& rd1, const basevector& 
     for ( int x = 0; x < Lengths(j); x++ )
     {
       if ( rd1[p1] == rd2[p2] ) ++answer;
-      ++p1; 
-      ++p2;    
-    }    
+      ++p1;
+      ++p2;
+    }
   }
-  return answer;    
+  return answer;
 }
 
 void allpathslg::align ::PerfectIntervals1( const basevector& rd1, const basevector& rd2,
-     vec<ho_interval>& perfs ) const
-{    perfs.clear( );
-     int p1 = pos1( ), p2 = pos2( );
-     for ( int j = 0; j < Nblocks( ); j++ )
-     {    if ( Gaps(j) > 0 ) p2 += Gaps(j);
-          if ( Gaps(j) < 0 ) p1 -= Gaps(j);
-          int last = p1 - 1;
-          for ( int x = 0; x < Lengths(j); x++ )
-          {    if ( rd1[p1] != rd2[p2] )
-               {    if ( p1 - (last+1) > 0 )
-                         perfs.push_back( ho_interval( last+1, p1 ) );
-	            last = p1;    }
-               ++p1; 
-               ++p2;    }
-          if ( p1 - (last+1) > 0 ) 
-               perfs.push_back( ho_interval( last+1, p1 ) );    }    }
+    vec<ho_interval>& perfs ) const
+{ perfs.clear( );
+  int p1 = pos1( ), p2 = pos2( );
+  for ( int j = 0; j < Nblocks( ); j++ )
+  { if ( Gaps(j) > 0 ) p2 += Gaps(j);
+    if ( Gaps(j) < 0 ) p1 -= Gaps(j);
+    int last = p1 - 1;
+    for ( int x = 0; x < Lengths(j); x++ )
+    { if ( rd1[p1] != rd2[p2] )
+      { if ( p1 - (last+1) > 0 )
+          perfs.push_back( ho_interval( last+1, p1 ) );
+        last = p1;
+      }
+      ++p1;
+      ++p2;
+    }
+    if ( p1 - (last+1) > 0 )
+      perfs.push_back( ho_interval( last+1, p1 ) );
+  }
+}
 
 void allpathslg::align ::PerfectIntervals2( const basevector& rd1, const basevector& rd2,
-     vec<ho_interval>& perfs ) const
-{    perfs.clear( );
-     int p1 = pos1( ), p2 = pos2( );
-     for ( int j = 0; j < Nblocks( ); j++ )
-     {    if ( Gaps(j) > 0 ) p2 += Gaps(j);
-          if ( Gaps(j) < 0 ) p1 -= Gaps(j);
-          int last = p2 - 1;
-          for ( int x = 0; x < Lengths(j); x++ )
-          {    if ( rd1[p1] != rd2[p2] )
-               {    if ( p2 - (last+1) > 0 )
-                         perfs.push_back( ho_interval( last+1, p2 ) );
-	            last = p2;    }
-               ++p1; ++p2;    }
-          if ( p2 - (last+1) > 0 ) 
-               perfs.push_back( ho_interval( last+1, p2 ) );    }    }
+    vec<ho_interval>& perfs ) const
+{ perfs.clear( );
+  int p1 = pos1( ), p2 = pos2( );
+  for ( int j = 0; j < Nblocks( ); j++ )
+  { if ( Gaps(j) > 0 ) p2 += Gaps(j);
+    if ( Gaps(j) < 0 ) p1 -= Gaps(j);
+    int last = p2 - 1;
+    for ( int x = 0; x < Lengths(j); x++ )
+    { if ( rd1[p1] != rd2[p2] )
+      { if ( p2 - (last+1) > 0 )
+          perfs.push_back( ho_interval( last+1, p2 ) );
+        last = p2;
+      }
+      ++p1;
+      ++p2;
+    }
+    if ( p2 - (last+1) > 0 )
+      perfs.push_back( ho_interval( last+1, p2 ) );
+  }
+}
 
 void allpathslg::align ::PerfectIntervals2( const fastavector& rd1, const fastavector& rd2,
-     vec<ho_interval>& perfs ) const
-{    perfs.clear( );
-     int p1 = pos1( ), p2 = pos2( );
-     for ( int j = 0; j < Nblocks( ); j++ )
-     {    if ( Gaps(j) > 0 ) p2 += Gaps(j);
-          if ( Gaps(j) < 0 ) p1 -= Gaps(j);
-          int last = p2 - 1;
-          for ( int x = 0; x < Lengths(j); x++ )
-          {    if ( !GeneralizedBase::fromChar(rd1[p1])
-                    .matches( GeneralizedBase::fromChar(rd2[p2]) ) ) 
-               {    if ( p2 - (last+1) > 0 )
-                         perfs.push_back( ho_interval( last+1, p2 ) );
-	            last = p2;    }
-               ++p1; ++p2;    }
-          if ( p2 - (last+1) > 0 ) 
-               perfs.push_back( ho_interval( last+1, p2 ) );    }    }
+    vec<ho_interval>& perfs ) const
+{ perfs.clear( );
+  int p1 = pos1( ), p2 = pos2( );
+  for ( int j = 0; j < Nblocks( ); j++ )
+  { if ( Gaps(j) > 0 ) p2 += Gaps(j);
+    if ( Gaps(j) < 0 ) p1 -= Gaps(j);
+    int last = p2 - 1;
+    for ( int x = 0; x < Lengths(j); x++ )
+    { if ( !GeneralizedBase::fromChar(rd1[p1])
+           .matches( GeneralizedBase::fromChar(rd2[p2]) ) )
+      { if ( p2 - (last+1) > 0 )
+          perfs.push_back( ho_interval( last+1, p2 ) );
+        last = p2;
+      }
+      ++p1;
+      ++p2;
+    }
+    if ( p2 - (last+1) > 0 )
+      perfs.push_back( ho_interval( last+1, p2 ) );
+  }
+}
 
 int allpathslg::align ::Indels( const basevector& rd1, const basevector& rd2,
-                   const qualvector& q1, int min_score ) const
+                                const qualvector& q1, int min_score ) const
 {
   int answer = 0, p1 = pos1( ), p2 = pos2( );
   for ( int j = 0; j < Nblocks( ); j++ )
   {
-    if ( Gaps(j) > 0 ) 
+    if ( Gaps(j) > 0 )
     {
-      if ( p1+1 < (int) q1.size( ) && q1[p1] >= min_score 
+      if ( p1+1 < (int) q1.size( ) && q1[p1] >= min_score
            && q1[p1+1] >= min_score ) answer += Gaps(j);
-      p2 += Gaps(j);    
+      p2 += Gaps(j);
     }
-    if ( Gaps(j) < 0 ) 
+    if ( Gaps(j) < 0 )
     {
       if ( -Gaps(j) + p1 < (int) q1.size( ) )
       {
         int k;
         for ( k = 0; k <= -Gaps(j); k++ )
           if ( q1[ p1 + k ] < min_score ) break;
-        if ( k == -Gaps(j) + 1 ) answer -= Gaps(j);    
+        if ( k == -Gaps(j) + 1 ) answer -= Gaps(j);
       }
-      p1 -= Gaps(j);    
+      p1 -= Gaps(j);
     }
     p1 += Lengths(j);
-    p2 += Lengths(j);    
+    p2 += Lengths(j);
   }
-  return answer;    
+  return answer;
 }
 
-vector<int> allpathslg::align ::MutationsGap1Gap2( const basevector& rd1, 
-                                      int from1, int to1, 
-                                      const basevector& rd2, 
-                                      int from2, int to2 ) const
+vector<int> allpathslg::align ::MutationsGap1Gap2( const basevector& rd1,
+    int from1, int to1,
+    const basevector& rd2,
+    int from2, int to2 ) const
 {
   vector<int> answer(3, 0);
   int p1 = pos1( ), p2 = pos2( );
-  for ( int j = 0; j < Nblocks( ); ++j ) 
+  for ( int j = 0; j < Nblocks( ); ++j )
   {
-    if ( Gaps(j) > 0 ) 
+    if ( Gaps(j) > 0 )
     {
       if ( p1 >= from1 && p1 < to1 && p2 >= from2 && p2 < to2 )
         answer[1] += Gaps(j);
-      p2 += Gaps(j);    
+      p2 += Gaps(j);
     }
-    if ( Gaps(j) < 0 ) 
+    if ( Gaps(j) < 0 )
     {
       if ( p1 >= from1 && p1 < to1 && p2 >= from2 && p2 < to2 )
-	answer[2] -= Gaps(j);
-      p1 -= Gaps(j);    
+        answer[2] -= Gaps(j);
+      p1 -= Gaps(j);
     }
-    for ( int x = 0; x < Lengths(j); ++x ) 
+    for ( int x = 0; x < Lengths(j); ++x )
     {
       if ( p1 >= from1 && p1 < to1 && p2 >= from2 && p2 < to2 &&
            rd1[p1] != rd2[p2] )
         ++answer[0];
       ++p1;
-      ++p2;    
-    }    
+      ++p2;
+    }
   }
-  return answer;    
+  return answer;
 }
 
 void allpathslg::align ::Write( ostream& out, int id1, int id2, Bool rc, int errors )
@@ -1879,31 +1946,31 @@ void allpathslg::align ::Write( ostream& out, int id1, int id2, Bool rc, int err
     gap = Gaps(i);
     length = Lengths(i);
     BinWrite( out, gap );
-    BinWrite( out, length );    
+    BinWrite( out, length );
   }
   BinWrite( out, id1 );
   BinWrite( out, id2 );
-  BinWrite( out, rc );    
+  BinWrite( out, rc );
 }
 
 void allpathslg::align ::writeBinary( BinaryWriter& writer ) const
 {
-    writer.write(pos1_);
-    writer.write(pos2_);
-    writer.write(nblocks_);
-    writer.write(gaps_.x,gaps_.x+nblocks_);
-    writer.write(lengths_.x,lengths_.x+nblocks_);
+  writer.write(pos1_);
+  writer.write(pos2_);
+  writer.write(nblocks_);
+  writer.write(gaps_.x,gaps_.x+nblocks_);
+  writer.write(lengths_.x,lengths_.x+nblocks_);
 }
 
 void allpathslg::align ::readBinary( BinaryReader& reader )
 {
-    reader.read(&pos1_);
-    reader.read(&pos2_);
-    reader.read(&nblocks_);
-    gaps_.resize(nblocks_);
-    reader.read(gaps_.x,gaps_.x+nblocks_);
-    lengths_.resize(nblocks_);
-    reader.read(lengths_.x,lengths_.x+nblocks_);
+  reader.read(&pos1_);
+  reader.read(&pos2_);
+  reader.read(&nblocks_);
+  gaps_.resize(nblocks_);
+  reader.read(gaps_.x,gaps_.x+nblocks_);
+  lengths_.resize(nblocks_);
+  reader.read(lengths_.x,lengths_.x+nblocks_);
 }
 
 ostream & operator<<(ostream & os, const allpathslg::align  & a) {

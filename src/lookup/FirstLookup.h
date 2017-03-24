@@ -28,10 +28,10 @@
  * aligns: output
  */
 void FirstLookup( const vecbasevector& query,
-		  const String& lookup_file,
-		  vec<look_align>& aligns,
-		  const FirstLookupFilter & filter = FirstLookupFilter( ),
-		  const int NUM_THREADS = 1);
+                  const String& lookup_file,
+                  vec<look_align>& aligns,
+                  const FirstLookupFilter & filter = FirstLookupFilter( ),
+                  const int NUM_THREADS = 1);
 
 
 #endif

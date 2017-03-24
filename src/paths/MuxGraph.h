@@ -14,7 +14,7 @@
 #include <map>
 
 class MuxGraph {
- public:
+public:
   // Constructors.
 
   MuxGraph()
@@ -47,15 +47,19 @@ class MuxGraph {
 
   void Read( const String& filename );
   bool FilesExist( const String& filename ) const; // do all files exist?
-  
+
   bool VerifySameAs( const MuxGraph& other ) const;
 
   void PrintDot( const String& filename, int partition = 0 ) const;
 
- private:  
+private:
 
-  bool IsSingle( const Mux& aMux ) const { return aMux.GetSegment() >= 0; }
-  bool IsSpecial( const Mux& aMux ) const { return aMux.GetSegment() < 0; }
+  bool IsSingle( const Mux& aMux ) const {
+    return aMux.GetSegment() >= 0;
+  }
+  bool IsSpecial( const Mux& aMux ) const {
+    return aMux.GetSegment() < 0;
+  }
 
   // Special nodes in the singleEdgeNodes point to nodes in
   // multiEdgeNodes as follows:
@@ -66,14 +70,16 @@ class MuxGraph {
 
   static const int s_empty = -1;
 
-  void SetToEmpty( Mux& aMux ) const { aMux.SetSegment( s_empty ); }
+  void SetToEmpty( Mux& aMux ) const {
+    aMux.SetSegment( s_empty );
+  }
   void SetToMulti( Mux& aMux, int startIndex, int numMuxes ) const
   {
     aMux.SetNumKmers( startIndex );
     aMux.SetSegment( -(numMuxes)-1 );
   }
 
-  int GetStartIndexFromMulti( const Mux& aMux ) const 
+  int GetStartIndexFromMulti( const Mux& aMux ) const
   {
     return aMux.GetNumKmers();
   }
@@ -89,8 +95,12 @@ class MuxGraph {
     numMuxes   = GetNumMuxesFromSpecial( aMux );
   }
 
-  bool IsEmpty( const Mux& aMux ) const { return aMux.GetSegment() == s_empty; }
-  bool IsMulti( const Mux& aMux ) const { return aMux.GetSegment() < s_empty; }
+  bool IsEmpty( const Mux& aMux ) const {
+    return aMux.GetSegment() == s_empty;
+  }
+  bool IsMulti( const Mux& aMux ) const {
+    return aMux.GetSegment() < s_empty;
+  }
 
   vec<Mux> m_singleEdgeNodes;
   vec<Mux> m_multiEdgeNodes;

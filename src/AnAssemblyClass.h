@@ -23,128 +23,142 @@ class assembly;
 
 class super {
 
-     public:
+public:
 
-     vec<int> mtig;
-     vec<int> gap;    // there are mtig.size( ) - 1 of these
+  vec<int> mtig;
+  vec<int> gap;    // there are mtig.size( ) - 1 of these
 
-     int Length( const assembly& A ) const;
-     int ReducedLength( const assembly& A ) const;
+  int Length( const assembly& A ) const;
+  int ReducedLength( const assembly& A ) const;
 
 };
 
 class assembly {
 
-     public:
+public:
 
-     // core data (mutable):
+  // core data (mutable):
 
-     vecbasevector mtig;                     // the mtigs
-     vecqualvector mtig_qual;                // and their quality scores
-     vec<read_location> reads, reads_orig;   // read placement relative to mtigs
-     vec<super> supers;                      // how the mtigs fit into supers
-     vec<brief_align> all_aligns;            // good aligns between original reads
-     vec<brief_align> mtig_aligns;           // known alignments between mtigs
-     vec<Bool> mtig_aligns_lost;
+  vecbasevector mtig;                     // the mtigs
+  vecqualvector mtig_qual;                // and their quality scores
+  vec<read_location> reads, reads_orig;   // read placement relative to mtigs
+  vec<super> supers;                      // how the mtigs fit into supers
+  vec<brief_align> all_aligns;            // good aligns between original reads
+  vec<brief_align> mtig_aligns;           // known alignments between mtigs
+  vec<Bool> mtig_aligns_lost;
 
-     // core data (mostly const):
+  // core data (mostly const):
 
-     int N;                                  // number of original reads
-     vec<read_pairing> pairs;                // pairings between reads
-     vec<int> orig_read_lengths;
+  int N;                                  // number of original reads
+  vec<read_pairing> pairs;                // pairings between reads
+  vec<int> orig_read_lengths;
 
-     // indices to facilitate access:
+  // indices to facilitate access:
 
-     vec< vec<int> > reads_index, reads_orig_index;
-     vec<int> simple_reads_orig_index; // read id --> index in reads_orig
-     vec<int> pairs_index;
-     map<int, int> mtigs_to_supers, mtigs_to_super_pos;
-     vec<int> all_aligns_index;
-     vec<int> mtig_aligns_index;
+  vec< vec<int> > reads_index, reads_orig_index;
+  vec<int> simple_reads_orig_index; // read id --> index in reads_orig
+  vec<int> pairs_index;
+  map<int, int> mtigs_to_supers, mtigs_to_super_pos;
+  vec<int> all_aligns_index;
+  vec<int> mtig_aligns_index;
 
-     // elogp should point to an open contig event log stream
-     ostream *elogp;
-     
-     void SetMtigAligns( const vec<brief_align>& b )
-     {    mtig_aligns = b;
-          mtig_aligns_index.resize( mtig.size( ) );
-          for ( size_t i = 0; i < mtig.size( ); i++ )
-               mtig_aligns_index[i] = -1;
-          for ( int i = (int) mtig_aligns.size( ) - 1; i >= 0; i-- )
-               mtig_aligns_index[ mtig_aligns[i].id1 ] = i;
-          mtig_aligns_lost.resize( mtig.size( ) );
-          for ( size_t i = 0; i < mtig.size( ); i++ )
-               mtig_aligns_lost[i] = False;    }
+  // elogp should point to an open contig event log stream
+  ostream *elogp;
 
-     // Constructor
+  void SetMtigAligns( const vec<brief_align>& b )
+  { mtig_aligns = b;
+    mtig_aligns_index.resize( mtig.size( ) );
+    for ( size_t i = 0; i < mtig.size( ); i++ )
+      mtig_aligns_index[i] = -1;
+    for ( int i = (int) mtig_aligns.size( ) - 1; i >= 0; i-- )
+      mtig_aligns_index[ mtig_aligns[i].id1 ] = i;
+    mtig_aligns_lost.resize( mtig.size( ) );
+    for ( size_t i = 0; i < mtig.size( ); i++ )
+      mtig_aligns_lost[i] = False;
+  }
 
-     assembly() : elogp(0) { }
+  // Constructor
 
-     assembly( String fasta_file, String qual_file,
-               const vec<read_location>& reads, const vec<read_location>& reads_orig,
-               const vec<super>& supers, const vec<brief_align>& all_aligns, 
-               int N, const vec<read_pairing>& pairs, 
-               const vec<int>& orig_read_lengths, const vec<int>& all_aligns_index,
-               Bool store_contigs_one_by_one = False );
+  assembly() : elogp(0) { }
 
-     // Number of mtigs in a supercontig
+  assembly( String fasta_file, String qual_file,
+            const vec<read_location>& reads, const vec<read_location>& reads_orig,
+            const vec<super>& supers, const vec<brief_align>& all_aligns,
+            int N, const vec<read_pairing>& pairs,
+            const vec<int>& orig_read_lengths, const vec<int>& all_aligns_index,
+            Bool store_contigs_one_by_one = False );
 
-     int SuperSize( int s ) const { return supers[s].mtig.size( ); }
+  // Number of mtigs in a supercontig
 
-     // Length of a contig or a supercontig
+  int SuperSize( int s ) const {
+    return supers[s].mtig.size( );
+  }
 
-     int Len( int m ) const { return mtig[m].size( ); }
+  // Length of a contig or a supercontig
 
-     int SuperLen( int s ) const
-     {    const super& sup = supers[s];
-          int answer = 0;
-          for ( int i = 0; i < (int) sup.mtig.size( ); i++ )
-          {    answer += mtig[ sup.mtig[i] ].size( );
-               if ( i < (int) sup.mtig.size( ) - 1 ) answer += sup.gap[i];    }
-          return answer;   }
+  int Len( int m ) const {
+    return mtig[m].size( );
+  }
 
-     int SuperLenWithoutGaps( int s ) const
-     {    return supers[s].ReducedLength( *this );   };
+  int SuperLen( int s ) const
+  { const super& sup = supers[s];
+    int answer = 0;
+    for ( int i = 0; i < (int) sup.mtig.size( ); i++ )
+    { answer += mtig[ sup.mtig[i] ].size( );
+      if ( i < (int) sup.mtig.size( ) - 1 ) answer += sup.gap[i];
+    }
+    return answer;
+  }
 
-     // Get the start of the given read location on its supercontig.
+  int SuperLenWithoutGaps( int s ) const
+  {
+    return supers[s].ReducedLength( *this );
+  };
 
-     int StartOnSuper( int read_loc_index ) const;
+  // Get the start of the given read location on its supercontig.
 
-     // Delete the specified mtig from the specified super, adjusting
-     // the various data structures as necessary.  Assumes that the
-     // supercontig will not break if this mtig is removed.
+  int StartOnSuper( int read_loc_index ) const;
 
-     void DeleteMtigInSuper( int m, int s );
+  // Delete the specified mtig from the specified super, adjusting
+  // the various data structures as necessary.  Assumes that the
+  // supercontig will not break if this mtig is removed.
 
-     // Schedule an mtig or super for annihilation
+  void DeleteMtigInSuper( int m, int s );
 
-     void ClearMtig( int m ) 
-     {    mtig[m].Reinitialize( );
-          mtig_qual[m].Reinitialize( );    }
+  // Schedule an mtig or super for annihilation
 
-     void ClearSuper( int s ) { supers[s].mtig.clear( ); }
+  void ClearMtig( int m )
+  { mtig[m].Reinitialize( );
+    mtig_qual[m].Reinitialize( );
+  }
 
-     // Return false if contig has been scheduled for annihilation; true if not.
-     
-     Bool Alive( int m ) const { return mtig[m].size( ) > 0; }
+  void ClearSuper( int s ) {
+    supers[s].mtig.clear( );
+  }
 
-     // Kill supercontigs which have at most min_contigs contigs, and 
-     // ( have less bases of sequence than min_len or less reads than min_reads ).
+  // Return false if contig has been scheduled for annihilation; true if not.
 
-     void KillShortStandaloneMtigs( int min_len, int min_reads = 0, 
-          int min_contigs = 0 );
+  Bool Alive( int m ) const {
+    return mtig[m].size( ) > 0;
+  }
 
-     // Delete all supercontigs in a specified list:
+  // Kill supercontigs which have at most min_contigs contigs, and
+  // ( have less bases of sequence than min_len or less reads than min_reads ).
 
-     void KillSupers( vec<int> bads );
+  void KillShortStandaloneMtigs( int min_len, int min_reads = 0,
+                                 int min_contigs = 0 );
 
-     // clean up by annihilating mtigs and renumbering (also supers)
+  // Delete all supercontigs in a specified list:
 
-     void CleanUp( );
+  void KillSupers( vec<int> bads );
 
-     // write assembly files to the specified directory
+  // clean up by annihilating mtigs and renumbering (also supers)
 
-     void Write( const String& out_dir, vec<read_location> *mappingLocs=0 );
+  void CleanUp( );
+
+  // write assembly files to the specified directory
+
+  void Write( const String& out_dir, vec<read_location> *mappingLocs=0 );
 
 };
 

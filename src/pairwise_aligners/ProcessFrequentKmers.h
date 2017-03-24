@@ -1,5 +1,5 @@
 // Copyright (c) 2000-2003 Whitehead Institute for Biomedical Research
-// 
+//
 
 
 #ifndef PROCESS_FREQUENT_KMERS
@@ -23,10 +23,12 @@ inline void ProcessFrequentKmers( const vecbasevector& EE,
                                   unsigned int S,
                                   int max_clique,
                                   String run_dir )
-{ vec<bvec const*> vvv; vvv.reserve(EE.size());
+{ vec<bvec const*> vvv;
+  vvv.reserve(EE.size());
   vecbvec::const_iterator end(EE.end());
   for ( vecbvec::const_iterator itr(EE.begin()); itr != end; ++itr )
-      vvv.push_back(&*itr);
-  ProcessFrequentKmers<I,k>(vvv,R,S,max_clique,run_dir); }
+    vvv.push_back(&*itr);
+  ProcessFrequentKmers<I,k>(vvv,R,S,max_clique,run_dir);
+}
 
 #endif

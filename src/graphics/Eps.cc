@@ -9,8 +9,8 @@
 
 #include "graphics/Eps.h"
 
-void PrintEpsHeader( ostream& out, 
-                     const float horizSize, 
+void PrintEpsHeader( ostream& out,
+                     const float horizSize,
                      const float vertSize,
                      const float border )
 {
@@ -20,7 +20,7 @@ void PrintEpsHeader( ostream& out,
   const int topBoundbox = border + vertSize + border;
 
   out.setf( ios::fixed );
-  
+
   out << "%!PS-Adobe-3.0 EPSF-3.0\n"
       << "%%BoundingBox: "
       << leftBoundbox << " " << bottomBoundbox << " "

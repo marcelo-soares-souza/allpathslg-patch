@@ -35,9 +35,9 @@ void BeautifyTable( vec< vec<String> > &table, const vec<Bool> *rjustify = 0 );
  * rjustify: as in BeautifyTable
  */
 void BeautifyAndPrintTable( vec< vec<String> > &table,
-			    ostream& out = cout,
-			    const String separator = "  ",
-			    const vec<Bool> *rjustify = 0 );
+                            ostream& out = cout,
+                            const String separator = "  ",
+                            const vec<Bool> *rjustify = 0 );
 
 /**
  * RemoveEmptyColumns
@@ -49,6 +49,6 @@ void BeautifyAndPrintTable( vec< vec<String> > &table,
  * def_empty: defaulted to { "na", "0", "" }
  */
 void RemoveEmptyColumns( vec< vec<String> > &table,
-			 const vec<String> *def_empty = 0 );
+                         const vec<String> *def_empty = 0 );
 
 #endif

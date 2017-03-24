@@ -38,7 +38,7 @@
 int main( int argc, char *argv[] )
 {
   RunTime( );
-  
+
   BeginCommandArguments;
   CommandArgument_String( LOOKUP );
   CommandArgument_String( SCAFFOLDS );
@@ -51,7 +51,7 @@ int main( int argc, char *argv[] )
   CommandArgument_UnsignedInt_OrDefault( BW_ADD, 10 );
   CommandArgument_UnsignedInt_OrDefault( NUM_THREADS, 0 );
   EndCommandArguments;
-  
+
   // Dir and file names.
   String out_dir = (OUT_DIR == "" ? SCAFFOLDS + ".Eval" : OUT_DIR);
 
@@ -68,15 +68,15 @@ int main( int argc, char *argv[] )
   String out_file = out_dir + "/main.log";
 
   Mkpath( out_dir );
- 
+
   // Thread control.
   NUM_THREADS = configNumThreads( NUM_THREADS );
   omp_set_num_threads( NUM_THREADS );
- 
+
   // Load.
   cout << Date( ) << ": loading supers" << endl;
   shandler supers( -1, supers_file );
-  
+
   longlong genome_size = 0;
   {
     vecbvec genome( genome_fastb );
@@ -98,7 +98,7 @@ int main( int argc, char *argv[] )
   else {
     selected.resize( supers.Size( ), true );
   }
-  
+
   // Extract selected contigs.
   vec<int> c_ids;
   for (int ii=0; ii<selected.isize( ); ii++) {
@@ -115,7 +115,7 @@ int main( int argc, char *argv[] )
     for (int ii=0; ii<c_ids.isize( ); ii++)
       out << c_ids[ii] << "\n";
     out.close( );
-  }  
+  }
 
   // Generate contigs fastb, fastamb.
   if ( FORCE || ! IsRegularFile( contigs_fastb ) ) {
@@ -123,7 +123,7 @@ int main( int argc, char *argv[] )
     vecbasevector cbases;
     FetchReads( cbases, 0, contigs_fasta );
     cbases.WriteAll( contigs_fastb );
-    
+
     cout << Date( ) << ": saving contigs fastamb" << endl;
     vecbitvector amb;
     FetchReadsAmb( amb, contigs_fasta );
@@ -133,8 +133,8 @@ int main( int argc, char *argv[] )
   // Align contigs (or just load them, if cached).
   vec<look_align> allhits;
   GetAlignsFast( 96, contigs_fastb, LOOKUP, qlt_file,
-		 allhits, !FORCE, out_dir, BW_ADD ); 
-  
+                 allhits, !FORCE, out_dir, BW_ADD );
+
   cout << Date( ) << ": filtering aligns" << endl;
   vec<look_align_plus> hits;
   hits.reserve( allhits.size( ) );
@@ -142,10 +142,10 @@ int main( int argc, char *argv[] )
     if ( allhits[ii].ErrorRate( ) < MAX_ER )
       hits.push_back( allhits[ii] );
   }
-  
+
   ofstream out( out_file.c_str( ) );
   PrintCommandPretty( out );
-  
+
   // A map edge_id to hits.
   vec< vec<int> > edge2hits( supers.NContigs( ) );
   for (int ii=0; ii<hits.isize( ); ii++)
@@ -165,7 +165,7 @@ int main( int argc, char *argv[] )
     vec<int> chain;
     SuperChain( super_id, supers, hits, edge2hits, chain );
     ChainGaps( supers, hits, chain, gap_stats );
-    
+
     vec<SPlacement> placs;
     DigestChain( supers, hits, chain, placs );
     copy( placs.begin( ), placs.end( ), back_inserter( all_placs ) );
@@ -182,7 +182,7 @@ int main( int argc, char *argv[] )
 
     n_local_inversions += n_inversions;
   }
-  
+
   cout << Date( ) << ": saving chain aligns\n" << endl;
   WriteLookAligns( chains_file, chain_hits );
 
@@ -205,14 +205,14 @@ int main( int argc, char *argv[] )
   else {
     out << "No aligns found\n" << endl;
   }
-  
+
   // Report on gap accuracy.
   gap_stats.PrintReport( out );
 
   // Report on number of local misorderings.
   double genome_size_mb = double( genome_size ) / 1000000.0;
   double ratio = double( n_local_inversions ) / genome_size_mb;
-  
+
   out << "LOCAL MISORDERINGS: " << n_local_inversions
       << " found, corresponding to " << ToString( ratio, 2 )
       << " inversions per Mb\n"
@@ -220,13 +220,13 @@ int main( int argc, char *argv[] )
       << " Mb, as found in the genome.fastb file).\n" << endl;
 
   PerfStat::log( ) << std::fixed << std::setprecision(2)
-		   << PerfStat( "misordering_rate",
-				"number of local misorderings per Mb",
-				ratio );
-  
+                   << PerfStat( "misordering_rate",
+                                "number of local misorderings per Mb",
+                                ratio );
+
   // Done.
   out << Date( ) << ": done" << endl;
   cout << "\n" << Date( ) << ": done" << endl;
-  
+
 }
 

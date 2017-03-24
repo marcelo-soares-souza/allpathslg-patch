@@ -4,14 +4,14 @@
 
 // Functions to translate pathIds to indexes and back.
 
-OrientedKmerPathId  PathIdFromIndex( int index ) 
+OrientedKmerPathId  PathIdFromIndex( int index )
 {
-  return OrientedKmerPathId( index/2, index&1 ); 
+  return OrientedKmerPathId( index/2, index&1 );
 }
-  
+
 int IndexFromPathId( const OrientedKmerPathId& pathId )
 {
-  return pathId.GetId()*2 + pathId.IsRc(); 
+  return pathId.GetId()*2 + pathId.IsRc();
 }
 
 void
@@ -23,7 +23,7 @@ BriefSubsumptionRecord::Write( ostream& out ) const
 
 
 void
-BriefSubsumptionRecord::Read( istream& in ) 
+BriefSubsumptionRecord::Read( istream& in )
 {
   m_superPath.Read( in );
   BinRead( in, m_leftOverhang );

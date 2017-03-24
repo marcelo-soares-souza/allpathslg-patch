@@ -13,7 +13,7 @@
    It lets you store for each integer, "I'm the result of the 12345th integer
    assignment!", so for a given incorrect value you can re-run the program
    and stop it at the point where the incorrect value was assigned.
-   
+
    See class TraceVal.
 */
 
@@ -39,7 +39,7 @@
 #define TRACEVAL_STOP_TRACING_COPIES TraceValCommon::StopTracingCopies()
 #define TRACEVAL_START_TRACING_COPIES TraceValCommon::StartTracingCopies()
 #else
-#define TRACEVAL_STOP_TRACING_COPIES 
+#define TRACEVAL_STOP_TRACING_COPIES
 #define TRACEVAL_START_TRACING_COPIES
 #endif
 
@@ -49,20 +49,24 @@
    Defines things common to all instantiations of TraceVal.
 */
 class TraceValCommon {
- public:
+public:
   typedef longlong timestamp_t;
 
   static void SetStopVal( timestamp_t stopVal ) {
     stopAtStamp_ = stopVal;
     cout << "\n*** TraceVal: will stop at time " << stopAtStamp_ << endl << endl;
   }
-  
-  static void StopTracingCopies() { tracingCopiesStopped_ = True; }
-  static void StartTracingCopies() { tracingCopiesStopped_ = False; }
 
- private:
+  static void StopTracingCopies() {
+    tracingCopiesStopped_ = True;
+  }
+  static void StartTracingCopies() {
+    tracingCopiesStopped_ = False;
+  }
+
+private:
   template <class T> friend class TraceVal;
-  
+
   static timestamp_t nextTimeStamp_;
   static timestamp_t stopAtStamp_;
   static Bool tracingCopiesStopped_;
@@ -85,23 +89,51 @@ class TraceValCommon {
 */
 template <class T>
 class TraceVal {
- public:
-  
-  TraceVal(): val_(0) { makeStamp(); }
+public:
+
+  TraceVal(): val_(0) {
+    makeStamp();
+  }
   TraceVal(const TraceVal<T>& tv): val_(tv.val_) {
     makeStamp(tv);
   }
-  TraceVal(const T& val): val_(val) {  makeStamp(); }
+  TraceVal(const T& val): val_(val) {
+    makeStamp();
+  }
 
-  operator T() const { return val_; }
+  operator T() const {
+    return val_;
+  }
 
-  TraceVal<T>& operator=( const TraceVal<T>& tv ) { val_ = tv.val_; makeStamp(tv); return *this; }
-  TraceVal<T>& operator=( const T& val ) { val_ = val; makeStamp(); return *this; }
+  TraceVal<T>& operator=( const TraceVal<T>& tv ) {
+    val_ = tv.val_;
+    makeStamp(tv);
+    return *this;
+  }
+  TraceVal<T>& operator=( const T& val ) {
+    val_ = val;
+    makeStamp();
+    return *this;
+  }
 
-  TraceVal<T>& operator++() { val_++; return *this; }
-  TraceVal<T> operator++(int) { TraceVal<T> oldVal = *this; this->operator++(); return oldVal; }
-  TraceVal<T>& operator--() { val_--; return *this; }
-  TraceVal<T> operator--(int) { TraceVal<T> oldVal = *this; this->operator--(); return oldVal; }
+  TraceVal<T>& operator++() {
+    val_++;
+    return *this;
+  }
+  TraceVal<T> operator++(int) {
+    TraceVal<T> oldVal = *this;
+    this->operator++();
+    return oldVal;
+  }
+  TraceVal<T>& operator--() {
+    val_--;
+    return *this;
+  }
+  TraceVal<T> operator--(int) {
+    TraceVal<T> oldVal = *this;
+    this->operator--();
+    return oldVal;
+  }
   TraceVal<T>& operator+=( const TraceVal<T>& tv ) {
     val_ += tv.val_;
     makeStamp(tv);
@@ -115,7 +147,9 @@ class TraceVal {
 
   template <class T2> friend std::istream& operator>> ( std::istream& in, TraceVal<T2>& tv );
 
-  TraceValCommon::timestamp_t GetTimeStamp() const { return timeStamp_; }
+  TraceValCommon::timestamp_t GetTimeStamp() const {
+    return timeStamp_;
+  }
 
 
 protected:
@@ -133,17 +167,17 @@ protected:
   void makeStamp( const TraceVal<T>& src ) {
     if ( TraceValCommon::tracingCopiesStopped_ ) {
       timeStamp_ = src.timeStamp_;
-     } else {
+    } else {
       if ( ( timeStamp_ = TraceValCommon::nextTimeStamp_++ ) == TraceValCommon::stopAtStamp_ ) {
-	cout << "TraceVal: STOPPING BY REQUEST AT " << timeStamp_ << "th val." << endl;
-	cout << "This val is being created from val created at time " << src.GetTimeStamp() << endl;
-	TracebackThisProcess();
+        cout << "TraceVal: STOPPING BY REQUEST AT " << timeStamp_ << "th val." << endl;
+        cout << "This val is being created from val created at time " << src.GetTimeStamp() << endl;
+        TracebackThisProcess();
       }
     }
   }
-  
+
   friend class TraceValInitializer;
-  
+
 };  // class TraceVal
 
 template <class T>

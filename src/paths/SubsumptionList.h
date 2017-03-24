@@ -9,23 +9,27 @@
 
 class BriefSubsumptionRecord
 {
- public:
+public:
   BriefSubsumptionRecord()
     : m_leftOverhang( -1 )
   {}
-  
+
   BriefSubsumptionRecord( const OrientedKmerPathId &superPath,
                           const int leftOverhang )
     : m_superPath( superPath ),
       m_leftOverhang( leftOverhang )
   {}
-  
-  OrientedKmerPathId GetSuperPathId() const { return m_superPath; }
-  int GetLeftOverhang() const { return m_leftOverhang; }
-  
+
+  OrientedKmerPathId GetSuperPathId() const {
+    return m_superPath;
+  }
+  int GetLeftOverhang() const {
+    return m_leftOverhang;
+  }
+
   void Write( ostream& out ) const;
   void Read( istream& in );
-  
+
   bool operator== ( const BriefSubsumptionRecord& other ) const
   {
     return ( m_superPath == other.m_superPath && m_leftOverhang == other.m_leftOverhang );
@@ -35,8 +39,8 @@ class BriefSubsumptionRecord
   {
     return ! ( *this == other );
   }
-  
- private:
+
+private:
   OrientedKmerPathId m_superPath;
   int m_leftOverhang;
 };
@@ -49,7 +53,7 @@ extern template class OuterVec<BriefSubsumptionRecordVec>;
 
 class SubsumptionRecord
 {
- public:
+public:
   SubsumptionRecord()
     : m_leftOverhang( -1 )
   {}
@@ -69,9 +73,15 @@ class SubsumptionRecord
       m_leftOverhang( record.GetLeftOverhang() )
   {}
 
-  OrientedKmerPathId GetSubPathId() const { return m_subPath; }
-  OrientedKmerPathId GetSuperPathId() const { return m_superPath; }
-  int GetLeftOverhang() const { return m_leftOverhang; }
+  OrientedKmerPathId GetSubPathId() const {
+    return m_subPath;
+  }
+  OrientedKmerPathId GetSuperPathId() const {
+    return m_superPath;
+  }
+  int GetLeftOverhang() const {
+    return m_leftOverhang;
+  }
 
   void Write( ostream& out ) const;
   void Read( istream& in );
@@ -79,7 +89,7 @@ class SubsumptionRecord
   bool operator== ( const SubsumptionRecord& other ) const
   {
     return ( m_subPath == other.m_subPath &&
-             m_superPath == other.m_superPath && 
+             m_superPath == other.m_superPath &&
              m_leftOverhang == other.m_leftOverhang );
   }
 
@@ -92,7 +102,7 @@ class SubsumptionRecord
     return ( m_leftOverhang < other.m_leftOverhang );
   }
 
- private:
+private:
   OrientedKmerPathId m_subPath;
   OrientedKmerPathId m_superPath;
   int m_leftOverhang;
@@ -100,14 +110,16 @@ class SubsumptionRecord
 
 
 class SubsumptionList {
- public:
+public:
   SubsumptionList() {}
-  
+
   SubsumptionList( const int nReads )
     : m_list( nReads*2 )
   {}
 
-  void resize( const int nReads ) { m_list.resize( nReads*2 ); }
+  void resize( const int nReads ) {
+    m_list.resize( nReads*2 );
+  }
 
   void
   SetBriefRecordsFor( const OrientedKmerPathId& subsumedRead,
@@ -120,12 +132,12 @@ class SubsumptionList {
   void Write( const String& filename ) const;
   void Read( const String& filename );
 
-  bool operator== ( const SubsumptionList& other ) const 
+  bool operator== ( const SubsumptionList& other ) const
   {
     return ( m_list == other.m_list );
   }
 
- private:
+private:
   VecBriefSubsumptionRecordVec m_list;
 };
 

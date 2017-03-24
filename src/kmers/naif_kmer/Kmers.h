@@ -16,7 +16,7 @@
 
 
 
-// ---- 256 random 64bit numbers to compute hash key 
+// ---- 256 random 64bit numbers to compute hash key
 
 const uint64_t hash_mixers[256] = {
   0xd5efa3673459f0b0, 0xe2bfb7185ba0dd69, 0xfa1a07dc2338c504, 0x98c417061852c314,
@@ -82,7 +82,8 @@ const uint64_t hash_mixers[256] = {
   0xf2dbd442a7caae2e, 0x7084366e445d965e, 0xf0e423fada826d70, 0x4718f3162f225f04,
   0xcfc5772c218b935b, 0xfdb8d41df8077140, 0x68a727db472b1a6c, 0xf47368c35131f6ea,
   0xbff6f430a06f187e, 0xca18c810d3eced2f, 0x2020138db082b04c, 0x6fa3fe05a7065bb7,
-  0xbbf608e106911734, 0xe1c2981358a65a09, 0x4e49c63e52acb33d, 0xd7e404d189c6872e };
+  0xbbf608e106911734, 0xe1c2981358a65a09, 0x4e49c63e52acb33d, 0xd7e404d189c6872e
+};
 
 
 
@@ -131,8 +132,8 @@ class Kmer29
 {
   static uint64_t const K_MAX = 29;
 
-  uint64_t _K          :  5;  // 5 bits for K 
-  uint64_t _tag        :  1; 
+  uint64_t _K          :  5;  // 5 bits for K
+  uint64_t _tag        :  1;
   uint64_t _bases      : 58;  // K_MAX * 2
 
 public:
@@ -141,25 +142,46 @@ public:
   explicit Kmer29(const unsigned K) : _K(K), _tag(0), _bases(0) {}
 
 protected:
-  uint64_t bases()    const { return _bases; }
-  uint64_t and_mask() const { return (1ul << (_K << 1)) - 1; }
+  uint64_t bases()    const {
+    return _bases;
+  }
+  uint64_t and_mask() const {
+    return (1ul << (_K << 1)) - 1;
+  }
 
 public:
-  bool     is_valid_kmer()             const { return _K > 0; }
-  unsigned K()                         const { return _K; }
-  unsigned size()                      const { return _K; }
-  unsigned tag()                       const { return _tag; }
-  void     tag_set(unsigned const tag = 1)   { _tag = tag; }
+  bool     is_valid_kmer()             const {
+    return _K > 0;
+  }
+  unsigned K()                         const {
+    return _K;
+  }
+  unsigned size()                      const {
+    return _K;
+  }
+  unsigned tag()                       const {
+    return _tag;
+  }
+  void     tag_set(unsigned const tag = 1)   {
+    _tag = tag;
+  }
 
   // insert a base at the end, index _K - 1, shifting everything down
   // base assumed to be < 4
   void push_right(const uint64_t base)
-  { _bases >>= 2; _bases |= (base << ((_K - 1) << 1)); }
-    
+  {
+    _bases >>= 2;
+    _bases |= (base << ((_K - 1) << 1));
+  }
+
   // insert a base at the begining, index 0, shifting everything up
   // base assumed to be < 4
   void push_left(const uint64_t base)
-  { _bases <<= 2; _bases &= and_mask(); _bases |= base; }
+  {
+    _bases <<= 2;
+    _bases &= and_mask();
+    _bases |= base;
+  }
 
 
 
@@ -168,19 +190,19 @@ public:
   void add_right(const uint64_t base)
   {
     ForceAssert(_K < K_MAX);
-    _bases |= (base << (_K << 1)); 
+    _bases |= (base << (_K << 1));
     _K++;
   }
-    
-  // add a base at the beginning, index 0, shifting everything up and 
+
+  // add a base at the beginning, index 0, shifting everything up and
   // incrementing K (if possible)
   // base assumed to be < 4
   void add_left(const uint64_t base)
   {
     ForceAssert(_K < K_MAX);
-    _bases <<= 2; 
-    _bases |= base; 
-    _K++; 
+    _bases <<= 2;
+    _bases |= base;
+    _K++;
   }
 
 
@@ -188,12 +210,12 @@ public:
   // delete the base at the end, index _K - 1, decrementing _K
   // base assumed to be < 4
   void del_right()
-  {    
+  {
     ForceAssert(_K > 0u);
     _K--;
     _bases &= and_mask();
   }
-    
+
   // delete the base at the begining, index 0, shifting everything down,
   // and decrementing K
   // base assumed to be < 4
@@ -201,56 +223,56 @@ public:
   {
     ForceAssert(_K > 0u);
     _K--;
-    _bases >>= 2; 
+    _bases >>= 2;
   }
-  
+
 
   void set(const unsigned i, const uint64_t base)
-  { 
+  {
     ForceAssert(i < _K);
     unsigned const shift = (i << 1);
     _bases &= ~(3ul << shift);   // mask
     _bases |= (base << shift);   // imprint
   }
 
-  unsigned operator[](const unsigned i) const 
+  unsigned operator[](const unsigned i) const
   {
     ForceAssert(i < _K);
-    return 3ul & (_bases >> (i << 1)); 
+    return 3ul & (_bases >> (i << 1));
   }
 
   uint64_t hash_64bits() const
   {
     const unsigned nbits = (_K << 1);
     uint64_t hash = 0x39743f67bf1a3d0c;
-    
+
     for (unsigned shift = 0; shift < nbits; shift += 8)
       hash ^= hash_mixers[(_bases >> shift) & 255u];
     return hash;
   }
 
-  bool match(const Kmer29 & a) const 
+  bool match(const Kmer29 & a) const
   {
     ForceAssert(a._K == _K);
-    return a._bases == _bases; 
+    return a._bases == _bases;
   }
 
-  friend bool operator<(const Kmer29 & a, const Kmer29 & b) 
-  { 
-    if (a._bases < b._bases) return true; 
-    if (a._bases > b._bases) return false; 
+  friend bool operator<(const Kmer29 & a, const Kmer29 & b)
+  {
+    if (a._bases < b._bases) return true;
+    if (a._bases > b._bases) return false;
     return (a._tag < b._tag);
   }
 
-  friend bool operator>(const Kmer29 & a, const Kmer29 & b) 
-  { 
-    if (a._bases > b._bases) return true; 
-    if (a._bases < b._bases) return false; 
+  friend bool operator>(const Kmer29 & a, const Kmer29 & b)
+  {
+    if (a._bases > b._bases) return true;
+    if (a._bases < b._bases) return false;
     return (a._tag > b._tag);
   }
 
   friend bool operator==(const Kmer29 & a, const Kmer29 & b)
-  { 
+  {
     return (a._bases == b._bases && a._tag == b._tag);
   }
 };
@@ -272,29 +294,43 @@ public:
   Kmer29H(const Kmer29 & kmer) : Kmer29(kmer) {}
 
 protected:
-  uint64_t and_mask_flanks() const { return and_mask() & ~(3ul << (K() - 1)); }
-  
-  uint64_t flanks() const { return bases() & and_mask_flanks(); }
-  uint64_t center() const { return 3ul & (bases() >> (K() - 1)); }  // assumes K() odd
+  uint64_t and_mask_flanks() const {
+    return and_mask() & ~(3ul << (K() - 1));
+  }
+
+  uint64_t flanks() const {
+    return bases() & and_mask_flanks();
+  }
+  uint64_t center() const {
+    return 3ul & (bases() >> (K() - 1));  // assumes K() odd
+  }
 
 public:
-  size_t hash_64bits() const 
+  size_t hash_64bits() const
   {
     const unsigned nbits = (K() << 1);
     const uint64_t bases = flanks();
     uint64_t hash = 0x39743f67bf1a3d0c;
-    
+
     for (unsigned shift = 0; shift < nbits; shift += 8)
       hash ^= hash_mixers[(bases >> shift) & 255u];
     return hash;
   }
 
 
-  bool match(const Kmer29H & a) const { return a.flanks() == flanks(); }
+  bool match(const Kmer29H & a) const {
+    return a.flanks() == flanks();
+  }
 
-  friend bool operator==(const Kmer29H & a, const Kmer29H & b) { return a.flanks() == b.flanks(); }
-  friend bool operator< (const Kmer29H & a, const Kmer29H & b) { return a.flanks() <  b.flanks(); }
-  friend bool operator> (const Kmer29H & a, const Kmer29H & b) { return a.flanks() >  b.flanks(); }
+  friend bool operator==(const Kmer29H & a, const Kmer29H & b) {
+    return a.flanks() == b.flanks();
+  }
+  friend bool operator< (const Kmer29H & a, const Kmer29H & b) {
+    return a.flanks() <  b.flanks();
+  }
+  friend bool operator> (const Kmer29H & a, const Kmer29H & b) {
+    return a.flanks() >  b.flanks();
+  }
 };
 
 
@@ -315,30 +351,44 @@ class KmerTemplate
   static UINT_K_t const K_MAX = 4 * NBYTES_BASES;
 
   UINT_K_t _tag   : 1;
-  UINT_K_t _K     : 8 * sizeof(UINT_K_t) - 1;  
-  uint8_t  _bases[NBYTES_BASES]; 
+  UINT_K_t _K     : 8 * sizeof(UINT_K_t) - 1;
+  uint8_t  _bases[NBYTES_BASES];
 
-  unsigned n_bytes_used() const { return (_K + 3u) >> 2; }
+  unsigned n_bytes_used() const {
+    return (_K + 3u) >> 2;
+  }
 
 public:
   typedef KmerTemplate kmer_type;
-  KmerTemplate() : _tag(0), _K(0) { memset(_bases, 0, NBYTES_BASES); }
-  explicit KmerTemplate(const UINT_K_t K = 0) : _tag(0), _K(K) 
+  KmerTemplate() : _tag(0), _K(0) {
+    memset(_bases, 0, NBYTES_BASES);
+  }
+  explicit KmerTemplate(const UINT_K_t K = 0) : _tag(0), _K(K)
   {
-      memset(_bases, 0, NBYTES_BASES);
+    memset(_bases, 0, NBYTES_BASES);
   }
 
-  bool     is_valid_kmer() const { return _K > 0; }
-  UINT_K_t K()             const { return _K; }
-  UINT_K_t size()          const { return _K; }
-  unsigned tag()           const { return _tag; }
-  void tag_set(unsigned const tag = 1) { _tag = tag; }
+  bool     is_valid_kmer() const {
+    return _K > 0;
+  }
+  UINT_K_t K()             const {
+    return _K;
+  }
+  UINT_K_t size()          const {
+    return _K;
+  }
+  unsigned tag()           const {
+    return _tag;
+  }
+  void tag_set(unsigned const tag = 1) {
+    _tag = tag;
+  }
 
   string to_string() const {
-       std::ostringstream s;
-       for ( size_t i = 0; i < _K; ++i )
-	    s << Base::val2Char((*this)[i]);
-       return s.str();
+    std::ostringstream s;
+    for ( size_t i = 0; i < _K; ++i )
+      s << Base::val2Char((*this)[i]);
+    return s.str();
   }
 
 
@@ -358,7 +408,7 @@ public:
     _bases[i1] = (_bases[i1] >> 2) | (base << (((_K - 1u) & 3u) << 1));
   }
 
-    
+
   // (0)...(K-1) -> (base)(0)...(K-2)
   //
   // insert a base at the begining, index 0, shifting everything up
@@ -392,7 +442,7 @@ public:
     _bases[i1] = _bases[i1] | (base << (((_K - 1u) & 3u) << 1));
   }
 
-    
+
   // (0)...(K-1) -> (base)(0)...(K-1)
   //
   // insert a base at the begining, index 0, shifting everything up
@@ -406,7 +456,7 @@ public:
 
     for (unsigned i = i1; i > 0; i--)
       _bases[i] = (_bases[i] << 2) | (_bases[i-1] >> 6);
-  
+
     _bases[0] = (_bases[0] << 2) | base;
   }
 
@@ -415,7 +465,7 @@ public:
 
 
 
-  // (0)...(K-1) -> (0)...(K-2) 
+  // (0)...(K-1) -> (0)...(K-2)
   //
   // delete the base at the end, index _K - 1, decrementing K
   // base assumed to be < 4
@@ -427,7 +477,7 @@ public:
     _bases[i1] &= ~(3u << ((_K & 3u) << 1)); // zero out last base
   }
 
-    
+
   // (0)...(K-1) -> (1)...(K-1)
   //
   // insert a base at the begining, index 0, shifting everything up
@@ -439,13 +489,13 @@ public:
 
     for (unsigned i = 0; i < i1; i++)
       _bases[i] = (_bases[i] >> 2) | (_bases[i+1] << 6);
-    
+
     _K--;
   }
 
 
   void set(const UINT_K_t i, const uint8_t base)
-  { 
+  {
     ForceAssert(i < _K);
     uint8_t * p_i = _bases + (i >> 2);
     unsigned const shift = ((i & 3u) << 1);
@@ -453,7 +503,7 @@ public:
     *p_i |= (base << shift);   // imprint
   }
 
-  unsigned operator[](const UINT_K_t i) const 
+  unsigned operator[](const UINT_K_t i) const
   {
     ForceAssert(i < _K);
     uint8_t const byte = _bases[i >> 2];
@@ -472,8 +522,8 @@ public:
 
 
 
-  bool match(const KmerTemplate & a) const 
-  { 
+  bool match(const KmerTemplate & a) const
+  {
     ForceAssert(a._K == _K);
     unsigned const nbytes = n_bytes_used();
     for (unsigned i = 0; i != nbytes; i++)
@@ -482,7 +532,7 @@ public:
   }
 
   friend bool operator==(const KmerTemplate & a, const KmerTemplate & b)
-  { 
+  {
     ForceAssert(a._K == b._K);
     unsigned const nbytes = a.n_bytes_used();
     for (unsigned i = 0; i != nbytes; i++)
@@ -490,8 +540,8 @@ public:
     return (a._tag == b._tag);
   }
 
-  friend bool operator<(const KmerTemplate & a, const KmerTemplate & b) 
-  { 
+  friend bool operator<(const KmerTemplate & a, const KmerTemplate & b)
+  {
     ForceAssert(a._K == b._K);
     unsigned const nbytes = a.n_bytes_used();
     for (unsigned i = nbytes; i != 0; i--) {
@@ -501,8 +551,8 @@ public:
     return (a._tag < b._tag);
   }
 
-  friend bool operator>(const KmerTemplate & a, const KmerTemplate & b) 
-  { 
+  friend bool operator>(const KmerTemplate & a, const KmerTemplate & b)
+  {
     ForceAssert(a._K == b._K);
     unsigned const nbytes = a.n_bytes_used();
     for (unsigned i = nbytes; i != 0; i--) {
@@ -511,8 +561,8 @@ public:
     }
     return (a._tag > b._tag);
   }
-  
- 
+
+
 };
 
 
@@ -528,12 +578,16 @@ class KmerKmerQual : public KMER_t
 public:
   KmerKmerQual(const unsigned K, const unsigned q = 0) : KMER_t(K), _q(q) {}
 
-  unsigned qual() const { return _q; }
-  void qual(const uint8_t q) { _q = q; }
+  unsigned qual() const {
+    return _q;
+  }
+  void qual(const uint8_t q) {
+    _q = q;
+  }
 
   /*
-  friend bool operator<(const KmerKmerQual & a, const KmerKmerQual & b) 
-  { 
+  friend bool operator<(const KmerKmerQual & a, const KmerKmerQual & b)
+  {
     if (static_cast<const KMER_t &>(a) < static_cast<const KMER_t &>(b)) return true;
     if (static_cast<const KMER_t &>(b) < static_cast<const KMER_t &>(a)) return false;
     return (a.qual() < b.qual());
@@ -542,10 +596,14 @@ public:
 };
 
 template<class REC_t>
-bool kmer_qual_lt(const REC_t & a, const REC_t & b) { return a.qual() < b.qual(); }
+bool kmer_qual_lt(const REC_t & a, const REC_t & b) {
+  return a.qual() < b.qual();
+}
 
 template<class REC_t>
-bool kmer_qual_gt(const REC_t & a, const REC_t & b) { return a.qual() > b.qual(); }
+bool kmer_qual_gt(const REC_t & a, const REC_t & b) {
+  return a.qual() > b.qual();
+}
 
 
 
@@ -563,17 +621,25 @@ class KmerKmerFreq : public KMER_t
 public:
   KmerKmerFreq(const KMER_t kmer, const unsigned freq = 0) : KMER_t(kmer), _freq(freq) {}
   KmerKmerFreq(const unsigned K, const unsigned freq = 0) : KMER_t(K), _freq(freq) {}
-  
-  uint32_t freq() const { return _freq; }
-  void     set_freq(const unsigned freq) { _freq = freq; }
+
+  uint32_t freq() const {
+    return _freq;
+  }
+  void     set_freq(const unsigned freq) {
+    _freq = freq;
+  }
 };
 
 
 template<class REC_t>
-bool kmer_freq_lt(const REC_t & a, const REC_t & b) { return a.freq() < b.freq(); }
+bool kmer_freq_lt(const REC_t & a, const REC_t & b) {
+  return a.freq() < b.freq();
+}
 
 template<class REC_t>
-bool kmer_freq_gt(const REC_t & a, const REC_t & b) { return a.freq() > b.freq(); }
+bool kmer_freq_gt(const REC_t & a, const REC_t & b) {
+  return a.freq() > b.freq();
+}
 
 
 
@@ -587,15 +653,23 @@ class KmerKmerBiFreq : public KMER_t
   uint32_t _freq_B;
 
 public:
-  KmerKmerBiFreq(const KMER_t kmer, const unsigned freq_A = 0, const unsigned freq_B = 0) : 
+  KmerKmerBiFreq(const KMER_t kmer, const unsigned freq_A = 0, const unsigned freq_B = 0) :
     KMER_t(kmer), _freq_A(freq_A), _freq_B(freq_B) {}
-  KmerKmerBiFreq(const unsigned K, const unsigned freq_A = 0, const unsigned freq_B = 0) : 
+  KmerKmerBiFreq(const unsigned K, const unsigned freq_A = 0, const unsigned freq_B = 0) :
     KMER_t(K), _freq_A(freq_A), _freq_B(freq_B) {}
-  
-  uint32_t freq_A() const { return _freq_A; }
-  uint32_t freq_B() const { return _freq_B; }
-  void     set_freq_A(const unsigned freq) { _freq_A = freq; }
-  void     set_freq_B(const unsigned freq) { _freq_B = freq; }
+
+  uint32_t freq_A() const {
+    return _freq_A;
+  }
+  uint32_t freq_B() const {
+    return _freq_B;
+  }
+  void     set_freq_A(const unsigned freq) {
+    _freq_A = freq;
+  }
+  void     set_freq_B(const unsigned freq) {
+    _freq_B = freq;
+  }
 };
 
 
@@ -611,37 +685,59 @@ class BVLoc
   uint64_t _ibv : 34;   // up to 2^34 =   16G (at 100b/read => 400+ GB)
   uint64_t _ib  : 28;   // up to 2^28 =  256M
   uint64_t _dir :  2;   // 0:invalid  1:fw  2:rc  3:palindrome
-  //uint64_t _fw  :  1;   // 0: fw  1: rc 
+  //uint64_t _fw  :  1;   // 0: fw  1: rc
   //uint64_t _pal :  1;   // palidrome?
 
 public:
-  BVLoc() : _ibv(0), _ib(0), _dir(0) {} 
+  BVLoc() : _ibv(0), _ib(0), _dir(0) {}
 
-  void set_ibv       (const size_t ibv) { _ibv = ibv; }
-  void set_ib        (const size_t ib)  { _ib  = ib; }
-  void set_fw        (const bool fw)    { _dir = (fw ? 1 : 2); }
-  void set_rc        (const bool rc)    { _dir = (rc ? 2 : 1); }
-  void set_palindrome(const bool pal)   { if (pal) _dir = 3; }
+  void set_ibv       (const size_t ibv) {
+    _ibv = ibv;
+  }
+  void set_ib        (const size_t ib)  {
+    _ib  = ib;
+  }
+  void set_fw        (const bool fw)    {
+    _dir = (fw ? 1 : 2);
+  }
+  void set_rc        (const bool rc)    {
+    _dir = (rc ? 2 : 1);
+  }
+  void set_palindrome(const bool pal)   {
+    if (pal) _dir = 3;
+  }
 
-  size_t ibv()           const { return _ibv; }
-  size_t ib()            const { return _ib; }
-  bool   is_fw()         const { return _dir == 1; }
-  bool   is_rc()         const { return _dir == 2; }
-  bool   is_palindrome() const { return _dir == 3; }
-  bool   is_valid_loc()  const { return _dir != 0; }
+  size_t ibv()           const {
+    return _ibv;
+  }
+  size_t ib()            const {
+    return _ib;
+  }
+  bool   is_fw()         const {
+    return _dir == 1;
+  }
+  bool   is_rc()         const {
+    return _dir == 2;
+  }
+  bool   is_palindrome() const {
+    return _dir == 3;
+  }
+  bool   is_valid_loc()  const {
+    return _dir != 0;
+  }
 
   String to_str() const
   {
-    return (String((is_palindrome() ? "dir= pal" : 
-                    is_fw() ? "dir= fw " : 
-		    is_rc() ? "dir= rc " : "dir= bad")) +
+    return (String((is_palindrome() ? "dir= pal" :
+                    is_fw() ? "dir= fw " :
+                    is_rc() ? "dir= rc " : "dir= bad")) +
             " ibv/ib=" + ToString(_ibv) +
             " " + ToString(_ib));
   }
-  
+
   friend
   bool operator < (const BVLoc & a, const BVLoc & b)
-  { 
+  {
     if (a._ibv < b._ibv) return true;
     if (a._ibv > b._ibv) return false;
     return (a._ib < b._ib);
@@ -660,7 +756,9 @@ class KmerKmerBVLoc : public KMER_t
 
 public:
   typedef KMER_t kmer_type;
-  vec<BVLoc>& locs() { return _locs; }
+  vec<BVLoc>& locs() {
+    return _locs;
+  }
   KmerKmerBVLoc(const KMER_t kmer) : KMER_t(kmer), _locs(0) {}
   KmerKmerBVLoc(const unsigned K) : KMER_t(K), _locs(0) {}
 };
@@ -674,7 +772,7 @@ public:
 // ------ basically a pair of a kmer and its location ------
 
 
-template<class KMER_t>  
+template<class KMER_t>
 class KmerBVLoc : public KMER_t, public BVLoc
 {
 public:
@@ -683,7 +781,7 @@ public:
 
   friend
   bool operator < (const KmerBVLoc & a, const KmerBVLoc & b)
-  { 
+  {
     if (static_cast<const KMER_t &>(a) < static_cast<const KMER_t &>(b)) return true;
     if (static_cast<const KMER_t &>(b) < static_cast<const KMER_t &>(a)) return false;
     return (static_cast<const BVLoc &>(a) < static_cast<const BVLoc &>(b));
@@ -699,35 +797,57 @@ class KmerFWRC
 {
   KMER_t _fw;
   KMER_t _rc;
-  
+
 public:
   KmerFWRC(const KMER_t & kmer) : _fw(kmer), _rc(reverse_complement(kmer)) {}
   KmerFWRC(const KmerFWRC<KMER_t> & kmer) : _fw(kmer._fw), _rc(kmer._rc) {}
-  explicit KmerFWRC(const unsigned K = 0) : 
-    _fw(K), 
+  explicit KmerFWRC(const unsigned K = 0) :
+    _fw(K),
     _rc(reverse_complement(_fw)) {}
-  
-  unsigned K()    const { return _fw.K(); }
-  unsigned size() const { return _fw.K(); }
-  
-  bool is_canonical_fw() const { return _fw < _rc; }
-  bool is_canonical_rc() const { return _rc < _fw; }
-  bool is_palindrome()   const { return _fw == _rc; }
-  
-  const KMER_t & fw()        const { return _fw; }
-  const KMER_t & rc()        const { return _rc; }
-  const KMER_t & canonical() const { return _fw < _rc ? _fw : _rc; }
 
-  KMER_t & fw()        { return _fw; }
-  KMER_t & rc()        { return _rc; }
-  KMER_t & canonical() { return _fw < _rc ? _fw : _rc; }
+  unsigned K()    const {
+    return _fw.K();
+  }
+  unsigned size() const {
+    return _fw.K();
+  }
+
+  bool is_canonical_fw() const {
+    return _fw < _rc;
+  }
+  bool is_canonical_rc() const {
+    return _rc < _fw;
+  }
+  bool is_palindrome()   const {
+    return _fw == _rc;
+  }
+
+  const KMER_t & fw()        const {
+    return _fw;
+  }
+  const KMER_t & rc()        const {
+    return _rc;
+  }
+  const KMER_t & canonical() const {
+    return _fw < _rc ? _fw : _rc;
+  }
+
+  KMER_t & fw()        {
+    return _fw;
+  }
+  KMER_t & rc()        {
+    return _rc;
+  }
+  KMER_t & canonical() {
+    return _fw < _rc ? _fw : _rc;
+  }
 
   void push_right(const unsigned base)  // no checking if in [0,3]!!!
   {
     _fw.push_right(base);
     _rc.push_left(3ul ^ base); // the complement of base
   }
-    
+
   void push_left(const unsigned base)  // no checking if in [0,3]!!!
   {
     _fw.push_left(base);
@@ -739,13 +859,13 @@ public:
     _fw.add_right(base);
     _rc.add_left(3ul ^ base); // the complement of base
   }
-    
+
   void add_left(const unsigned base)  // no checking if in [0,3]!!!
   {
     _fw.add_left(base);
     _rc.add_right(3ul ^ base); // the complement of base
   }
-  
+
   void set(const unsigned i, const unsigned base)
   {
     _fw.set(i, base);
@@ -758,7 +878,7 @@ public:
 
 
 // -------- class to parse kmers from reads --------
-// 
+//
 // this looks like an iterator but I chose not to make it an iterator for simplicity.
 //
 template<class BASE_VEC_t, class KMER_t>
@@ -776,13 +896,15 @@ public:
     KmerFWRC<KMER_t>(K), _bv(bv), _nb(_bv.size()), _K(K)
   {
     if (_nb < ib0 + _K) // ---- BaseVec too short.  Signal we're done.
-      _ib = _nb + 1;  
-    else 
+      _ib = _nb + 1;
+    else
       for (_ib = ib0; _ib < ib0 + _K; _ib++) // ---- build 1st kmer.
         this->push_right(_bv[_ib]);
   }
 
-  bool not_done() const { return (_ib <= _nb && _ib >= _K); }
+  bool not_done() const {
+    return (_ib <= _nb && _ib >= _K);
+  }
 
   void next()
   {
@@ -796,11 +918,21 @@ public:
     _ib--;
   }
 
-  size_t   index_start()         const { return _ib - _K; }
-  size_t   index_stop()          const { return _ib; }
-  size_t   index_start_reverse() const { return _nb - _ib; }
-  size_t   index_stop_reverse()  const { return _nb - _ib + _K; }
-  size_t   n_kmers()             const { return _nb - _K + 1; }
+  size_t   index_start()         const {
+    return _ib - _K;
+  }
+  size_t   index_stop()          const {
+    return _ib;
+  }
+  size_t   index_start_reverse() const {
+    return _nb - _ib;
+  }
+  size_t   index_stop_reverse()  const {
+    return _nb - _ib + _K;
+  }
+  size_t   n_kmers()             const {
+    return _nb - _K + 1;
+  }
 };
 
 
@@ -817,10 +949,10 @@ class Validator
   size_t _min, _max;
 public:
   Validator(const size_t min = 0, const size_t max = 0) : _min(min), _max(max) {}
-  bool operator()(const size_t x) const 
-  { 
-    return (((_min == 0 && x > 0) || (_min > 0 && x >= _min)) && 
-            (_max == 0 || x <= _max)); 
+  bool operator()(const size_t x) const
+  {
+    return (((_min == 0 && x > 0) || (_min > 0 && x >= _min)) &&
+            (_max == 0 || x <= _max));
   }
 };
 
@@ -842,7 +974,7 @@ public:
 
 typedef KmerTemplate< uint8_t,  16>   Kmer60;   //  60 =  64 - 4 * 1
 typedef KmerTemplate< uint8_t,  32>   Kmer124;  // 124 = 128 - 4 * 1
-typedef KmerTemplate<uint16_t,  64>   Kmer248;  // 248 = 256 - 4 * 2 
+typedef KmerTemplate<uint16_t,  64>   Kmer248;  // 248 = 256 - 4 * 2
 typedef KmerTemplate<uint16_t, 128>   Kmer504;  // 504 = 512 - 4 * 2
 
 

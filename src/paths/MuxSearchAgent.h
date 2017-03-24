@@ -26,8 +26,8 @@
 /// agent is possible but slow, as search branches never coalesce.
 ///
 /// Derived classes should prune the search tree when reaching a
-/// state isomorphic to one they have previously processed, and may 
-/// optinally prune on any other criteria (eg require coverage by 
+/// state isomorphic to one they have previously processed, and may
+/// optinally prune on any other criteria (eg require coverage by
 /// "happy" reads, whatever "happy" means).
 //
 //  For things inside the innermost loop: inline as much as possible.
@@ -41,10 +41,10 @@ class MuxSearchAgentBase {
   //
 
 public:
-  MuxSearchAgentBase( const MuxGraph* muxGraph, 
-		      const ReadFillDatabase* readfillDB, 
-		      const SubsumptionList* subList, 
-		      int verbosity )
+  MuxSearchAgentBase( const MuxGraph* muxGraph,
+                      const ReadFillDatabase* readfillDB,
+                      const SubsumptionList* subList,
+                      int verbosity )
     : mp_muxGraph   ( muxGraph ),
       mp_readfillDB ( readfillDB ),
       mp_subList    ( subList ),
@@ -62,19 +62,21 @@ public:
   //
 
 public:
-  void Setup( int openingReadId, 
-	      int closingReadId,
-	      int minAcceptableExtLength,
-	      int maxAcceptableExtLength,
-	      MuxSearchResult& result );
-  
-  bool Done() { return ( search.path_to_here.empty() && 
-			 search.to_explore[0].empty() ); }
+  void Setup( int openingReadId,
+              int closingReadId,
+              int minAcceptableExtLength,
+              int maxAcceptableExtLength,
+              MuxSearchResult& result );
+
+  bool Done() {
+    return ( search.path_to_here.empty() &&
+             search.to_explore[0].empty() );
+  }
 
   void TopOfLoop() {
     ForceAssert( search.to_explore.size() == search.path_to_here.size() + 1 );
-    ForceAssert( ( dist_to_here==0 && search.dist_stack.empty() ) 
-		 || ( dist_to_here == search.dist_stack.back() ) );
+    ForceAssert( ( dist_to_here==0 && search.dist_stack.empty() )
+                 || ( dist_to_here == search.dist_stack.back() ) );
 
     if( m_verbosity>3 ) ReportSearchState();
   }
@@ -103,17 +105,17 @@ public:
     final_mux_subsumes_something = subsume_iter != closers_I_subsume.end();
 
     if( ! final_mux_subsumes_something &&
-	dist_to_here + final_mux.GetNumKmers() > maxAcceptableExtLength ) {
+        dist_to_here + final_mux.GetNumKmers() > maxAcceptableExtLength ) {
       if( m_verbosity > 5 )
-	cout << "Not exploring " << final_mux.GetPathId()
-	     << ", would make path too long" << endl;
+        cout << "Not exploring " << final_mux.GetPathId()
+             << ", would make path too long" << endl;
       return true;
     }
     else
       return false;
   }
 
-  // Is it worth the time and space to calculate the invariant of the 
+  // Is it worth the time and space to calculate the invariant of the
   // state and store it in the set of seen states?  The actual calculation
   // and storage are the job of the derived classes, and I suppose
   // some derived class might want to override this, but it seems
@@ -122,21 +124,27 @@ public:
     return ( mp_muxGraph->NumMuxesOf( final_mux.GetPathId() ) > 1 );
   }
 
-  bool IsStateNewRecordIfSo() { return true; }
+  bool IsStateNewRecordIfSo() {
+    return true;
+  }
 
   void SaveIfConverged();
 
   // Guarantee: if MayIPush() returns true, the search will call PushMux().
   // So derived classes can be efficient by doing some of their
   // pushing within MayIPush() if they're going to return true.
-  bool MayIPush() { return true; }
+  bool MayIPush() {
+    return true;
+  }
 
   void PushMux();
 
   // Guarantee: this is always called immediately after PushMux().
   // So derived classes may cache the answer, if it's known during
   // MayIPush() or PushMux().
-  bool MayIClose() { return true; }
+  bool MayIClose() {
+    return true;
+  }
 
   void SaveIfClosed();
 
@@ -172,10 +180,10 @@ private:
 protected:
   int m_verbosity;
 
-private:  
+private:
   int leftReadId, rightReadId;
   int minAcceptableExtLength, maxAcceptableExtLength;
-  
+
   // The genuine closers (fillings of the left read).
   vec<OrientedKmerPathId> closers;
   // The other possible closers: reads which subsume the above ones.
@@ -203,26 +211,40 @@ private:
   // Protected read-only accessors to search state internals:
   //
   // The search state is private, with protected read-only accessors below
-  // for the use of derived classes.  I can't think of why a derived class 
-  // would need write access, but perhaps that's just a failure of my 
+  // for the use of derived classes.  I can't think of why a derived class
+  // would need write access, but perhaps that's just a failure of my
   // imagination -- if so, modify this organization in the future.
 protected:
-  const MuxSearchState& GetSearch() { return search; }
-  const int& GetDist() { return dist_to_here; }
-  const Mux& GetFinalMux() { return final_mux; }
-  const int& GetMinAcceptableExtLength() { return minAcceptableExtLength; }
-  const int& GetMaxAcceptableExtLength() { return maxAcceptableExtLength; }
-  const vec<OrientedKmerPathId>& GetClosers() { return closers; }
+  const MuxSearchState& GetSearch() {
+    return search;
+  }
+  const int& GetDist() {
+    return dist_to_here;
+  }
+  const Mux& GetFinalMux() {
+    return final_mux;
+  }
+  const int& GetMinAcceptableExtLength() {
+    return minAcceptableExtLength;
+  }
+  const int& GetMaxAcceptableExtLength() {
+    return maxAcceptableExtLength;
+  }
+  const vec<OrientedKmerPathId>& GetClosers() {
+    return closers;
+  }
   const map< OrientedKmerPathId,vec<SubsumptionRecord> >& GetCloserSubs()
-    { return closers_I_subsume; }
+  {
+    return closers_I_subsume;
+  }
 
   // This helper isn't used at all in the base class.
   // But it's used in every derived class, so I'm putting it here
   // to avoid code duplication.
 protected:
   longlong BasicHashOfPosition() {
-    return ( GetFinalMux().GetPathId().GetIdRc() 
-	     ^ (longlong(GetDist()+GetFinalMux().GetNumKmers()) << 32) );
+    return ( GetFinalMux().GetPathId().GetIdRc()
+             ^ (longlong(GetDist()+GetFinalMux().GetNumKmers()) << 32) );
   }
 
 
@@ -249,10 +271,10 @@ protected:
 
 class MuxSearchAgentSimple : public MuxSearchAgentBase {
 public:
-  MuxSearchAgentSimple( const MuxGraph* muxGraph, 
-			const ReadFillDatabase* readfillDB, 
-			const SubsumptionList* subList, 
-			int verbosity )
+  MuxSearchAgentSimple( const MuxGraph* muxGraph,
+                        const ReadFillDatabase* readfillDB,
+                        const SubsumptionList* subList,
+                        int verbosity )
     : MuxSearchAgentBase( muxGraph, readfillDB, subList, verbosity ) { }
 
 private:
@@ -289,14 +311,14 @@ public:
 
 class MuxSearchAgentGoodReads : public MuxSearchAgentBase {
 public:
-  MuxSearchAgentGoodReads( const MuxGraph* muxGraph, 
-			   const ReadFillDatabase* readfillDB, 
-			   const SubsumptionList* subList, 
-			   const vec<int>* readLengths,
-			   const int max_read_length,
-			   const int min_perfect_match,
-			   int verbosity,
-			   const vec<MuxSearchPolicy*>& policies )
+  MuxSearchAgentGoodReads( const MuxGraph* muxGraph,
+                           const ReadFillDatabase* readfillDB,
+                           const SubsumptionList* subList,
+                           const vec<int>* readLengths,
+                           const int max_read_length,
+                           const int min_perfect_match,
+                           int verbosity,
+                           const vec<MuxSearchPolicy*>& policies )
     : MuxSearchAgentBase ( muxGraph, readfillDB, subList, verbosity ),
       mp_readLengths     ( readLengths ),
       m_max_read_length  ( max_read_length ),
@@ -307,7 +329,7 @@ public:
 
 private:
 
-  const vec<int>* mp_readLengths; 
+  const vec<int>* mp_readLengths;
   const int m_max_read_length;
   const vec<MuxSearchPolicy*>& m_policies;
   int m_min_perfect_match;
@@ -368,20 +390,20 @@ private:
   // helper functions:
   void SetupPolicies() {
     for( vec<MuxSearchPolicy*>::const_iterator pol = m_policies.begin();
-	 pol != m_policies.end(); pol++ )
-      (*pol)->Setup( GetMinAcceptableExtLength(), 
-		     GetMaxAcceptableExtLength(), 
-		     GetClosers(), GetCloserSubs() );
+         pol != m_policies.end(); pol++ )
+      (*pol)->Setup( GetMinAcceptableExtLength(),
+                     GetMaxAcceptableExtLength(),
+                     GetClosers(), GetCloserSubs() );
   }
 
   void PopPolicies() {
-    for_each( m_policies.begin(), m_policies.end(), 
-	      mem_fun( &MuxSearchPolicy::Pop ) );
+    for_each( m_policies.begin(), m_policies.end(),
+              mem_fun( &MuxSearchPolicy::Pop ) );
   }
 
   longlong GoodReadsHash( const MuxSearchState& search,
-			  const int dist_to_here,
-			  const int min_dist );
+                          const int dist_to_here,
+                          const int min_dist );
 
   pair<longlong,longlong> PolicyHashOfPosition();
 

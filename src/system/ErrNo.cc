@@ -18,7 +18,7 @@
 #include <sstream>
 
 ErrNo::ErrNo()
-: mErrNo(errno)
+  : mErrNo(errno)
 {
 }
 
@@ -26,14 +26,14 @@ ErrNo::ErrNo()
 // of strerror_r, so we're going to code so that either will work
 std::string ErrNo::text() const
 {
-    char buf[8192];
-    long val = (long)strerror_r(mErrNo,buf,sizeof(buf));
+  char buf[8192];
+  long val = (long)strerror_r(mErrNo,buf,sizeof(buf));
 
-    char const* msg = "Unknown error"; // XOPEN version failed
-    if ( val == 0 ) msg = buf; // XOPEN version worked
-    else if ( val != -1 ) msg = (char*)val; // GNU version worked
+  char const* msg = "Unknown error"; // XOPEN version failed
+  if ( val == 0 ) msg = buf; // XOPEN version worked
+  else if ( val != -1 ) msg = (char*)val; // GNU version worked
 
-    std::ostringstream os;
-    os << ": " << msg << " [errno=" << mErrNo << "].";
-    return os.str();
+  std::ostringstream os;
+  os << ": " << msg << " [errno=" << mErrNo << "].";
+  return os.str();
 }

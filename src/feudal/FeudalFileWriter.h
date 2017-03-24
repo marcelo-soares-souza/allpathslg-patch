@@ -40,50 +40,56 @@
 class FeudalFileWriter
 {
 public:
-    typedef unsigned int size_type;
-    typedef unsigned long offset_type;
+  typedef unsigned int size_type;
+  typedef unsigned long offset_type;
 
-    FeudalFileWriter( char const* filename,
-                      size_type vecSize,
-                      size_type eltSize,
-                      size_type fixedLenDataLen,
-                      unsigned long estimatedNElements = 100000 );
+  FeudalFileWriter( char const* filename,
+                    size_type vecSize,
+                    size_type eltSize,
+                    size_type fixedLenDataLen,
+                    unsigned long estimatedNElements = 100000 );
 
-    ~FeudalFileWriter();
+  ~FeudalFileWriter();
 
-    std::string const& getFilename() const
-    { return mWriter.getFilename(); }
+  std::string const& getFilename() const
+  {
+    return mWriter.getFilename();
+  }
 
-    /// number of elements written so far
-    unsigned long getNElements() const { return mOffsets.size()-1; }
+  /// number of elements written so far
+  unsigned long getNElements() const {
+    return mOffsets.size()-1;
+  }
 
-    /// Get the writer for variable-length data.
-    BinaryWriter& getWriter() { return mWriter; }
+  /// Get the writer for variable-length data.
+  BinaryWriter& getWriter() {
+    return mWriter;
+  }
 
-    /// Tell us that you've added variable-length data for an element.
-    void addElement( void const* fixedLenData );
+  /// Tell us that you've added variable-length data for an element.
+  void addElement( void const* fixedLenData );
 
-    /// Flush everything to make a finished feudal file, but leave it open for
-    /// further writing.  It's necessary for just a couple of pieces of code
-    /// that need to re-read a feudal file as it's being created.  It's slow.
-    void checkPoint();
+  /// Flush everything to make a finished feudal file, but leave it open for
+  /// further writing.  It's necessary for just a couple of pieces of code
+  /// that need to re-read a feudal file as it's being created.  It's slow.
+  void checkPoint();
 
-    void close();
+  void close();
 
 private:
-    FeudalFileWriter( FeudalFileWriter const& ); // unimplemented -- no copying
-    FeudalFileWriter& operator=( FeudalFileWriter const& ); // unimplemented -- no copying
+  FeudalFileWriter( FeudalFileWriter const& ); // unimplemented -- no copying
+  FeudalFileWriter& operator=( FeudalFileWriter const& ); // unimplemented -- no copying
 
-    void finish( size_t pos );
+  void finish( size_t pos );
 
-    BinaryWriter mWriter;
-    std::vector<offset_type> mOffsets;
-    std::vector<char> mFixedLenData;
-    size_type mVecSize;
-    size_type mEltSize;
-    size_type mFixedLenDataLen;
+  BinaryWriter mWriter;
+  std::vector<offset_type> mOffsets;
+  std::vector<char> mFixedLenData;
+  size_type mVecSize;
+  size_type mEltSize;
+  size_type mFixedLenDataLen;
 
-    static FeudalControlBlock gInvalidFCB;
+  static FeudalControlBlock gInvalidFCB;
 };
 
 #endif /* FEUDAL_FEUDALFILEWRITER_H_ */

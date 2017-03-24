@@ -14,9 +14,9 @@
 #include "paths/BigMapTools.h"
 #include "paths/Uniseq.h"
 
-void BigMapDot( const String& DOT, const snark& S, const int K2, 
-     const Bool VALIDATE, const vecbasevector& genome, 
-     const vec< vec<placementy> >& Ulocs2, const vec<String>& legends_to_show,
-     const Bool circo );
+void BigMapDot( const String& DOT, const snark& S, const int K2,
+                const Bool VALIDATE, const vecbasevector& genome,
+                const vec< vec<placementy> >& Ulocs2, const vec<String>& legends_to_show,
+                const Bool circo );
 
 #endif

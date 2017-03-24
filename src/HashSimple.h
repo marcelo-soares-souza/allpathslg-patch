@@ -58,8 +58,8 @@ public:
   class iterator;
   friend class iterator;
 
-  HashSimple(int capacity=100): 
-    data(capacity,BAD), start_(&data[0]), end_(start_ + capacity), 
+  HashSimple(int capacity=100):
+    data(capacity,BAD), start_(&data[0]), end_(start_ + capacity),
     size_(0), h_(), MAXSIZE_(capacity*2/3) {}
 
   /// Return false if t was already in the set.
@@ -67,47 +67,64 @@ public:
     AssertNe(t, BAD);
     int * here = FindInternal(t);
     if (*here != BAD) return false;
-    
-    *here = t; 
-    if (++size_ > MAXSIZE_) { 
+
+    *here = t;
+    if (++size_ > MAXSIZE_) {
       Rehash();
     }
     return true;
   }
 
-  void clear() { data.clear(); size_=0; }
+  void clear() {
+    data.clear();
+    size_=0;
+  }
 
-  int size() const { return size_; }
+  int size() const {
+    return size_;
+  }
 
-  int capacity() const { return data.size(); }
+  int capacity() const {
+    return data.size();
+  }
 
   bool Has(const T & t) const {
     return (*FindInternal(t) != BAD);
   }
-  
-  /// Note that this iterator always ends at end(), so it 
+
+  /// Note that this iterator always ends at end(), so it
   /// must be started at begin(): it does not know how to circle
   /// back.
   class iterator {
-  private: 
-    HashSimple & h; 
-    int pos; 
-    const int SIZE; 
+  private:
+    HashSimple & h;
+    int pos;
+    const int SIZE;
 
   public:
     iterator(HashSimple & h, int p=0): h(h), pos(p), SIZE(h.data.size()) {}
-    iterator operator++() { 
+    iterator operator++() {
       //PRINT4(pos, SIZE, h.data[pos], h.capacity());
       while (++pos < SIZE && h.data[pos] == -1) {}
-      return *this; 
+      return *this;
     }
-    T operator*() { return h.data[pos]; }
-    bool operator==(const iterator & o) { return o.pos == pos; }
-    bool operator!=(const iterator & o) { return !operator==(o); }
+    T operator*() {
+      return h.data[pos];
+    }
+    bool operator==(const iterator & o) {
+      return o.pos == pos;
+    }
+    bool operator!=(const iterator & o) {
+      return !operator==(o);
+    }
   };
 
-  iterator begin() { return iterator(*this); }
-  iterator end() { return iterator(*this, data.size()); }
+  iterator begin() {
+    return iterator(*this);
+  }
+  iterator end() {
+    return iterator(*this, data.size());
+  }
 };
 
 //const int HashSimple::BAD;

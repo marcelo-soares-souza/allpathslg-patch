@@ -10,7 +10,7 @@
 
 class OrientedKmerPathId
 {
- public:
+public:
   OrientedKmerPathId()
     : m_idRc( INT_MAX ) {}
 
@@ -21,12 +21,22 @@ class OrientedKmerPathId
   OrientedKmerPathId( int id, bool rc )
     : m_idRc( rc ? -id-1 : id ) {}
 
-  bool IsValid() const { return ( m_idRc != INT_MAX ); }
+  bool IsValid() const {
+    return ( m_idRc != INT_MAX );
+  }
 
-  bool IsFw() const { return m_idRc >= 0; }
-  bool IsRc() const { return m_idRc < 0; }
-  int  GetId() const { return ( IsRc() ? -m_idRc-1 : m_idRc ); }
-  int  GetIdRc() const { return m_idRc; }
+  bool IsFw() const {
+    return m_idRc >= 0;
+  }
+  bool IsRc() const {
+    return m_idRc < 0;
+  }
+  int  GetId() const {
+    return ( IsRc() ? -m_idRc-1 : m_idRc );
+  }
+  int  GetIdRc() const {
+    return m_idRc;
+  }
 
   template <class T, class vecT>
   const T* GetPtr( const vecT& fw, const vecT& rc ) const
@@ -34,8 +44,8 @@ class OrientedKmerPathId
     return &( IsRc() ? rc[ -m_idRc-1 ] : fw[ m_idRc ] );
   }
 
-  const KmerPath * GetPathPtr( const vecKmerPath &paths, 
-                               const vecKmerPath &paths_rc ) const 
+  const KmerPath * GetPathPtr( const vecKmerPath &paths,
+                               const vecKmerPath &paths_rc ) const
   {
     return GetPtr<KmerPath,vecKmerPath>( paths, paths_rc );
   }
@@ -59,8 +69,8 @@ class OrientedKmerPathId
   {
     in.read( (char*)&m_idRc, sizeof(m_idRc) );
   }
-  
- private:
+
+private:
   int m_idRc; // TODO: potentially dangerous truncation of index
 };
 TRIVIALLY_SERIALIZABLE(OrientedKmerPathId);
@@ -82,9 +92,11 @@ template <class T> struct hash;
 
 template<>
 struct hash<OrientedKmerPathId> {
-  size_t 
+  size_t
   operator() ( const OrientedKmerPathId& okpid ) const
-  { return okpid.GetIdRc(); }
+  {
+    return okpid.GetIdRc();
+  }
 };
 
 #if __GNUC__ > 2

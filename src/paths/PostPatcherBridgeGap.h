@@ -10,13 +10,13 @@
 
 bool
 BridgeGap(const vec<basevector> & bridges,
-	   const vec<int> &gaps,
-	   int pgap,	// predicted gap
-	   int pdev,	// sigma of predicted gap
-	   float max_sigma, // within how many sigma must we be?
-	   int flags,	// flags to control method
-	   const bool verbose,
-	   fastavector &bridge);
+          const vec<int> &gaps,
+          int pgap,	// predicted gap
+          int pdev,	// sigma of predicted gap
+          float max_sigma, // within how many sigma must we be?
+          int flags,	// flags to control method
+          const bool verbose,
+          fastavector &bridge);
 
 // Flags
 #define BRIDGEGAP_ONESIZE  1	/* only bridge if all candidates are same size */

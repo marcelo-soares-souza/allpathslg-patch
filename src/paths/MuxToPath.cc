@@ -11,9 +11,9 @@
 #include "paths/MuxToPath.h"
 #include "system/Assert.h"
 
-void MuxToPath::ToPath( const vec<Mux>& muxes, 
-			const KmerPath& path_so_far,
-			KmerPath& ans ) const {
+void MuxToPath::ToPath( const vec<Mux>& muxes,
+                        const KmerPath& path_so_far,
+                        KmerPath& ans ) const {
   if( muxes.empty() ) {
     ans = path_so_far;
     return;
@@ -25,11 +25,11 @@ void MuxToPath::ToPath( const vec<Mux>& muxes,
   int numsegs = path_so_far.NSegments();
   vec<Mux>::const_iterator muxp = muxes.begin();
   if( path_so_far.IsEmpty() ) {
-    numsegs += 
+    numsegs +=
       muxp->GetPathId().GetPathPtr(*mp_pathsFw,*mp_pathsRc)->NSegments();
     muxp++;
   }
-  
+
   for( ; muxp != muxes.end(); muxp++ )
     numsegs += muxp->GetSegment();
 
@@ -40,7 +40,7 @@ void MuxToPath::ToPath( const vec<Mux>& muxes,
 
   muxp = --muxes.end();
   const KmerPath* current_read_path_p;
-  const KmerPath* next_read_path_p = 
+  const KmerPath* next_read_path_p =
     muxp->GetPathId().GetPathPtr(*mp_pathsFw,*mp_pathsRc);
 
   // First give ans its initial kmer, as we AppendNoFirstPath everything
@@ -57,8 +57,8 @@ void MuxToPath::ToPath( const vec<Mux>& muxes,
     ForceAssert(joining_kmer.GetSegment().Contains(next_read_path_p->Start(0)));
     joining_kmer.SetKmer( next_read_path_p->Start(0) );
     current_read_path_p->CopySubpathNoFirstKmer( current_read_path_p->Begin(),
-						 joining_kmer,
-						 ans );
+        joining_kmer,
+        ans );
   } // note: muxp = muxes.begin() is still used later
 
   // Then add the last snippet and path_so_far, as needed:
@@ -76,19 +76,19 @@ void MuxToPath::ToPath( const vec<Mux>& muxes,
     ForceAssert( joining_kmer.GetSegment().Contains(path_so_far.Start(0)) );
     joining_kmer.SetKmer( path_so_far.Start(0) );
     current_read_path_p->CopySubpathNoFirstKmer( current_read_path_p->Begin(),
-						 joining_kmer,
-						 ans );
+        joining_kmer,
+        ans );
     ans.AppendNoFirstKmer( path_so_far );
   }
 
 }
 
 
-void MuxToPath::ExtendByMux( const Mux& the_mux, 
-			     const KmerPath& path_so_far,
-			     KmerPath& ans ) const {
+void MuxToPath::ExtendByMux( const Mux& the_mux,
+                             const KmerPath& path_so_far,
+                             KmerPath& ans ) const {
 
-  const KmerPath& the_path = 
+  const KmerPath& the_path =
     *the_mux.GetPathId().GetPathPtr(*mp_pathsFw,*mp_pathsRc);
 
   if( path_so_far.IsEmpty() )
@@ -112,11 +112,11 @@ void MuxToPath::ExtendByMux( const Mux& the_mux,
 // match path_so_far on their overlap, in which case ans is empty.
 // (So yes, the return value is redundant.)
 bool MuxToPath::ExtendByKmersIfMatch( const OrientedKmerPathId& okpid,
-				      const int numKmers,
-				      const KmerPath& path_so_far,
-				      KmerPath& ans ) const {
+                                      const int numKmers,
+                                      const KmerPath& path_so_far,
+                                      KmerPath& ans ) const {
 
-  const KmerPath& the_path = 
+  const KmerPath& the_path =
     *okpid.GetPathPtr(*mp_pathsFw,*mp_pathsRc);
 
   if( path_so_far.IsEmpty() ) {
@@ -136,10 +136,10 @@ bool MuxToPath::ExtendByKmersIfMatch( const OrientedKmerPathId& okpid,
     // This should never happen if the okpid is a mux of
     // the final read of path_so_far, but could happen if
     // intermediate reads in the mux graph did not get used
-    // -- for example, because they didn't match earlier parts 
+    // -- for example, because they didn't match earlier parts
     // of the path, or becuase they were declared bad.
     if( joining_kmer.isGap() ||
-	joining_kmer.GetKmer() != path_so_far.Start(0) )
+        joining_kmer.GetKmer() != path_so_far.Start(0) )
       return false;
 
     // Do the paths match perfectly to the right?

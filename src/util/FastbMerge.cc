@@ -9,7 +9,7 @@
 
 /* FastbMerge
  *
- * Takes a set of fastb files and merges them into one. 
+ * Takes a set of fastb files and merges them into one.
  *
  * Optionally merges quality scores in corresponding qualb files.
  *
@@ -21,8 +21,10 @@
 #include "Qualvector.h"
 #include "String.h"
 
-static inline 
-String Tag(String S = "FM") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "FM") {
+  return Date() + " (" + S + "): ";
+}
 
 
 
@@ -33,7 +35,7 @@ String Tag(String S = "FM") { return Date() + " (" + S + "): "; }
 int main(int argc, char **argv)
 {
   RunTime();
-  
+
   BeginCommandArguments;
   CommandArgument_StringSet(HEADS_IN);
   CommandArgument_String(HEAD_OUT);
@@ -54,10 +56,10 @@ int main(int argc, char **argv)
 
     const size_t n_r = MastervecFileObjectCount(fns_bases_in[i]);
     cout << Tag() << setw(14) << n_r << "  reads in '" << fns_bases_in[i] << "'." << endl;
-   
+
     if (IsRegularFile(fns_quals_in[i]))
       ForceAssertEq(n_r, MastervecFileObjectCount(fns_quals_in[i]));
-    else 
+    else
       do_quals = false;
 
     n_reads_out += n_r;
@@ -75,7 +77,7 @@ int main(int argc, char **argv)
     MergeMastervecs(fn_quals_out, fns_quals_in);
   }
 
-  
+
   cout << Tag() << "Done." << endl;
 
 }

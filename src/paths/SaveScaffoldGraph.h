@@ -26,10 +26,10 @@
  *  <HEAD>.contigs.fasta     fastavector of contigs
  */
 void SaveScaffoldGraph( const String &HEAD,
-			const vec<superb> &supers,
-			const digraphE<CLinkBundle> &graph,
-			const vec<fastavector> &contigs,
-			ostream *log = 0 );
+                        const vec<superb> &supers,
+                        const digraphE<CLinkBundle> &graph,
+                        const vec<fastavector> &contigs,
+                        ostream *log = 0 );
 
 /**
  * SaveScaffoldAssembly
@@ -41,9 +41,9 @@ void SaveScaffoldGraph( const String &HEAD,
  *  <HEAD>.contigs.fast{b,amb}  contigs as fastb, fastamb (if save_fastb = true)
  */
 void SaveScaffoldAssembly( const String &HEAD,
-			   const vec<superb> &supers,
-			   const vec<fastavector> &contigs,
-			   ostream *log = 0,
-			   bool save_fastb = false );
+                           const vec<superb> &supers,
+                           const vec<fastavector> &contigs,
+                           ostream *log = 0,
+                           bool save_fastb = false );
 
 #endif

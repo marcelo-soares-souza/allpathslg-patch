@@ -23,10 +23,10 @@
  * Generate a contig to pairs map (needed by OffsetFromDistribution).
  */
 void MapContigsToPairs( UInt64VecVec &contig_to_pairs,
-			const PairsManager &pairs,
-			const vec<superb> &supers,
-			const vec<alignlet> &aligns,
-			const vec<int> &index );
+                        const PairsManager &pairs,
+                        const vec<superb> &supers,
+                        const vec<alignlet> &aligns,
+                        const vec<int> &index );
 
 /**
  * OffsetFromDistributions
@@ -35,13 +35,13 @@ void MapContigsToPairs( UInt64VecVec &contig_to_pairs,
  * between two contigs. The contigs are assumed to be oriented fw.
  */
 void OffsetFromDistributions( CBundle &bundle,
-			      const superb &super,
-			      const PairsManager &pairs,
-			      const UInt64VecVec &to_pairs,
-			      const vec<alignlet> &aligns,
-			      const vec<int> &index,
-			      const vec<int> &cg_lens,
-			      const vec<IntDistribution> &distr,
+                              const superb &super,
+                              const PairsManager &pairs,
+                              const UInt64VecVec &to_pairs,
+                              const vec<alignlet> &aligns,
+                              const vec<int> &index,
+                              const vec<int> &cg_lens,
+                              const vec<IntDistribution> &distr,
                               ostream * p_log = 0 );
 
 #endif

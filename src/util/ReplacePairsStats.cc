@@ -22,11 +22,11 @@ int main( int argc, char *argv[] )
   BeginCommandArguments;
   CommandDoc(DOC);
   CommandArgument_String_Doc(PAIRS_IN,
-    "Pairs file with original stats");
+                             "Pairs file with original stats");
   CommandArgument_String_OrDefault_Doc(PAIRS_OUT, "",
-    "Updated pairs file (now containing replacement stats)");
+                                       "Updated pairs file (now containing replacement stats)");
   CommandArgument_String_OrDefault_Doc(STATS_IN, "",
-    "Pairs file containing replacement stats.");
+                                       "Pairs file containing replacement stats.");
   EndCommandArguments;
 
   if (PAIRS_OUT=="") {
@@ -39,7 +39,7 @@ int main( int argc, char *argv[] )
   PAIRS_IN = PAIRS_IN.SafeBefore(".pairs");
   PAIRS_OUT = PAIRS_OUT.SafeBefore(".pairs");
   STATS_IN = STATS_IN.SafeBefore(".pairs");
-  
+
   // Load pairing information
 
   cout << Date() << ": Loading original pairing info from:" << endl;
@@ -50,9 +50,9 @@ int main( int argc, char *argv[] )
 
   cout << Date() << ": Loading replacement pairing stats from:" << endl;
   cout << "  " << STATS_IN + ".pairs" << endl;
-  longlong nreads; 
+  longlong nreads;
   vec<String> lib_names;
-  vec<int> lib_sep, lib_sd; 
+  vec<int> lib_sep, lib_sd;
   ReadPairsManagerLibInfo(STATS_IN + ".pairs", nreads, lib_names, lib_sep, lib_sd );
 
   cout << Date() << ": Original Stats:" << endl;
@@ -63,15 +63,15 @@ int main( int argc, char *argv[] )
     if (pos != -1)
       pairs.changeLibrarySepSd(lib_id, lib_sep[pos], lib_sd[pos]);
     else
-      FatalErr("Could not find replacement stats for library " 
-	       + pairs.getLibraryName(lib_id));
+      FatalErr("Could not find replacement stats for library "
+               + pairs.getLibraryName(lib_id));
   }
 
   cout << Date() << ": Replacement Stats:" << endl;
   pairs.printLibraryStats( cout );
 
-   // Write corrected file
-  cout << Date() << ": Writing new pairs file: " << endl 
+  // Write corrected file
+  cout << Date() << ": Writing new pairs file: " << endl
        << "  " << PAIRS_OUT << ".pairs" << endl;
   pairs.Write(PAIRS_OUT + ".pairs");
 

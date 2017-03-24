@@ -17,7 +17,9 @@ MATRIX_DEF(Bool);
 MATRIX_DEF(char);
 
 template<> void matrix<char>::Print( ostream& out ) const
-{    for ( int i = 0; i < Nrows( ); i++ )
-     {    for ( int j = 0; j < Ncols( ); j++ )
-               out << (*this)(i, j);
-          out << "\n";    }    }
+{ for ( int i = 0; i < Nrows( ); i++ )
+  { for ( int j = 0; j < Ncols( ); j++ )
+      out << (*this)(i, j);
+    out << "\n";
+  }
+}

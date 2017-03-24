@@ -23,7 +23,7 @@ class lookup_table;
 /// \brief A Query encodes a kmer from the query sequence (as numeric index),
 /// position (offset) of this kmer in the query sequence (0-based), and the
 /// orientation of the query sequence (is this Kmer found at the specified
-/// offset in the original query sequence or in its reverse complement). 
+/// offset in the original query sequence or in its reverse complement).
 ///
 /// A query does not store any information about the identity of the original
 /// sequence it was generated from, so it is responsibility of the client
@@ -38,12 +38,18 @@ struct Query {
     query_pos(rc ? (in_query_pos | TopBit32) : in_query_pos)
   {}
   /// Returns true if the query was generated from rc sequence
-  bool IsRc() const { return (query_pos & TopBit32)!=0; }
+  bool IsRc() const {
+    return (query_pos & TopBit32)!=0;
+  }
   /// Returns Kmer index represented by this query
-  unsigned int Kmer() const { return k; }
+  unsigned int Kmer() const {
+    return k;
+  }
   /// Offset of this query's Kmer in the original sequence or in the
   /// reverse complement of the original sequence (if IsRc() is true)
-  int QueryPos() const { return (query_pos & Bits31); }
+  int QueryPos() const {
+    return (query_pos & Bits31);
+  }
 };
 
 TRIVIALLY_SERIALIZABLE(Query);
@@ -74,7 +80,7 @@ struct CompareQueriesByKmer {
 
 /// Transform a single basevector to queries. Each query in the resulting vector stores
 /// the Kmer (as numeric index) and the position, at which this Kmer occurs
-/// in the \c bases sequence, incremented by constant amount <offset>. 
+/// in the \c bases sequence, incremented by constant amount <offset>.
 /// This method <em>does not</em> generate queries coming
 /// from the reverse complement of \c bases.
 void BasesToQueries(const basevector &bases, vec<Query> &queries, unsigned int K, unsigned int offset = 0);
@@ -82,7 +88,7 @@ void BasesToQueries(const basevector &bases, vec<Query> &queries, unsigned int K
 
 
 /// Same as BasesToQueries(const basevector &bases, vec<Query> &queries, unsigned int K)
-/// but takes basevector iterator as its argument instead of basevector itself: this 
+/// but takes basevector iterator as its argument instead of basevector itself: this
 /// overload can be used, in particular, with adaptors
 template <class ITER>
 void BasesToQueries(const ITER & bvec_iter, const ITER & bvec_iter_end, vec<Query> &queries, unsigned int K, unsigned int offset = 0)
@@ -97,10 +103,10 @@ void BasesToQueries(const ITER & bvec_iter, const ITER & bvec_iter_end, vec<Quer
 
 
 
-/// Transform a collection of basevectors (e.g. reads) into a collection of queries. 
-/// Each resulting query stores the Kmer (as numeric index) and the position (offset), 
+/// Transform a collection of basevectors (e.g. reads) into a collection of queries.
+/// Each resulting query stores the Kmer (as numeric index) and the position (offset),
 /// at which this Kmer occurs in the corresponding basevector sequence (\em not
-/// the position on the concatenated basevector sequence - see overloaded 
+/// the position on the concatenated basevector sequence - see overloaded
 /// implementations!!). In this implementation, \c queries is a vector of vectors -
 /// queries[i] stores all the queries derived from bases[i]. For each sequence bases[i],
 /// the corresponding collection of queries queries[i] is sorted by 1) direction (fw, rc),
@@ -112,19 +118,19 @@ void BasesToQueries(const ITER & bvec_iter, const ITER & bvec_iter_end, vec<Quer
 ///   be generated for bases[i] sequence.
 /// @param K Kmer length
 /// @param direction whether to generate queries only for the specified sequences (FW)
-///  or for both specified sequences and their reverse complements (FW_OR_RC); in the 
+///  or for both specified sequences and their reverse complements (FW_OR_RC); in the
 ///  latter case, both fw and rc queries for bases[i] will be stored in queries[i],
 ///  with the directionality flag set for each query.
 void BasesToQueries(const vecbasevector &bases, VecQueryVec &queries, unsigned int K,
-		    AlignDir direction=FW_OR_RC);
+                    AlignDir direction=FW_OR_RC);
 
 
 /// Same as BasesToQueries(const vecbasevector &, VecQueryVec &, unsigned int, AlignDir),
-/// but always assumes that direction is FW_OR_RC (both forward and reverse) and stores separately 
-/// all forward and reverse queries for each sequence in the two passed arrays, fw_queries and 
+/// but always assumes that direction is FW_OR_RC (both forward and reverse) and stores separately
+/// all forward and reverse queries for each sequence in the two passed arrays, fw_queries and
 /// rc_queries, respectively.
 void BasesToQueries(const vecbasevector &bases, VecQueryVec &fw_queries, VecQueryVec & rc_queries,
-		    unsigned int K);
+                    unsigned int K);
 
 
 /// Transform a vecbasevector into queries.  Note that \c queries is a linear
@@ -143,16 +149,16 @@ void BasesToQueries(const vecbasevector &bases, vec<Query> &queries, unsigned in
 /// corresponds to - it is responsibility of the client to keep this
 /// association when needed). The information provided by a RawHit is:
 ///  - an offset into the reference genome, at which the query kmer is
-/// found on the reference; 
+/// found on the reference;
 ///  - offset of the query kmer in the original
-/// full query sequence or its reverse complement (see next item); 
-///  - orientation of the original query sequence from which the query Kmer 
+/// full query sequence or its reverse complement (see next item);
+///  - orientation of the original query sequence from which the query Kmer
 ///    was generated (if IsRc()==true, the query sequence was reverse
-///    complemented). 
+///    complemented).
 /// RawHit fits in 64 bits and works for any reasonable query:
-/// query length is up to 2^31.  
+/// query length is up to 2^31.
 struct RawHit {
-  unsigned int offset; 
+  unsigned int offset;
   //  int query_pos; ///< negative query_pos values are used to encode rc hits
   unsigned int query_pos; ///< top bit==1 in query_pos values encodes rc hits
   RawHit(unsigned int offset, unsigned int in_query_pos, bool rc ) :
@@ -166,11 +172,19 @@ struct RawHit {
     query_pos ( in_query_pos )
   { }
   //  bool IsRc() const { return query_pos<0; }
-  bool IsRc() const { return (query_pos & TopBit32)!=0; }
-  unsigned int Offset() const { return offset; }
+  bool IsRc() const {
+    return (query_pos & TopBit32)!=0;
+  }
+  unsigned int Offset() const {
+    return offset;
+  }
   //  int QueryPos() const { return (query_pos>=0) ? query_pos : -(1+query_pos); }
-  unsigned int QueryPos() const { return query_pos & Bits31; }
-  longlong QueryStartOnTarget() const { return longlong(Offset()) - longlong(QueryPos()); }
+  unsigned int QueryPos() const {
+    return query_pos & Bits31;
+  }
+  longlong QueryStartOnTarget() const {
+    return longlong(Offset()) - longlong(QueryPos());
+  }
 };
 
 inline ostream & operator<<(ostream &out, const RawHit &h)
@@ -199,7 +213,7 @@ struct RawHitsEqualByOffset {
 
 struct RawHitOffsetIsBefore {
   RawHit b;
-  RawHitOffsetIsBefore(RawHit b) : b(b) { } 
+  RawHitOffsetIsBefore(RawHit b) : b(b) { }
   bool operator()(const RawHit &a) {
     return (a.Offset() < b.Offset());
   }
@@ -235,17 +249,27 @@ struct ProcessedHit : public RawHit {
   unsigned short bw;
   unsigned int contig;
   ProcessedHit(unsigned int offset = 0, unsigned int contig = 0,
-	       int in_query_pos = 0, bool rc = false, unsigned int in_nhits = 0) :
+               int in_query_pos = 0, bool rc = false, unsigned int in_nhits = 0) :
     RawHit(offset, in_query_pos, rc),
     nhits(min(in_nhits, static_cast<unsigned int>(numeric_limits<unsigned short>::max()))),
     bw(0),
     contig(contig)
   { }
-  unsigned int TargetContig() const { return contig; }
-  unsigned short NHits() const { return nhits; }
-  unsigned short Bandwidth() const { return bw; }
-  void SetNHits(unsigned int n) { nhits = min(n, static_cast<unsigned int>(numeric_limits<unsigned short>::max())); }
-  void SetBandwidth(unsigned int b) { bw = min(b, static_cast<unsigned int>(numeric_limits<unsigned short>::max())); }
+  unsigned int TargetContig() const {
+    return contig;
+  }
+  unsigned short NHits() const {
+    return nhits;
+  }
+  unsigned short Bandwidth() const {
+    return bw;
+  }
+  void SetNHits(unsigned int n) {
+    nhits = min(n, static_cast<unsigned int>(numeric_limits<unsigned short>::max()));
+  }
+  void SetBandwidth(unsigned int b) {
+    bw = min(b, static_cast<unsigned int>(numeric_limits<unsigned short>::max()));
+  }
 };
 
 TRIVIALLY_SERIALIZABLE(ProcessedHit);
@@ -257,7 +281,7 @@ extern template class OuterVec<ProcessedHitVec>;
 inline ostream & operator<<(ostream &out, const ProcessedHit &h)
 {
   return out << static_cast<RawHit>(h) << "(" << h.TargetContig() << ")["
-	     << h.NHits() << "," << h.Bandwidth() << "]";
+         << h.NHits() << "," << h.Bandwidth() << "]";
 }
 
 struct CompareProcessedHitsByRcContigQueryStart {
@@ -296,7 +320,9 @@ public:
   ClusterHits(int bw) : bw(bw) { }
   // Use this version to increase bandwidth of ProcessedHits clusters
   void operator()(ProcessedHitVec& hits);
-  int bandwidth() const { return bw; }
+  int bandwidth() const {
+    return bw;
+  }
 };
 
 

@@ -22,12 +22,12 @@ void UpdateRefGenomeSize(String ref_dir);
 
 // Sets threading values for each module, returns global thread count
 int ParseThreadArgs(const String& THREADS,
-		    int& LR_THREADS, int& CP_THREADS, int& FF_THREADS,
-		    int& ECJ_THREADS, int& KP_THREADS,
-		    int& CUG_THREADS, int& RDR_THREADS, int& FE_THREADS,
-		    int& MN_THREADS, int& PR_THREADS, int& PC_THREADS);
+                    int& LR_THREADS, int& CP_THREADS, int& FF_THREADS,
+                    int& ECJ_THREADS, int& KP_THREADS,
+                    int& CUG_THREADS, int& RDR_THREADS, int& FE_THREADS,
+                    int& MN_THREADS, int& PR_THREADS, int& PC_THREADS);
 
 
 void DisplaySystemStatus();
-  
+
 #endif

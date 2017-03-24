@@ -16,25 +16,27 @@ class RefTraceControl;
 
 class ReadOriginTracker {
 public:
-    ReadOriginTracker (const RefTraceControl& refc);
-    virtual ~ReadOriginTracker () {};
+  ReadOriginTracker (const RefTraceControl& refc);
+  virtual ~ReadOriginTracker () {};
 
-    vec<String> getSampleList() const;
+  vec<String> getSampleList() const;
 
-    int getSampleID(size_t read_ID) const;
+  int getSampleID(size_t read_ID) const;
 
-    String getSampleName(size_t read_ID) const;
+  String getSampleName(size_t read_ID) const;
 
-    const vecbasevector& Reads() const;
-    const vecqualvector& Quals() const;
+  const vecbasevector& Reads() const;
+  const vecqualvector& Quals() const;
 
-    // return the direction of the read +1 or -1. 0 for unknown
-    enum READ_DIR {PLUS, MINUS, UNKNOWN};
-    READ_DIR ReadDirection(size_t read_id) const { return read_dirs_[read_id]; };
-       
+  // return the direction of the read +1 or -1. 0 for unknown
+  enum READ_DIR {PLUS, MINUS, UNKNOWN};
+  READ_DIR ReadDirection(size_t read_id) const {
+    return read_dirs_[read_id];
+  };
+
 private:
-    const RefTraceControl& ref_control_;
-    vec<READ_DIR> read_dirs_;
+  const RefTraceControl& ref_control_;
+  vec<READ_DIR> read_dirs_;
 };
 
 #endif

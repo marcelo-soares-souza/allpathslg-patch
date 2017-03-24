@@ -1,5 +1,5 @@
 // Copyright (c) 2000-2003 Whitehead Institute for Biomedical Research
-// 
+//
 
 #include "Basevector.h"
 #include "SuperMap.h"
@@ -12,7 +12,7 @@
  * Constructor
  */
 super_map::super_map( const super &new_super,
-		      const vec<int> &contig_lengths )
+                      const vec<int> &contig_lengths )
 {
   const vec<int> *the_lengths = &contig_lengths;
   vecbasevector *the_contigs = 0;
@@ -27,11 +27,11 @@ super_map::super_map( const super &new_super,
  * Constructor
  */
 super_map::super_map( const super &new_super,
-		      const vecbasevector &contigs )
+                      const vecbasevector &contigs )
 {
   vec<int> *the_lengths = 0;
   const vecbasevector *the_contigs = &contigs;
-  
+
   this->Setup( new_super, the_lengths, the_contigs );
 }
 
@@ -42,7 +42,7 @@ super_map::super_map( const super &new_super,
  * Setup
  */
 void super_map::Setup( const super &new_super,
-		       const vec<int> &contig_lengths )
+                       const vec<int> &contig_lengths )
 {
   const vec<int> *the_lengths = &contig_lengths;
   vecbasevector *the_contigs = 0;
@@ -57,11 +57,11 @@ void super_map::Setup( const super &new_super,
  * Setup
  */
 void super_map::Setup( const super &new_super,
-		       const vecbasevector &contigs )
+                       const vecbasevector &contigs )
 {
   vec<int> *the_lengths = 0;
   const vecbasevector *the_contigs = &contigs;
-  
+
   this->Setup( new_super, the_lengths, the_contigs );
 }
 
@@ -97,7 +97,7 @@ int super_map::GetNumberContigs( ) const
 int super_map::GetSupercontigLength( ) const
 {
   return *max_element( stop_.begin( ), stop_.end( ) ) -
-    *min_element( start_.begin(), start_.end() ) + 1;
+         *min_element( start_.begin(), start_.end() ) + 1;
 }
 
 
@@ -111,7 +111,7 @@ int super_map::GetUngappedSupercontigLength( ) const
   int tot_length = 0;
   for (int jj=0; jj<(int)ids_.size(); jj++)
     tot_length += 1 + stop_[jj] - start_[jj];
-  
+
   return tot_length;
 }
 
@@ -151,8 +151,8 @@ vec<int> super_map::GetContigLengths( ) const
     lengths[jj] = 1 + stop_[jj] - start_[jj];
   return lengths;
 }
-  
- 
+
+
 
 /*
  * super_map
@@ -209,7 +209,7 @@ vec<int> super_map::GetGaps( ) const
   vec<int> gaps( ids_.size() - 1 );
   for ( unsigned int ii = 0; ii < gaps.size(); ++ii )
     gaps[ii] = start_[ii+1] - stop_[ii] - 1;
-  
+
   return gaps;
 }
 
@@ -244,11 +244,11 @@ int super_map::GetStartOnSupercontigPos( int contig_pos ) const
 int super_map::GetUngappedStartOnSupercontig( int contig_id ) const
 {
   int position_on_super = this->FindPos( contig_id );
-  
+
   int start = 0;
   for ( int ii = 0; ii < position_on_super; ++ii )
     start += ( stop_[ii] - start_[ii] + 1 );
-  
+
   return start;
 }
 
@@ -263,7 +263,7 @@ int super_map::GetUngappedStartOnSupercontigPos( int contig_pos ) const
   int start = 0;
   for ( int ii = 0; ii < contig_pos; ++ii )
     start += ( stop_[ii] - start_[ii] + 1 );
-  
+
   return start;
 }
 
@@ -302,7 +302,7 @@ int super_map::GetUngappedStopOnSupercontig( int contig_id ) const
   int stop = 0;
   for ( int ii = 0; ii < position_on_super+1; ++ii )
     stop += ( stop_[ii] - start_[ii] + 1 );
-  
+
   return stop - 1;
 }
 
@@ -317,7 +317,7 @@ int super_map::GetUngappedStopOnSupercontigPos( int contig_pos ) const
   int stop = 0;
   for ( int ii = 0; ii < contig_pos+1; ++ii )
     stop += ( stop_[ii] - start_[ii] + 1 );
-  
+
   return stop - 1;
 }
 
@@ -330,12 +330,12 @@ int super_map::GetUngappedStopOnSupercontigPos( int contig_pos ) const
 void super_map::SortContigsByStart( vec<int> &contig_ids ) const
 {
   contig_ids.clear( );
-  
+
   int n_contigs = this->GetNumberContigs( );
   contig_ids.reserve( n_contigs );
   for (int jj=0; jj<n_contigs; jj++)
     contig_ids.push_back( jj );
-  
+
   order_contig_pos_Start sorter( this );
   sort( contig_ids.begin( ), contig_ids.end( ), sorter );
 
@@ -352,15 +352,15 @@ void super_map::SortContigsByStart( vec<int> &contig_ids ) const
 void super_map::SortContigsByMaxGap( vec<int> &contig_ids ) const
 {
   contig_ids.clear( );
-  
+
   int n_contigs = this->GetNumberContigs( );
   contig_ids.reserve( n_contigs );
   for (int jj=0; jj<n_contigs; jj++)
     contig_ids.push_back( jj );
-  
+
   order_contig_pos_MaxGap sorter( this );
   sort( contig_ids.begin( ), contig_ids.end( ), sorter );
-  
+
   for (int jj=0; jj<n_contigs; jj++)
     contig_ids[jj] = ids_[ contig_ids[jj] ];
 }
@@ -376,23 +376,23 @@ void super_map::SortContigsByMaxGap( vec<int> &contig_ids ) const
  * if contigs is null, then contig_lengts is used).
  */
 void super_map::Setup( const super &new_super,
-		       const vec<int> *contig_lengths,
-		       const vecbasevector *contigs )
+                       const vec<int> *contig_lengths,
+                       const vecbasevector *contigs )
 {
   int n_contigs = (int)new_super.mtig.size( );
-  
+
   this->Clear( );
   this->Reserve( n_contigs );
-  
+
   int pos_on_scg = -1;
   for (int jj=0; jj<n_contigs; jj++) {
     int id = new_super.mtig[jj];
     int length = (contigs) ? (*contigs)[id].size( ) : (*contig_lengths)[id];
     int start = pos_on_scg + 1;
     int stop = pos_on_scg + length;
-    
+
     this->AddContig( id, start, stop );
-      
+
     pos_on_scg = stop;
     if ( jj<n_contigs - 1 )
       pos_on_scg += new_super.gap[jj];
@@ -452,7 +452,7 @@ void super_map::AddContig( int contig_id, int start, int stop )
   stop_.push_back( stop );
 
   ForceAssert( ids_.size( ) == start_.size( ) &&
-	       start_.size( ) == stop_.size( ) );
+               start_.size( ) == stop_.size( ) );
 
   contig_to_pos_[ contig_id ] = (int)ids_.size( ) - 1;
 }

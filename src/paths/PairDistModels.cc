@@ -11,7 +11,7 @@
 // to generate an end-to-end pair separation, also allow distribution to be trimmed
 // to contain only single peak, and trimmed for given MIN_SEP and MAX_SEP.
 ProbFuncIntDist:: ProbFuncIntDist(const IntDistribution& dist, const int shift, bool TRIM,
-                               const int MIN_SEP, const int MAX_SEP) 
+                                  const int MIN_SEP, const int MAX_SEP)
 {
   bool verbose = false;
   // avg and std of the original distribution
@@ -25,16 +25,16 @@ ProbFuncIntDist:: ProbFuncIntDist(const IntDistribution& dist, const int shift, 
   int MAX_SEP_new = dist.x_max();
   if ( TRIM)
   {
-    // Distribution trimming 
-    // Select only one peak from the distribution. Also trim 0.1% ditribution from both side 
+    // Distribution trimming
+    // Select only one peak from the distribution. Also trim 0.1% ditribution from both side
     double prob_cutoff = 0.001;
-    int maxProbArg = 0; 
+    int maxProbArg = 0;
     double maxProb = dist.prob(maxProbArg); // no innies
     //int maxProbArg = dist.x_min(), maxProb = dist.prob(maxProbArg);
     for ( int i = 0; i < dist.x_max(); i++ ) {
       if ( dist.prob(i) > maxProb ) {
-	maxProb = dist.prob(i);
-	maxProbArg = i;
+        maxProb = dist.prob(i);
+        maxProbArg = i;
       }
     }
     int iU = maxProbArg + s_sd, iL =  maxProbArg - s_sd; // upperbound and lowbound
@@ -46,7 +46,7 @@ ProbFuncIntDist:: ProbFuncIntDist(const IntDistribution& dist, const int shift, 
     MIN_SEP_new = iL;
     MAX_SEP_new = iU;
   }
-  // min and max in invariant pair distance 
+  // min and max in invariant pair distance
   int minSep = Max ( MIN_SEP - shift, MIN_SEP_new );
   int maxSep = Min ( MAX_SEP - shift, MAX_SEP_new );
   // Every invarant gap size in [minSep,  maxSep) will be mapped to the array of length len,
@@ -70,7 +70,7 @@ ProbFuncIntDist:: ProbFuncIntDist(const IntDistribution& dist, const int shift, 
   }
   //for( int i=0; i < len; i++)
   //  p[i]/= sum;
-  
+
   // calcualte d0, d1, d2
   double total0 = 0, total1= 0, total2 = 0;
   for(int i=0; i<len; i++)
@@ -90,7 +90,7 @@ ProbFuncIntDist:: ProbFuncIntDist(const IntDistribution& dist, const int shift, 
 
 
 ProbFuncIntDist:: ProbFuncIntDist( const vec<double>& array,
-                               const int MIN_SEP )
+                                   const int MIN_SEP )
 {
   this->FromArray(array, MIN_SEP);
 }
@@ -98,7 +98,7 @@ ProbFuncIntDist:: ProbFuncIntDist( const vec<double>& array,
 
 // Initialize the probability functon from an array
 void ProbFuncIntDist:: FromArray( const vec<double>& array,
-                               const int MIN_SEP )
+                                  const int MIN_SEP )
 {
   int len = array.size();
   ForceAssertGt( len, 0 );
@@ -126,7 +126,7 @@ void ProbFuncIntDist:: FromArray( const vec<double>& array,
     d1[i] = total1;
     d2[i] = total2;
   }
-  // assign the essential parameters 
+  // assign the essential parameters
   avg = total1 / total0;
   sd = sqrt( total2 / total0 - avg * avg );
   cout << "new avg std " <<  avg*sqrt(2.0) << " " << sd*sqrt(2.0) << endl;
@@ -135,8 +135,8 @@ void ProbFuncIntDist:: FromArray( const vec<double>& array,
 }
 
 
-// Pair distribution from an ascii file 
-ProbFuncDist::ProbFuncDist(String filename) 
+// Pair distribution from an ascii file
+ProbFuncDist::ProbFuncDist(String filename)
 {
   ForceAssert(IsRegularFile(filename));
   ifstream ifs(filename.c_str());

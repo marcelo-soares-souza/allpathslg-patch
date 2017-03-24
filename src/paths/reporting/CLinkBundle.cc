@@ -26,8 +26,8 @@ CLinkBundle::CLinkBundle( ) :
  * Constructor
  */
 CLinkBundle::CLinkBundle( int sep, int dev, int weight, float score,
- 			  pair<double,double> win1,
-			  pair<double,double> win2 ) :
+                          pair<double,double> win1,
+                          pair<double,double> win2 ) :
   sep_ ( sep ),
   dev_ ( dev ),
   weight_ ( weight ),
@@ -35,14 +35,14 @@ CLinkBundle::CLinkBundle( int sep, int dev, int weight, float score,
   win1_ ( win1 ),
   win2_ ( win2 )
 { }
-  
+
 /**
  * CLinkBundle
  * Constructor
  */
 void CLinkBundle::Set( int sep, int dev, int weight, float score,
-		       pair<double,double> win1,
-		       pair<double,double> win2 )
+                       pair<double,double> win1,
+                       pair<double,double> win2 )
 {
   sep_ = sep;
   dev_ = dev;
@@ -56,7 +56,7 @@ void CLinkBundle::Set( int sep, int dev, int weight, float score,
  * CLinkBundle
  * ToString
  */
-String CLinkBundle::AsString( bool brief ) const 
+String CLinkBundle::AsString( bool brief ) const
 {
   if ( brief )
     return
@@ -86,7 +86,7 @@ String CLinkBundle::AsString( bool brief ) const
  * HEURISTICS: use DAMPING to damp the effect of the exponential
  * (at 1.0 it would decay too fast).
  */
-double CLinkBundle::CombinedScore( ) const 
+double CLinkBundle::CombinedScore( ) const
 {
   const double CENTER = 1.0;
   const double DAMPING = 100.0;

@@ -27,7 +27,7 @@
 #include "system/UseGDB.h"
 
 #ifndef FatalErr
-     #define FatalErr(message) { cout << message << endl << endl; exit(-1); }
+#define FatalErr(message) { cout << message << endl << endl; exit(-1); }
 #endif
 
 #define CleanUpAndExit(EXITCODE) { RemoveTheTee(); exit(EXITCODE); }
@@ -50,36 +50,36 @@ String parsed_args::doc_format;    // paramter documentation format
 void parsed_args::PrintTheCommandPretty( ostream& out, const String& prefix )
 {
   String bar( "-----------------------------------------------------------"
-	      "---------------------" );
-  
+              "---------------------" );
+
   std::string hostname = getHostName();
   hostname = hostname.substr(0,hostname.find('.'));
-  
+
   // Get the process ID and pad it to 5 characters.
   String pid_str = ToString( getpid( ) );
   while ( pid_str.size( ) < 5 ) pid_str += " ";
-  
+
   // Write the first line of the command header.
   out << prefix << "\n" << prefix << bar << "\n" << prefix
       << Date( ) << " run on " << hostname << ", pid=" << pid_str
       << " [" << LINK_TIMESTAMP << " R" << SVN_REVISION << " ]\n";
-  
+
   if ( orig_command_ != "" ) {
     String oc;
     SlashFold( orig_command_, oc );
     out << prefix << oc;
     out << "........................................................."
-	<< ".......................\n";
+        << ".......................\n";
   }
-  
+
   String tc;
   SlashFold( TheCommand( ), tc );
   if ( prefix != "" )  {
     ForceAssert( !prefix.Contains("\n") );
-    
+
     for ( int i = 0; i+1 < tc.isize(); i++ ) // tc changes size in the loop, which is ok
       if ( tc[i] == '\n' )
-	tc.replace( i+1, 0, prefix );
+        tc.replace( i+1, 0, prefix );
   }
   out << prefix << tc << prefix << bar << "\n" << prefix << endl;
 }
@@ -87,96 +87,107 @@ void parsed_args::PrintTheCommandPretty( ostream& out, const String& prefix )
 parsed_args::parsed_args( int argc, char *argv[], const Bool no_header )
   : command_( Basename(argv[0]) ), doc_(0), outputRedirectionPipe( NULL )
 {
-     no_header_ = no_header;
-     ARGS = this;
-     char* pretty_help_ptr = getenv( "ARACHNE_PRETTY_HELP" );
-     if (pretty_help_ptr != 0 && String(pretty_help_ptr) == "Color") {
-       usage_format = START_BOLD;
-       param_format = START_MAGENTA;
-       header_format = START_BOLD;
-       info_format = START_LIGHT_BLUE;
-       doc_format = "";
-       pretty_help = True;
-     } else if (pretty_help_ptr != 0 && String(pretty_help_ptr) == "Bold") {
-       usage_format = START_BOLD;
-       param_format = START_BOLD;
-       header_format = START_BOLD;
-       info_format = "";
-       doc_format = "";
-       pretty_help = True;
-     } else {
-       pretty_help = False;
-     }
-     name_.reserve( argc - 1 );
-     def_.reserve( argc - 1 );
-     used_.reserve( argc - 1 );
-     if ( argc == 1 || ( argc > 1 && (strcmp( argv[1], "-h" ) == 0  || strcmp( argv[1], "--help" ) == 0 ) ) ) {
-       get_help_ = True;
-       if (argc == 3)
-	 get_help_command_ = String(argv[2]);
-     } else if ( argc == 2 && (strcmp( argv[1], "-v" ) == 0  || strcmp( argv[1], "--version" ) == 0 ) ) {
-       PrintVersion();
-       exit(0);
-     } else
-       {    static Bool included_args;  // static because of longjmp below
-       included_args = False;
-          get_help_ = False;
-          for ( int i = 1; i < argc; i++ )
-          {    if ( String(argv[i]).Contains( "@@", 0 ) )
-               {    included_args = True;
-                    String source = String(argv[i]).After( "@@" );
-                    if ( !IsRegularFile(source) )
-                    {     PRINT2(i, argv[i]);
-                          InputErr( "Failed to locate " << source << "." );     }
-                    Ifstream( in, source );
-                    String line, x, inargs;
-                    while(in)
-                    {    getline( in, line );
-                         if ( !in ) break;
-                         if ( line.Contains( "#", 0 ) ) continue;
-                         istrstream ini( line.c_str( ) );
-                         while(ini)
-                         {    ini >> x;
-                              if ( x == "" ) break;
-                              if ( !ParseString(x) )
-                              {    PRINT2(i, argv[i]);
-	                           InputErr( "Could not parse argument " << x 
-                                        << " from file " << source 
-                                        << "." );    }    }    }    }
-               else if ( ! this->ParseString( argc, argv, i) )
-               {    PRINT2(i, argv[i]);
-	            InputErr( "You did not invoke this program with " <<
-		          "white-space-free arguments of the form PARAMETER=VALUE." 
-		          << "\n\nTo see the syntax for this command, type \"" 
-		          << command_ << " -h\"." );    }    }
+  no_header_ = no_header;
+  ARGS = this;
+  char* pretty_help_ptr = getenv( "ARACHNE_PRETTY_HELP" );
+  if (pretty_help_ptr != 0 && String(pretty_help_ptr) == "Color") {
+    usage_format = START_BOLD;
+    param_format = START_MAGENTA;
+    header_format = START_BOLD;
+    info_format = START_LIGHT_BLUE;
+    doc_format = "";
+    pretty_help = True;
+  } else if (pretty_help_ptr != 0 && String(pretty_help_ptr) == "Bold") {
+    usage_format = START_BOLD;
+    param_format = START_BOLD;
+    header_format = START_BOLD;
+    info_format = "";
+    doc_format = "";
+    pretty_help = True;
+  } else {
+    pretty_help = False;
+  }
+  name_.reserve( argc - 1 );
+  def_.reserve( argc - 1 );
+  used_.reserve( argc - 1 );
+  if ( argc == 1 || ( argc > 1 && (strcmp( argv[1], "-h" ) == 0  || strcmp( argv[1], "--help" ) == 0 ) ) ) {
+    get_help_ = True;
+    if (argc == 3)
+      get_help_command_ = String(argv[2]);
+  } else if ( argc == 2 && (strcmp( argv[1], "-v" ) == 0  || strcmp( argv[1], "--version" ) == 0 ) ) {
+    PrintVersion();
+    exit(0);
+  } else
+  { static Bool included_args;  // static because of longjmp below
+    included_args = False;
+    get_help_ = False;
+    for ( int i = 1; i < argc; i++ )
+    { if ( String(argv[i]).Contains( "@@", 0 ) )
+      { included_args = True;
+        String source = String(argv[i]).After( "@@" );
+        if ( !IsRegularFile(source) )
+        { PRINT2(i, argv[i]);
+          InputErr( "Failed to locate " << source << "." );
+        }
+        Ifstream( in, source );
+        String line, x, inargs;
+        while(in)
+        { getline( in, line );
+          if ( !in ) break;
+          if ( line.Contains( "#", 0 ) ) continue;
+          istrstream ini( line.c_str( ) );
+          while(ini)
+          { ini >> x;
+            if ( x == "" ) break;
+            if ( !ParseString(x) )
+            { PRINT2(i, argv[i]);
+              InputErr( "Could not parse argument " << x
+                        << " from file " << source
+                        << "." );
+            }
+          }
+        }
+      }
+      else if ( ! this->ParseString( argc, argv, i) )
+      { PRINT2(i, argv[i]);
+        InputErr( "You did not invoke this program with " <<
+                  "white-space-free arguments of the form PARAMETER=VALUE."
+                  << "\n\nTo see the syntax for this command, type \""
+                  << command_ << " -h\"." );
+      }
+    }
 
-	  MemMonitor();   // Launch MemMonitor if required
-	  ParseTheTee();	  // Create TEE if required
+    MemMonitor();   // Launch MemMonitor if required
+    ParseTheTee();	  // Create TEE if required
 
-          // Print the command name, etc.
-     
-          if ( no_header_ ) return;
-          if ( TheCommand( ).Contains( "Assemble ", 0 ) ) return;
-          if ( TheCommand( ).Contains( "Rerun ", 0 ) ) return;
-          if ( TheCommand( ).Contains( "PackSource ", 0 ) ) return;
-          if ( TheCommand( ).Contains( " NO_HEADER=True" ) ) return;
-          if ( TheCommand( ).Contains( " NH=True" ) ) return;
+    // Print the command name, etc.
 
-	  // Add any command arguments passed via a file (using @@filename) to
-	  // the original command line string for pretty printing. Ignore TEE.
+    if ( no_header_ ) return;
+    if ( TheCommand( ).Contains( "Assemble ", 0 ) ) return;
+    if ( TheCommand( ).Contains( "Rerun ", 0 ) ) return;
+    if ( TheCommand( ).Contains( "PackSource ", 0 ) ) return;
+    if ( TheCommand( ).Contains( " NO_HEADER=True" ) ) return;
+    if ( TheCommand( ).Contains( " NH=True" ) ) return;
 
-          if (included_args)
-          {
-	    Bool first = True;
-	      for ( int i = 0; i < argc; i++ )
-               {    if ( String(orig_command_).substr(0, 4) == "TEE=" )
-		       continue;
-	            if ( !first ) orig_command_ += " ";
-		    first = False;
-                    orig_command_ += argv[i];    }    }
+    // Add any command arguments passed via a file (using @@filename) to
+    // the original command line string for pretty printing. Ignore TEE.
 
-          PrintTheCommandPretty( cout );
-	  PrintTheTee();    }    }
+    if (included_args)
+    {
+      Bool first = True;
+      for ( int i = 0; i < argc; i++ )
+      { if ( String(orig_command_).substr(0, 4) == "TEE=" )
+          continue;
+        if ( !first ) orig_command_ += " ";
+        first = False;
+        orig_command_ += argv[i];
+      }
+    }
+
+    PrintTheCommandPretty( cout );
+    PrintTheTee();
+  }
+}
 
 parsed_args::~parsed_args() {
   ARGS = NULL;
@@ -185,9 +196,9 @@ parsed_args::~parsed_args() {
 
 bool parsed_args::ParseString( int argc, char **argv, int & i) {
   int len = strlen(argv[i]);
-  if (i == argc-1 
+  if (i == argc-1
       || argv[i][len-1] != '=' //e.g. PARAM=blah
-      || String(argv[i+1]).Contains("=") ) { 
+      || String(argv[i+1]).Contains("=") ) {
     return ParseString(argv[i]);
   }
   else { //e.g. PARAM= blah
@@ -199,27 +210,31 @@ bool parsed_args::ParseString( int argc, char **argv, int & i) {
 }
 
 void parsed_args::FetchArgsFromFile( const String& filename )
-{    if ( IsRegularFile(filename) )
-     {    Ifstream( in, filename );
-          String line, a;
-          while(1)
-          {    getline( in, line );
-               if ( !in ) break;
-               if ( line.Contains( "#", 0 ) ) continue;
-               if ( line.size( ) == 0 ) continue;
-               istrstream iline( line.c_str( ) );
-               while(iline)
-               {    iline >> a;
-                    if ( a.empty( ) ) break;
-                    if ( !this->ParseString(a) )
-	                 InputErr( "\nThe file " << filename << "\ndoes not contain "
-		              << "white-space-free arguments of the form "
-		              << "PARAMETER=VALUE." );    }    }    }    }
+{ if ( IsRegularFile(filename) )
+  { Ifstream( in, filename );
+    String line, a;
+    while(1)
+    { getline( in, line );
+      if ( !in ) break;
+      if ( line.Contains( "#", 0 ) ) continue;
+      if ( line.size( ) == 0 ) continue;
+      istrstream iline( line.c_str( ) );
+      while(iline)
+      { iline >> a;
+        if ( a.empty( ) ) break;
+        if ( !this->ParseString(a) )
+          InputErr( "\nThe file " << filename << "\ndoes not contain "
+                    << "white-space-free arguments of the form "
+                    << "PARAMETER=VALUE." );
+      }
+    }
+  }
+}
 
 bool parsed_args::ParseString( const String& string )
 {
   int eq = string.Position( "=" );
-  if ( eq <= 0 ) 
+  if ( eq <= 0 )
     return false;
 
   String name = string.substr( 0, eq );
@@ -230,18 +245,19 @@ bool parsed_args::ParseString( const String& string )
     used_.push_back(False);
   }
   else
-  {    cout << "You've specified two values for " << name << ".\n"
-            << "This is not allowed.  Please remove one of your "
-            << "specifications.\n";
-       cout << "Aborting.\n\n";
-       CleanUpAndExit(1);    }
+  { cout << "You've specified two values for " << name << ".\n"
+         << "This is not allowed.  Please remove one of your "
+         << "specifications.\n";
+    cout << "Aborting.\n\n";
+    CleanUpAndExit(1);
+  }
 
   return true;
 }
-  
+
 void parsed_args::ConversionFailure(int i) {
   cout << "I couldn't convert the command line value \"" << def_[i] <<
-    "\" for argument \"" << name_[i] << "\" to the required type.\n";
+       "\" for argument \"" << name_[i] << "\" to the required type.\n";
   System( command_ + " -h " + name_[i] );
   cout << "Aborting.\n\n";
   CleanUpAndExit(1);
@@ -249,7 +265,7 @@ void parsed_args::ConversionFailure(int i) {
 
 void parsed_args::ValidationFailure(int i, const String& valid ) {
   cout << "Invalid command line value \"" << def_[i]
-       << "\" for argument \"" << name_[i] << "\".\n" 
+       << "\" for argument \"" << name_[i] << "\".\n"
        << "Valid value set/range is " << valid << "\n";
   System( command_ + " -h " + name_[i] );
   cout << "Aborting.\n\n";
@@ -257,10 +273,10 @@ void parsed_args::ValidationFailure(int i, const String& valid ) {
 }
 
 void parsed_args::ValidationFailureDefault(const String& name,
-					   const String& deflt,
-					   const String& valid ) {
+    const String& deflt,
+    const String& valid ) {
   cout << "Invalid default command line value \"" << deflt
-       << "\" for argument \"" << name << "\".\n" 
+       << "\" for argument \"" << name << "\".\n"
        << "Valid value set/range is " << valid << "\n";
   System( command_ + " -h " + name );
   cout << "Aborting.\n\n";
@@ -268,10 +284,11 @@ void parsed_args::ValidationFailureDefault(const String& name,
 }
 
 void parsed_args::NoValue(String n)
-{    cout << "You must specify a command-line value for " << n << ".\n";
-     System( command_ + " -h " + n );
-     cout << "Aborting.\n\n";
-     CleanUpAndExit(1);    }
+{ cout << "You must specify a command-line value for " << n << ".\n";
+  System( command_ + " -h " + n );
+  cout << "Aborting.\n\n";
+  CleanUpAndExit(1);
+}
 
 String parsed_args::CheckForArgAndAbbreviation( String n, String abbr )
 {
@@ -280,121 +297,121 @@ String parsed_args::CheckForArgAndAbbreviation( String n, String abbr )
 
   bool gotName(False), gotAbbr(False);
   for ( unsigned int i = 0; i < name_.size( ); i++ )
-     {
-       if ( name_[i] == n )
-	 {
-	   gotName = True;
-	   continue;
-	 }
-       if ( name_[i] == abbr )
-	 {
-	   gotAbbr = True;
-	 }
-     }
+  {
+    if ( name_[i] == n )
+    {
+      gotName = True;
+      continue;
+    }
+    if ( name_[i] == abbr )
+    {
+      gotAbbr = True;
+    }
+  }
 
   if ( gotName && gotAbbr )
-    {
-      cout << "You must not specify both an argument-" << n 
-	   << " and its abbreviation-" << abbr << ".\n"
-	   << "\nTo see the syntax for this command, type \"" 
-	   << command_ << " -h\".\n\n";
-     CleanUpAndExit(1);    
-    }
+  {
+    cout << "You must not specify both an argument-" << n
+         << " and its abbreviation-" << abbr << ".\n"
+         << "\nTo see the syntax for this command, type \""
+         << command_ << " -h\".\n\n";
+    CleanUpAndExit(1);
+  }
 
   if ( gotName )
     return n;
-  
+
   return abbr;
 
-}   
+}
 
 void parsed_args::CheckEnv( const String& n, const String& abbr ) {
-    for ( int i = 0; i < name_.isize( ); i++ )
-	if ( name_[i] == n || name_[i] == abbr ) return;
-    int npasses = ( abbr == "" ? 1 : 2 );
-    for ( int pass = 1; pass <= npasses; pass++ ) {
-	char* env = nullptr;
-	if (env_var_prefix_ != "") { 
-	    // Look for specific prefix (if set) first
-	    String env_var = env_var_prefix_ + "_" + ( pass == 1 ? n : abbr );
-	    env = getenv( env_var.c_str( ) );
-	}
-	if (!env) {  
-	    // Try default ARACHNE prefix as a fall back
-	    String env_var =  "ARACHNE_" + ( pass == 1 ? n : abbr );
-	    env = getenv( env_var.c_str( ) );
-	}
-	if ( env != 0 ) {
-	    // Environment variable command arg found
-	    def_.push_back( String(env) );
-	    name_.push_back(n);
-	    used_.push_back(False);
-	    return;
-	}
+  for ( int i = 0; i < name_.isize( ); i++ )
+    if ( name_[i] == n || name_[i] == abbr ) return;
+  int npasses = ( abbr == "" ? 1 : 2 );
+  for ( int pass = 1; pass <= npasses; pass++ ) {
+    char* env = nullptr;
+    if (env_var_prefix_ != "") {
+      // Look for specific prefix (if set) first
+      String env_var = env_var_prefix_ + "_" + ( pass == 1 ? n : abbr );
+      env = getenv( env_var.c_str( ) );
     }
+    if (!env) {
+      // Try default ARACHNE prefix as a fall back
+      String env_var =  "ARACHNE_" + ( pass == 1 ? n : abbr );
+      env = getenv( env_var.c_str( ) );
+    }
+    if ( env != 0 ) {
+      // Environment variable command arg found
+      def_.push_back( String(env) );
+      name_.push_back(n);
+      used_.push_back(False);
+      return;
+    }
+  }
 }
 
 template<>
 void parsed_args::GetValue<String>
 ( String n, String & value, const String & abbr, const String & deflt,
   const String & valid) {
-  value = GetStringValue(n, abbr, deflt, valid); 
+  value = GetStringValue(n, abbr, deflt, valid);
 }
-    
+
 template<>
 void parsed_args::GetValue<vec<String> >
 ( String n, vec<String> & value, const String & abbr, const String & deflt,
   const String & valid) {
-    ParseStringSet(GetStringValue(n, abbr,deflt), value, false); 
+  ParseStringSet(GetStringValue(n, abbr,deflt), value, false);
 }
-    
+
 template<>
 void parsed_args::GetValue<vec<int> >
 ( String n, vec<int> & value, const String & abbr, const String & deflt,
   const String & valid) {
-    ParseIntSet(GetStringValue(n, abbr,deflt), value, false); 
+  ParseIntSet(GetStringValue(n, abbr,deflt), value, false);
 }
 template<>
 void parsed_args::GetValue<vec<longlong> >
 ( String n, vec<longlong> & value, const String & abbr, const String & deflt,
   const String & valid) {
-    ParseLongLongSet(GetStringValue(n, abbr,deflt), value, false); 
+  ParseLongLongSet(GetStringValue(n, abbr,deflt), value, false);
 }
-    
+
 template<>
 void parsed_args::GetValue<vec<double> >
 ( String n, vec<double> & value, const String & abbr, const String & deflt,
   const String & valid) {
-    ParseDoubleSet(GetStringValue(n, abbr,deflt), value, false); 
+  ParseDoubleSet(GetStringValue(n, abbr,deflt), value, false);
 }
 
 template<>
 void parsed_args::GetValue<unsigned int>
 ( String n, unsigned int & value, const String & abbr, const String & deflt,
   const String & valid) {
-  value = deflt.IsInt() 
-    ? GetUnsignedIntValue(n, abbr, deflt.Int(), valid)
-    : GetUnsignedIntValue(n, abbr, INVALID_UINT, valid);
+  value = deflt.IsInt()
+          ? GetUnsignedIntValue(n, abbr, deflt.Int(), valid)
+          : GetUnsignedIntValue(n, abbr, INVALID_UINT, valid);
   return;
 }
 
 template<>
 void parsed_args::GetValue<int>
-( String n, int & value, const String & abbr, const String & deflt, 
+( String n, int & value, const String & abbr, const String & deflt,
   const String & valid) {
-  value = deflt.IsInt() 
-    ? GetIntValue(n, abbr, deflt.Int(), valid)
-    : GetIntValue(n, abbr, INVALID_INT, valid);
+  value = deflt.IsInt()
+          ? GetIntValue(n, abbr, deflt.Int(), valid)
+          : GetIntValue(n, abbr, INVALID_INT, valid);
   return;
 }
 
 template<>
 void parsed_args::GetValue<longlong>
-( String n, longlong & value, const String & abbr, const String & deflt, 
+( String n, longlong & value, const String & abbr, const String & deflt,
   const String & valid) {
   value = deflt.IsInt() // only checks format, not range
-    ? GetLongLongValue(n, abbr, deflt.Int(), valid)
-    : GetLongLongValue(n, abbr, INVALID_LONGLONG, valid);
+          ? GetLongLongValue(n, abbr, deflt.Int(), valid)
+          : GetLongLongValue(n, abbr, INVALID_LONGLONG, valid);
   return;
 }
 
@@ -402,15 +419,15 @@ void parsed_args::GetValue<longlong>
 template<>
 void parsed_args::GetValue<double>
 ( String n, double & value, const String & abbr, const String & deflt,
-  const String & valid) { 
-  value = deflt.IsDouble() 
-    ? GetDoubleValue(n, abbr, deflt.Double(), valid)
-    : GetDoubleValue(n, abbr, INVALID_DOUBLE, valid);
+  const String & valid) {
+  value = deflt.IsDouble()
+          ? GetDoubleValue(n, abbr, deflt.Double(), valid)
+          : GetDoubleValue(n, abbr, INVALID_DOUBLE, valid);
   return;
 }
 
 String parsed_args::GetStringValue( String n, String abbr,
-				    String deflt, String valid ) { 
+                                    String deflt, String valid ) {
 
   if (deflt != INVALID_STRING && valid != "" && !IsMemberOf(valid, deflt))
     ValidationFailureDefault(n, deflt, valid);
@@ -420,83 +437,84 @@ String parsed_args::GetStringValue( String n, String abbr,
   for ( unsigned int i = 0; i < name_.size( ); i++ ) {
     if ( name_[i] == toFind ) {
       used_[i] = True;
-      if ( def_[i].size( ) > 0 && def_[i][0] == '"' 
-	   && def_[i][ def_.size( ) - 1 ] == '"' ) {
-	for ( unsigned int j = 1; j < def_.size( ) - 1; j++ )
-	  def_[j-1] = def_[j];
-	def_.resize( def_.size( ) - 2 );
+      if ( def_[i].size( ) > 0 && def_[i][0] == '"'
+           && def_[i][ def_.size( ) - 1 ] == '"' ) {
+        for ( unsigned int j = 1; j < def_.size( ) - 1; j++ )
+          def_[j-1] = def_[j];
+        def_.resize( def_.size( ) - 2 );
       }
       if (valid == "" || IsMemberOf(valid, def_[i]))
-	return def_[i];
-      else 
-	ValidationFailure(i, valid);
+        return def_[i];
+      else
+        ValidationFailure(i, valid);
     }
   }
   if ( deflt != INVALID_STRING )
     return deflt;
 
   NoValue(n);
-  return GARBAGE;    
+  return GARBAGE;
 }
 
 
 Bool parsed_args::GetBoolValue( String n, String abbr, Bool deflt )
-{ 
+{
   CheckEnv( n, abbr );
   String toFind = CheckForArgAndAbbreviation( n, abbr );
   for ( unsigned int i = 0; i < name_.size( ); i++ )
-          if ( name_[i] == toFind ) 
-          {    used_[i] = True;
-              if ( ToLower(def_[i]) == "true" ) return True;
-              else if ( ToLower(def_[i]) == "false" ) return False;
-               else FatalErr( "The value of " << n 
-                    << " must be either True or False." );    }
-     if ( deflt != INVALID_BOOL ) return deflt;
-     NoValue(n);
-     return GARBAGE;    
+    if ( name_[i] == toFind )
+    { used_[i] = True;
+      if ( ToLower(def_[i]) == "true" ) return True;
+      else if ( ToLower(def_[i]) == "false" ) return False;
+      else FatalErr( "The value of " << n
+                       << " must be either True or False." );
+    }
+  if ( deflt != INVALID_BOOL ) return deflt;
+  NoValue(n);
+  return GARBAGE;
 }
 
 template<>
 void parsed_args::GetValue<Bool>
 ( String n, Bool & value, const String & abbr, const String & deflt,
   const String & valid) {
-    value = (!deflt.IsBool()) ? GetBoolValue(n, abbr) 
-    : ("True" == deflt) 
-      ?  GetBoolValue(n, abbr, True)
-      :  GetBoolValue(n, abbr, False);
-    return;
-  }
+  value = (!deflt.IsBool()) ? GetBoolValue(n, abbr)
+          : ("True" == deflt)
+          ?  GetBoolValue(n, abbr, True)
+          :  GetBoolValue(n, abbr, False);
+  return;
+}
 
 
 unsigned int parsed_args::GetUnsignedIntValue( String n, String abbr,
-					       unsigned int deflt, String valid ) {
-  
+    unsigned int deflt, String valid ) {
+
   if (deflt != INVALID_UINT && valid != "" && !IsMemberOf(valid, deflt))
     ValidationFailureDefault(n, ToString(deflt), valid);
-  
+
   CheckEnv( n, abbr );
   String toFind = CheckForArgAndAbbreviation( n, abbr );
   for ( int i = 0; i < name_.isize( ); i++ ) {
     if ( name_[i] == toFind ) {
       if ( def_[i].size( ) > 0 && def_[i].IsInt( ) ) {
-	longlong answer = def_[i].Int( );
-	static longlong answer_bound((longlong) 4 *
-				     (longlong) (1024 * 1024 * 1024) );
-	if ( answer < answer_bound ) {
-	  used_[i] = True;
-	  unsigned int answerUInt = static_cast<unsigned int>(answer);
-	  if (valid == "" || IsMemberOf(valid, answerUInt))
-	    return answerUInt;
-	  else
-	    ValidationFailure(i, valid);
-	}
+        longlong answer = def_[i].Int( );
+        static longlong answer_bound((longlong) 4 *
+                                     (longlong) (1024 * 1024 * 1024) );
+        if ( answer < answer_bound ) {
+          used_[i] = True;
+          unsigned int answerUInt = static_cast<unsigned int>(answer);
+          if (valid == "" || IsMemberOf(valid, answerUInt))
+            return answerUInt;
+          else
+            ValidationFailure(i, valid);
+        }
       }
       ConversionFailure(i);
     }
   }
   if ( deflt != INVALID_UINT )
     return deflt;
-  
+
   NoValue(n);
   return 0;
 }
@@ -512,24 +530,24 @@ int parsed_args::GetIntValue( String n, String abbr, int deflt, String valid ) {
   for ( int i = 0; i < name_.isize( ); i++ ) {
     if ( name_[i] == toFind ) {
       if ( def_[i].size( ) > 0 && def_[i].IsInt( ) ) {
-	longlong answer = def_[i].Int( );
-	static longlong answer_top(INT_MAX);
-	static longlong answer_bottom(INT_MIN);
-	if ( answer <= answer_top && answer >= answer_bottom ) {
-	  used_[i] = True;
-	  int answerInt = static_cast<int>(answer);
-	  if (valid == "" || IsMemberOf(valid, answerInt))
-	    return answerInt;
-	  else
-	    ValidationFailure(i, valid);
-	}
+        longlong answer = def_[i].Int( );
+        static longlong answer_top(INT_MAX);
+        static longlong answer_bottom(INT_MIN);
+        if ( answer <= answer_top && answer >= answer_bottom ) {
+          used_[i] = True;
+          int answerInt = static_cast<int>(answer);
+          if (valid == "" || IsMemberOf(valid, answerInt))
+            return answerInt;
+          else
+            ValidationFailure(i, valid);
+        }
       }
       ConversionFailure(i);
     }
   }
   if ( deflt != INVALID_INT )
     return deflt;
-  
+
   NoValue(n);
   return 0;
 }
@@ -545,26 +563,26 @@ longlong parsed_args::GetLongLongValue( String n, String abbr, longlong deflt, S
   for ( int i = 0; i < name_.isize( ); i++ ) {
     if ( name_[i] == toFind ) {
       if ( def_[i].size( ) > 0 && def_[i].IsInt( ) ) {  // isInt() doesn't range check
-	longlong answer = def_[i].Int( );  // Int() returns a longlong, no range checking
-	used_[i] = True;
-	if (valid == "" || IsMemberOf(valid, answer))
-	  return answer;
-	else
-	  ValidationFailure(i, valid);
+        longlong answer = def_[i].Int( );  // Int() returns a longlong, no range checking
+        used_[i] = True;
+        if (valid == "" || IsMemberOf(valid, answer))
+          return answer;
+        else
+          ValidationFailure(i, valid);
       }
       ConversionFailure(i);
     }
   }
   if ( deflt != INVALID_LONGLONG )
     return deflt;
-  
+
   NoValue(n);
   return 0;
 }
 
 
 double parsed_args::GetDoubleValue( String n, String abbr,
-				    double deflt, String valid ) {  
+                                    double deflt, String valid ) {
 
   if (deflt != INVALID_INT && valid != "" && !IsMemberOf(valid, deflt))
     ValidationFailureDefault(n, ToString(deflt), valid);
@@ -574,12 +592,12 @@ double parsed_args::GetDoubleValue( String n, String abbr,
   for ( unsigned int i = 0; i < name_.size( ); i++ ) {
     if ( name_[i] == toFind ) {
       if ( def_[i].size( ) > 0 && def_[i].IsDouble( ) ) {
-	double answer = def_[i].Double( );
-	used_[i] = True;
-	if (valid == "" || IsMemberOf(valid, answer))
-	  return answer;
-	else
-	  ValidationFailure(i, valid);
+        double answer = def_[i].Double( );
+        used_[i] = True;
+        if (valid == "" || IsMemberOf(valid, answer))
+          return answer;
+        else
+          ValidationFailure(i, valid);
       }
       ConversionFailure(i);
     }
@@ -600,17 +618,17 @@ void parsed_args::MemMonitor() {
       int pid = getpid();
       String cmd = "MemMonitor";
       if (IsCommandInPath(cmd) ) {
-	String mmcmd = cmd + " NH=True PID=" + ToString(pid);
-	for (unsigned int mmindex = 0; mmindex < used_.size( ); mmindex++) {
-	  if (name_[mmindex].Contains("_MM_")) {
-	    mmcmd += " " + name_[mmindex].After("_MM_") + "=" + def_[mmindex];
-	  }
-	}
-	Fork(mmcmd, true);
+        String mmcmd = cmd + " NH=True PID=" + ToString(pid);
+        for (unsigned int mmindex = 0; mmindex < used_.size( ); mmindex++) {
+          if (name_[mmindex].Contains("_MM_")) {
+            mmcmd += " " + name_[mmindex].After("_MM_") + "=" + def_[mmindex];
+          }
+        }
+        Fork(mmcmd, true);
       }
       used_[pos] = True;
     }
-  }    
+  }
 }
 
 void parsed_args::ParseTheTee()
@@ -654,48 +672,58 @@ void parsed_args::PrintTheTee()
 
 
 void parsed_args::CheckForExtraArgs( bool abort_if_found )
-{    Bool junk_found = False;
-     for ( unsigned int i = 0; i < used_.size( ); i++ )
-          if ( used_[i] == False )
-          {
-	       if ( name_[i] == "GDB" )
-               {    if ( def_[i] == "True" ) use_gdb_for_tracebacks = True;
-                    else if ( def_[i] != "False" )
-                    {    cout << "illegal value for parameter GDB" << endl;
-                         CleanUpAndExit(1);    }
-                    continue;    }
-               if ( name_[i] == "NO_HEADER" )
-               {    if ( def_[i] != "True" && def_[i] != "False" )
-                    {    cout << "illegal value for parameter NO_HEADER" << endl;
-                         CleanUpAndExit(1);    }
-                    continue;    }
-               if ( name_[i] == "NH" )
-               {    if ( def_[i] != "True" && def_[i] != "False" )
-                    {    cout << "illegal value for parameter NH" << endl;
-                         CleanUpAndExit(1);    }
-                    continue;    }
-               if ( name_[i] == "MEM_MONITOR" || name_[i] == "MM" )
-               {    if ( def_[i] != "True" && def_[i] != "False" )
-		    {    cout << "illegal value for parameter " << def_[i] << endl;
-		         CleanUpAndExit(1);    }
-		    continue;    }
-               if ( name_[i].Contains("_MM_") ) continue;
-               if ( name_[i] == "TV" )
-		 {    TraceValCommon::SetStopVal( (TraceValCommon::timestamp_t)atoll(def_[i].c_str()));
-                    continue;    }
-               cout << "You should not have specified a value for " <<
-                    name_[i] << ".\n";
-               junk_found = True;    }
-     if (junk_found) 
-       if ( abort_if_found )
-       {
-	 cout << "\nTo see the syntax for this command, type \"" << command_
-	      << " -h\". \n" << endl;
-	 CleanUpAndExit(-1);    
-       }
-       else {
-         cout << "Ignoring extra arguments.\n" << endl;
-       }
+{ Bool junk_found = False;
+  for ( unsigned int i = 0; i < used_.size( ); i++ )
+    if ( used_[i] == False )
+    {
+      if ( name_[i] == "GDB" )
+      { if ( def_[i] == "True" ) use_gdb_for_tracebacks = True;
+        else if ( def_[i] != "False" )
+        { cout << "illegal value for parameter GDB" << endl;
+          CleanUpAndExit(1);
+        }
+        continue;
+      }
+      if ( name_[i] == "NO_HEADER" )
+      { if ( def_[i] != "True" && def_[i] != "False" )
+        { cout << "illegal value for parameter NO_HEADER" << endl;
+          CleanUpAndExit(1);
+        }
+        continue;
+      }
+      if ( name_[i] == "NH" )
+      { if ( def_[i] != "True" && def_[i] != "False" )
+        { cout << "illegal value for parameter NH" << endl;
+          CleanUpAndExit(1);
+        }
+        continue;
+      }
+      if ( name_[i] == "MEM_MONITOR" || name_[i] == "MM" )
+      { if ( def_[i] != "True" && def_[i] != "False" )
+        { cout << "illegal value for parameter " << def_[i] << endl;
+          CleanUpAndExit(1);
+        }
+        continue;
+      }
+      if ( name_[i].Contains("_MM_") ) continue;
+      if ( name_[i] == "TV" )
+      { TraceValCommon::SetStopVal( (TraceValCommon::timestamp_t)atoll(def_[i].c_str()));
+        continue;
+      }
+      cout << "You should not have specified a value for " <<
+           name_[i] << ".\n";
+      junk_found = True;
+    }
+  if (junk_found)
+    if ( abort_if_found )
+    {
+      cout << "\nTo see the syntax for this command, type \"" << command_
+           << " -h\". \n" << endl;
+      CleanUpAndExit(-1);
+    }
+    else {
+      cout << "Ignoring extra arguments.\n" << endl;
+    }
 }
 
 /// The special command-line argument TEE="file1 file2..."
@@ -724,31 +752,31 @@ void parsed_args::PrintVersion()
 }
 
 
-void parsed_args::AddArgHelp( const String& arg, 
-			      const String& type, 
-			      const String& abbreviation,
-			      const String& default_value,
-			      const String& valid_values,
-			      const String& documentation)
+void parsed_args::AddArgHelp( const String& arg,
+                              const String& type,
+                              const String& abbreviation,
+                              const String& default_value,
+                              const String& valid_values,
+                              const String& documentation)
 {
   arg_help_.push_back(parsed_arg_help
-		      (arg, type, abbreviation, default_value, valid_values, documentation));
+                      (arg, type, abbreviation, default_value, valid_values, documentation));
 }
 
 void parsed_args::PrintArgHelp()
 {
 
-  bool print_special = (get_help_command_ == "special");    
+  bool print_special = (get_help_command_ == "special");
   if (get_help_command_ != "" && print_special != true) {
     for ( unsigned int i = 0; i < arg_help_.size( ); i++ )
       if ( arg_help_[i].GetName() == get_help_command_) {
-	cout << "\n" << arg_help_[i] << "\n\n"
-	     << "For more help type: "<< command_ << " -h\n" << endl;
-	return;
+        cout << "\n" << arg_help_[i] << "\n\n"
+             << "For more help type: "<< command_ << " -h\n" << endl;
+        return;
       }
-    cout << "\nUnknown argument: " << get_help_command_ 
-	 << "  - No help available.\n\nFor a list of arguments type: "
-	 << command_ << " -h\n" << endl;
+    cout << "\nUnknown argument: " << get_help_command_
+         << "  - No help available.\n\nFor a list of arguments type: "
+         << command_ << " -h\n" << endl;
     return;
   }
 
@@ -761,41 +789,41 @@ void parsed_args::PrintArgHelp()
   }
   vec<parsed_arg_help>::iterator firstOpt =
     stable_partition(arg_help_.begin(), arg_help_.end(),
-		     mem_fun_ref(&parsed_arg_help::isRequired));
+                     mem_fun_ref(&parsed_arg_help::isRequired));
   if (firstOpt != arg_help_.begin()) {
     if (parsed_args::pretty_help) cout << header_format;
     cout << "\nRequired arguments:\n\n";
     if (parsed_args::pretty_help) cout << END_ESCAPE;
-    copy( arg_help_.begin(), firstOpt, 
-	  ostream_iterator<parsed_arg_help>(cout, "\n") );
+    copy( arg_help_.begin(), firstOpt,
+          ostream_iterator<parsed_arg_help>(cout, "\n") );
   }
   if (firstOpt != arg_help_.end() ) {
     if (parsed_args::pretty_help) cout << header_format;
     cout << "\nOptional arguments:\n\n";
     if (parsed_args::pretty_help) cout << END_ESCAPE;
-    copy( firstOpt, arg_help_.end(), 
-	  ostream_iterator<parsed_arg_help>(cout, "\n") );
+    copy( firstOpt, arg_help_.end(),
+          ostream_iterator<parsed_arg_help>(cout, "\n") );
   }
-    
+
   if (print_special) {
     if (parsed_args::pretty_help) cout << header_format;
     cout << "\nSpecial arguments:\n\n";
     if (parsed_args::pretty_help) cout << END_ESCAPE;
 
     cout << parsed_arg_help( "GDB", "Bool", "", "False", "", "Whether to use GDB for tracebacks." )
-	 << "\n"
-	 << parsed_arg_help( "NO_HEADER", "Bool", "NH", "False", "",
-			     "Whether to suppress the normal command-line header block." )
-	 << "\n"
-	 << parsed_arg_help( "MEM_MONITOR", "Bool", "MM", "False", "",
-			     "Monitor the memory usage of this module by forking MemMonitor. "
-			     "All arguments specifiable to MemMonitor can be supplied here "
-			     "by prefixing them with '_MM_'. "
-			     "See MemMonitor help for more information. " )
-	 << "\n"
-	 << parsed_arg_help( "TEE", "String", "", "", "",
-			     "Redirect standard out to the supplied space separated list of files." )
-	 << "\n";
+         << "\n"
+         << parsed_arg_help( "NO_HEADER", "Bool", "NH", "False", "",
+                             "Whether to suppress the normal command-line header block." )
+         << "\n"
+         << parsed_arg_help( "MEM_MONITOR", "Bool", "MM", "False", "",
+                             "Monitor the memory usage of this module by forking MemMonitor. "
+                             "All arguments specifiable to MemMonitor can be supplied here "
+                             "by prefixing them with '_MM_'. "
+                             "See MemMonitor help for more information. " )
+         << "\n"
+         << parsed_arg_help( "TEE", "String", "", "", "",
+                             "Redirect standard out to the supplied space separated list of files." )
+         << "\n";
   } else {
     cout << endl << "To see additional special arguments, type: " << command_ << " --help special" << endl;
   }
@@ -809,10 +837,11 @@ ostream& operator<< (ostream& out, const parsed_arg_help& an_arg)
   out << an_arg.name_;
   if (parsed_args::pretty_help) out << END_ESCAPE;
   if ( !an_arg.abbreviation_.empty() )
-  {    out << ", or ";
-       if (parsed_args::pretty_help) out <<  parsed_args::param_format;
-       out << an_arg.abbreviation_;
-       if (parsed_args::pretty_help) out << END_ESCAPE;    }
+  { out << ", or ";
+    if (parsed_args::pretty_help) out <<  parsed_args::param_format;
+    out << an_arg.abbreviation_;
+    if (parsed_args::pretty_help) out << END_ESCAPE;
+  }
   if (parsed_args::pretty_help) out <<  parsed_args::info_format;
   out << " (" << an_arg.type_;
   if ( an_arg.valid_.empty() )
@@ -820,9 +849,9 @@ ostream& operator<< (ostream& out, const parsed_arg_help& an_arg)
   else
     out << ": " << an_arg.valid_ << ") ";
   if ( ! (an_arg.isRequired() || an_arg.default_.empty() ) )
-    out << "default: " << an_arg.default_ << " "; 
+    out << "default: " << an_arg.default_ << " ";
   if (parsed_args::pretty_help) out << END_ESCAPE;
-  
+
   // Now fold and display the documentation line, if any.
   if (!an_arg.doc_.empty()) {
     if (parsed_args::pretty_help) out <<  parsed_args::doc_format;
@@ -833,24 +862,27 @@ ostream& operator<< (ostream& out, const parsed_arg_help& an_arg)
 }
 
 String parsed_args::TheCommand( ) const
-{    String com = command_;
-     for ( unsigned int i = 0; i < name_.size( ); i++ )
-     {    Bool need_quotes = False;
-          const String& d = def_[i];
-	  if ( name_[i] == "TEE" ) continue;
-          for ( unsigned int j = 0; j < d.size( )  &&  !need_quotes; j++ )
-          {    if ( isspace( d[j] ) ) need_quotes = True;
-               if ( d[j] == '{' || d[j] == '}' ) need_quotes = True;
-               if ( d[j] == '[' || d[j] == ']' ) need_quotes = True;
-               if ( d[j] == '(' || d[j] == ')' ) need_quotes = True;
-               if ( d[j] == '%' || d[j] == ',' || d[j] == '=' ) need_quotes = True;
-               if ( d[j] == '*' ) need_quotes = True;    }
-          if ( !need_quotes ) com += " " + name_[i] + "=" + d;
-          else com += " " + name_[i] + "=\"" + d + "\"";    }
-     return com;    }
+{ String com = command_;
+  for ( unsigned int i = 0; i < name_.size( ); i++ )
+  { Bool need_quotes = False;
+    const String& d = def_[i];
+    if ( name_[i] == "TEE" ) continue;
+    for ( unsigned int j = 0; j < d.size( )  &&  !need_quotes; j++ )
+    { if ( isspace( d[j] ) ) need_quotes = True;
+      if ( d[j] == '{' || d[j] == '}' ) need_quotes = True;
+      if ( d[j] == '[' || d[j] == ']' ) need_quotes = True;
+      if ( d[j] == '(' || d[j] == ')' ) need_quotes = True;
+      if ( d[j] == '%' || d[j] == ',' || d[j] == '=' ) need_quotes = True;
+      if ( d[j] == '*' ) need_quotes = True;
+    }
+    if ( !need_quotes ) com += " " + name_[i] + "=" + d;
+    else com += " " + name_[i] + "=\"" + d + "\"";
+  }
+  return com;
+}
 
 bool parsed_args::RemoveArg(String n, String abbr)
-{  
+{
   String toFind = CheckForArgAndAbbreviation( n, abbr );
   for ( int i = 0; i < name_.isize( ); i++ )
     if ( name_[i] == toFind ) {

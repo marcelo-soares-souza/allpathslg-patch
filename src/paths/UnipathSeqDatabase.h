@@ -14,19 +14,19 @@
 // unipath in a set of UnipathSeqs.
 
 class UnipathSeqDatabase {
- public:
+public:
   UnipathSeqDatabase( const vecUnipathSeq& unipathSeqs );
   //TODO: potentially dangerous truncation of ids
   struct Record {
     int unipath;
     int seqId;
     int index;
-    
+
     Record() {}
 
     Record( int u, int s, int i )
       : unipath(u), seqId(s), index(i) {}
-    
+
     bool operator< ( const Record& other ) const {
       return ( this->unipath < other.unipath );
     }
@@ -43,8 +43,8 @@ class UnipathSeqDatabase {
   };
 
   void Find( const int unipath, vec<Record>& records ) const;
-  
- private:
+
+private:
   vec<Record> m_records;
 };
 
@@ -68,7 +68,7 @@ inline
 void UnipathSeqDatabase::Find( const int unipath, vec<UnipathSeqDatabase::Record>& records ) const
 {
   pair<vec<Record>::const_iterator,vec<Record>::const_iterator> range;
-  
+
   range = equal_range( m_records.begin(), m_records.end(),
                        Record( unipath, 0, 0 ) );
 

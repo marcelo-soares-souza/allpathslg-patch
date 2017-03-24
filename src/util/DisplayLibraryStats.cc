@@ -22,11 +22,11 @@ int main( int argc, char *argv[] )
   BeginCommandArguments;
   CommandDoc(DOC);
   CommandArgument_String_Doc(READS,
-    "Fastb file with associated .pairs file.");
+                             "Fastb file with associated .pairs file.");
   CommandArgument_Bool_OrDefault_Doc( QUICK, False,
-    "Quick peek at library stats without loading the entire file." );
+                                      "Quick peek at library stats without loading the entire file." );
   CommandArgument_Bool_OrDefault_Doc( READ_STATS, True,
-    "Compute per library read statistics." );
+                                      "Compute per library read statistics." );
   EndCommandArguments;
 
   // Strip .fastb from filenames
@@ -41,7 +41,7 @@ int main( int argc, char *argv[] )
     if (IsRegularFile(READS + ".pairs")) {
       cout << "  " << READS + ".pairs" << endl;
 
-      longlong nreads; 
+      longlong nreads;
 
       vec<PM_LibraryStats> stats;
       ReadPairsManagerLibInfo(READS + ".pairs", nreads, stats);
@@ -71,9 +71,9 @@ int main( int argc, char *argv[] )
     if (IsRegularFile(READS + ".fastb")) {
       size_t nreads = MastervecFileObjectCount(READS + ".fastb");
       if (nreads != pairs.nReads()) {
-	cout << "Warning: Inconsistency between .pairs and .fastb files..." << endl;
-	cout << "         Fastb file contains " << nreads << " reads" << endl;
-	cout << "         Pairs file reports  " << pairs.nReads() << " reads" << endl;
+        cout << "Warning: Inconsistency between .pairs and .fastb files..." << endl;
+        cout << "         Fastb file contains " << nreads << " reads" << endl;
+        cout << "         Pairs file reports  " << pairs.nReads() << " reads" << endl;
       }
     }
   } else if (IsRegularFile(READS + ".pairto")) {
@@ -100,9 +100,9 @@ int main( int argc, char *argv[] )
   cout << "reads are " << (inter ? "" : "not ") << "interleaved" << endl;
   cout << endl;
 
-  if (READ_STATS) 
-    pairs.printLibraryStats( cout , READS + ".fastb");
+  if (READ_STATS)
+    pairs.printLibraryStats( cout, READS + ".fastb");
   else
     pairs.printLibraryStats( cout );
-   
+
 }

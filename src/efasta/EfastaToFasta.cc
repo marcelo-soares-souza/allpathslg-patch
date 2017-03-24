@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
   CommandArgument_String(HEAD);
   CommandArgument_String_OrDefault(SPLIT_DIR, "");
   CommandArgument_Bool_OrDefault_Doc(IUPAC, True,
-      "Keep ambiguities that can be expressed by IUPAC code" );
+                                     "Keep ambiguities that can be expressed by IUPAC code" );
   CommandArgument_Bool_OrDefault_Doc(EXPAND, False, "instead expand efasta" );
   CommandArgument_Bool_OrDefault_Doc(ALLOW_EMPTY, False, "allow empty records" );
   EndCommandArguments;
@@ -56,12 +56,12 @@ int main(int argc, char *argv[])
     if (line.size() == 0) continue;
     if (line[0] != '>') {
       Err("See line = '" << line << "', which was expected "
-           << "to start with >.");
+          << "to start with >.");
     }
     String name = "";
-    for (unsigned i = 1; i != line.size(); i++) 
+    for (unsigned i = 1; i != line.size(); i++)
       name.push_back(line[i]);
-    
+
     if (SPLIT_DIR != "") {
       String head = SPLIT_DIR + "/" + name;
       OpenOfstream(out, "out_i", head + ".fsa");
@@ -75,17 +75,22 @@ int main(int argc, char *argv[])
     while (1) {
       char c;
       in.peek(c);
-      if (in.fail()) { eof = True; break; }
+      if (in.fail()) {
+        eof = True;
+        break;
+      }
       if (c == '>') break;
       getline(in, line);
       lines.push_back(line);
     }
-    if (lines.empty()) 
-    {    if (ALLOW_EMPTY)
-         {    out << iline << "\n";
-              if (eof) break;
-              continue;    }
-         Err("Illegal record of empty length.");    }
+    if (lines.empty())
+    { if (ALLOW_EMPTY)
+      { out << iline << "\n";
+        if (eof) break;
+        continue;
+      }
+      Err("Illegal record of empty length.");
+    }
 
     String all;
     int64_t all_size = 0;
@@ -97,16 +102,19 @@ int main(int argc, char *argv[])
     ValidateEfastaRecord(lines);
 
     if (EXPAND)
-    {    vec<basevector> bases;
-         efasta(all).ExpandTo(bases);
-         for ( int j = 0; j < bases.isize( ); j++ )
-         {    out << iline << "[" << j << "]\n";
-              const basevector& b = bases[j];
-              for ( int l = 0; l < b.isize( ); l++ )
-              {    if ( l > 0 && l % 80 == 0 ) out << "\n";
-                   out << as_base( b[l] );    }
-              out << "\n";    }
-         continue;    }
+    { vec<basevector> bases;
+      efasta(all).ExpandTo(bases);
+      for ( int j = 0; j < bases.isize( ); j++ )
+      { out << iline << "[" << j << "]\n";
+        const basevector& b = bases[j];
+        for ( int l = 0; l < b.isize( ); l++ )
+        { if ( l > 0 && l % 80 == 0 ) out << "\n";
+          out << as_base( b[l] );
+        }
+        out << "\n";
+      }
+      continue;
+    }
 
     out << iline << "\n";
 
@@ -122,9 +130,9 @@ int main(int argc, char *argv[])
       out << v[i];
     }
     out << "\n";
-    
 
-    if (va.size()) 
+
+    if (va.size())
       tbl << ">Feature    " << name << "\n";
     for (size_t i = 0; i < va.size(); i++)
       tbl << va[i].to_annotation() << endl;

@@ -16,8 +16,8 @@
 
 
 void AddRule_MakeLookupTable( MakeMgr& make,
-			      String refFile, String refDir,
-			      String comment)
+                              String refFile, String refDir,
+                              String comment)
 {
   String refHead = refFile.SafeBefore(".fasta");
   String lookupFile = refHead + ".lookup";
@@ -25,21 +25,21 @@ void AddRule_MakeLookupTable( MakeMgr& make,
 
 // MakeDepend: dependency MakeLookupTable
   make.AddRule( JoinVecs(FilesIn( refDir, lookupFile),
-			 FilesIn( refDir, fastbFile)),
-		FilesIn( refDir, refFile ),
-		"MakeLookupTable"
-		" SOURCE=" + refDir + "/" + refFile +
-		" OUT_HEAD=" + refDir + "/" + refHead,
-		comment);
+                         FilesIn( refDir, fastbFile)),
+                FilesIn( refDir, refFile ),
+                "MakeLookupTable"
+                " SOURCE=" + refDir + "/" + refFile +
+                " OUT_HEAD=" + refDir + "/" + refHead,
+                comment);
 }
 
 
 void AddRule_SQLAlign( MakeMgr& make,
-		       String refFile, String queryFile,
-		       String refDir, String queryDir, String outDir,
-		       int maxErrors, Bool fwrc,
-		       int maxIndelLen, int errDiff,
-		       String comment)
+                       String refFile, String queryFile,
+                       String refDir, String queryDir, String outDir,
+                       int maxErrors, Bool fwrc,
+                       int maxIndelLen, int errDiff,
+                       String comment)
 {
   String queryHead = queryFile.SafeBefore(".fastb");
   String refHead = refFile.SafeBefore(".fastb");
@@ -49,64 +49,64 @@ void AddRule_SQLAlign( MakeMgr& make,
     queryDir = refDir;
   if (outDir == "")
     outDir = queryDir;
- 
+
   String alignsHead = queryHead + ".aligned." + refHead;
   String alignsFile = alignsHead + ".sql.qltout";
 
 // MakeDepend: dependency ShortQueryLookup
   make.AddRule( FilesIn( outDir, alignsFile ),
-		JoinVecs( FilesIn( refDir, lookupFile),
-			  FilesIn( queryDir, queryFile)),
-		"ShortQueryLookup "
-		" SEQS=" + queryDir + "/" + queryFile +
-		" LOOKUP_TABLE=" + refDir + "/" + lookupFile +
-		" OUT_PREFIX=" + outDir + "/" + alignsHead +
-		" OUT_SUFFIX=.sql.qltout"
-		" FWRC=" +ToStringBool(fwrc) +
-		" MAX_INDEL_LEN=" + ToString(maxIndelLen) +
-		" MAX_ERRS=" + ToString(maxErrors) +
-		" ERR_DIFF=" + ToString(errDiff) +
-		" CHUNK=500000 READABLE=False",
-		
-		comment );
+                JoinVecs( FilesIn( refDir, lookupFile),
+                          FilesIn( queryDir, queryFile)),
+                "ShortQueryLookup "
+                " SEQS=" + queryDir + "/" + queryFile +
+                " LOOKUP_TABLE=" + refDir + "/" + lookupFile +
+                " OUT_PREFIX=" + outDir + "/" + alignsHead +
+                " OUT_SUFFIX=.sql.qltout"
+                " FWRC=" +ToStringBool(fwrc) +
+                " MAX_INDEL_LEN=" + ToString(maxIndelLen) +
+                " MAX_ERRS=" + ToString(maxErrors) +
+                " ERR_DIFF=" + ToString(errDiff) +
+                " CHUNK=500000 READABLE=False",
+
+                comment );
 }
 
 void AddRule_LookupAndSQLAlign( MakeMgr& make,
-				String refFile, String queryFile,
-				String refDir, String queryDir, String outDir,
-				int maxErrors, Bool fwrc,
-				int maxIndelLen, int errDiff,
-				String comment)
+                                String refFile, String queryFile,
+                                String refDir, String queryDir, String outDir,
+                                int maxErrors, Bool fwrc,
+                                int maxIndelLen, int errDiff,
+                                String comment)
 {
 
   // Make Lookup Table
 
   AddRule_MakeLookupTable( make, refFile, refDir,
-			   "Build lookup table.");
-    
+                           "Build lookup table.");
+
   // Perform Alignment
 
   AddRule_SQLAlign( make, refFile, queryFile, refDir, queryDir, outDir,
-		    maxErrors, fwrc, maxIndelLen, errDiff, comment);
+                    maxErrors, fwrc, maxIndelLen, errDiff, comment);
 
 
 }
 
 void AddRule_CommonPather(MakeMgr& make,
-			  int K, String outDir,
-			  String dir1, String file1,
-			  String dir2, String file2,
-			  String dir3, String file3) {
+                          int K, String outDir,
+                          String dir1, String file1,
+                          String dir2, String file2,
+                          String dir3, String file3) {
 
   AddRule_CommonPather(make, 1, K, outDir, dir1, file1, dir2, file2, dir3, file3);
 }
 
 void AddRule_CommonPather(MakeMgr& make,
-			  int nThreads,
-			  int K, String outDir,
-			  String dir1, String file1,
-			  String dir2, String file2,
-			  String dir3, String file3) {
+                          int nThreads,
+                          int K, String outDir,
+                          String dir1, String file1,
+                          String dir2, String file2,
+                          String dir3, String file3) {
 
 
   vec< filename_t > sourceFiles, targetFiles;
@@ -147,42 +147,50 @@ void AddRule_CommonPather(MakeMgr& make,
 
 // MakeDepend: dependency CommonPather
   make.AddRule( targetFiles, sourceFiles,
-		"CommonPather K=" + ToString(K) +
-		" NUM_THREADS=" + ToString(nThreads) + 
-		" READS_IN=" + readsIn +
-		" PATHS_OUT=" + pathsOut,
-		
-		"Pathing reads: " + comment );
+                "CommonPather K=" + ToString(K) +
+                " NUM_THREADS=" + ToString(nThreads) +
+                " READS_IN=" + readsIn +
+                " PATHS_OUT=" + pathsOut,
+
+                "Pathing reads: " + comment );
 }
 
 
 void AddRule_MergeReadSets(MakeMgr& make,
-			   bool quals, bool pairs, bool paths, bool dist,
-			   bool tracker, bool repath, int K, int nThreads,
+                           bool quals, bool pairs, bool paths, bool dist,
+                           bool tracker, bool repath, int K, int nThreads,
                            const String& dir, const String& headOut,
-			   const String& headIn1, const String& headIn2, 
-			   const String& headIn3, const String& headIn4,
-			   const String& headIn5, const String& headIn6 ) {
+                           const String& headIn1, const String& headIn2,
+                           const String& headIn3, const String& headIn4,
+                           const String& headIn5, const String& headIn6 ) {
 
   // Decide which file types are required as input and output
 
   String suffixIn  = "{fastb";
   String suffixOut = "{fastb";
 
-  if (quals) { suffixIn += ",qualb";   suffixOut += ",qualb";  } 
-  if (pairs) { suffixIn += ",pairs";  suffixOut += ",pairs"; }
-  if (dist)  { suffixOut += ",distribs"; }
+  if (quals) {
+    suffixIn += ",qualb";
+    suffixOut += ",qualb";
+  }
+  if (pairs) {
+    suffixIn += ",pairs";
+    suffixOut += ",pairs";
+  }
+  if (dist)  {
+    suffixOut += ",distribs";
+  }
   if (paths && !repath) suffixIn  += ",paths.kN";
   if (paths ||  repath) suffixOut += ",paths.kN";
   if (tracker) suffixOut += ",readtrack";
-  
+
   suffixIn  += "}";
   suffixOut += "}";
 
   // Create a list of all source files required
 
   vec<String> headsIn;
-  
+
   headsIn.push_back(headIn1.SafeBefore(".fastb"));
   headsIn.push_back(headIn2.SafeBefore(".fastb"));
   if (headIn3 != "" ) headsIn.push_back(headIn3.SafeBefore(".fastb"));
@@ -197,8 +205,8 @@ void AddRule_MergeReadSets(MakeMgr& make,
   for (size_t i = 1; i < headsIn.size(); ++i) {
     headsInArg  += "," + headsIn[i];
     sourceFiles.append(FilesIn(dir, headsIn[i] + "." + suffixIn));
-  }  
-					
+  }
+
   headsInArg  += "}";
 
   // Create a list of all target files to be created
@@ -209,20 +217,20 @@ void AddRule_MergeReadSets(MakeMgr& make,
 
 // MakeDepend: dependency MergeReadSets
   make.AddRule( targetFiles, sourceFiles,
-		"MergeReadSets "
-		" DIR=" + dir +
-		" READS_IN=" + "\"" + headsInArg + "\""
-		" READS_OUT=" + headOutArg +
-		" K=" + ToString(K) +
-		" REPATH=" + ToStringBool(repath) +
-		" NUM_THREADS=" + ToString(nThreads) +
-		" MERGE_QUALS=" + ToStringBool(quals) +
-		" MERGE_PAIRS=" + ToStringBool(pairs) +
-		" MERGE_PATHS=" + ToStringBool(paths) +
-		" MERGE_DISTRIBS=" + ToStringBool(dist) + 
-		" FORCE_MERGE_DISTRIBS=" + ToStringBool(dist) +
-		" TRACK_READS=" + ToStringBool(tracker),
-		
-		"Merging reads: " + headsInArg);
+                "MergeReadSets "
+                " DIR=" + dir +
+                " READS_IN=" + "\"" + headsInArg + "\""
+                " READS_OUT=" + headOutArg +
+                " K=" + ToString(K) +
+                " REPATH=" + ToStringBool(repath) +
+                " NUM_THREADS=" + ToString(nThreads) +
+                " MERGE_QUALS=" + ToStringBool(quals) +
+                " MERGE_PAIRS=" + ToStringBool(pairs) +
+                " MERGE_PATHS=" + ToStringBool(paths) +
+                " MERGE_DISTRIBS=" + ToStringBool(dist) +
+                " FORCE_MERGE_DISTRIBS=" + ToStringBool(dist) +
+                " TRACK_READS=" + ToStringBool(tracker),
+
+                "Merging reads: " + headsInArg);
 
 }

@@ -54,40 +54,40 @@ bool ScaffoldGraphIntegrity( const digraphE<CLinkBundle> &graph, ostream *log )
       int idw = all_idws[jj];
       vec<int> edges = graph.EdgesBetween( idv, idw );
       if ( edges.size( ) != 1 ) {
-	n_errors++;
-	out << edges.size( ) << " edge(s) found from "
-	    << idv << " and "
-	    << idw << " ((it should be 1)\n";
-	continue;
+        n_errors++;
+        out << edges.size( ) << " edge(s) found from "
+            << idv << " and "
+            << idw << " ((it should be 1)\n";
+        continue;
       }
       int rc_idv = ( 0 == idv % 2 ) ? idv + 1 : idv - 1;
       int rc_idw = ( 0 == idw % 2 ) ? idw + 1 : idw - 1;
       vec<int> rc_edges = graph.EdgesBetween( rc_idw, rc_idv );
       if ( rc_edges.size( ) != 1 ) {
-	n_errors++;
-	out << rc_edges.size( ) << " edge(s) found from "
-	    << rc_idw << " and "
-	    << rc_idv << " ((it should be 1)\n";
-	continue;
+        n_errors++;
+        out << rc_edges.size( ) << " edge(s) found from "
+            << rc_idw << " and "
+            << rc_idv << " ((it should be 1)\n";
+        continue;
       }
       twin_of[ edges[0] ] = rc_edges[0];
       twin_of[ rc_edges[0] ] = edges[0];
       const CLinkBundle &bundle1 = graph.EdgeObject( edges[0] );
       const CLinkBundle &bundle2 = graph.EdgeObject( rc_edges[0] );
       if ( bundle1.Sep( ) != bundle2.Sep( ) ||
-	   bundle1.Dev( ) != bundle2.Dev( ) ||
-	   bundle1.Weight( ) != bundle2.Weight( ) ||
-	   bundle1.Score( ) != bundle2.Score( ) ) {
-	n_errors++;
-	out << "Broken symmetry: "
-	    << LogSupers( idv, idw )
-	    << " [" << bundle1.AsString( true ) << "], but "
-	    << LogSupers( rc_idw, rc_idv )
-	    << " [" << bundle2.AsString( true ) << "]\n";
+           bundle1.Dev( ) != bundle2.Dev( ) ||
+           bundle1.Weight( ) != bundle2.Weight( ) ||
+           bundle1.Score( ) != bundle2.Score( ) ) {
+        n_errors++;
+        out << "Broken symmetry: "
+            << LogSupers( idv, idw )
+            << " [" << bundle1.AsString( true ) << "], but "
+            << LogSupers( rc_idw, rc_idv )
+            << " [" << bundle2.AsString( true ) << "]\n";
       }
     }
   }
-  
+
   // Check all edges are accounted for.
   for (int ii=0; ii<twin_of.isize( ); ii++) {
     if ( twin_of[ii] < 0 ) {
@@ -104,6 +104,6 @@ bool ScaffoldGraphIntegrity( const digraphE<CLinkBundle> &graph, ostream *log )
   }
   out << "ScaffoldGraphIntegrity run: no errors found" << endl;
   return true;
-  
+
 }
 

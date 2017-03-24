@@ -52,15 +52,15 @@ int main( int argc, char *argv[] )
   CommandArgument_String_OrDefault( SUBDIR, "test" );
   CommandArgument_String_OrDefault( READS, "all_reads" );
   CommandArgument_Int( K );
-  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0, 
-    "Number of threads to use (use all available processors if set to 0)");
+  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0,
+      "Number of threads to use (use all available processors if set to 0)");
   CommandArgument_String_OrDefault( SEEDS, "" );
-  CommandArgument_Bool_OrDefault_Doc(DUMP_FASTA, False, 
-    "Dump edges of all neighborhood hypers as fasta");
+  CommandArgument_Bool_OrDefault_Doc(DUMP_FASTA, False,
+                                     "Dump edges of all neighborhood hypers as fasta");
   EndCommandArguments;
 
   // Thread control
-   
+
   NUM_THREADS = configNumThreads(NUM_THREADS);
 
   cout << Date( ) << ": Beginning MergeNeighborhoods..." << endl;
@@ -110,9 +110,9 @@ int main( int argc, char *argv[] )
   cout << Date( ) << ": Creating a vecbasevector for the entire assembly" << endl;
   vecbasevector bases;
   for ( size_t i = 0; i < local_HBVs.size(); i++ )
-      if ( local_HBVs[i].K() )
-          for ( int j = 0; j < local_HBVs[i].EdgeObjectCount( ); j++ )
-              bases.push_back( local_HBVs[i].EdgeObject(j) );
+    if ( local_HBVs[i].K() )
+      for ( int j = 0; j < local_HBVs[i].EdgeObjectCount( ); j++ )
+        bases.push_back( local_HBVs[i].EdgeObject(j) );
 
 
   // Add to this basevector all of the global unibases.  Now it contains the
@@ -144,9 +144,9 @@ int main( int argc, char *argv[] )
   spaths.WriteRange( sub_dir + "/reads.unipaths" + kK, n_bases, bases.size() );
 
   KmerBaseBroker kbb;
-  if ( DUMP_FASTA ){
+  if ( DUMP_FASTA ) {
     kbb.Initialize(K, bases, spaths, spaths_rc, spathsdb);
-  }else{
+  } else {
     // Clear out some data structures we no longer need.
     Destroy( bases );
     Destroy( spaths_rc );
@@ -161,18 +161,18 @@ int main( int argc, char *argv[] )
   vec<HyperKmerPath> local_HKPs;
   for ( size_t i = 0; i < local_HBVs.size(); i++ )
   {
-      if ( local_HBVs[i].K() )
-      {
-          vec<KmerPath> these_paths(0);
-          for ( int j = 0; j < local_HBVs[i].EdgeObjectCount(); j++ )
-              these_paths.push_back(spaths[count++]);
-          HyperKmerPath h(K, local_HBVs[i], these_paths);
-          local_HKPs.push_back(h);
-      }
-      
+    if ( local_HBVs[i].K() )
+    {
+      vec<KmerPath> these_paths(0);
+      for ( int j = 0; j < local_HBVs[i].EdgeObjectCount(); j++ )
+        these_paths.push_back(spaths[count++]);
+      HyperKmerPath h(K, local_HBVs[i], these_paths);
+      local_HKPs.push_back(h);
+    }
+
   }
   BinaryWriter::writeFile( sub_dir + "/nhood.hypers", local_HKPs );
-  if ( DUMP_FASTA ){
+  if ( DUMP_FASTA ) {
     HyperKmerPath nh( K, local_HKPs );
     nh.DumpFasta( sub_dir + "/nhood.hypers.fasta", kbb );
   }

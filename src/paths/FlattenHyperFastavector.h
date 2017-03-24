@@ -23,14 +23,14 @@
  * NUM_THREADS: for FirstLookupFinder
  */
 void FlattenHyperFastavector( ostream &log,
-			      HyperFastavector &hfv,
-			      const String base_out = "",
-			      const String hyper_inter_file = "",
-			      const String dump_hfv_head = "", 
-			      const bool NEW_ALGORITHM = False,
-			      const bool INITIAL_SCAFFOLD_PER_CONTIG = True,
-			      const int MAX_CELL_SIZE = 20,
-			      const int MIN_EDGE_TO_SAVE = 1000,
-			      const int NUM_THREADS = 0 );
+                              HyperFastavector &hfv,
+                              const String base_out = "",
+                              const String hyper_inter_file = "",
+                              const String dump_hfv_head = "",
+                              const bool NEW_ALGORITHM = False,
+                              const bool INITIAL_SCAFFOLD_PER_CONTIG = True,
+                              const int MAX_CELL_SIZE = 20,
+                              const int MIN_EDGE_TO_SAVE = 1000,
+                              const int NUM_THREADS = 0 );
 
 #endif

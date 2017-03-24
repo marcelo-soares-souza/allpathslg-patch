@@ -14,10 +14,10 @@
 
 
 // InternalMergeImpl: The implementation of the InternalMerge merging algorithm.
-void InternalMergeImpl( HyperKmerPath& h, 
-     const NegativeGapValidator* ngv, int min_overlap, 
-     int min_proper_overlap, int max_Q_size,
-     Bool seed_unique, Bool seed_unique_weak, const vec<tagged_rpint>& uniqdb );
+void InternalMergeImpl( HyperKmerPath& h,
+                        const NegativeGapValidator* ngv, int min_overlap,
+                        int min_proper_overlap, int max_Q_size,
+                        Bool seed_unique, Bool seed_unique_weak, const vec<tagged_rpint>& uniqdb );
 
 
 

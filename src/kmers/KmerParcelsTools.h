@@ -12,7 +12,7 @@
   2010-03 Filipe Ribeiro
 
   A toolkit of useful functions that use the kmers parcels paradigm.
- 
+
 */
 
 #ifndef KMER_PARCELS_TOOLS_H
@@ -23,13 +23,15 @@
 #include "system/WorklistN.h"
 
 
-inline 
-String KPTTag(String S = "PK") { return Date() + " (" + S + "): "; } 
+inline
+String KPTTag(String S = "PK") {
+  return Date() + " (" + S + "): ";
+}
 
 
 
 inline bool GetNextMatchingKmerBatches(KmerParcelReader & parcel1_reader,
-                                KmerParcelReader & parcel2_reader)
+                                       KmerParcelReader & parcel2_reader)
 {
   // always read the next k1
   if (!parcel1_reader.GetNextKmerBatch()) return false;
@@ -43,33 +45,33 @@ inline bool GetNextMatchingKmerBatches(KmerParcelReader & parcel1_reader,
 
   while (1) {
 
-    if (*kmer1 < *kmer2) { // parcel 1 must catch up 
+    if (*kmer1 < *kmer2) { // parcel 1 must catch up
 
       if (!parcel1_reader.GetNextKmerBatch()) return false;
       kmer1 = & parcel1_reader.CurrentKmerBatch().Kmer();
     }
-    else if (*kmer1 > *kmer2) { // parcel 2 must catch up 
-      
+    else if (*kmer1 > *kmer2) { // parcel 2 must catch up
+
       if (!parcel2_reader.GetNextKmerBatch()) return false;
       kmer2 = & parcel2_reader.CurrentKmerBatch().Kmer();
 
     }
     else { // kmer1 == kmer2
-      
+
       return true;
-      
+
     }
-    
+
   }
-  
+
 }
-  
+
 
 
 
 
 inline bool GetExclusiveKmerBatch(KmerParcelReader & parcel1_reader,
-                           KmerParcelReader & parcel2_reader)
+                                  KmerParcelReader & parcel2_reader)
 {
   size_t nb1 = parcel1_reader.GetNumKmerBatches();
   size_t nb2 = parcel2_reader.GetNumKmerBatches();
@@ -107,7 +109,7 @@ inline bool GetExclusiveKmerBatch(KmerParcelReader & parcel1_reader,
       kmer1 = & parcel1_reader.CurrentKmerBatch().Kmer();
       kmer2 = & parcel2_reader.CurrentKmerBatch().Kmer();
 
-    } 
+    }
 
   }
 }
@@ -140,25 +142,25 @@ inline bool GetExclusiveKmerBatch(KmerParcelReader & parcel1_reader,
 
 
 inline void CountMatchingKmersInParcels(KmerParcelReader & parcel1_reader,
-                                 KmerParcelReader & parcel2_reader,
-                                 ComparativeKmerFrequencyCounters * kmer_freqs)
+                                        KmerParcelReader & parcel2_reader,
+                                        ComparativeKmerFrequencyCounters * kmer_freqs)
 {
   size_t K = parcel1_reader.GetK();
   NaifBuffer kmer1(2*K);
   NaifBuffer kmer2(2*K);
   size_t freq1, freq2;
   bool found1, found2;
-  
+
   NaifTimer timer_all;
 
-  
+
   timer_all.Start();
-  
+
   found1 = parcel1_reader.GetNextKmer(&kmer1, &freq1);
   found2 = parcel2_reader.GetNextKmer(&kmer2, &freq2);
-  
+
   while (found1 && found2) {
-    
+
     if (kmer1 < kmer2) {  // parcel 1 has to catch up to parcel 2
 
       kmer_freqs->only1[freq1]++;
@@ -195,17 +197,17 @@ inline void CountMatchingKmersInParcels(KmerParcelReader & parcel1_reader,
 
   /*
   if (_verbose)
-    cout << (KPTTag() + "timers(sec):" + 
-	     " read= "  + ToString(timer_read, 1)  + " " + ToString(100*timer_read/timer_all, 1)  + "%" + 
-	     " else= "  + ToString(timer_else, 1)  + " " + ToString(100*timer_else/timer_all, 1)  + "%")
-	 << endl;
+    cout << (KPTTag() + "timers(sec):" +
+       " read= "  + ToString(timer_read, 1)  + " " + ToString(100*timer_read/timer_all, 1)  + "%" +
+       " else= "  + ToString(timer_else, 1)  + " " + ToString(100*timer_else/timer_all, 1)  + "%")
+   << endl;
   */
 }
 
 
 
 
-class CountMatchingKmersProc 
+class CountMatchingKmersProc
 {
 private:
   KmerParcelsStore & _parcels1;
@@ -221,13 +223,13 @@ public:
                          KmerParcelsStore & parcels2,
                          vec<ComparativeKmerFrequencyCounters> * kmer_freqs_vec,
                          NaiveThreadPool & thread_pool)
-    : 
-      _parcels1(parcels1),
-      _parcels2(parcels2),
-      _kmer_freqs_vec(kmer_freqs_vec),
-      _thread_pool(thread_pool)
+    :
+    _parcels1(parcels1),
+    _parcels2(parcels2),
+    _kmer_freqs_vec(kmer_freqs_vec),
+    _thread_pool(thread_pool)
   {}
-    
+
 
   void operator() (size_t parcel_ID) {
 
@@ -235,13 +237,13 @@ public:
 
     String tag = "CKPP";
     //if (_verbose)
-      cout << KPTTag(tag) << "Processing parcel " << parcel_ID 
-           << " of " << _parcels1.GetNumParcels()
-           << " on thread " << thread_ID << endl;
+    cout << KPTTag(tag) << "Processing parcel " << parcel_ID
+         << " of " << _parcels1.GetNumParcels()
+         << " on thread " << thread_ID << endl;
     {
       KmerParcelReader parcel1_reader(_parcels1, parcel_ID);
       KmerParcelReader parcel2_reader(_parcels2, parcel_ID);
-      
+
 
       CountMatchingKmersInParcels(parcel1_reader,
                                   parcel2_reader,
@@ -263,7 +265,7 @@ public:
 
 inline void CompareKmerParcels(KmerParcelsStore & parcels1,
                                KmerParcelsStore & parcels2,
-                               ComparativeKmerFrequencyCounters * kmer_freqs, 
+                               ComparativeKmerFrequencyCounters * kmer_freqs,
                                const size_t num_threads = 1)
 {
   String tag = "CKPP";
@@ -276,7 +278,7 @@ inline void CompareKmerParcels(KmerParcelsStore & parcels1,
 
   {
     NaiveThreadPool thread_pool(num_threads, num_parcels);
-    
+
     CountMatchingKmersProc proc(parcels1, parcels2, &kmer_freqs_vec, thread_pool);
     parallelFor(0ul,num_parcels,proc,num_threads);
   }
@@ -284,7 +286,7 @@ inline void CompareKmerParcels(KmerParcelsStore & parcels1,
   typedef vec<ComparativeKmerFrequencyCounters>::const_iterator CKFCVecIter;
   for (CKFCVecIter it = kmer_freqs_vec.begin(); it != kmer_freqs_vec.end(); it++)
     (*kmer_freqs) += (*it);
-      
+
 }
 
 
@@ -292,17 +294,17 @@ inline void CompareKmerParcels(KmerParcelsStore & parcels1,
 
 // wrapper for function above that writes results to disk
 inline void CompareKmerParcels(KmerParcelsDiskStore & parcels1,
-                        KmerParcelsDiskStore & parcels2,
-                        const String & label1,
-                        const String & label2,
-                        const size_t num_threads = 1) 
+                               KmerParcelsDiskStore & parcels2,
+                               const String & label1,
+                               const String & label2,
+                               const size_t num_threads = 1)
 {
   String tag = "CKP";
 
   ComparativeKmerFrequencyCounters kmer_freqs;
 
   CompareKmerParcels(parcels1, parcels2, &kmer_freqs, num_threads);
-                     
+
   cout << KPTTag(tag) << "Writing results" << endl;
 
   String Dir1Name = parcels1.GetDirectoryName();
@@ -322,40 +324,40 @@ inline void CompareKmerParcels(KmerParcelsDiskStore & parcels1,
   size_t both2 = kmer_freqs.both2.Total();
   size_t all1 = only1 + both1;
   size_t all2 = only2 + both2;
-  
 
-  cout << KPTTag(tag) << "GREPABLE: " 
+
+  cout << KPTTag(tag) << "GREPABLE: "
        << setw(12) << all1
        << " (" << setw(5) << fixed  << setprecision(1) << 100.0 << "%)"
        << "  kmers in      '" << label1 << "'." << endl;
-  cout << KPTTag(tag) << "GREPABLE: " 
+  cout << KPTTag(tag) << "GREPABLE: "
        << setw(12) << both1
-       << " (" << setw(5) << fixed  << setprecision(1) 
+       << " (" << setw(5) << fixed  << setprecision(1)
        << 100.0 * static_cast<double>(both1) / static_cast<double>(all1)
        << "%)"
        << "  kmers also in '" << label2 << "'." << endl;
-  cout << KPTTag(tag) << "GREPABLE: " 
+  cout << KPTTag(tag) << "GREPABLE: "
        << setw(12) << only1
-       << " (" << setw(5) << fixed  << setprecision(1) 
+       << " (" << setw(5) << fixed  << setprecision(1)
        << 100.0 * static_cast<double>(only1) / static_cast<double>(all1)
        << "%)"
        << "  kmers not in  '" << label2 << "'." << endl;
 
   cout << endl;
 
-  cout << KPTTag(tag) << "GREPABLE: " 
+  cout << KPTTag(tag) << "GREPABLE: "
        << setw(12) << all2
        << " (" << setw(5) << fixed  << setprecision(1) << 100.0 << "%)"
        << "  kmers in      '" << label2 << "'." << endl;
-  cout << KPTTag(tag) << "GREPABLE: " 
+  cout << KPTTag(tag) << "GREPABLE: "
        << setw(12) << both2
-       << " (" << setw(5) << fixed  << setprecision(1) 
+       << " (" << setw(5) << fixed  << setprecision(1)
        << 100.0 * static_cast<double>(both2) / static_cast<double>(all2)
        << "%)"
        << "  kmers also in '" << label1 << "'." << endl;
-  cout << KPTTag(tag) << "GREPABLE: " 
+  cout << KPTTag(tag) << "GREPABLE: "
        << setw(12) << only2
-       << " (" << setw(5) << fixed  << setprecision(1) 
+       << " (" << setw(5) << fixed  << setprecision(1)
        << 100.0 * static_cast<double>(only2) / static_cast<double>(all2)
        << "%)"
        << "  kmers not in  '" << label1 << "'." << endl;
@@ -373,14 +375,14 @@ inline void CompareKmerParcels(KmerParcelsDiskStore & parcels1,
 
 
 inline bool FindMatchingKmerBatch(const KmerParcelReader & parcel_reader,
-                           const NaifBuffer & kmer0)
+                                  const NaifBuffer & kmer0)
 {
   // if never read any batch, read the first
   if (parcel_reader.GetNumKmerBatchesRead() == 0)
     if (!parcel_reader.GetNextKmerBatch()) return false;
 
   while (true) {
-    const NaifBuffer * kmer = & parcel_reader.CurrentKmerBatch().Kmer(); 
+    const NaifBuffer * kmer = & parcel_reader.CurrentKmerBatch().Kmer();
     if      (kmer0  < *kmer)                    return false;
     else if (kmer0 == *kmer)                    return true;
     else if (!parcel_reader.GetNextKmerBatch()) return false;

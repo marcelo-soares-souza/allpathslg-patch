@@ -18,90 +18,96 @@
 
 void
 SeqOnHyper::TestValid( const HyperBasevector& hb, const vecbasevector & reads,
-		       const vecbasevector & edges,
-		       const vec<int>& to_left, const vec<int>& to_right ) const
-{    ForceAssertGe( Id1( ), 0 );
-     ForceAssertGt( Len1( ), 0 );
-     ForceAssert( parts_.nonempty( ) );
-     ForceAssertEq( parts_.front( ).pos1( ), 0 );
-     int K = hb.K( );
-     for ( int i = 1; i < parts_.isize( ); i++ )
-     {    ForceAssertEq( Pos1(i-1) - pos1(i), K - 1 );
-          ForceAssertEq( to_right[ Id2(i-1) ], to_left[ Id2(i) ] );    }
-     for ( int i = 1; i < parts_.isize( ) - 1; i++ )
-     {    ForceAssertEq( pos2(i), 0 );
-          ForceAssertEq( Pos2(i), hb.EdgeLength( Id2(i) ) );    }
-     if ( parts_.size( ) > 1 )
-     {    ForceAssertEq( Pos2(0), hb.EdgeLength( Id2(0) ) );
-          ForceAssertEq( parts_.back( ).pos2( ), 0 );    }
-     
-     // Compare the basevector of the read sequence and the basevector of
-     // the HyperBasevector where it is supposedly aligned.
-     for ( int i = 0; i < parts_.isize(); i++ ) {
-       const PartialSeqOnHyper& p = parts_[i];
-       basevector r = reads[ Id1( ) ];
-       if ( Rc1() ) r.ReverseComplement( );
-       basevector bv1( r,                p.pos1(), p.Len() );
-       basevector bv2( edges[ p.Id2() ], p.pos2(), p.Len() );
-       ForceAssert( bv1 == bv2 );
-     }
+                       const vecbasevector & edges,
+                       const vec<int>& to_left, const vec<int>& to_right ) const
+{ ForceAssertGe( Id1( ), 0 );
+  ForceAssertGt( Len1( ), 0 );
+  ForceAssert( parts_.nonempty( ) );
+  ForceAssertEq( parts_.front( ).pos1( ), 0 );
+  int K = hb.K( );
+  for ( int i = 1; i < parts_.isize( ); i++ )
+  { ForceAssertEq( Pos1(i-1) - pos1(i), K - 1 );
+    ForceAssertEq( to_right[ Id2(i-1) ], to_left[ Id2(i) ] );
+  }
+  for ( int i = 1; i < parts_.isize( ) - 1; i++ )
+  { ForceAssertEq( pos2(i), 0 );
+    ForceAssertEq( Pos2(i), hb.EdgeLength( Id2(i) ) );
+  }
+  if ( parts_.size( ) > 1 )
+  { ForceAssertEq( Pos2(0), hb.EdgeLength( Id2(0) ) );
+    ForceAssertEq( parts_.back( ).pos2( ), 0 );
+  }
+
+  // Compare the basevector of the read sequence and the basevector of
+  // the HyperBasevector where it is supposedly aligned.
+  for ( int i = 0; i < parts_.isize(); i++ ) {
+    const PartialSeqOnHyper& p = parts_[i];
+    basevector r = reads[ Id1( ) ];
+    if ( Rc1() ) r.ReverseComplement( );
+    basevector bv1( r,                p.pos1(), p.Len() );
+    basevector bv2( edges[ p.Id2() ], p.pos2(), p.Len() );
+    ForceAssert( bv1 == bv2 );
+  }
 }
 
-void SeqOnHyper::Print( ostream& out, const vec<int>& to_left, 
-     const vec<int>& to_right ) const
-{    out << Id1( ) << ( Rc1( ) ? "rc" : "fw" );
-     for ( int i = 0; i < parts_.isize( ); i++ )
-     {    const PartialSeqOnHyper& p = parts_[i];
-          longlong e = p.Id2( );
-          cout << " " << e << "[" << to_left[e] << "->" << to_right[e] << "]."
-               << p.pos2( ) << "-" << p.Pos2( );    }
-     cout << "\n";    }
+void SeqOnHyper::Print( ostream& out, const vec<int>& to_left,
+                        const vec<int>& to_right ) const
+{ out << Id1( ) << ( Rc1( ) ? "rc" : "fw" );
+  for ( int i = 0; i < parts_.isize( ); i++ )
+  { const PartialSeqOnHyper& p = parts_[i];
+    longlong e = p.Id2( );
+    cout << " " << e << "[" << to_left[e] << "->" << to_right[e] << "]."
+         << p.pos2( ) << "-" << p.Pos2( );
+  }
+  cout << "\n";
+}
 
 void SeqOnHyper::PrintVisual( ostream& out, const vecbasevector& reads,
-			      const vecbasevector& edges) const
-{    basevector r = reads[Id1()];
-     r.Print(cout);
-     if (Rc1())
-       r.ReverseComplement();
-     r.Print(cout);
-     for ( int i = 0; i < parts_.isize( ); i++ )
-     {    const PartialSeqOnHyper& p = parts_[i];
-          longlong e = p.Id2( );
-	  PrintBlanks(cout, p.pos1());
-	  edges[e].PrintBases(out, p.pos2(), p.Len(), False, UINT_MAX);
-     }
-     cout << "\n";    }
+                              const vecbasevector& edges) const
+{ basevector r = reads[Id1()];
+  r.Print(cout);
+  if (Rc1())
+    r.ReverseComplement();
+  r.Print(cout);
+  for ( int i = 0; i < parts_.isize( ); i++ )
+  { const PartialSeqOnHyper& p = parts_[i];
+    longlong e = p.Id2( );
+    PrintBlanks(cout, p.pos1());
+    edges[e].PrintBases(out, p.pos2(), p.Len(), False, UINT_MAX);
+  }
+  cout << "\n";
+}
 
 void SeqOnHyper::PrintStats( ostream& out, const vecbasevector& reads,
-			      const vecbasevector& edges) const
-{    basevector r = reads[Id1()];
-     cout << "READ: "<< Id1() << "  ";
-     if (Rc1()) {
-       r.ReverseComplement();
-       cout << "RC" << endl;
-     } else
-       cout << endl;
-     for ( int i = 0; i < parts_.isize( ); i++ )
-     {    const PartialSeqOnHyper& p = parts_[i];
-          longlong e = p.Id2( );
-	  out << "Edge: " << e << "  Len: " << edges[e].size();
-	  out << "  Start: " << p.pos2() << "  End: " << p.Pos2();
-	  out << "  Overlap: " << p.Len() << endl;
-     }
+                             const vecbasevector& edges) const
+{ basevector r = reads[Id1()];
+  cout << "READ: "<< Id1() << "  ";
+  if (Rc1()) {
+    r.ReverseComplement();
+    cout << "RC" << endl;
+  } else
+    cout << endl;
+  for ( int i = 0; i < parts_.isize( ); i++ )
+  { const PartialSeqOnHyper& p = parts_[i];
+    longlong e = p.Id2( );
+    out << "Edge: " << e << "  Len: " << edges[e].size();
+    out << "  Start: " << p.pos2() << "  End: " << p.Pos2();
+    out << "  Overlap: " << p.Len() << endl;
+  }
 }
 
 void SeqOnHyper::writeBinary( BinaryWriter& writer ) const
 {
-    writer.write(rc1_);
-    writer.write(id1_);
-    writer.write(parts_);
+  writer.write(rc1_);
+  writer.write(id1_);
+  writer.write(parts_);
 }
 
 void SeqOnHyper::readBinary( BinaryReader& reader )
 {
-    reader.read(&rc1_);
-    reader.read(&id1_);
-    reader.read(&parts_);
+  reader.read(&rc1_);
+  reader.read(&id1_);
+  reader.read(&parts_);
 }
 
 
@@ -111,8 +117,8 @@ longlong CompressedSeqOnHyper::ambig_count = 0;
 
 // Not clever or fast.  Does this really not exist globally?
 bool MatchUntilEnd( const basevector& s, const basevector& t,
-		    int s_offset = 0, int t_offset = 0, 
-		    bool rc1 = false ) {
+                    int s_offset = 0, int t_offset = 0,
+                    bool rc1 = false ) {
   if( rc1 ) {
     for(uint i=0; i + s_offset < s.size() && i + t_offset < t.size(); i++)
       if( 3 - s[s.size()-1 - i - s_offset] != t[i + t_offset] ) return false;
@@ -128,9 +134,9 @@ bool MatchUntilEnd( const basevector& s, const basevector& t,
 // Starting from position bases[pos], what edges out of vx agree perfectly?
 // If rc, work as if passed the rc of the basevector.
 void CompressedSeqOnHyper::AgreeingFromEdges( const HyperBasevector& hbv,
-					      const int vx,
-					      const int pos, const bool rc,
-					      vec<int>& ans ) const {
+    const int vx,
+    const int pos, const bool rc,
+    vec<int>& ans ) const {
   ans.clear();
   for(int j = 0; j < hbv.From(vx).isize(); j++)
     if( MatchUntilEnd( *mp_bases, hbv.EdgeObjectByIndexFrom(vx,j), pos, 0, rc ) ) {
@@ -139,9 +145,9 @@ void CompressedSeqOnHyper::AgreeingFromEdges( const HyperBasevector& hbv,
 }
 
 void CompressedSeqOnHyper::Compress( const SeqOnHyper& salign,
-				     const HyperBasevector& hbv_aligned,
-				     const basevector* bv_aligned,
-				     const vec<int>& to_right_vertex ) {
+                                     const HyperBasevector& hbv_aligned,
+                                     const basevector* bv_aligned,
+                                     const vec<int>& to_right_vertex ) {
 
   // Set the things which can be set without looking at the HBV:
   mp_bases = bv_aligned;
@@ -176,7 +182,7 @@ void CompressedSeqOnHyper::Compress( const SeqOnHyper& salign,
 
   for(int i=1; i < num_edges; i++) {
     // These asserts are no longer valid - need to figure out what should replace them.
-    //    ForceAssertEq( pos, salign.pos1(i) ); 
+    //    ForceAssertEq( pos, salign.pos1(i) );
     //    ForceAssertLe( pos, bv_aligned->isize() - K ); // must be at least K bases
     edge_id = salign.Id2(i);
     // vx_id should now be the left vertex of edge_id
@@ -185,17 +191,17 @@ void CompressedSeqOnHyper::Compress( const SeqOnHyper& salign,
 
     if( ! Member( from_edges, edge_id ) ) { // uh oh
       cout << "SeqOnHyper doesn't align  correctly to HyberBasevector!"
-	   << "\nwhole basevector: " << mp_bases->ToString()
-	   << "\npos=" << pos << ", " << (Rc1() ? "rc" : "fw")
-	   << "\nedge " << edge_id << ": " 
-	   << hbv_aligned.EdgeObject(edge_id).ToString()
-	   << endl;
+           << "\nwhole basevector: " << mp_bases->ToString()
+           << "\npos=" << pos << ", " << (Rc1() ? "rc" : "fw")
+           << "\nedge " << edge_id << ": "
+           << hbv_aligned.EdgeObject(edge_id).ToString()
+           << endl;
       FatalErr( "SeqOnHyper doesn't align  correctly to HyperBasevector!" );
     }
 
     if( from_edges.size() != 1 )  // we have ambiguity, captain
       ambig.push_back(edge_id);
-      
+
     // move to the right end of that edge.
     vx_id = to_right_vertex[edge_id];
     pos = salign.Pos1(i) - K + 1;
@@ -210,9 +216,9 @@ void CompressedSeqOnHyper::Compress( const SeqOnHyper& salign,
 }
 
 void CompressedSeqOnHyper::Compress(Bool rc1, longlong id1,
-				    longlong id2, int pos1, int pos2, int len, 
-				    const basevector* bv_aligned,
-				    const vec<int>& to_right_vertex ) {
+                                    longlong id2, int pos1, int pos2, int len,
+                                    const basevector* bv_aligned,
+                                    const vec<int>& to_right_vertex ) {
   mp_bases = bv_aligned;
 
   if( mp_ambig ) {
@@ -228,7 +234,7 @@ void CompressedSeqOnHyper::Compress(Bool rc1, longlong id1,
 }
 
 void CompressedSeqOnHyper::DecompressInto( SeqOnHyper& salign,
-			   const HyperBasevector& hbv ) const {
+    const HyperBasevector& hbv ) const {
 
   vec<PartialSeqOnHyper> parts( 1, m_first_edge_alignment );
   PartialSeqOnHyper partial;
@@ -248,25 +254,25 @@ void CompressedSeqOnHyper::DecompressInto( SeqOnHyper& salign,
       id2 = from_edges[0];
     else if ( from_edges.size() == 0 ) {
       FatalErr( "CompressedSeqOnHyper Decompression Failure!"
-		<< "  No edge matches basevector!\n"
-		<< "vertex=" << vx_id << ", pos=" << pos1
-		<< " in bases=" << mp_bases->ToString() );
+                << "  No edge matches basevector!\n"
+                << "vertex=" << vx_id << ", pos=" << pos1
+                << " in bases=" << mp_bases->ToString() );
     }
     else { // ambiguity
       if( mp_ambig == NULL || ambig_index >= mp_ambig->isize() ) {
-	FatalErr( "CompressedSeqOnHyper Decompression Failure!"
-		  << "Found ambiguity and I don't know what to do!\n"
-		  << "vertex=" << vx_id << ", pos=" << pos1
-		  << " in bases=" << mp_bases->ToString() );
+        FatalErr( "CompressedSeqOnHyper Decompression Failure!"
+                  << "Found ambiguity and I don't know what to do!\n"
+                  << "vertex=" << vx_id << ", pos=" << pos1
+                  << " in bases=" << mp_bases->ToString() );
       }
       id2 = (*mp_ambig)[ambig_index++];
     }
-    
+
     partial.Setpos1( pos1 );
     partial.Setpos2( 0 );
     partial.SetId2( id2 );
     partial.SetLen( min( hbv.EdgeObject(id2).isize(),
-			 mp_bases->isize() - pos1 ) );
+                         mp_bases->isize() - pos1 ) );
     parts.push_back(partial);
 
     // update vx_id
@@ -278,40 +284,40 @@ void CompressedSeqOnHyper::DecompressInto( SeqOnHyper& salign,
 
 
 void BinaryWrite( const String& filename,
-                        const vec<CompressedSeqOnHyper>& csaligns,
-                        const HyperBasevector& hbv)
+                  const vec<CompressedSeqOnHyper>& csaligns,
+                  const HyperBasevector& hbv)
 {
-    BinaryWriter bw(filename);
-    bw.write(csaligns.size());
-    SeqOnHyper salign;
-    typedef vec<CompressedSeqOnHyper>::const_iterator Itr;
-    for ( Itr itr(csaligns.begin()), end(csaligns.end()); itr != end; ++itr )
-    {
-        itr->DecompressInto(salign, hbv);
-        bw.write(salign);
-    }
-    bw.close();
+  BinaryWriter bw(filename);
+  bw.write(csaligns.size());
+  SeqOnHyper salign;
+  typedef vec<CompressedSeqOnHyper>::const_iterator Itr;
+  for ( Itr itr(csaligns.begin()), end(csaligns.end()); itr != end; ++itr )
+  {
+    itr->DecompressInto(salign, hbv);
+    bw.write(salign);
+  }
+  bw.close();
 }
 
-  
+
 void BinaryRead( const String& filename, vec<CompressedSeqOnHyper>& csaligns,
-		 const HyperKmerPath& h, const HyperBasevector& hbv,
-		 const vecbasevector& reads )
+                 const HyperKmerPath& h, const HyperBasevector& hbv,
+                 const vecbasevector& reads )
 {
-    vec<int> to_right_vertex(h.EdgeObjectCount());
-    h.ToRight(to_right_vertex);
+  vec<int> to_right_vertex(h.EdgeObjectCount());
+  h.ToRight(to_right_vertex);
 
-    BinaryReader br(filename);
-    vec<CompressedSeqOnHyper>::size_type nnn;
-    br.read(&nnn);
-    csaligns.clear();
-    csaligns.reserve(nnn);
+  BinaryReader br(filename);
+  vec<CompressedSeqOnHyper>::size_type nnn;
+  br.read(&nnn);
+  csaligns.clear();
+  csaligns.reserve(nnn);
 
-    SeqOnHyper salign;
-    while ( nnn-- )
-    {
-        br.read(&salign);
-        csaligns.push_back(CompressedSeqOnHyper(salign, hbv,
-                &reads[salign.Id1()], to_right_vertex));
-    }
+  SeqOnHyper salign;
+  while ( nnn-- )
+  {
+    br.read(&salign);
+    csaligns.push_back(CompressedSeqOnHyper(salign, hbv,
+                                            &reads[salign.Id1()], to_right_vertex));
+  }
 }

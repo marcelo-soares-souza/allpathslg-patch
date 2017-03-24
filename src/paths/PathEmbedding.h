@@ -14,7 +14,7 @@
 ///
 /// They are functionally read-only objects (with a private constructor).
 /// To create a PathEmbedding, you should call FindPathEmbeddings()
-/// (which may find more than one, in which case you will need to 
+/// (which may find more than one, in which case you will need to
 /// figure out which one you want), or one of the specialised generators,
 /// IdentityEmbedding() and SubpathEmbedding().
 ///
@@ -23,8 +23,8 @@
 /// are invalidated, then the PathEmbedding's member functions can no longer
 /// be used.  (They may give garbage answers or cause a segmentation fault.)
 ///
-/// SPECIAL EMBEDDINGS: 
-/// 1. An Identity embedding knows it's the identity because its sub_ and 
+/// SPECIAL EMBEDDINGS:
+/// 1. An Identity embedding knows it's the identity because its sub_ and
 ///    super_ pointers are the same.  It uses this knowledge for good.
 /// 2. A call to SubpathEmbedding() creates a brand new read for the
 ///    subpath in question, which goes in the provided storage spot.
@@ -32,24 +32,34 @@
 
 class PathEmbedding {
 public:
-  const KmerPath* GetSubPath() const { return sub_path; }
-  const KmerPath* GetSuperPath() const { return super_path; }
-  bool IsIdentity() const { return( sub_path == super_path ); }
+  const KmerPath* GetSubPath() const {
+    return sub_path;
+  }
+  const KmerPath* GetSuperPath() const {
+    return super_path;
+  }
+  bool IsIdentity() const {
+    return( sub_path == super_path );
+  }
   // theorem: any embedding of a path into itself must be the identity.
-  
-  int SubStartSegment() const { return block_start_on_super.front(); }
-  int SubStopSegment() const { return block_stop_on_super.back(); }
+
+  int SubStartSegment() const {
+    return block_start_on_super.front();
+  }
+  int SubStopSegment() const {
+    return block_stop_on_super.back();
+  }
 
   // Fast replacement for eg PushLoc(sub_path->End())
   KmerPathLoc SubStartLoc() const {
     return KmerPathLoc( super_path, block_start_on_super.front(),
-			sub_path->Start(0) - 
-			super_path->Start(block_start_on_super.front()) );
+                        sub_path->Start(0) -
+                        super_path->Start(block_start_on_super.front()) );
   }
   KmerPathLoc SubStopLoc() const {
     return KmerPathLoc( super_path, block_stop_on_super.back(),
-			sub_path->Stop(sub_path->NSegments()-1) - 
-			super_path->Start(block_stop_on_super.back()) );
+                        sub_path->Stop(sub_path->NSegments()-1) -
+                        super_path->Start(block_stop_on_super.back()) );
   }
 
 
@@ -83,18 +93,18 @@ public:
 
   friend bool operator<( const PathEmbedding& lhs, const PathEmbedding& rhs ) {
     return( lhs.block_start_on_super < lhs.block_start_on_super ||
-	    (lhs.block_start_on_super == lhs.block_start_on_super &&
-	     (*lhs.sub_path < *rhs.sub_path ||
-	      (*lhs.sub_path == *rhs.sub_path && 
-	       (*lhs.super_path < *rhs.super_path)))) );
+            (lhs.block_start_on_super == lhs.block_start_on_super &&
+             (*lhs.sub_path < *rhs.sub_path ||
+              (*lhs.sub_path == *rhs.sub_path &&
+               (*lhs.super_path < *rhs.super_path)))) );
     // The other two vec<int> members are just for efficiency --
     // they are guaranteed to be the same, if these all are.
   }
 
-  friend bool operator==( const PathEmbedding& lhs, const PathEmbedding& rhs ){
+  friend bool operator==( const PathEmbedding& lhs, const PathEmbedding& rhs ) {
     return( *lhs.sub_path == *rhs.sub_path &&
-	    *lhs.super_path == *rhs.super_path &&
-	    lhs.block_start_on_super == rhs.block_start_on_super );
+            *lhs.super_path == *rhs.super_path &&
+            lhs.block_start_on_super == rhs.block_start_on_super );
     // The other two vec<int> members are just for efficiency --
     // they are guaranteed to be the same, if these all are.
   }
@@ -105,8 +115,8 @@ public:
   friend ostream& operator<<(ostream& out, const PathEmbedding& e) {
     for( uint i=0; i<=e.sub_gap.size(); i++ ) {
       out << "sub block " << i << " runs from super segment "
-	  << e.block_start_on_super[i] << " to "
-	  << e.block_stop_on_super[i] << endl;
+          << e.block_start_on_super[i] << " to "
+          << e.block_stop_on_super[i] << endl;
     }
     return out;
   }
@@ -114,20 +124,20 @@ public:
 private:
   // CONSTRUCTION:
 
-  // PathEmbeddings are functionally read-only -- anything creating a new 
+  // PathEmbeddings are functionally read-only -- anything creating a new
   // one should be a friend.  So the constructor is private.
-  PathEmbedding(const KmerPath* sub, 
-		const KmerPath* super) :
+  PathEmbedding(const KmerPath* sub,
+                const KmerPath* super) :
     sub_path(sub), super_path(super) {}
 public:
   // Deep copy constructor -- copies referred-to paths into given new homes,
   // thereby guaranteeing the copied PathEmbedding remains valid.
   // SetSubPath and SetSuperPath obviate this, except for minor inefficiency
-  PathEmbedding( const PathEmbedding& emb, 
-		 KmerPath& new_sub_location, 
-		 KmerPath& new_super_location) {
+  PathEmbedding( const PathEmbedding& emb,
+                 KmerPath& new_sub_location,
+                 KmerPath& new_super_location) {
     ForceAssert( &new_sub_location != &new_super_location
-		 || emb.IsIdentity() );
+                 || emb.IsIdentity() );
     *this = emb;   // copy over all the vec<int> data fields
     new_sub_location = *emb.GetSubPath();     // make a copy of emb->sub_path
     sub_path = &new_sub_location;             // and point to it
@@ -135,7 +145,7 @@ public:
     super_path = &new_super_location;         // and point to it
   }
 
-  
+
 
 
 
@@ -143,18 +153,18 @@ public:
   // Here's where they come from.  The return value is just !ans.empty()
   // If start_of_sub_on_super is specified, it's the segment of super that
   // the 0th segment of sub should align  to.
-  friend 
+  friend
   bool FindPathEmbeddings( const KmerPath& sub, const KmerPath& super,
-			   vec<PathEmbedding>& ans, 
-			   int start_of_sub_on_super = -1,
-			   int end_of_sub_on_super = -1 );
+                           vec<PathEmbedding>& ans,
+                           int start_of_sub_on_super = -1,
+                           int end_of_sub_on_super = -1 );
 
-  friend 
+  friend
   bool EmbeddingExists( const KmerPath& sub, const KmerPath& super,
-			int start_of = -1, int end_of = -1 ) {
+                        int start_of = -1, int end_of = -1 ) {
     vec<PathEmbedding> will_be_ignored;
     return( FindPathEmbeddings( sub, super, will_be_ignored,
-				start_of, end_of ) );
+                                start_of, end_of ) );
   }
 
 
@@ -162,9 +172,9 @@ public:
 
   // The subpath is stored in subpath_storage_spot
   friend PathEmbedding SubpathEmbedding( const KmerPath& path,
-					 const KmerPathLoc& begin,
-					 const KmerPathLoc& end,
-					 KmerPath* subpath_storage_spot);
+                                         const KmerPathLoc& begin,
+                                         const KmerPathLoc& end,
+                                         KmerPath* subpath_storage_spot);
 
 
   // Compose the mappings from A->B and and B->C to a mapping of A->C.
@@ -174,18 +184,21 @@ public:
 
   // This is a helper function for FindPathEmbeddings.
   // I doubt anything else should ever call it.
-  friend 
+  friend
   void RecursiveFindEmbeddings( const KmerPath& sub, const KmerPath& super,
-				int sub_seg, int super_seg, 
-				PathEmbedding& embedding,
-				vec<PathEmbedding>& ans );
+                                int sub_seg, int super_seg,
+                                PathEmbedding& embedding,
+                                vec<PathEmbedding>& ans );
 private:
   // Private helper functions:
   longlong first_kmer_in_sub_block( unsigned int b ) const
-    { return sub_path->Start( b==0 ? 0 : sub_gap[b-1]+1 ); }
+  {
+    return sub_path->Start( b==0 ? 0 : sub_gap[b-1]+1 );
+  }
   longlong last_kmer_in_sub_block( unsigned int b ) const
-    { return sub_path->Stop( b==sub_gap.size() ? sub_path->NSegments()-1
-			     : sub_gap[b]-1 ); }
+  { return sub_path->Stop( b==sub_gap.size() ? sub_path->NSegments()-1
+                           : sub_gap[b]-1 );
+  }
 
 
 private:
@@ -206,16 +219,16 @@ private:
 PathEmbedding IdentityEmbedding( const KmerPath& path );
 
 PathEmbedding SubpathEmbedding( const KmerPath& path,
-                                         const KmerPathLoc& begin,
-                                         const KmerPathLoc& end,
-                                         KmerPath* subpath_storage_spot);
+                                const KmerPathLoc& begin,
+                                const KmerPathLoc& end,
+                                KmerPath* subpath_storage_spot);
 
 bool FindPathEmbeddings( const KmerPath& sub, const KmerPath& super,
-			 vec<PathEmbedding>& ans, 
-			 int start_of_sub_on_super,
-			 int end_of_sub_on_super );
+                         vec<PathEmbedding>& ans,
+                         int start_of_sub_on_super,
+                         int end_of_sub_on_super );
 
 bool EmbeddingExists( const KmerPath& sub, const KmerPath& super,
-                        int start_of, int end_of );
+                      int start_of, int end_of );
 
 #endif

@@ -66,8 +66,8 @@ void FindClosures( const vec<pp_pair>& ppp,
     for ( int j = 0; j < p.RightSize( ); j++ )
       x.Append( h.EdgeObject( p.Right(j) ) );
     paths.push_back_reserve(x, 0, 2.0);
-    if ( pairs_to_close[i] ) 
-      pairs.push_back(rp);    
+    if ( pairs_to_close[i] )
+      pairs.push_back(rp);
   }
   cout << "Reserving" << endl;
   int pathsSize = paths.size();
@@ -86,7 +86,7 @@ void FindClosures( const vec<pp_pair>& ppp,
       paths.push_back(x);
     }
   cout << "Calling FindClosures()" << endl;
-  FindClosures( paths, pairs, sdMult, h.K( ), closures, fail, 
+  FindClosures( paths, pairs, sdMult, h.K( ), closures, fail,
                 max_pseudo_closures, max_closures );
 }
 
@@ -103,10 +103,10 @@ void PrepareData( const vecKmerPath& paths,
                   OffsetTracker* pOffTracker )
 {
   const int numInserts = pairs.size();
-  
+
   vecKmerPath pathsFw;
   vecKmerPath pathsRc;
-  
+
   vec<bool> isPaired( paths.size(), false );
 
   newPairs.reserve( numInserts );
@@ -162,7 +162,7 @@ void FindClosures( const vecKmerPath& paths,
                    const vec<read_pairing>& pairs,
                    const double sdMult,
                    const int K,
-                   vec< HyperKmerPath >& closures, 
+                   vec< HyperKmerPath >& closures,
                    vec<Bool>& fail,
                    const unsigned int max_pseudo_closures,
                    const unsigned int max_closures )
@@ -170,7 +170,7 @@ void FindClosures( const vecKmerPath& paths,
 {
   fail.resize_and_set( pairs.size( ), False );
   const int numInserts = pairs.size();
-  
+
   vecKmerPath pathsFw;
   vecKmerPath pathsRc;
   vec<read_pairing> newPairs;
@@ -186,7 +186,7 @@ void FindClosures( const vecKmerPath& paths,
   vec<int> readLengths( allPathsFw.size() );
   for ( size_t i = 0; i < allPathsFw.size(); ++i )
     readLengths[i] = allPathsFw[i].KmerCount();
-  
+
   int verbosity = 0;
   KmerPathMuxSearcher searcher( &allMuxes, &identityFillDb, &allSubs, &readLengths, verbosity );
 
@@ -194,7 +194,7 @@ void FindClosures( const vecKmerPath& paths,
   for ( int i = 0; i < numInserts; ++i ) {
     cout << i << ":";
     const read_pairing& thePair = newPairs[i];
-    
+
     int expLength = readLengths[ thePair.id1 ] + thePair.sep + (K-1);
     int minLength = expLength - (int)ceil( sdMult * (double)thePair.sd );
     int maxLength = expLength + (int)ceil( sdMult * (double)thePair.sd );
@@ -206,9 +206,9 @@ void FindClosures( const vecKmerPath& paths,
                            result );
 
     cout << " calculating..." << flush;
-    
-    if (result.hit_search_limit) 
-      fail[i] = True;   
+
+    if (result.hit_search_limit)
+      fail[i] = True;
     if ( max_pseudo_closures > 0 && result.num_closures_found > (int) max_pseudo_closures )
       fail[i] = True;
 
@@ -229,7 +229,7 @@ void FindClosureLengths( const vecKmerPath& paths,
                          vec< vec<int> >& closureLengths )
 {
   const int numInserts = pairs.size();
-  
+
   vecKmerPath pathsFw;
   vecKmerPath pathsRc;
   vec<read_pairing> newPairs;
@@ -247,7 +247,7 @@ void FindClosureLengths( const vecKmerPath& paths,
   for ( int i = 0; i < numInserts; ++i ) {
     int id1 = newPairs[i].id1;
     int id2 = newPairs[i].id2;
-    
+
     vec<Mux> muxes;
     allMuxes.GetMuxesOf( OrientedKmerPathId( id1, false ), muxes );
     ForceAssertEq( muxes.size(), 1u );

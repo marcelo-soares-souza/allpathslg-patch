@@ -27,22 +27,26 @@
 class ThreadsafeStreambuf : public std::streambuf
 {
 public:
-    ThreadsafeStreambuf( std::ostream& os )
+  ThreadsafeStreambuf( std::ostream& os )
     : mOS(os)
-    { setp(mBuf,mBuf+sizeof(mBuf)-1); }
+  {
+    setp(mBuf,mBuf+sizeof(mBuf)-1);
+  }
 
-    ThreadsafeStreambuf( ThreadsafeStreambuf const& )=delete;
+  ThreadsafeStreambuf( ThreadsafeStreambuf const& )=delete;
 
-    ~ThreadsafeStreambuf()
-    { sync(); }
+  ~ThreadsafeStreambuf()
+  {
+    sync();
+  }
 
 private:
-    int_type overflow( int_type ch );
-    int sync();
+  int_type overflow( int_type ch );
+  int sync();
 
-    std::ostream& mOS;
-    char mBuf[4096];
-    static SpinLockedData gLock;
+  std::ostream& mOS;
+  char mBuf[4096];
+  static SpinLockedData gLock;
 };
 
 /// An ostream that wraps another.
@@ -50,14 +54,14 @@ private:
 class ThreadsafeOStream : public std::ostream
 {
 public:
-    ThreadsafeOStream( std::ostream& os )
+  ThreadsafeOStream( std::ostream& os )
     : std::ostream(&mSB), mSB(os)
-    {}
+  {}
 
-    ThreadsafeOStream( ThreadsafeOStream const& )=delete;
+  ThreadsafeOStream( ThreadsafeOStream const& )=delete;
 
 private:
-    ThreadsafeStreambuf mSB;
+  ThreadsafeStreambuf mSB;
 };
 
 #endif /* SYSTEM_THREADSAFEIO_H_ */

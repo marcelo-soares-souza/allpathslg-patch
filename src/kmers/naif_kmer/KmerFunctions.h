@@ -20,15 +20,21 @@
 
 template <class KMER_t>
 inline
-bool operator<=(const KMER_t & a, const KMER_t & b) { return !(a > b); }
+bool operator<=(const KMER_t & a, const KMER_t & b) {
+  return !(a > b);
+}
 
 template <class KMER_t>
 inline
-bool operator>=(const KMER_t & a, const KMER_t & b) { return !(a < b); }
+bool operator>=(const KMER_t & a, const KMER_t & b) {
+  return !(a < b);
+}
 
 template <class KMER_t>
 inline
-bool operator!=(const KMER_t & a, const KMER_t & b) { return !(a == b); }
+bool operator!=(const KMER_t & a, const KMER_t & b) {
+  return !(a == b);
+}
 
 
 
@@ -45,7 +51,7 @@ String stringify_base(const unsigned base, const char * ascii = "ACGT")
 
 
 template<class KMER_t>
-inline 
+inline
 String stringify_kmer(const KMER_t & kmer, const char * ascii = "ACGT")
 {
   String s = "";
@@ -57,11 +63,15 @@ String stringify_kmer(const KMER_t & kmer, const char * ascii = "ACGT")
 
 
 inline
-String hieroglyph(const unsigned base) { return stringify_base(base, "^(-."); }
+String hieroglyph(const unsigned base) {
+  return stringify_base(base, "^(-.");
+}
 
 template<class KMER_t>
 inline
-String hieroglyphs(const KMER_t & kmer) { return stringify_kmer(kmer, "^(-."); }
+String hieroglyphs(const KMER_t & kmer) {
+  return stringify_kmer(kmer, "^(-.");
+}
 
 
 
@@ -73,14 +83,14 @@ String hieroglyphs(const KMER_t & kmer) { return stringify_kmer(kmer, "^(-."); }
 
 
 template<class KMER_t>
-inline 
-KMER_t reverse_complement(const KMER_t & kmerFW) 
+inline
+KMER_t reverse_complement(const KMER_t & kmerFW)
 {
   const unsigned K = kmerFW.size();
-  KMER_t kmerRC = kmerFW;          // copy, because KMER_t might have other stuff 
-  for (unsigned i = 0; i != K; i++) 
+  KMER_t kmerRC = kmerFW;          // copy, because KMER_t might have other stuff
+  for (unsigned i = 0; i != K; i++)
     kmerRC.set(K - i - 1, 3u ^ kmerFW[i]);   // set bases from the begining
-  
+
   return kmerRC;
 }
 
@@ -88,10 +98,10 @@ KMER_t reverse_complement(const KMER_t & kmerFW)
 
 template<class KMER_t>
 inline
-KMER_t canonical(const KMER_t & kmerFW) 
+KMER_t canonical(const KMER_t & kmerFW)
 {
   const unsigned K = kmerFW.K();
-  const KMER_t kmerRC = reverse_complement(kmerFW); // copy, because KMER_t might have other stuff 
+  const KMER_t kmerRC = reverse_complement(kmerFW); // copy, because KMER_t might have other stuff
   return (kmerFW < kmerRC) ? kmerFW : kmerRC;
 }
 

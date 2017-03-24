@@ -21,8 +21,8 @@
  * index of the alignments to -2 ("no alignment found").
  */
 void RemoveDuplicateAligns( const PairsManager &pairs,
-			    const vec<alignlet> &aligns,
-			    vec<int> &index,
-			    ostream &log );
+                            const vec<alignlet> &aligns,
+                            vec<int> &index,
+                            ostream &log );
 
 #endif

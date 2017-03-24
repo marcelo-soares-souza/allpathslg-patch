@@ -10,9 +10,9 @@
 // Evaluate error correction using reference, not true reads.
 
 const char *DOC =
-"EvalCorrectedReads. Evaluates success of error correction and suspicious "
-"read removal by perfectly aligning these reads back to a reference. "
-"Does not require truth data";
+  "EvalCorrectedReads. Evaluates success of error correction and suspicious "
+  "read removal by perfectly aligning these reads back to a reference. "
+  "Does not require truth data";
 
 #include "Basevector.h"
 #include "MainTools.h"
@@ -31,21 +31,21 @@ String Fraction(longlong numerator, longlong denominator) {
 // Add aligned pair to coverage map. For multiple paired aligments, add fractional
 // coverage - 1/alignments to each base position in the map.
 void AddCoverage(const vec<look_align>& aligns, const vec<pair<longlong, longlong> >& valid,
-		 vec<vec< double> >& covered) {
+                 vec<vec< double> >& covered) {
   if (valid.empty())
     return;
   longlong alignments = valid.size();
   double fraction = 1.0/alignments;
   for (longlong i = 0; i < alignments; i++) {
     for (int read = 0; read < 2; read++) {  // 1st or 2nd read in pair
-      const look_align& la = 
-	(read == 0 ? aligns[valid[i].first] : aligns[valid[i].second]);
+      const look_align& la =
+        (read == 0 ? aligns[valid[i].first] : aligns[valid[i].second]);
       int contig = la.TargetId();
       int start = la.StartOnTarget();
       int end = la.EndOnTarget();
       for (int pos = start; pos <= end; pos++)
-	covered[contig][pos] += fraction;
-    }   
+        covered[contig][pos] += fraction;
+    }
   }
 }
 
@@ -60,22 +60,22 @@ void CoverageStatistics(vec<vec< double> >& covered, int coverage) {
   for (longlong i = 0; i < covered.isize(); i++) {
     low00 += covered[i].CountValue(0);
     low25 += count_if(covered[i].begin(), covered[i].end(),
-		      bind2nd(less<double>(), coverage/4));
+                      bind2nd(less<double>(), coverage/4));
     low50 += count_if(covered[i].begin(), covered[i].end(),
-		      bind2nd(less<double>(), coverage/2));
+                      bind2nd(less<double>(), coverage/2));
     low75 += count_if(covered[i].begin(), covered[i].end(),
-		      bind2nd(less<double>(), coverage*3/4));
+                      bind2nd(less<double>(), coverage*3/4));
   }
   cout << "\nBases covered by paired reads at...:\n";
-  cout << "  0-25% of expected coverage : " << low25 
+  cout << "  0-25% of expected coverage : " << low25
        <<"  (" << Fraction(low25, total) << ")\n";
   cout << "  0-50% of expected coverage : " << low50
        <<"  (" << Fraction(low50, total) << ")\n";
-  cout << "  0-75% of expected coverage : " << low75 
+  cout << "  0-75% of expected coverage : " << low75
        <<"  (" << Fraction(low75, total) << ")\n";
-  cout << "  75%+ of expected coverage  : " << (total - low75) 
+  cout << "  75%+ of expected coverage  : " << (total - low75)
        <<"  (" << Fraction(total - low75, total) << ")\n";
-  cout << "  Uncovered bases            : " << low00 
+  cout << "  Uncovered bases            : " << low00
        <<"  (" << Fraction(low00, total) << ")\n";
 }
 
@@ -84,14 +84,14 @@ void CoverageStatistics(vec<vec< double> >& covered, int coverage) {
 // Number of alignments found is returned in alignmentCount
 // Multiple alignments are allowed, and each possible pair alignment
 // is returned as a pair of alignment index positions in vec valid.
-// A sensible alignment is one that has an actual separation within 
+// A sensible alignment is one that has an actual separation within
 // max*expectedSd of the expected separation.
 Bool EvaluatePair(const vec<look_align>& aligns, const vec<int>& indexReadA,
-		  const vec<int>& indexReadB, vec<pair<longlong, longlong> >& valid,
-		  int expectedSep, int expectedSd,
-		  int& alignmentCount, double max = 3) {
+                  const vec<int>& indexReadB, vec<pair<longlong, longlong> >& valid,
+                  int expectedSep, int expectedSd,
+                  int& alignmentCount, double max = 3) {
 
-  if (indexReadA.empty() || indexReadB.empty()) // need both to align 
+  if (indexReadA.empty() || indexReadB.empty()) // need both to align
     return False;
 
   valid.clear();
@@ -104,17 +104,17 @@ Bool EvaluatePair(const vec<look_align>& aligns, const vec<int>& indexReadA,
       int startA = laA.StartOnTarget();
       int startB = laB.StartOnTarget();
       if (laA.rc1 == laB.rc1) // incorrect orientation
-	continue;
+        continue;
       if (laA.TargetId() != laB.TargetId())
-	continue;  // land on different reference contigs
+        continue;  // land on different reference contigs
       int actualSep;
-      if (laA.rc1) 
-	actualSep = startA-startB-laB.query_length;
-      else 
-	actualSep = startB-startA-laA.query_length;
+      if (laA.rc1)
+        actualSep = startA-startB-laB.query_length;
+      else
+        actualSep = startB-startA-laA.query_length;
       if (abs(actualSep - expectedSep) < max * expectedSd) {
-	alignmentCount++;
-	valid.push_back(make_pair(indexReadA[iA], indexReadB[iB]));
+        alignmentCount++;
+        valid.push_back(make_pair(indexReadA[iA], indexReadB[iB]));
       }
     }
   }
@@ -124,21 +124,21 @@ Bool EvaluatePair(const vec<look_align>& aligns, const vec<int>& indexReadA,
 int main( int argc, char *argv[] )
 {
   RunTime( );
-  
+
   BeginCommandArguments;
   CommandDoc(DOC);
   CommandArgument_String(PRE);
   CommandArgument_String(DATA);
   CommandArgument_String(RUN);
   CommandArgument_Int_OrDefault_Doc(LOOKUP_K, 12,
-    "Kmer size of lookup table");
+                                    "Kmer size of lookup table");
   CommandArgument_Int_OrDefault_Doc(MAX_NO_SD, 3,
-    "Maximum number of standard deviation allowed from mean separation for a "
-    "pair to be still consider valid");
+                                    "Maximum number of standard deviation allowed from mean separation for a "
+                                    "pair to be still consider valid");
   CommandArgument_String_OrDefault_Doc(READS_ORIG, "",
-    "Uncorrected reads.");
+                                       "Uncorrected reads.");
   CommandArgument_String_OrDefault_Doc(READS_IN, "reads_nosusp",
-    "Reads that we need to find locations on the genome for.");
+                                       "Reads that we need to find locations on the genome for.");
   CommandArgument_String_OrDefault(GENOME, "genome");
 //   CommandArgument_Bool_OrDefault_Doc(UNIQUE_ONLY, False,
 //     "If True, only use uniquely place reads." );
@@ -153,7 +153,7 @@ int main( int argc, char *argv[] )
   vec<unsigned int> genomeContigSizes;
 
   // Determine genome size statistics
-  { 
+  {
     vecbasevector genome(data_dir + "/" + GENOME + ".fastb");
     genomeSize = genome.sumSizes();
     genomeContigCount = genome.size();
@@ -187,7 +187,7 @@ int main( int argc, char *argv[] )
     estimatedPairCoverage += reads[id1].size() + reads[id2].size();
   }
   PRINT3( estimatedPairCoverage, genomeSize, estimatedPairCoverage / genomeSize );
-  
+
   cout << "Aligning " << n_reads << " reads to reference" << endl;
 
   // Perform Alignment
@@ -202,7 +202,7 @@ int main( int argc, char *argv[] )
 
   // Count number of aligned reads
   longlong alignedReads = 0;
-  for (longlong i = 0; i < index.isize(); i++ ) 
+  for (longlong i = 0; i < index.isize(); i++ )
     if (index[i].nonempty())
       alignedReads++;
 
@@ -224,11 +224,11 @@ int main( int argc, char *argv[] )
     longlong id2 = pairs.ID2(i);
     int aligned;
     if (EvaluatePair(lookAligns, index[id1], index[id2], valid,
-		     pairs.sep(i), pairs.sd(i), aligned, MAX_NO_SD) ){
+                     pairs.sep(i), pairs.sd(i), aligned, MAX_NO_SD) ) {
       if (aligned == 1 )
-	uniquelyAlignedPairs++;
-      else 
-	multiplyAlignedPairs++;
+        uniquelyAlignedPairs++;
+      else
+        multiplyAlignedPairs++;
       pairCoverage += reads[id1].size() + reads[id2].size();
       AddCoverage(lookAligns, valid, covered);
     } else
@@ -243,18 +243,18 @@ int main( int argc, char *argv[] )
 
   cout << "\nReads:\n";
   cout << "  Original   : " << originalReads << "\n";
-  cout << "  Corrected  : " << n_reads 
+  cout << "  Corrected  : " << n_reads
        <<"  (" << Fraction(n_reads, originalReads) << " of original)\n";
   cout << "  Aligned    : " << alignedReads
        <<"  (" << Fraction(alignedReads, n_reads) << " of corrected)\n";
   cout << "  Unaligned  : " << n_reads - alignedReads
        <<"  (" << Fraction(n_reads - alignedReads, n_reads) << " of corrected)\n";
-  
+
   cout << "\nPaired Reads:\n";
   cout << "  Original   : " << originalPairs << "\n";
   cout << "  Corrected  : " << n_pairs
        <<"  (" << Fraction(n_pairs, originalPairs) << " of original)\n";
-  cout << "  Aligned    : " << alignedPairs 
+  cout << "  Aligned    : " << alignedPairs
        <<"  (" << Fraction(alignedPairs, n_pairs) << " of corrected)\n";
   cout << "    Uniquely : " << uniquelyAlignedPairs
        <<"  (" << Fraction(uniquelyAlignedPairs, alignedPairs) << " of aligned)\n";

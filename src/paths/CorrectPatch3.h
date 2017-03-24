@@ -17,10 +17,10 @@
 #include "paths/AssemblyEdit.h"
 
 Bool CorrectPatch3( const basevector& LEFT, const basevector& RIGHT,
-     const vecbasevector& fbases, const vecqualvector& fquals, 
-     const PairsManager& fpairs, const vec< kmer<20> >& fheads, 
-     const vec<int64_t>& fids, assembly_edit& e, ostringstream& out,
-     const Bool verbose, const vecbasevector& genome2, const int LG,
-     const vec< vec< pair<int,int> > > & Glocs );
+                    const vecbasevector& fbases, const vecqualvector& fquals,
+                    const PairsManager& fpairs, const vec< kmer<20> >& fheads,
+                    const vec<int64_t>& fids, assembly_edit& e, ostringstream& out,
+                    const Bool verbose, const vecbasevector& genome2, const int LG,
+                    const vec< vec< pair<int,int> > > & Glocs );
 
 #endif

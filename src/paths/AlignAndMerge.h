@@ -13,7 +13,7 @@ class NegativeGapValidator;
 /// The path merging tools return a MergedKmerPath for each merger.
 /// This is mostly a KmerPath, but also includes some integers,
 /// referring to segments in the merged path:
-///  .given -- the interval aligning to the match originally passed 
+///  .given -- the interval aligning to the match originally passed
 ///            to MergePaths
 ///  .left_end.{first,second} -- the interval containing the left endpoint
 ///            of the original paths
@@ -27,7 +27,9 @@ class NegativeGapValidator;
 struct MergedKmerPath {
   // Empty constructor so I can make a vec of them.
   MergedKmerPath( ) { }
-  MergedKmerPath( const KmerPath& rp ) { path = rp; }
+  MergedKmerPath( const KmerPath& rp ) {
+    path = rp;
+  }
 
   KmerPath path;
   pair<int,int> left_end;
@@ -37,7 +39,7 @@ struct MergedKmerPath {
 
   int longest_perfect_match;
 
-  void flip() { 
+  void flip() {
     swap(left_end.first, left_end.second);
     swap(right_end.first, right_end.second);
   }
@@ -53,7 +55,7 @@ struct MergedKmerPath {
       if(i==mrp.path.NSegments()-1-mrp.right_end.first) out << "|";
       if(i==mrp.path.NSegments()-1-mrp.right_end.second) out << ">";
     }
-    
+
     return out;
   }
 
@@ -61,27 +63,27 @@ struct MergedKmerPath {
   {
     for(int i=0; i<path.NSegments(); i++) {
       if(i == left_end.second )
-	out << START_MAGENTA << "<" << END_ESCAPE;
+        out << START_MAGENTA << "<" << END_ESCAPE;
       if(i == left_end.first )
-	out << START_BLUE << "<" << END_ESCAPE;
+        out << START_BLUE << "<" << END_ESCAPE;
       if(i==given) out << "*";
       out << path.Segment(i);
       if(i==given) out << "*";
       if(i == path.NSegments()-1 - right_end.first )
-	out << START_BLUE << ">" << END_ESCAPE;
+        out << START_BLUE << ">" << END_ESCAPE;
       if(i == path.NSegments()-1 - right_end.second )
-	out << START_MAGENTA << ">" << END_ESCAPE;
+        out << START_MAGENTA << ">" << END_ESCAPE;
     }
     out << " (longest match=" << longest_perfect_match << ")" << endl;
   }
 
 };
 
-void MergePaths( const KmerPath& p1, const KmerPath& p2, 
-		 int ind1, int ind2, vec<MergedKmerPath>& ans,
-		 int min_perfect_match=1,
-		 const NegativeGapValidator* ngv = NULL,
-		 bool DEBUG_GAP_SIZES=false );
+void MergePaths( const KmerPath& p1, const KmerPath& p2,
+                 int ind1, int ind2, vec<MergedKmerPath>& ans,
+                 int min_perfect_match=1,
+                 const NegativeGapValidator* ngv = NULL,
+                 bool DEBUG_GAP_SIZES=false );
 
 
 

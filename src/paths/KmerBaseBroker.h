@@ -23,14 +23,14 @@
 /**
    Class: KmerBaseBrokerTemplate
 
-   A class to answer questions about kmers and paths that require 
+   A class to answer questions about kmers and paths that require
    knowing the underlying sequence (as opposed to just the <kmer ids>
    that make up a <kmer path>).  For example:
-   
+
    - what is the base sequence of a given kmer, given its <kmer number>?
    - what is the base sequence of a <KmerPathInterval>?
    - what is the base sequence of a <KmerPath>?
-   
+
    Quick-and-dirty -- keeps its own copy of all the big files
    (reads.{fastb,paths{_rc},pathsdb}) in memory.
    Want this more efficient in both time and space later.
@@ -41,26 +41,26 @@ template <class TAG>
 class KmerBaseBrokerTemplate {
 public:
 
-  KmerBaseBrokerTemplate( ) 
-    : self_owned(False) 
+  KmerBaseBrokerTemplate( )
+    : self_owned(False)
   { }
 
   /// Constructor that loaded paths, paths_rc, pathsdb and reads direct from file
-  KmerBaseBrokerTemplate(String RunDir, int k, const String readsBase = "reads", const String pathsBase = "paths", bool Verbose = false) 
+  KmerBaseBrokerTemplate(String RunDir, int k, const String readsBase = "reads", const String pathsBase = "paths", bool Verbose = false)
     : K( k ),
       bases( RunDir + "/" + readsBase + ".fastb" ),
       verbose( Verbose )
-  { 
+  {
     pathsp = new vecKmerPath( RunDir + "/" + readsBase + "." + pathsBase + ".k" + ToString(K) );
     paths_rcp = new vecKmerPath( RunDir + "/" + readsBase + "." + pathsBase + "_rc.k" + ToString(K) );
     vec<TAG>* nonconst_pathsdbp = new vec<TAG>;
     BinaryReader::readFile( RunDir + "/" + readsBase + "." + pathsBase + "db" + ( TAG::IS_BIG ? "_big" : "") + ".k" + ToString(K), nonconst_pathsdbp );
     pathsdbp = nonconst_pathsdbp;
-    self_owned = True; 
+    self_owned = True;
   }
-  
+
   void Initialize(String RunDir, int k, const String readsBase = "reads", const String pathsBase = "paths", bool Verbose = false)
-  { 
+  {
     if ( self_owned ) {
       delete pathsp;
       delete paths_rcp;
@@ -74,17 +74,17 @@ public:
     vec<TAG>* nonconst_pathsdbp = new vec<TAG>;
     BinaryReader::readFile( RunDir + "/" + readsBase + "." + pathsBase + "db" + (TAG::IS_BIG ? "_big" : "") + ".k" + ToString(K), nonconst_pathsdbp );
     pathsdbp = nonconst_pathsdbp;
-    self_owned = True; 
+    self_owned = True;
   }
 
 
 
   /// Constructor that takes preloaded paths, paths_rc, pathsdb
   /// but loads reads directly from file
-  KmerBaseBrokerTemplate( String RunDir, int k, 
-                  const vecKmerPath& paths, const vecKmerPath& paths_rc,
-                  const vec<TAG>& pathsdb, 
-                  const String readsBase = "reads", bool Verbose = false )
+  KmerBaseBrokerTemplate( String RunDir, int k,
+                          const vecKmerPath& paths, const vecKmerPath& paths_rc,
+                          const vec<TAG>& pathsdb,
+                          const String readsBase = "reads", bool Verbose = false )
     : K( k ),
       bases( RunDir + "/" + readsBase + ".fastb" ),
       verbose( Verbose )
@@ -98,10 +98,10 @@ public:
 
   /// Constructor that takes preloaded paths, paths_rc, pathsdb and reads
   /// Ignores hqkmers
-  KmerBaseBrokerTemplate( int k, 
-                  const vecKmerPath& paths, const vecKmerPath& paths_rc,
-                  const vec<TAG>& pathsdb, 
-                  const vecbasevector& reads, bool Verbose = false )
+  KmerBaseBrokerTemplate( int k,
+                          const vecKmerPath& paths, const vecKmerPath& paths_rc,
+                          const vec<TAG>& pathsdb,
+                          const vecbasevector& reads, bool Verbose = false )
     : K( k ),
       bases( reads ),
       verbose( Verbose )
@@ -114,14 +114,14 @@ public:
     ForceAssertEq( static_cast<size_t>(paths.size( )), reads.size( ) );
   }
 
-  KmerBaseBrokerTemplate( int k, 
-                  const vecKmerPath& paths, const vecKmerPath& paths_rc,
-                  const vec<TAG>& pathsdb, 
-                  const String& reads_file,
-                  bool Verbose = false )
+  KmerBaseBrokerTemplate( int k,
+                          const vecKmerPath& paths, const vecKmerPath& paths_rc,
+                          const vec<TAG>& pathsdb,
+                          const String& reads_file,
+                          bool Verbose = false )
     : K( k ),
       verbose( Verbose )
-  { 
+  {
     bases.ReadAll(reads_file);
     pathsp = &paths;
     paths_rcp = &paths_rc;
@@ -133,10 +133,10 @@ public:
 
   /// Constructor that takes preloaded paths, pathsdb and reads, ignores hqkmers
   /// Special case where there are no rc paths - unipaths for example
-  KmerBaseBrokerTemplate( int k, 
-                  const vecKmerPath& paths, 
-                  const vec<TAG>& pathsdb, 
-                  const vecbasevector& reads, bool Verbose = false )
+  KmerBaseBrokerTemplate( int k,
+                          const vecKmerPath& paths,
+                          const vec<TAG>& pathsdb,
+                          const vecbasevector& reads, bool Verbose = false )
     : K( k ),
       bases( reads ),
       verbose( Verbose )
@@ -148,11 +148,11 @@ public:
   }
 
 
-  void Initialize( int k, 
-                  const vecbasevector& Bases,
-                  const vecKmerPath& paths, const vecKmerPath& paths_rc,
-                  const vec<TAG>& pathsdb, 
-                  bool Verbose = false )
+  void Initialize( int k,
+                   const vecbasevector& Bases,
+                   const vecKmerPath& paths, const vecKmerPath& paths_rc,
+                   const vec<TAG>& pathsdb,
+                   bool Verbose = false )
   { K = k;
     bases = Bases;
     verbose = Verbose;
@@ -161,17 +161,19 @@ public:
     pathsdbp = &pathsdb;
     self_owned = False;
   }
-  
+
   ~KmerBaseBrokerTemplate( )
   {
-    if (self_owned) {    
+    if (self_owned) {
       delete pathsp;
       delete paths_rcp;
       delete pathsdbp;
     }
   }
 
-  int GetK() const { return K; }
+  int GetK() const {
+    return K;
+  }
 
   /// Method: Bases(kmer_id_t)
   /// Convert a <kmer number> to its sequence.
@@ -185,7 +187,9 @@ public:
   // Method: ClearBasesCache
   // <Bases(kmer_id_t)> caches and returns references to the cache.
   // This lets you clear the cache, which also invalidates those refs.
-  void ClearBasesCache() { bases_cache.clear(); }
+  void ClearBasesCache() {
+    bases_cache.clear();
+  }
 
   /// Method: ToSequence
   /// Convert a KmerPath to its sequence-with-gaps.
@@ -255,13 +259,13 @@ private:
     int m_gapsize;
     cache_key(kmer_id_t k1, kmer_id_t k2, int g)
       : m_k1(k1), m_k2(k2), m_gapsize(g) { };
-    friend 
+    friend
     bool operator<(const cache_key& lhs, const cache_key& rhs) {
       return(lhs.m_k1 < rhs.m_k1 ||
-	     (lhs.m_k1 == rhs.m_k1 &&
-	      (lhs.m_gapsize < rhs.m_gapsize ||
-	       (lhs.m_gapsize == rhs.m_gapsize &&
-		(lhs.m_k2 < rhs.m_k2)))));
+             (lhs.m_k1 == rhs.m_k1 &&
+              (lhs.m_gapsize < rhs.m_gapsize ||
+               (lhs.m_gapsize == rhs.m_gapsize &&
+                (lhs.m_k2 < rhs.m_k2)))));
     }
   };
 

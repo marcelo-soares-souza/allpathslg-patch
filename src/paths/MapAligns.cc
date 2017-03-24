@@ -16,21 +16,21 @@
  * MapAligns
  */
 void MapAligns( vec<seq_interval> &wins,
-		const shandler &supers,
-		const vec<alignlet> &aligns,
-		const vec<int> &index,
-		const PairsManager &pairs,
-		const double MAX_STRETCH,
-		const bool INTERNAL_SEP,
-		ostream *log )
+                const shandler &supers,
+                const vec<alignlet> &aligns,
+                const vec<int> &index,
+                const PairsManager &pairs,
+                const double MAX_STRETCH,
+                const bool INTERNAL_SEP,
+                ostream *log )
 {
   wins.clear( );
   wins.reserve( pairs.nPairs( ) );
-  
+
   // Log stream.
   ofstream devnull ( "/dev/null" );
   ostream &out = log ? *log : devnull;
-  
+
   // Loop over all pairs.
   out << Date( ) << ": parsing " << pairs.nPairs( ) << " pairs" << endl;
   for (size_t pair_id=0; pair_id<pairs.nPairs( ); pair_id++) {
@@ -39,7 +39,7 @@ void MapAligns( vec<seq_interval> &wins,
 
     int id2 = pairs.ID2( pair_id );
     if ( index[id2] < 0 ) continue;
-    
+
     const alignlet &al1 = aligns[ index[id1] ];
     const alignlet &al2 = aligns[ index[id2] ];
     int cg1 = al1.TargetId( );
@@ -48,7 +48,7 @@ void MapAligns( vec<seq_interval> &wins,
     int s2 = supers.ToSuper( cg2 );
     if ( s1 != s2 ) continue;
     if ( al1.Fw1( ) == al2.Fw1( ) ) continue;
-    
+
     int given_sep = pairs.sep( pair_id );
     int given_sd = pairs.sd( pair_id );
     int rc_begin = al1.Fw1( ) ? al2.pos2( ) : al1.pos2( );
@@ -71,9 +71,9 @@ void MapAligns( vec<seq_interval> &wins,
       int rc_begin = al1.Fw1( ) ? start2 : start1;
       wins.push_back( seq_interval( (int)pair_id, s1, fw_end, rc_begin ) );
     }
-    
+
   } // loop over all pairs.
-  
+
   // Sort.
   out << Date( ) << ": sorting " << wins.size( ) << " intervals" << endl;
   sort( wins.begin( ), wins.end( ) );

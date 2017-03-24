@@ -18,15 +18,15 @@
 
 template<typename vecT, typename dataT, typename streamT>
 FastaFilesetTemplate<vecT,dataT,streamT>::FastaFilesetTemplate( const vec<String>& filenames,
-                                                                FastaNameParser *nameParser,
-                                                                ostream &log )
+    FastaNameParser *nameParser,
+    ostream &log )
   : m_filenames( filenames ),
     m_isParsed( false ),
     mp_nameParser( nameParser ),
     m_log( log )
 {
   if ( mp_nameParser == 0 )
-      mp_nameParser = new LastWordParser;
+    mp_nameParser = new LastWordParser;
 }
 
 template<typename vecT, typename dataT, typename streamT>
@@ -71,8 +71,8 @@ FastaFilesetTemplate<vecT,dataT,streamT>::GetNext( String &name, dataT &datum )
 template<typename vecT, typename dataT, typename streamT>
 bool
 FastaFilesetTemplate<vecT,dataT,streamT>::GetAtIndex( typename vecT::size_type i,
-						      String &name,
-						      dataT &datum )
+    String &name,
+    dataT &datum )
 {
   if ( ! m_isParsed ) this->Parse();
   if ( i >= m_data.size() ) {
@@ -151,8 +151,8 @@ FastaFilesetTemplate<vecT,dataT,streamT>::Parse()
   // read in sequences
   vec<streamT> filestreams;
   transform( m_filenames.begin(), m_filenames.end(),
-	     back_inserter(filestreams),
-	     FastaFilestreamBuilder<streamT>(mp_nameParser) );
+             back_inserter(filestreams),
+             FastaFilestreamBuilder<streamT>(mp_nameParser) );
 
   unsigned int totalSequences = 0;
   for ( unsigned int ii = 0; ii < filestreams.size(); ++ii )

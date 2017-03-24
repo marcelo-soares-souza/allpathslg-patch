@@ -31,10 +31,10 @@ public:
 
   CSARead( ) :
     cid_ ( -1 ), rid_ ( -1 ), beg_ ( 0 ), end_ ( 0 ) { }
-  
-  CSARead( int cid, int rid, int beg, int end ) : 
+
+  CSARead( int cid, int rid, int beg, int end ) :
     cid_ ( cid ), rid_ ( rid ), beg_ ( beg ), end_ ( end ) { }
-    
+
   CSARead( const alignlet &al, const int rid ) {
     cid_ = al.TargetId( );
     rid_ = rid;
@@ -44,13 +44,25 @@ public:
     if ( ! al.Fw1( ) ) swap( beg_, end_ );
   }
 
-  int ContigId( ) const { return cid_; }
-  int ReadId( ) const { return rid_; }
-  bool Fw( ) const { return beg_ < end_; }
-  bool Rc( ) const { return ! this->Fw( ); }
-  int Begin( ) const { return ( this->Fw( ) ? beg_ : end_ ); }
-  int End( ) const { return ( this->Fw( ) ? end_ : beg_ ); }
-  
+  int ContigId( ) const {
+    return cid_;
+  }
+  int ReadId( ) const {
+    return rid_;
+  }
+  bool Fw( ) const {
+    return beg_ < end_;
+  }
+  bool Rc( ) const {
+    return ! this->Fw( );
+  }
+  int Begin( ) const {
+    return ( this->Fw( ) ? beg_ : end_ );
+  }
+  int End( ) const {
+    return ( this->Fw( ) ? end_ : beg_ );
+  }
+
   friend bool operator< ( const CSARead &left, const CSARead &right ) {
     if ( left.ContigId( ) < right.ContigId( ) ) return true;
     if ( left.ContigId( ) > right.ContigId( ) ) return false;
@@ -60,15 +72,15 @@ public:
     if ( left.End( ) > right.End( ) ) return false;
     return ( left.ReadId( ) < right.ReadId( ) );
   }
-  
-  
+
+
 private:
 
   int cid_;
   int rid_;
   int beg_;  // read is rc if end_ < beg_
   int end_;
-  
+
 };
 
 /**
@@ -104,7 +116,7 @@ int main( int argc, char *argv[] )
 
   // Two contigs are linked iff they own >= MIN_LINKS consistent links.
   CommandArgument_Int_OrDefault( MIN_LINKS, 3 );
-  
+
   // Gap dev args: dev = Max( DEV_RATIO * gap_size, MIN_DEV ).
   CommandArgument_Double_OrDefault( DEV_RATIO, 0.25 );
   CommandArgument_Int_OrDefault( MIN_DEV, 20 );
@@ -113,7 +125,7 @@ int main( int argc, char *argv[] )
   CommandArgument_Bool_OrDefault( VERBOSE, False );
 
   EndCommandArguments;
-  
+
   // Dir and file names.
   String data_dir = PRE + "/" + DATA;
   String run_dir = data_dir + "/" + RUN;
@@ -127,7 +139,7 @@ int main( int argc, char *argv[] )
   String supers_file = sub_dir + "/" + HEAD_IN + ".superb";
 
   String final_head =  sub_dir + "/" + HEAD_OUT;
-  
+
   // Needed.
   vec<String> needed;
   needed.push_back( pairs_file );
@@ -136,21 +148,21 @@ int main( int argc, char *argv[] )
   needed.push_back( contigs_file );
   needed.push_back( supers_file );
   if ( ! CheckFilesExist( needed, &cout ) ) return 1;
-  
+
   // Load.
   cout << Date( ) << ": loading pairs" << endl;
   PairsManager pairs( pairs_file );
   size_t n_pairs = pairs.nPairs( );
-  
+
   cout << Date( ) << ": loading aligns" << endl;
   vec<alignlet> aligns;
   BinaryReader::readFile( aligns_file, &aligns );
-  
+
   cout << Date( ) << ": loading index" << endl;
   vec<int> index;
   BinaryReader::readFile( index_file, &index );
   const int n_reads = index.size( );
-  
+
   cout << Date( ) << ": loading contigs" << endl;
   vec<fastavector> contigs;
   LoadFromFastaFile( contigs_file, contigs );
@@ -159,7 +171,7 @@ int main( int argc, char *argv[] )
   cout << Date( ) << ": loading supers" << endl;
   shandler supers( contigs.isize( ), supers_file );
   const int n_supers = supers.Size( );
-    
+
   // Build maps.
   cout << Date( ) << ": digesting and sorting aligns" << endl;
   vec<CSARead> raligns;
@@ -192,13 +204,13 @@ int main( int argc, char *argv[] )
 
   vec< vec<String> > table;
   vec<String> line = MkVec( String( "lib_name" ),
-			    String( "min_sep" ),
-			    String( "max_sep" ) );
+                            String( "min_sep" ),
+                            String( "max_sep" ) );
   table.push_back( line );
   for (int ii=0; ii<lib_names.isize( ); ii++) {
     line = MkVec( lib_names[ii],
-		  ToString( sep_ranges[ii].first ),
-		  ToString( sep_ranges[ii].second ) );
+                  ToString( sep_ranges[ii].first ),
+                  ToString( sep_ranges[ii].second ) );
     table.push_back( line );
   }
   cout << "\n";
@@ -213,14 +225,14 @@ int main( int argc, char *argv[] )
   // Loop over all supers.
   cout << "\n" << Date( ) << ": loop over " << n_supers << " supers" << endl;
   for (int super_id=0; super_id<n_supers; super_id++) {
-    
+
     // Estimate reads and pairs (needed to reserve links below).
     const int n_tigs = supers[super_id].Ntigs( );
     int n_reads_estim = 0;
     for (int tpos=0; tpos<n_tigs; tpos++)
       n_reads_estim += n_aligns[ supers[super_id].Tig( tpos ) ];
     int n_pairs_estim = ( ( 1 + n_reads_estim ) / 2 );
-    
+
     // All consistent links.
     vec< pair<int,int> > links;
     links.reserve( n_pairs_estim );
@@ -229,89 +241,89 @@ int main( int argc, char *argv[] )
     for (int tpos1=0; tpos1<n_tigs; tpos1++ ) {
       const int tig1 = supers[super_id].Tig( tpos1 );
       int first_ral = first_ralign[tig1];
-      
+
       // Repeat contigs have no links, force-link them to adjacent contigs.
       if ( first_ral < 0 ) {
-	if ( tpos1 > 0 )
-	  for (int jj=0; jj<MIN_LINKS; jj++)
-	    links.push_back( make_pair( tpos1-1, tpos1 ) );
-	if ( tpos1 < n_tigs - 1 )
-	  for (int jj=0; jj<MIN_LINKS; jj++)
-	    links.push_back( make_pair( tpos1, tpos1+1 ) );
-	continue;
+        if ( tpos1 > 0 )
+          for (int jj=0; jj<MIN_LINKS; jj++)
+            links.push_back( make_pair( tpos1-1, tpos1 ) );
+        if ( tpos1 < n_tigs - 1 )
+          for (int jj=0; jj<MIN_LINKS; jj++)
+            links.push_back( make_pair( tpos1, tpos1+1 ) );
+        continue;
       }
-      
+
       // Loop over all reads in contig.
       for (int ral_id=first_ral; ral_id<raligns.isize( ); ral_id++) {
-	const CSARead &ral1 = raligns[ral_id];
-	if ( ral1.ContigId( ) != tig1 ) break;
-      	if ( ral1.Rc( ) ) continue;
+        const CSARead &ral1 = raligns[ral_id];
+        if ( ral1.ContigId( ) != tig1 ) break;
+        if ( ral1.Rc( ) ) continue;
 
-	int id1 = ral1.ReadId( );
-	int id2 = pairs.getPartnerID( (longlong)id1 );
-	int libid = pairs.libraryID( pairs.getPairID( (longlong)id1 ) );
-	if ( rindex[id2] < 0 ) continue;
+        int id1 = ral1.ReadId( );
+        int id2 = pairs.getPartnerID( (longlong)id1 );
+        int libid = pairs.libraryID( pairs.getPairID( (longlong)id1 ) );
+        if ( rindex[id2] < 0 ) continue;
 
-	const CSARead &ral2 = raligns[ rindex[id2] ];
-	if ( ral2.Fw( ) ) continue;
-	
-	int tig2 = ral2.ContigId( );
-	if ( tig2 == tig1 ) continue;
-	if ( supers.ToSuper( tig2 ) != super_id ) continue;
+        const CSARead &ral2 = raligns[ rindex[id2] ];
+        if ( ral2.Fw( ) ) continue;
 
-	int tpos2 = supers.PosOnSuper( tig2 );
-	int tig1len = supers[super_id].Len( tpos1 );
-	int tig2len = supers[super_id].Len( tpos2 );
-	int tig1start = supers.StartOnSuper( tig1 );
-	int tig1end = tig1start + tig1len;
-	int tig2start = supers.StartOnSuper( tig2 );
-	int sep
-	  =  tig1len - ral1.End( )
-	  + tig2start - tig1end
-	  + ral2.Begin( );
+        int tig2 = ral2.ContigId( );
+        if ( tig2 == tig1 ) continue;
+        if ( supers.ToSuper( tig2 ) != super_id ) continue;
 
-	bool out_of_range
-	  = sep < sep_ranges[libid].first || sep > sep_ranges[libid].second;
+        int tpos2 = supers.PosOnSuper( tig2 );
+        int tig1len = supers[super_id].Len( tpos1 );
+        int tig2len = supers[super_id].Len( tpos2 );
+        int tig1start = supers.StartOnSuper( tig1 );
+        int tig1end = tig1start + tig1len;
+        int tig2start = supers.StartOnSuper( tig2 );
+        int sep
+          =  tig1len - ral1.End( )
+             + tig2start - tig1end
+             + ral2.Begin( );
 
-	if ( VERBOSE )
-	  cout << "s" << super_id << "\t"
-	       << tpos1 << "-" << tpos2 << "\t"
-	       << "sep: " << sep << "\t"
-	       << ( out_of_range ? "out_of_range" : "ok" ) << "\n";
-	
-	if ( out_of_range ) continue;
+        bool out_of_range
+          = sep < sep_ranges[libid].first || sep > sep_ranges[libid].second;
 
-	if ( tpos2 < tpos1 ) links.push_back( make_pair( tpos2, tpos1 ) );
-	else links.push_back( make_pair( tpos1, tpos2 ) );
-	
+        if ( VERBOSE )
+          cout << "s" << super_id << "\t"
+               << tpos1 << "-" << tpos2 << "\t"
+               << "sep: " << sep << "\t"
+               << ( out_of_range ? "out_of_range" : "ok" ) << "\n";
+
+        if ( out_of_range ) continue;
+
+        if ( tpos2 < tpos1 ) links.push_back( make_pair( tpos2, tpos1 ) );
+        else links.push_back( make_pair( tpos1, tpos2 ) );
+
       } // loop over all reads in contig.
 
     } // loop over all contigs.
-    
+
     sort( links.begin( ), links.end( ) );
-    
+
     // Compactify links in bundles.
     vec< triple<int,int,int> > bundles;
     bundles.reserve( links.size( ) );
     for (int ii=0; ii<links.isize( ); ii++) {
       if ( bundles.size( ) < 1 ||
-	   bundles.back( ).first != links[ii].first ||
-	   bundles.back( ).second != links[ii].second ) {
-	triple<int,int,int> newt( links[ii].first, links[ii].second, 0 );
-	bundles.push_back( newt );
+           bundles.back( ).first != links[ii].first ||
+           bundles.back( ).second != links[ii].second ) {
+        triple<int,int,int> newt( links[ii].first, links[ii].second, 0 );
+        bundles.push_back( newt );
       }
       bundles[bundles.size( )-1].third += 1;
     }
-    
+
     // Find connected components.
     equiv_rel er( n_tigs );
     for (int ii=0; ii<bundles.isize( ); ii++)
       if ( bundles[ii].third >= MIN_LINKS )
-	er.Join( bundles[ii].first, bundles[ii].second );
-    
+        er.Join( bundles[ii].first, bundles[ii].second );
+
     vec<int> reps;
     er.OrbitRepsAlt( reps );
-    
+
     // One output super per orbit.
     for (int orbit_id=0; orbit_id<reps.isize( ); orbit_id++) {
       const superb &orig = supers[super_id];
@@ -327,24 +339,24 @@ int main( int argc, char *argv[] )
       placed[tig] = true;
 
       for (int ii=1; ii<select.isize( ); ii++) {
-	int tig = orig.Tig( select[ii] );
-	int len = orig.Len( select[ii] );
-	int prev_tig = orig.Tig( select[ii-1] );
-	int prev_len = orig.Len( select[ii-1] );
-	int prev_end = prev_len + supers.StartOnSuper( prev_tig );
-	int this_beg = supers.StartOnSuper( tig );
-	int gap = this_beg - prev_end;
-	int dev = Max( (int)( DEV_RATIO * (double)gap ), MIN_DEV );
+        int tig = orig.Tig( select[ii] );
+        int len = orig.Len( select[ii] );
+        int prev_tig = orig.Tig( select[ii-1] );
+        int prev_len = orig.Len( select[ii-1] );
+        int prev_end = prev_len + supers.StartOnSuper( prev_tig );
+        int this_beg = supers.StartOnSuper( tig );
+        int gap = this_beg - prev_end;
+        int dev = Max( (int)( DEV_RATIO * (double)gap ), MIN_DEV );
 
-	newsup.AppendTig( tig, len, gap, dev );
-	placed[tig] = true;
+        newsup.AppendTig( tig, len, gap, dev );
+        placed[tig] = true;
       }
 
       out_supers.push_back( newsup );
     }
 
   } // loop over all supers.
-  
+
   // Unplaced contigs.
   cout << Date( ) << ": adding unplaced contigs... " << flush;
   int n_unplaced = 0;
@@ -357,7 +369,7 @@ int main( int argc, char *argv[] )
     out_supers.push_back( newsup );
   }
   cout << n_unplaced << " contigs added" << endl;
-  
+
   // Save and leave.
   cout << Date( ) << ": saving" << endl;
   SaveScaffoldAssembly( final_head, supers.AllSupers( ), contigs );

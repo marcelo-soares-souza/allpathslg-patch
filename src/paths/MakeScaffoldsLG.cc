@@ -39,7 +39,7 @@
  * MakeScaffoldsLG
  *
  * Scaffolding code for ALLPATHS-LG.
- * 
+ *
  * Builds scaffold graphs and merges/fixes the scaffolds using two
  * different algorithms (MakeScaffoldsScoredBest: join scaffolds by
  * using first the best edge-scores; and MakeScaffoldsCloseBest: join
@@ -73,8 +73,8 @@ int main( int argc, char *argv[] )
   CommandArgument_String( DATA );
   CommandArgument_String( RUN );
   CommandArgument_String_OrDefault( SUBDIR, "test" );
-  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0, 
-    "Number of threads to use (use all available processors if set to 0)");
+  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0,
+      "Number of threads to use (use all available processors if set to 0)");
   CommandArgument_String_OrDefault( READS, "scaffold_reads" );
   CommandArgument_String_OrDefault( ALIGNS, "scaffold_reads_filtered" );
   CommandArgument_String_OrDefault( SCAFFOLDS_IN, "initial_scaffolds" );
@@ -94,18 +94,18 @@ int main( int argc, char *argv[] )
   CommandArgument_Bool_OrDefault( FIT_GAPS, False );
 
   CommandArgument_Bool_OrDefault_Doc( USE_UNIBASES, True,
-    "Use linking information over repetetive unibases to fix assemblies in FixScaffolds");
+                                      "Use linking information over repetetive unibases to fix assemblies in FixScaffolds");
   CommandArgument_String_OrDefault_Doc( UNIBASES_HEAD, "all_reads",
-    "Unibases to be used in extended FixScaffolds algorithm");
+                                        "Unibases to be used in extended FixScaffolds algorithm");
   CommandArgument_Int_OrDefault_Doc( UNIBASES_K, 96,
-    "K-mer size used for generating unibases (unipaths)");
+                                     "K-mer size used for generating unibases (unipaths)");
 
   CommandArgument_Bool_OrDefault( FORCE, True );
   CommandArgument_Bool_OrDefault( VERBOSE, False );
   EndCommandArguments;
 
   // Thread control (OMP used in FixScaffoldsCore)
-  
+
   NUM_THREADS = configNumThreads(NUM_THREADS);
   omp_set_num_threads( NUM_THREADS );
 
@@ -122,21 +122,21 @@ int main( int argc, char *argv[] )
   String unfilt_index_file = sub_dir + "/" + unfilt + ".qltoutlet.index";
   String contigs_file = sub_dir + "/" + SCAFFOLDS_IN + ".contigs.fasta";
   String supers_file = sub_dir + "/" + SCAFFOLDS_IN + ".superb";
-  
-  String unibases_file = 
+
+  String unibases_file =
     run_dir + "/" + UNIBASES_HEAD + ".unibases.k" + ToString(UNIBASES_K);
-  String unibases_cn_file = 
+  String unibases_cn_file =
     run_dir + "/" + UNIBASES_HEAD + ".unipaths.predicted_count.k" + ToString(UNIBASES_K);
 
   String final_head = sub_dir + "/" + HEAD_OUT;
-  
+
 
   // Find ploidy.
   const int ploidy = FirstLineOfFile( run_dir + "/ploidy" ).Int( );
   ForceAssertGt( ploidy, 0 );
 
   Mkpath( tmp_dir );
-  
+
   // Load.
   vec<int> min_links;
   ParseIntSet( MIN_LINKS, min_links, false );
@@ -144,15 +144,15 @@ int main( int argc, char *argv[] )
   cout << Date( ) << ": loading contigs fasta" << endl;
   vec<fastavector> contigs;
   LoadFromFastaFile( contigs_file, contigs );
-  
+
   cout << Date( ) << ": loading supers" << endl;
   vec<superb> supers;
   ReadSuperbs( supers_file, supers );
-  
+
   cout << Date( ) << ": loading index" << endl;
   vec<int> index;
   BinaryReader::readFile( index_file, &index );
-  
+
   vec<int> unfilt_index;
   if ( USE_HIGH_CN_ALIGNS ) {
     cout << Date( ) << ": loading unfiltered index" << endl;
@@ -163,12 +163,12 @@ int main( int argc, char *argv[] )
   cout << Date( ) << ": loading aligns" << endl;
   vec<alignlet> aligns;
   BinaryReader::readFile( aligns_file, &aligns );
-  
+
   cout << Date( ) << ": loading pairs" << endl;
   PairsManager pairs( pairs_file );
   size_t n_pairs = pairs.nPairs( );
-  
-  // pair length correction 
+
+  // pair length correction
   // correction
   vec<int> seps_empty;
   vec<int> seps;
@@ -180,49 +180,49 @@ int main( int argc, char *argv[] )
   cout << Date( ) << ": done loading\n" << endl;
 
   // These are needed to run FixScaffoldsCore.
-  vec<int> trace_ids;    
+  vec<int> trace_ids;
   ofstream devnull ( "/dev/null" );
   ostream &fs_log = VERBOSE ? cout : devnull;
 
-  
+
   vec<alignlet> highCNaligns; // unibase alignment data
   vec< vec<int> > highCN_index; // unibase alignment index
 
-  if ( USE_UNIBASES ){
+  if ( USE_UNIBASES ) {
     cout << Date() << ": Using unibases for scaffold fixing" << endl;
     int cn_thresh      = ploidy;  // threshold for high copy number unibase (greater than)
     prob_t prob_thresh = 0;       // copy number probability prediction threshold
-    
+
     vecbasevector highCNunis;
 
     {
       vecbasevector unibases( unibases_file );
-      
+
       vec<int> toRc;
       UnibaseInvolution( unibases, toRc );
       vec<Bool> uused( unibases.size(), False );
-      
+
 
       ForceAssert( IsRegularFile( unibases_cn_file ) );
       VecPdfEntryVec ucn_pdfs;
       ucn_pdfs.ReadAll( unibases_cn_file ); // read unibase copy number predictions
-      
+
       ForceAssertEq( unibases.size(), ucn_pdfs.size() );
-      
-      for ( size_t uid = 0; uid < unibases.size(); uid++ ){
-	if ( uused[uid] ) continue;
-	uused[uid] = uused[ toRc[uid] ] = True;
-	int cn = -1;
-	prob_t maxp = 0;
-	for ( unsigned int pi = 0; pi < ucn_pdfs[uid].size( ); pi++ ){    
-	  if ( ucn_pdfs[uid][pi].second > maxp ) {    
-	    cn = ucn_pdfs[uid][pi].first;
-	    maxp = ucn_pdfs[uid][pi].second;    
-	  }    
-	} 
-	if ( cn > cn_thresh && maxp > prob_thresh )
-	  highCNunis.push_back( unibases[uid] );
-      }   
+
+      for ( size_t uid = 0; uid < unibases.size(); uid++ ) {
+        if ( uused[uid] ) continue;
+        uused[uid] = uused[ toRc[uid] ] = True;
+        int cn = -1;
+        prob_t maxp = 0;
+        for ( unsigned int pi = 0; pi < ucn_pdfs[uid].size( ); pi++ ) {
+          if ( ucn_pdfs[uid][pi].second > maxp ) {
+            cn = ucn_pdfs[uid][pi].first;
+            maxp = ucn_pdfs[uid][pi].second;
+          }
+        }
+        if ( cn > cn_thresh && maxp > prob_thresh )
+          highCNunis.push_back( unibases[uid] );
+      }
     }
     cout << "Found " << highCNunis.size() << " highCN unibases" << endl;
 
@@ -231,54 +231,56 @@ int main( int argc, char *argv[] )
       Mkdir777(work_dir);
 
     String lookup_file = work_dir + "/" + SCAFFOLDS_IN + ".contigs.lookup";
-    if ( FORCE || ! IsRegularFile( lookup_file ) ){
+    if ( FORCE || ! IsRegularFile( lookup_file ) ) {
       cout << Date() << ": Creating a lookup table" << endl;
       SystemSucceed( "MakeLookupTable" + ARG(SOURCE, contigs_file )
-		     + ARG(OUT_HEAD, lookup_file.SafeBefore(".lookup")) + ARG(LOOKUP_ONLY, True)
-			   + ARG( NH, True ) );
+                     + ARG(OUT_HEAD, lookup_file.SafeBefore(".lookup")) + ARG(LOOKUP_ONLY, True)
+                     + ARG( NH, True ) );
     }
 
 
     cout << Date() << ": Obtaining high-CN unibase alignments" << endl;
     highCNaligns.reserve( highCNunis.size() );
     highCN_index.resize( highCNunis.size() );
-    
+
     String highCNunis_file = work_dir + "/" + UNIBASES_HEAD + ".unibases.highCN.fastb";
     highCNunis.WriteAll( highCNunis_file );
 
-    String highCNlook_aligns_file = work_dir + "/" + UNIBASES_HEAD + ".unibases.highCN.qltout";    
+    String highCNlook_aligns_file = work_dir + "/" + UNIBASES_HEAD + ".unibases.highCN.qltout";
     vec<look_align> highCNlook_aligns;
     SystemSucceed( "Fasta2Fastb" + ARG(IN, contigs_file )
-		   + ARG(OUT, lookup_file.SafeBefore(".lookup") + ".fastb" ) + ARG( NAMES, False ) +
-			   ARG( NH, True ) );
+                   + ARG(OUT, lookup_file.SafeBefore(".lookup") + ".fastb" ) + ARG( NAMES, False ) +
+                   ARG( NH, True ) );
     GetAlignsFast( 12, highCNunis_file, lookup_file, highCNlook_aligns_file, highCNlook_aligns, false, work_dir );
-   
+
     cout << "Found " << highCNlook_aligns.size() << " unibase alignments.\nCreating index." << endl;
-    for ( int ai = 0; ai < highCNlook_aligns.isize(); ai++ ){
+    for ( int ai = 0; ai < highCNlook_aligns.isize(); ai++ ) {
       size_t qid = highCNlook_aligns[ai].QueryId();
       highCNaligns.push_back( highCNlook_aligns[ai] );
       highCN_index[qid].push_back( ai );
     }
-    int nAlignsNotFound = 0; 
+    int nAlignsNotFound = 0;
     vec<int> unalignedLens;
-    for ( size_t qid = 0; qid < highCN_index.size(); qid++ ){
-      if ( highCN_index[qid].size() == 0 ){
-	nAlignsNotFound++;
-	unalignedLens.push_back( highCNunis[qid].size() );
+    for ( size_t qid = 0; qid < highCN_index.size(); qid++ ) {
+      if ( highCN_index[qid].size() == 0 ) {
+        nAlignsNotFound++;
+        unalignedLens.push_back( highCNunis[qid].size() );
       }
     }
     cout << "INFO: did not find alignments for " << nAlignsNotFound << " high-CN unibases" << endl;
-    if ( VERBOSE ){
-      cout << " their lengths are: "; unalignedLens.Print(cout); cout << endl;
+    if ( VERBOSE ) {
+      cout << " their lengths are: ";
+      unalignedLens.Print(cout);
+      cout << endl;
     }
 
-    if ( ! VERBOSE ){
+    if ( ! VERBOSE ) {
       // clean up
       Remove(lookup_file);
       Remove( lookup_file.SafeBefore(".lookup") + ".fastb" );
 
     }
-    
+
   }
 
   // Parse STEP_INTERIM.
@@ -301,8 +303,8 @@ int main( int argc, char *argv[] )
     ReportScaffoldsBrief( supers, nlinks, 0, cout );
     if ( links_interim == nlinks && iter_interim == 0 ) {
       String head_out = HEAD_INTERIM + ".ml_" + ToString( nlinks ) + "_0";
-      SaveInterimScaffolds( data_dir, head_out, pairs, contigs, 
-	  supers, &aligns, &index );
+      SaveInterimScaffolds( data_dir, head_out, pairs, contigs,
+                            supers, &aligns, &index );
     }
 
     // Adjust MAX_OVERLAP.
@@ -312,73 +314,73 @@ int main( int argc, char *argv[] )
     // Scored best and fix.
     int minsep = - max_overlap;
     MakeScaffoldsScoredBest( pairs, contigs, supers, aligns, index, cout,
-	&nlinks, &minsep, SUCK_SCAFFOLDS, VERBOSE );
+                             &nlinks, &minsep, SUCK_SCAFFOLDS, VERBOSE );
     ReportScaffoldsBrief( supers, nlinks, 1, cout );
     if ( links_interim == nlinks && iter_interim == 1 ) {
       String head_out = HEAD_INTERIM + ".ml_" + ToString( nlinks ) + "_1";
-      SaveInterimScaffolds( data_dir, head_out, pairs, contigs, 
-	  supers, &aligns, &index );
+      SaveInterimScaffolds( data_dir, head_out, pairs, contigs,
+                            supers, &aligns, &index );
     }
 
     if ( FIX_SCAFFOLDS )
       if (USE_HIGH_CN_ALIGNS)
-	FixScaffoldsCore( trace_ids, pairs, MIN_REACH_AWAY, contigs,
-			  supers, aligns, index, unfilt_index, highCNaligns, highCN_index, fs_log, VERBOSE );
+        FixScaffoldsCore( trace_ids, pairs, MIN_REACH_AWAY, contigs,
+                          supers, aligns, index, unfilt_index, highCNaligns, highCN_index, fs_log, VERBOSE );
       else
-	FixScaffoldsCore( trace_ids, pairs, MIN_REACH_AWAY, contigs,
-			  supers, aligns, index, index, highCNaligns, highCN_index, fs_log, VERBOSE );
+        FixScaffoldsCore( trace_ids, pairs, MIN_REACH_AWAY, contigs,
+                          supers, aligns, index, index, highCNaligns, highCN_index, fs_log, VERBOSE );
     ReportScaffoldsBrief( supers, nlinks, 2, cout );
     if ( links_interim == nlinks && iter_interim == 2 ) {
       String head_out = HEAD_INTERIM + ".ml_" + ToString( nlinks ) + "_2";
-      SaveInterimScaffolds( data_dir, head_out, pairs, contigs, 
-	  supers, &aligns, &index );
+      SaveInterimScaffolds( data_dir, head_out, pairs, contigs,
+                            supers, &aligns, &index );
     }
 
     IdentifyCircularScaffolds( pairs, contigs, supers, aligns, index,
-			       is_circular, ( VERBOSE ? &cout : 0 ), 1, nlinks );
+                               is_circular, ( VERBOSE ? &cout : 0 ), 1, nlinks );
 
     // Close best and fix.
     String str_links = "{" + ToString( nlinks ) + "}";
     MakeScaffoldsCloseBest( supers, contigs, aligns, index,
-	pairs, "", "", str_links, "", max_overlap );
+                            pairs, "", "", str_links, "", max_overlap );
     ReportScaffoldsBrief( supers, nlinks, 3, cout );
     if ( links_interim == nlinks && iter_interim == 3 ) {
       String head_out = HEAD_INTERIM + ".ml_" + ToString( nlinks ) + "_3";
-      SaveInterimScaffolds( data_dir, head_out, pairs, contigs, 
-	  supers, &aligns, &index );
+      SaveInterimScaffolds( data_dir, head_out, pairs, contigs,
+                            supers, &aligns, &index );
     }
 
     if ( FIX_SCAFFOLDS )
       if (USE_HIGH_CN_ALIGNS)
-	FixScaffoldsCore( trace_ids, pairs, MIN_REACH_AWAY, contigs,
-			  supers, aligns, index, unfilt_index, highCNaligns, highCN_index, fs_log, VERBOSE );
+        FixScaffoldsCore( trace_ids, pairs, MIN_REACH_AWAY, contigs,
+                          supers, aligns, index, unfilt_index, highCNaligns, highCN_index, fs_log, VERBOSE );
       else
-	FixScaffoldsCore( trace_ids, pairs, MIN_REACH_AWAY, contigs,
-			  supers, aligns, index, index, highCNaligns, highCN_index, fs_log, VERBOSE );
+        FixScaffoldsCore( trace_ids, pairs, MIN_REACH_AWAY, contigs,
+                          supers, aligns, index, index, highCNaligns, highCN_index, fs_log, VERBOSE );
     ReportScaffoldsBrief( supers, nlinks, 4, cout );
     if ( links_interim == nlinks && iter_interim == 4 ) {
       String head_out = HEAD_INTERIM + ".ml_" + ToString( nlinks ) + "_4";
-      SaveInterimScaffolds( data_dir, head_out, pairs, contigs, 
-	  supers, &aligns, &index );
+      SaveInterimScaffolds( data_dir, head_out, pairs, contigs,
+                            supers, &aligns, &index );
     }
 
     IdentifyCircularScaffolds( pairs, contigs, supers, aligns, index,
-			       is_circular, ( VERBOSE ? &cout : 0 ), 1, nlinks );
+                               is_circular, ( VERBOSE ? &cout : 0 ), 1, nlinks );
 
     // Regap.
     if ( REGAP ) {
       // Apply the gap correction if FIT_GAPS switch turned on
       if ( FIT_GAPS)
-	pairs.AddSeps(seps);
+        pairs.AddSeps(seps);
       RegapSupers( fs_log, supers, pairs, aligns, index, VERBOSE, max_overlap,
-	  1, 12000, REGAP_NEG_GAPS );
+                   1, 12000, REGAP_NEG_GAPS );
       if ( FIT_GAPS)
-	pairs.AddSeps(seps_empty);
+        pairs.AddSeps(seps_empty);
       ReportScaffoldsBrief( supers, nlinks, 5, cout );
       if ( links_interim == nlinks && iter_interim == 5 ) {
-	String head_out = HEAD_INTERIM + ".ml_" + ToString( nlinks ) + "_5";
-	SaveInterimScaffolds( data_dir, head_out, pairs, contigs, 
-	    supers, &aligns, &index );
+        String head_out = HEAD_INTERIM + ".ml_" + ToString( nlinks ) + "_5";
+        SaveInterimScaffolds( data_dir, head_out, pairs, contigs,
+                              supers, &aligns, &index );
       }
     }
 
@@ -396,8 +398,8 @@ int main( int argc, char *argv[] )
     ReportScaffoldsBrief( supers, min_links, 0, cout );
 
     MakeScaffoldsCloseBest( supers, contigs, aligns, unfilt_index, pairs, "",
-	"", ToString( min_links ), ToString( max_links ),
-	MAX_OVERLAP, min_scaffold_len );
+                            "", ToString( min_links ), ToString( max_links ),
+                            MAX_OVERLAP, min_scaffold_len );
     ReportScaffoldsBrief( supers, min_links, 2, cout );
     cout << endl;
   }
@@ -414,19 +416,19 @@ int main( int argc, char *argv[] )
 
     int dotter = 100;
     cout << Date( ) << ": merging consecutive contigs (.="
-      << dotter << " supers, with "
-      << supers.isize( ) << " supers in input):" << endl;
+         << dotter << " supers, with "
+         << supers.isize( ) << " supers in input):" << endl;
 
     for (int super_id=0; super_id<supers.isize( ); super_id++) {
       if ( super_id % dotter == 0 ) Dot( cout, super_id / dotter );
       const superb &sup = supers[super_id];
       for (int cgpos=0; cgpos<sup.Ntigs( )-1; cgpos++) {
-	int gap = sup.Gap( cgpos );
-	int dev = sup.Dev( cgpos );
-	int flex_gap = gap - int( DEV_FLEX * double( dev ) );
-	if ( flex_gap <= - MIN_OVERLAP ) {
-	  AlignConsecutiveContigs( super_id, cgpos, bcontigs, supers );
-	}
+        int gap = sup.Gap( cgpos );
+        int dev = sup.Dev( cgpos );
+        int flex_gap = gap - int( DEV_FLEX * double( dev ) );
+        if ( flex_gap <= - MIN_OVERLAP ) {
+          AlignConsecutiveContigs( super_id, cgpos, bcontigs, supers );
+        }
       }
     }
     cout << endl;
@@ -443,7 +445,7 @@ int main( int argc, char *argv[] )
   cout << Date( ) << ": saving circular scaffolds info" << endl;
   String out_file = final_head + ".is_circular";
   IdentifyCircularScaffolds( pairs, contigs, supers, aligns, index,
-			     is_circular, ( VERBOSE ? &cout : 0 ), 1, min_links.back( ) );
+                             is_circular, ( VERBOSE ? &cout : 0 ), 1, min_links.back( ) );
   BinaryWriter::writeFile( out_file, is_circular );
 
   // Save aligns and index.

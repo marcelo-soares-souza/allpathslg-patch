@@ -14,14 +14,14 @@
 // -------------- Union Find ---------------
 //
 //  Problem: having a set of vertexes, we want to progressively group them.
-// 
+//
 //  Solution: create a UnionFind object.
 //
 //    UnionFind uf(nv);
 //
 //    uf.unite(iv, jv);   // associates a common root vertex with both iv and jv.
 //
-//    uf.iv_root(iv);    // returns the root vertex associated with vertex iv.  
+//    uf.iv_root(iv);    // returns the root vertex associated with vertex iv.
 
 class UnionFind
 {
@@ -29,13 +29,15 @@ class UnionFind
   vec<size_t> rank;       // to keep tree mergers balanced
 
 public:
-  UnionFind(const size_t nv) : iv_parent(nv), rank(nv, 0) 
+  UnionFind(const size_t nv) : iv_parent(nv), rank(nv, 0)
   {
     for (size_t iv = 0; iv < nv; iv++)
       iv_parent[iv] = iv;  // in the begining every node is its own tree in the forest
   }
 
-  size_t n_vertexes() const { return iv_parent.size(); }
+  size_t n_vertexes() const {
+    return iv_parent.size();
+  }
 
   size_t iv_root(const size_t iv) const // recursively find root of tree
   {
@@ -46,19 +48,19 @@ public:
   size_t iv_root(const size_t iv)
   {
     const size_t ivp = iv_parent[iv];
-    return (ivp == iv) ? 
-      ivp : 
-      iv_parent[iv] = iv_root(ivp); // path-compression (non-const method) 
+    return (ivp == iv) ?
+           ivp :
+           iv_parent[iv] = iv_root(ivp); // path-compression (non-const method)
 
     // note: path compression with a const method could be achieved with mutable
     //       but thread-safety would have to be addressed
-    
+
   }
 
   // ---- Unite vertexes
   //      returns 'true'  if vertexes were not previously united
   //              'false' if vertexes were     previously united
-  
+
   bool unite(const size_t iv0, const size_t iv1)
   {
     const size_t iv0_root = iv_root(iv0);
@@ -97,7 +99,7 @@ public:
          it != nv_tree.end(); it++)
       cout << "n_vertexes[" << setw(6) << (*it).first << "]= " << setw(6) << (*it).second << endl;
   }
-  
+
 };
 
 
@@ -116,7 +118,7 @@ public:
   size_t iv0;        // vertex index 0
   size_t iv1;        // vertex index 1
   WEIGHT_t weight;   // edge weight
-  
+
   EdgeWeight(const size_t _iv0, const size_t _iv1, const WEIGHT_t & _w)
     : iv0(_iv0), iv1(_iv1), weight(_w) {}
 };
@@ -135,16 +137,16 @@ void minimum_spanning_tree_kruskal(const vec<EdgeWeight<WEIGHT_t> > & edges,
                                    vec<size_t>                      * i_edges_p)
 {
   // ---- sort edges by weight
-  
+
   vec<pair<WEIGHT_t, size_t> > weight_ie;
-  
+
   const size_t ne = edges.size();
-  
-  for (size_t ie = 0; ie < ne; ie++) 
+
+  for (size_t ie = 0; ie < ne; ie++)
     weight_ie.push_back(make_pair(edges[ie].weight, ie));
-  
+
   sort(weight_ie.begin(), weight_ie.end());
-  
+
 
   // ---- start picking edges from the lightest one
 
@@ -158,7 +160,7 @@ void minimum_spanning_tree_kruskal(const vec<EdgeWeight<WEIGHT_t> > & edges,
       i_edges_p->push_back(ie);
   }
 }
-                                  
+
 
 template<class WEIGHT_t>
 void minimum_spanning_tree_kruskal(const size_t                       n_vertexes,

@@ -15,11 +15,11 @@
 #include "system/AllOfOutput.h"
 
 vec<String> AllOfOutput(String const& command) {
-    procbuf pbuf(command.c_str(),std::ios_base::in);
-    istream is(&pbuf);
-    vec<String> lines;
-    String line;
-    while ( getline(is,line) )
-        lines.push_back(line);
-    return lines;
+  procbuf pbuf(command.c_str(),std::ios_base::in);
+  istream is(&pbuf);
+  vec<String> lines;
+  String line;
+  while ( getline(is,line) )
+    lines.push_back(line);
+  return lines;
 }

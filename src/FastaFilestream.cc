@@ -15,11 +15,11 @@
 
 template <typename vecT, typename seqT, typename convT, typename verifT>
 FastaFilestream<vecT,seqT,convT,verifT>::FastaFilestream( const String& filename,
-                                                          FastaNameParser* name_parser )
-  : filename_(filename), 
-    preview_ptr_(0), 
-    parsed_(false), 
-    needs_pipe_(false), 
+    FastaNameParser* name_parser )
+  : filename_(filename),
+    preview_ptr_(0),
+    parsed_(false),
+    needs_pipe_(false),
     name_parser_(name_parser)
 {
   RequireRegularFile(filename_);
@@ -32,10 +32,10 @@ FastaFilestream<vecT,seqT,convT,verifT>::FastaFilestream( const String& filename
 
 template <typename vecT, typename seqT, typename convT, typename verifT>
 FastaFilestream<vecT,seqT,convT,verifT>::FastaFilestream( const FastaFilestream& original )
-  : filename_(original.filename_), 
-    preview_ptr_(0), 
+  : filename_(original.filename_),
+    preview_ptr_(0),
     parsed_(original.parsed_),
-    needs_pipe_(original.needs_pipe_), 
+    needs_pipe_(original.needs_pipe_),
     name_parser_(original.name_parser_)
 {
   if ( original.preview_ptr_ != 0 )
@@ -44,7 +44,7 @@ FastaFilestream<vecT,seqT,convT,verifT>::FastaFilestream( const FastaFilestream&
 
 
 template <typename vecT, typename seqT, typename convT, typename verifT>
-FastaFilestream<vecT,seqT,convT,verifT>& 
+FastaFilestream<vecT,seqT,convT,verifT>&
 FastaFilestream<vecT,seqT,convT,verifT>::operator= ( const FastaFilestream& original )
 {
   filename_ = original.filename_;
@@ -55,12 +55,12 @@ FastaFilestream<vecT,seqT,convT,verifT>::operator= ( const FastaFilestream& orig
 
   if ( original.preview_ptr_ != 0 )
     preview_ptr_ = new FastaFilestreamPreview( *(original.preview_ptr_ ) );
-  
+
   return *this;
-}  
-  
+}
+
 template <typename vecT, typename seqT, typename convT, typename verifT>
-int 
+int
 FastaFilestream<vecT,seqT,convT,verifT>::estimatedSize()
 {
   if ( ! preview_ptr_ ) {
@@ -113,7 +113,7 @@ FastaFilestream<vecT,seqT,convT,verifT>::verify()
       istream_ptr->clear();
       istream_ptr->getline( buffer, buffer_size );
       if ( ! verifier.verifyRestOfLine( buffer ) )
-	problem = true;
+        problem = true;
     }
 
     if ( ! problem )
@@ -122,7 +122,7 @@ FastaFilestream<vecT,seqT,convT,verifT>::verify()
 
   if ( problem )
     cout << "There was an illegal character on line " << line_number
-	 << " of the file: " << endl << filename_ << endl;
+         << " of the file: " << endl << filename_ << endl;
 
   delete [] buffer;
 
@@ -133,17 +133,17 @@ FastaFilestream<vecT,seqT,convT,verifT>::verify()
 
 template <typename vecT, typename seqT, typename convT, typename verifT>
 void
-FastaFilestream<vecT,seqT,convT,verifT>::parse_( vecString &names, 
-                                                 vecT *p_sequences, 
-                                                 const vec<int> *p_indices )
+FastaFilestream<vecT,seqT,convT,verifT>::parse_( vecString &names,
+    vecT *p_sequences,
+    const vec<int> *p_indices )
 {
   bool verbose = false;
 
   if ( parsed_ )
     return;
-  
+
   istream* istream_ptr = getIstream_();
-  
+
   if ( ! preview_ptr_ ) {
     preview_( istream_ptr );
     resetIstream_( istream_ptr );
@@ -153,7 +153,7 @@ FastaFilestream<vecT,seqT,convT,verifT>::parse_( vecString &names,
   long max_sequence_size = preview_ptr_->getMaxSequenceSize();
   streampos start_offset = preview_ptr_->getStartOffset();
 
-  // Here we derive the start positions of each sequence in the file as 
+  // Here we derive the start positions of each sequence in the file as
   // an offset in bytes from the beginning.
   vec<streampos> sequence_positions;
 
@@ -162,19 +162,19 @@ FastaFilestream<vecT,seqT,convT,verifT>::parse_( vecString &names,
 
   // We derive the positions of the remaining sequences by performing a
   // partial sum on their sizes and pushing the results onto the back
-  // of sequence_positions.  
+  // of sequence_positions.
 
   // We need to add start_offset to the first sequence size for the
   // sum to come out right.
   if ( sequence_sizes.size() )
   {
-      sequence_sizes[0] += start_offset;
+    sequence_sizes[0] += start_offset;
 
-      partial_sum( sequence_sizes.begin(), sequence_sizes.end(),
-                   back_inserter( sequence_positions ) );
+    partial_sum( sequence_sizes.begin(), sequence_sizes.end(),
+                 back_inserter( sequence_positions ) );
 
-      // We take it back off because we use sequence_sizes later.
-      sequence_sizes[0] -= start_offset;
+    // We take it back off because we use sequence_sizes later.
+    sequence_sizes[0] -= start_offset;
   }
 
   char* buffer = new char[ max_sequence_size+1 ];
@@ -236,7 +236,7 @@ FastaFilestream<vecT,seqT,convT,verifT>::parse_( vecString &names,
     int this_buffer_size = istream_ptr->gcount();
     curr_position += this_buffer_size;
     buffer[ this_buffer_size ] = 0;
-    converter.extractAllFromBuffer( buffer, name, datum ); 
+    converter.extractAllFromBuffer( buffer, name, datum );
 
     if ( p_sequences )
       p_sequences->push_back( datum );
@@ -262,14 +262,14 @@ FastaFilestream<vecT,seqT,convT,verifT>::parse_( vecString &names,
 
 
 template <typename vecT, typename seqT, typename convT, typename verifT>
-const String 
+const String
 FastaFilestream<vecT,seqT,convT,verifT>::getBasename_( const String& filename ) const
 {
   int i;
   for (i = filename_.size() - 1; i >= 0; i--)
     if ( filename_[ i ] == '/' )
       break;
-  
+
   return filename_.substr( i+1, filename_.size() - i );
 }
 
@@ -279,14 +279,14 @@ FastaFilestream<vecT,seqT,convT,verifT>::preview_( istream* fasta_istream )
 {
   String basename = getBasename_( filename_ );
   // cout << "Scanning file " << basename << "... " << flush;
-  
+
   preview_ptr_ = new FastaFilestreamPreview( *fasta_istream );
 
   // cout << "found " << preview_ptr_->getSequenceSizes().size() << " reads." << endl;
 }
 
 template <typename vecT, typename seqT, typename convT, typename verifT>
-istream* 
+istream*
 FastaFilestream<vecT,seqT,convT,verifT>::getIstream_() const
 {
   istream* istream_ptr;
@@ -294,16 +294,16 @@ FastaFilestream<vecT,seqT,convT,verifT>::getIstream_() const
   if ( needs_pipe_ ) {
     // it's compressed, so we need to open a pipe
     string command = "gzip -dc " + filename_;
-  
+
     procbuf* zcat_pipe = new procbuf( command.c_str(), ios::in );
     istream_ptr = new istream( zcat_pipe );
   }
   else {
     istream_ptr = new ifstream( filename_.c_str() );
   }
-  
+
   //  istream_ptr->rdbuf()->allocate();
-  
+
   return istream_ptr;
 }
 

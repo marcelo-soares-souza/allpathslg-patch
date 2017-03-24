@@ -29,7 +29,7 @@ public:
   CRing( ) :
     super_id_ ( -1 ), gap_size_( 0 ), gap_dev_ ( -1 ), n_links_ ( 0 )
   { }
-	     
+
   CRing( int super_id, int gap_size, int gap_dev, int n_links ) :
     super_id_ ( super_id ),
     gap_size_ ( gap_size ),
@@ -37,32 +37,40 @@ public:
     n_links_ ( n_links )
   { }
 
-  int SuperId( ) const { return super_id_; }
-  int GapSize( ) const { return gap_size_; }
-  int GapDev( ) const { return gap_dev_; }
-  int NLinks( ) const { return n_links_; }
-  
+  int SuperId( ) const {
+    return super_id_;
+  }
+  int GapSize( ) const {
+    return gap_size_;
+  }
+  int GapDev( ) const {
+    return gap_dev_;
+  }
+  int NLinks( ) const {
+    return n_links_;
+  }
+
   void GenerateLegend( vec<String> &legend ) const {
     legend.clear( );
     legend = MkVec( ToString( "scaffold_id" ),
-		    ToString( "gap_size" ),
-		    ToString( "gap_dev" ),
-		    ToString( "n_links" ) );
+                    ToString( "gap_size" ),
+                    ToString( "gap_dev" ),
+                    ToString( "n_links" ) );
   }
-  
+
   void PrintableInfo( vec<String> &printable ) const {
     printable.clear( );
     printable = MkVec( ToString( super_id_ ),
-		       ToString( gap_size_ ),
-		       ToString( gap_dev_ ),
-		       ToString( n_links_ ) );
+                       ToString( gap_size_ ),
+                       ToString( gap_dev_ ),
+                       ToString( n_links_ ) );
   }
-  
+
   friend bool operator< ( const CRing &left, const CRing &right ) {
     return ( left.SuperId( ) < right.SuperId( ) );
   }
-  
-  
+
+
 private:
 
   int super_id_;
@@ -83,14 +91,14 @@ private:
  * VERBOSE: 0 (no log) to 2 (max log)
  */
 void IdentifyCircularScaffolds( const PairsManager &pairs,
-				const vec<fastavector> &contigs,
-				const vec<superb> &supers,
-				const vec<alignlet> &aligns,
-				vec<int> &index,
-				vec<Bool> &is_circular,
-				ostream *log = 0,
-				int VERBOSE = 0,
-				int MIN_LINKS = 150 );
+                                const vec<fastavector> &contigs,
+                                const vec<superb> &supers,
+                                const vec<alignlet> &aligns,
+                                vec<int> &index,
+                                vec<Bool> &is_circular,
+                                ostream *log = 0,
+                                int VERBOSE = 0,
+                                int MIN_LINKS = 150 );
 
 /**
  * IdentifyCircularScaffolds
@@ -103,11 +111,11 @@ void IdentifyCircularScaffolds( const PairsManager &pairs,
  * NUM_THREADS: if negative, use all available
  */
 void IdentifyCircularScaffolds( const vec<PairsManager> &pairs,
-				const vec<fastavector> &contigs,
-				const vec<superb> &supers,
-				read_locs_on_disk &locs_file,
-				vec<CRing> &rings,
-				ostream *log = 0,
-				int MIN_LINKS = 150 );
+                                const vec<fastavector> &contigs,
+                                const vec<superb> &supers,
+                                read_locs_on_disk &locs_file,
+                                vec<CRing> &rings,
+                                ostream *log = 0,
+                                int MIN_LINKS = 150 );
 
 #endif

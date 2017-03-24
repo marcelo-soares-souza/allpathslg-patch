@@ -68,15 +68,15 @@ void shandler::Setup( int *min_gap )
   if ( n_contigs_ < 0 ) {
     for (int ii=0; ii<(int)supers_.size( ); ii++)
       for (int jj=0; jj<supers_[ii].Ntigs( ); jj++)
-	n_contigs_ = Max( n_contigs_, supers_[ii].Tig( jj ) );
+        n_contigs_ = Max( n_contigs_, supers_[ii].Tig( jj ) );
     n_contigs_ += 1;
   }
-  
+
   if ( min_gap ) {
     for (int ii=0; ii<(int)supers_.size( ); ii++) {
       for (int jj=0; jj<supers_[ii].Ntigs( )-1; jj++)
-	if ( supers_[ii].Gap( jj ) < *min_gap )
-	  supers_[ii].SetGap( jj, *min_gap );
+        if ( supers_[ii].Gap( jj ) < *min_gap )
+          supers_[ii].SetGap( jj, *min_gap );
     }
   }
 
@@ -103,7 +103,7 @@ void shandler::Setup( int *min_gap )
       pos_on_super_[supers_[ii].Tig( jj )] = jj;
       pos += supers_[ii].Len( jj );
       if ( jj < (int)supers_[ii].Ntigs( ) - 1 )
-	pos += supers_[ii].Gap( jj );
+        pos += supers_[ii].Gap( jj );
     }
   }
 

@@ -41,9 +41,9 @@ LocsHandlerLG::LocsHandlerLG( const int K, const String &reads_head )
  * Constructor
  */
 LocsHandlerLG::LocsHandlerLG( const vec<int> *rlens,
-		      const vec<int> *clens,
-		      const vec<int> *to_rc,
-		      const vec<ReadLocationLG> *locs ) :
+                              const vec<int> *clens,
+                              const vec<int> *to_rc,
+                              const vec<ReadLocationLG> *locs ) :
   rlens_ ( rlens ),
   clens_ ( clens ),
   to_rc_ ( to_rc ),
@@ -56,10 +56,10 @@ LocsHandlerLG::LocsHandlerLG( const vec<int> *rlens,
 // LocsHandlerLG constructor that takes uloc index as input,
 // which is exactly the same as to_locs_ that we want to assign
 LocsHandlerLG::LocsHandlerLG( const vec<int> *rlens,
-		      const vec<int> *clens,
-		      const vec<int> *to_rc,
-		      const vec<ReadLocationLG> *locs,
-                      const VecULongVec* ulocs_indexr ) :
+                              const vec<int> *clens,
+                              const vec<int> *to_rc,
+                              const vec<ReadLocationLG> *locs,
+                              const VecULongVec* ulocs_indexr ) :
   rlens_ ( rlens ),
   clens_ ( clens ),
   to_rc_ ( to_rc ),
@@ -68,7 +68,7 @@ LocsHandlerLG::LocsHandlerLG( const vec<int> *rlens,
   //to_loc_ = ulocs_indexr;
   to_loc_.resize( ulocs_indexr->size() );
   for ( size_t i = 0; i < to_loc_.size(); ++i ) {
-      to_loc_[i].assign( (*ulocs_indexr)[i].begin(), (*ulocs_indexr)[i].end() );
+    to_loc_[i].assign( (*ulocs_indexr)[i].begin(), (*ulocs_indexr)[i].end() );
   }
 }
 
@@ -96,18 +96,18 @@ void LocsHandlerLG::LoadFromKmers( const int K, const String &reads_head )
   core_rlens_.resize( paths.size( ) );
   for (size_t ii=0; ii<paths.size( ); ii++)
     core_rlens_[ii] = paths[ii].KmerCount( );
-  
+
   core_clens_.resize( unipaths.size( ) );
   for (size_t ii=0; ii<unipaths.size( ); ii++)
     core_clens_[ii] = unipaths[ii].KmerCount( );
-  
+
   UnipathInvolution( unipaths, unipathsdb, core_to_rc_ );
 
   // Load and sort locs.
   BinaryReader::readFile( unilocs_file, &core_locs_ );
   if ( ! is_sorted( core_locs_.begin( ), core_locs_.end( ) ) )
     sort( core_locs_.begin( ), core_locs_.end( ) );
-  
+
   // Assign pointers.
   rlens_ = &core_rlens_;
   clens_ = &core_clens_;
@@ -128,7 +128,7 @@ pair<int,int> LocsHandlerLG::BracketOnRead( longlong loc_id ) const
   int start = rloc.Start( );
   int contig_len = (*clens_)[rloc.Contig( )];
   int read_len = (*rlens_)[rloc.ReadId( )];
-  
+
   int begin = Max( - start, 0 );
   int end = Min( contig_len - start, read_len );
 
@@ -148,10 +148,10 @@ pair<int,int> LocsHandlerLG::BracketOnContig( longlong loc_id ) const
   int start = rloc.Start( );
   int contig_len = (*clens_)[rloc.Contig( )];
   int read_len = (*rlens_)[rloc.ReadId( )];
-  
+
   int begin = Max( 0, start );
   int end = Min( contig_len, read_len + start );
-  
+
   return make_pair( begin, end );
 }
 
@@ -183,7 +183,7 @@ bool LocsHandlerLG::GetFwChain( longlong read_id, vec<longlong> &locpos ) const
   // No locs found (not an error).
   if ( locpos.size( ) < 1 )
     return true;
-  
+
   // Match each loc in the chain with the bracket on the read (sort locpos).
   {
     vec< pair< pair<int,int>, longlong > > brackets2locpos;
@@ -196,7 +196,7 @@ bool LocsHandlerLG::GetFwChain( longlong read_id, vec<longlong> &locpos ) const
     for (longlong ii=0; ii<(longlong)locpos.size( ); ii++)
       locpos[ii] = brackets2locpos[ii].second;
   }
-  
+
   // Get brackets on reads and contigs.
   vec< pair<int,int> > rBracks;
   vec< pair<int,int> > cBracks;
@@ -222,15 +222,15 @@ bool LocsHandlerLG::GetFwChain( longlong read_id, vec<longlong> &locpos ) const
   if ( is_valid && cBracks.size( ) == 1 ) {
     if ( rBracks[0].first > 0 ) {
       if ( cBracks[0].first > 0 )
-	is_valid = false;
+        is_valid = false;
     }
     else if ( rBracks[0].second < (*rlens_)[read_id] ) {
       int contig_id = (*locs_)[ locpos[0] ].Contig( );
       if ( cBracks[0].second < (*clens_)[contig_id] )
-	is_valid = false;
+        is_valid = false;
     }
   }
-  
+
   // 2. Two brackets or more.
   if ( is_valid ) {
     for (longlong ii=0; ii<cBracks.isize( ); ii++) {
@@ -238,20 +238,20 @@ bool LocsHandlerLG::GetFwChain( longlong read_id, vec<longlong> &locpos ) const
 
       bool read_begin = ( ii == 0 && rBracks[0].first  == 0 );
       if ( ( ! read_begin ) && cBracks[ii].first != 0 ) {
-	is_valid = false;
-	break;
+        is_valid = false;
+        break;
       }
-      
-      int brack_end = rBracks[ rBracks.size( )-1 ].second;      
+
+      int brack_end = rBracks[ rBracks.size( )-1 ].second;
       bool is_last = ( ii == cBracks.isize( ) - 1 );
       bool read_end = ( is_last && brack_end == (*rlens_)[read_id] );
       if ( ( ! read_end ) && cBracks[ii].second != (*clens_)[contig_id] ) {
-	is_valid = false;
-	break;
+        is_valid = false;
+        break;
       }
     }
   }
-  
+
   // Return.
   return is_valid;
 
@@ -269,11 +269,11 @@ void LocsHandlerLG::PrintChain( vec<longlong> &locpos, ostream &out ) const
     out << "Empty chain: skip printing.\n";
     return;
   }
-  
+
   vec< vec<String> > table;
   vec<String> line;
   longlong read_id = (*locs_)[ locpos[0] ].ReadId( );
-  
+
   vec< pair<int,int> > rBracks;
   vec< pair<int,int> > cBracks;
   rBracks.reserve( locpos.size( ) );
@@ -295,18 +295,18 @@ void LocsHandlerLG::PrintChain( vec<longlong> &locpos, ostream &out ) const
       String str2 = ToString( bra.second );
       String entry = "[" + str1 + "," + str2 + ")";
       if ( level == 0 ) {
-	if ( ii == (longlong)locpos.size( )-1 )
-	  entry += "_" + ToString( (*rlens_)[read_id] );
+        if ( ii == (longlong)locpos.size( )-1 )
+          entry += "_" + ToString( (*rlens_)[read_id] );
       }
       else if ( level == 1 )
-	entry += "_" + ToString( (*clens_)[rl.Contig( )] );
+        entry += "_" + ToString( (*clens_)[rl.Contig( )] );
       else
-	entry = "c" + ToString( rl.Contig( ) );
+        entry = "c" + ToString( rl.Contig( ) );
       line.push_back( entry );
     }
     table.push_back( line );
   }
-  
+
   out << "read_" << read_id << "\n";
   BeautifyAndPrintTable( table, out );
 }
@@ -340,7 +340,7 @@ vec<longlong> LocsHandlerLG::GetFwPlacements(const longlong read_id) const
   for (Int64Vec::const_iterator iv_it = iv.begin(); iv_it != iv.end(); iv_it++)
     if ((*locs_)[*iv_it].Fw())
       fw_locs.push_back(*iv_it);
-			
+
   return fw_locs;
 }
 
@@ -356,7 +356,7 @@ vec<longlong> LocsHandlerLG::GetRcPlacements(const longlong read_id) const
   for (Int64Vec::const_iterator iv_it = iv.begin(); iv_it != iv.end(); iv_it++)
     if ((*locs_)[*iv_it].Rc())
       rc_locs.push_back(*iv_it);
-			
+
   return rc_locs;
 }
 

@@ -15,33 +15,35 @@
 
 class FastaVerifier {
 
- public:
+public:
   virtual ~FastaVerifier() {}
 
   bool verifyLine( const char* line );
   bool verifyRestOfLine( const char* line );
-  
- protected:
+
+protected:
   virtual bool verifyChar( const char c ) = 0;
-  
+
   bool ignore_rest_of_line_;
 };
 
 class FastaNullVerifier: public FastaVerifier {
- 
-  private:
-    bool verifyChar( const char ) { return true; }
+
+private:
+  bool verifyChar( const char ) {
+    return true;
+  }
 };
 
 class FastaSequenceVerifier: public FastaVerifier {
- 
- private:
+
+private:
   bool verifyChar( const char c );
 };
 
 class FastaQualityVerifier: public FastaVerifier {
 
- private:
+private:
   bool verifyChar( const char c );
 };
 

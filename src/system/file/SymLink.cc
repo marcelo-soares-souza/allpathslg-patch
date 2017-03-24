@@ -22,31 +22,31 @@
 
 File SymLink::target() const
 {
-    size_t const bufSiz = 8193;
-    char buf[bufSiz];
-    int len = readlink(toString().c_str(),buf,bufSiz-1);
-    if ( len < 0 )
-    {
-        ErrNo err;
-        FatalErr("Can't read symlink " << toString() << err);
-    }
-    buf[len] = 0;
-    return File(buf);
+  size_t const bufSiz = 8193;
+  char buf[bufSiz];
+  int len = readlink(toString().c_str(),buf,bufSiz-1);
+  if ( len < 0 )
+  {
+    ErrNo err;
+    FatalErr("Can't read symlink " << toString() << err);
+  }
+  buf[len] = 0;
+  return File(buf);
 }
 
 void SymLink::setTarget( File const& target, bool force ) const
 {
-    char const* fileName = toString().c_str();
-    if ( force && isLink() && unlink(fileName) == -1 )
-    {
-        ErrNo err;
-        FatalErr("Can't remove existing symlink " << toString()
-                    << " in order to retarget it" << err);
-    }
-    if ( symlink(target.toString().c_str(), fileName) == -1 )
-    {
-        ErrNo err;
-        FatalErr("Can't symlink " << toString() << err);
-    }
-    clearStat();
+  char const* fileName = toString().c_str();
+  if ( force && isLink() && unlink(fileName) == -1 )
+  {
+    ErrNo err;
+    FatalErr("Can't remove existing symlink " << toString()
+             << " in order to retarget it" << err);
+  }
+  if ( symlink(target.toString().c_str(), fileName) == -1 )
+  {
+    ErrNo err;
+    FatalErr("Can't symlink " << toString() << err);
+  }
+  clearStat();
 }

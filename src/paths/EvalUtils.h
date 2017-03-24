@@ -37,20 +37,20 @@ void PrintGraphStatistics
 // available.  Note that this will reorder the HyperKmerPath h.
 
 void EvaluateAssembly( HyperKmerPath& h, const KmerBaseBroker* kbb,
-       const String& data_dir, const String& wrun_dir, const String& sub_dir,
-       const vecbasevector& genome, const vecbitvector& genome_amb, 
-       const Bool DIPLOID, const Bool USE_TRUTH,
-       const Bool FILTER_ALIGNS, const Bool WRITE_ALIGNS, const Bool REORDER = True,
-       nbases_t MIN_TRUSTED_PATH_LEN = 0, const filename_t& HYPER = "hyper", 
-       String report_suffix = "" );
+                       const String& data_dir, const String& wrun_dir, const String& sub_dir,
+                       const vecbasevector& genome, const vecbitvector& genome_amb,
+                       const Bool DIPLOID, const Bool USE_TRUTH,
+                       const Bool FILTER_ALIGNS, const Bool WRITE_ALIGNS, const Bool REORDER = True,
+                       nbases_t MIN_TRUSTED_PATH_LEN = 0, const filename_t& HYPER = "hyper",
+                       String report_suffix = "" );
 
 void FilterAligns( const HyperKmerPath& h, vec<look_align>& aligns,
-     vec< vec<int> >& aligns_index, vec<TrustedPath>& trusted_paths,
-     const int MIN_LEN = 3000 );
+                   vec< vec<int> >& aligns_index, vec<TrustedPath>& trusted_paths,
+                   const int MIN_LEN = 3000 );
 
 /**
    FuncDecl: ComputeComponentSizes
-   
+
    Compute the component sizes.  The size of each
    component here is defined to be the sum of the component's
    edges, which is not quite right but usually close enough.  To
@@ -60,7 +60,7 @@ void FilterAligns( const HyperKmerPath& h, vec<look_align>& aligns,
    Output params:
 
      component_sizes - the size of each component; sorted, so you can call N50() on it.
-   
+
  */
 void ComputeComponentSizes( const HyperKmerPath& h, vec< nkmers_t >& component_sizes );
 

@@ -15,28 +15,28 @@
 
 /*  CombineNormalDistribution              Filipe Ribeiro 2009-06-22
  *
- *   When you have different measurements (normaly distributed) of the same quantity, 
- *   you can compute the resultant normal distribution.   
- * 
+ *   When you have different measurements (normaly distributed) of the same quantity,
+ *   you can compute the resultant normal distribution.
+ *
  *   The resultant normal distribution (mu, sigma) satisfies:
- * 
+ *
  *      1 / sigma^2  =  sum(     1 / sigma[i]^2 )
- * 
+ *
  *     mu / sigma^2  =  sum( mu[i] / sigma[i]^2 )
  *
  */
 
 NormalDistribution CombineNormalDistributions(const vec<NormalDistribution> & ds,
-                                               float * score)
+    float * score)
 {
   size_t n = ds.size();
 
-  // do everything with 'double' and convert to 'float' only at the end 
+  // do everything with 'double' and convert to 'float' only at the end
   double one_sig2 = 0; //  1   / sigma^2
-  double mu_sig2  = 0; //  mu  / sigma^2 
-  
+  double mu_sig2  = 0; //  mu  / sigma^2
+
   for (size_t i = 0; i != n; i++) {
-    const double x_i   = ds[i].mu_; 
+    const double x_i   = ds[i].mu_;
     const double sig_i = ds[i].sigma_;
 
     const double one_sig2_i = 1.0 / (sig_i * sig_i);
@@ -44,26 +44,26 @@ NormalDistribution CombineNormalDistributions(const vec<NormalDistribution> & ds
     one_sig2 +=        one_sig2_i;
     mu_sig2  +=  x_i * one_sig2_i;
   }
-  
+
   const double sig2 = 1.0 / one_sig2;
 
 
   // if a pointer for the score is provided calculate the score
   // score is a ratio between the observed spread and the expected spread
   // so it should be close to 1.
-  // If score is much larger than 1 (say 3), then you probably don't have a good gaussian. 
+  // If score is much larger than 1 (say 3), then you probably don't have a good gaussian.
   if (score) {
     const double mu2_nsig2 = mu_sig2 * mu_sig2 * sig2 / static_cast<double>(n);
-      
+
     double s2_sig2 = 0;
     for (size_t i = 0; i != n; i++) {
-      const double x_i   = ds[i].mu_; 
+      const double x_i   = ds[i].mu_;
       const double sig_i = ds[i].sigma_;
-      
+
       // add x2 and subtract mu2/n to keep round off error low.
       s2_sig2 += (x_i * x_i) / (sig_i * sig_i) - mu2_nsig2;
     }
-    
+
     // s2_sig2 should always be >= 0, but you never know...
     *score = (s2_sig2 <= 0.0) ? 0.0 : sqrt(s2_sig2 / static_cast<double>(n));
   }
@@ -77,7 +77,7 @@ NormalDistribution CombineNormalDistributions(const vec<NormalDistribution> & ds
 
 
 /* ClusterNormalDistribution              Filipe Ribeiro 2010-04-16
- *  
+ *
  *  Extract clusters based on overlaps of n_sigma x sigma.
  */
 vec< vec<NormalDistribution> >
@@ -86,7 +86,7 @@ ClusterNormalDistributions(const vec<NormalDistribution> & ds,
 {
   const size_t n = ds.size();
   bool sorted = true;
-  for (size_t i = 1; i != n && sorted; i++) 
+  for (size_t i = 1; i != n && sorted; i++)
     sorted = (ds[i-1].mu_ <= ds[i].mu_);
 
   vec<NormalDistribution> dss;
@@ -94,16 +94,16 @@ ClusterNormalDistributions(const vec<NormalDistribution> & ds,
     dss = ds;
     sort(dss.begin(), dss.end());
   }
-  
+
   const vec<NormalDistribution> & myds = (sorted) ? ds : dss;
 
   vec< vec<NormalDistribution> > clusters(1, vec<NormalDistribution>(1, myds[0]));
   size_t i_cluster = 0;
 
   for (size_t i = 1; i != n; i++) {
-    
-    const bool overlap = (myds[i-1].mu_ + n_sigma * myds[i-1].sigma_ > 
-                          myds[i].mu_   - n_sigma * myds[i].sigma_); 
+
+    const bool overlap = (myds[i-1].mu_ + n_sigma * myds[i-1].sigma_ >
+                          myds[i].mu_   - n_sigma * myds[i].sigma_);
 
     if (overlap) {
       clusters[i_cluster].push_back(myds[i]);
@@ -113,7 +113,7 @@ ClusterNormalDistributions(const vec<NormalDistribution> & ds,
       i_cluster++;
     }
   }
-  
+
   return clusters;
 }
 
@@ -140,14 +140,14 @@ ClusterNormalDistributions(const vec<NormalDistribution> & ds,
 NormalDistribution SafeMeanStdev(const vec<float> & points)
 {
   unsigned int num_points = points.size();
-  
+
   NormalDistribution result;
   result.mu_ = -1;
   result.sigma_ = -1;
 
   if ( 0 == num_points )
     return result;
-  
+
   //find the first valid i and initialize the recurrence
   unsigned int i = 0;
   while (i<num_points && !std::isfinite(points[i]))
@@ -168,10 +168,10 @@ NormalDistribution SafeMeanStdev(const vec<float> & points)
       sigma += ( point - last_mu ) * ( point - mu );
     }
   }
-  
+
   if ( sigma < 0 )
     return result;
-  
+
   double n_points = validPoints;
   if ( sigma > 0 ) {
     result.mu_ = mu;
@@ -205,33 +205,33 @@ NormalDistribution SafeMeanStdev(int count, double sum, double sumsq) {
 //log(ratio) - ((x-d1.mu_)/d1.sigma_)2 = - ((x-d2.mu_)/d2.sigma_)2
 //where the 2 means squared.
 //if ratio is 1 then we can get rid of the squares and have the simple case.
-//otherwise we end up with the quadratic equation in the general case.  
+//otherwise we end up with the quadratic equation in the general case.
 double OptimalCutoff(const NormalDistribution & d1,
-		     const NormalDistribution & d2,
-		     const double ratio) {
+                     const NormalDistribution & d2,
+                     const double ratio) {
   Assert(d1.sigma_ >= 0);
   Assert(d2.sigma_ >= 0);
   Assert(d1.mu_ < d2.mu_);
 
   //return weighted mean of means if either sigma is 0.
-  if (0 == d1.sigma_ || 0 == d2.sigma_) { 
+  if (0 == d1.sigma_ || 0 == d2.sigma_) {
     return (ratio * d1.mu_ + d2.mu_) / (1+ratio);
   }
 
   if (1 == ratio) {//simplest case
-    return ((d1.sigma_ * d2.mu_ + d1.mu_ * d2.sigma_) 
-	    / (d1.sigma_ + d2.sigma_));
-  } 
+    return ((d1.sigma_ * d2.mu_ + d1.mu_ * d2.sigma_)
+            / (d1.sigma_ + d2.sigma_));
+  }
   else { //quadratic parameters
     double s = (d1.sigma_*d1.sigma_) / (d2.sigma_*d2.sigma_);
     double a = 1-s;
     double b = -2*(d1.mu_ - s*d2.mu_);
-    double c = d1.mu_*d1.mu_- s*d2.mu_*d2.mu_ 
-      - (d1.sigma_*d1.sigma_)*log(ratio);
+    double c = d1.mu_*d1.mu_- s*d2.mu_*d2.mu_
+               - (d1.sigma_*d1.sigma_)*log(ratio);
     QuadraticFunction quad(a,b,c);
     pair<double,double> sol = quad.solutions();
     //if (!isfinite(sol.first) || sol.first == sol.second) return sol.first;
-    
+
     //Now the general case: which of the two solutions is between the means?
     //PRINT4(sol.first, sol.second, d1.mu_, d2.mu_);
     if (sol.first >= d1.mu_ && sol.first <= d2.mu_) return sol.first;
@@ -249,13 +249,13 @@ pair<double,double> QuadraticFunction::solutions() const {
       sol = -c/b;
     }
     return make_pair(sol,sol);
-  } 
-      
+  }
+
   double discrim = b*b -4*a*c;
   if (discrim < 0) return make_pair(numeric_limits<double>::quiet_NaN(),
-				    numeric_limits<double>::quiet_NaN());
+                                      numeric_limits<double>::quiet_NaN());
   else return make_pair((-b - sqrt(discrim))/(2*a),
-			(-b + sqrt(discrim))/(2*a));
+                          (-b + sqrt(discrim))/(2*a));
 }
 
 double Poisson(double lambda, unsigned int n) {
@@ -266,21 +266,25 @@ double Poisson(double lambda, unsigned int n) {
   return ret;
 }
 
-double PoissonCdf( double lambda, unsigned int n ) 
-{    double term = exp(-lambda);
-     double cum = term;
-     for (unsigned int i = 1; i <= n; ++i) 
-     {    term *= lambda/(double)i;
-          cum += term;    }
-     return cum;    }
+double PoissonCdf( double lambda, unsigned int n )
+{ double term = exp(-lambda);
+  double cum = term;
+  for (unsigned int i = 1; i <= n; ++i)
+  { term *= lambda/(double)i;
+    cum += term;
+  }
+  return cum;
+}
 
-long double PoissonCdfLong( long double lambda, unsigned int n ) 
-{    long double term = expl(-lambda);
-     long double cum = term;
-     for (unsigned int i = 1; i <= n; ++i) 
-     {    term *= lambda/(long double)i;
-          cum += term;    }
-     return cum;    }
+long double PoissonCdfLong( long double lambda, unsigned int n )
+{ long double term = expl(-lambda);
+  long double cum = term;
+  for (unsigned int i = 1; i <= n; ++i)
+  { term *= lambda/(long double)i;
+    cum += term;
+  }
+  return cum;
+}
 
 int InversePoissonCdf(double lambda, double p) {
   double term = exp(-lambda);
@@ -298,7 +302,7 @@ int InversePoissonCdf(double lambda, double p) {
 
 
 template<class T> T N50( const vec<T>& v )
-{    
+{
   ForceAssert( v.size( ) > 0 );
 
   longlong sum = 0, half = 0;
@@ -311,15 +315,15 @@ template<class T> T N50( const vec<T>& v )
   if ( is_sorted( v.rbegin(), v.rend() ) ) {
     for ( int i = v.size()-1; i >= 0; i-- ) {
       half += v[i];
-      if ( 2 * half == sum && i > 0 ) 
+      if ( 2 * half == sum && i > 0 )
         return (v[i] + v[i-1])/2;
       if ( 2 * half >= sum )
-	return v[i];
+        return v[i];
     }
 
     return 0; // never executed
   }
-  
+
   // If v is not sorted, copy it on a local vector and sort it.
   vec<T> sorted_v;
   bool use_given_v = true;
@@ -328,16 +332,16 @@ template<class T> T N50( const vec<T>& v )
     use_given_v = false;
     sort( sorted_v.begin(), sorted_v.end() );
   }
-  
+
   const vec<T> &the_vector = ( use_given_v ) ? v : sorted_v;
 
   for ( int i = 0; i < (int) the_vector.size( ); i++ ) {
     half += the_vector[i];
-    if ( 2 * half == sum && i < (int) the_vector.size( ) - 1 ) 
+    if ( 2 * half == sum && i < (int) the_vector.size( ) - 1 )
       return (the_vector[i] + the_vector[i+1])/2;
     if ( 2 * half >= sum ) return the_vector[i];
   }
-  
+
   return 0; // never executed
 }
 
@@ -353,7 +357,7 @@ template<class T> int N50_size( const vec<vec<T> >& v )
   vec<int> sizes( N, 0 );
   for ( int i = 0; i < N; i++ )
     sizes[i] = v[i].isize( );
-  
+
   Sort( sizes );
   return N50( sizes );
 }
@@ -381,38 +385,38 @@ template<class T> vec<T> NStatistics( const vec<T>& v )
 
   if ( is_sorted( v.begin(), v.end() ) )
   {
-    for ( typename vec<T>::const_reverse_iterator v_iter = v.rbegin(); 
+    for ( typename vec<T>::const_reverse_iterator v_iter = v.rbegin();
           v_iter != v.rend() && target_idx < targets.size(); ++v_iter )
     {
       partial_sum += *v_iter;
-      
+
       while ( partial_sum >= targets[target_idx] )
       {
-	stats[target_idx] = *v_iter;
-	
-	if ( ++target_idx >= targets.size() )
-	  break;
+        stats[target_idx] = *v_iter;
+
+        if ( ++target_idx >= targets.size() )
+          break;
       }
     }
   }
 
-  else if ( is_sorted( v.rbegin(), v.rend() ) ) 
+  else if ( is_sorted( v.rbegin(), v.rend() ) )
   {
-    for ( typename vec<T>::const_iterator v_iter = v.begin(); 
+    for ( typename vec<T>::const_iterator v_iter = v.begin();
           v_iter != v.end() && target_idx < targets.size(); ++v_iter )
     {
       partial_sum += *v_iter;
-      
+
       while ( partial_sum >= targets[target_idx] )
       {
-	stats[target_idx] = *v_iter;
-	
-	if ( ++target_idx >= targets.size() )
-	  break;
+        stats[target_idx] = *v_iter;
+
+        if ( ++target_idx >= targets.size() )
+          break;
       }
     }
   }
-  
+
   else
   {
     cerr << "Vector not sorted." << endl;
@@ -430,34 +434,39 @@ template vec<size_t> NStatistics( const vec<size_t>& v );
 
 Bool CombineMeasurements( const double g1, const double g2, const double d1,
                           const double d2, const double dmult, double& g, double& d )
-{    if ( d1 == 0 && d2 == 0 )
-     {    if ( g1 != g2 ) return False;
-          g = g1;
-          d = d1;    }
-     else if ( d1 == 0 )
-     {    g = g1;
-          d = d1;
-          if ( Abs( g2 - g ) > dmult * d2 ) return False;    }
-     else if ( d2 == 0 )
-     {    g = g2;
-          d = d2;
-          if ( Abs( g1 - g ) > dmult * d1 ) return False;    }
-     else
-     {    double w1 = 1.0/(d1*d1), w2 = 1.0/(d2*d2);
-          g = ( w1*g1 + w2*g2 ) / (w1+w2);
-          // This statement (i.e. the old code)
-          //   d = sqrt( w1*w1*d1*d1 + w2*w2*d2*d2 ) / (w1+w2);
-          // is equivalent to
-          //   d = sqrt( w1*w1*(1/w1) + w2*w2*(1/w2) ) / (w1+w2);
-          // which is equivalent to
-          //   d = sqrt( w1+w2 ) / (w1+w2);
-          // which is equivalent to
-          d = 1.0 / sqrt( w1+w2 );
-          if ( Abs( g1 - g ) > dmult * d1 ) return False;
-          if ( Abs( g2 - g ) > dmult * d2 ) return False;    }
-     return True;    }
+{ if ( d1 == 0 && d2 == 0 )
+  { if ( g1 != g2 ) return False;
+    g = g1;
+    d = d1;
+  }
+  else if ( d1 == 0 )
+  { g = g1;
+    d = d1;
+    if ( Abs( g2 - g ) > dmult * d2 ) return False;
+  }
+  else if ( d2 == 0 )
+  { g = g2;
+    d = d2;
+    if ( Abs( g1 - g ) > dmult * d1 ) return False;
+  }
+  else
+  { double w1 = 1.0/(d1*d1), w2 = 1.0/(d2*d2);
+    g = ( w1*g1 + w2*g2 ) / (w1+w2);
+    // This statement (i.e. the old code)
+    //   d = sqrt( w1*w1*d1*d1 + w2*w2*d2*d2 ) / (w1+w2);
+    // is equivalent to
+    //   d = sqrt( w1*w1*(1/w1) + w2*w2*(1/w2) ) / (w1+w2);
+    // which is equivalent to
+    //   d = sqrt( w1+w2 ) / (w1+w2);
+    // which is equivalent to
+    d = 1.0 / sqrt( w1+w2 );
+    if ( Abs( g1 - g ) > dmult * d1 ) return False;
+    if ( Abs( g2 - g ) > dmult * d2 ) return False;
+  }
+  return True;
+}
 
-double InverseNormalCDF(double p, double mu, double sigma) 
+double InverseNormalCDF(double p, double mu, double sigma)
 {
   // Algorithm by Peter J. Acklam from http://home.online.no/~pjacklam/index.html
   // Documentation claims error has absolute value less than 1.15 * 10^-9 in the entire region.

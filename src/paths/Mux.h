@@ -26,24 +26,36 @@ public:
       m_numKmers ( numKmers )
   {}
 
-  OrientedKmerPathId  GetPathId() const { return m_pathId; }
-  void SetPathId( const OrientedKmerPathId& id ) { m_pathId = id; }
-  
-  int  GetSegment() const  { return m_segment; }
-  void SetSegment( const int segment )  { m_segment = segment; }
-  
-  int  GetNumKmers() const { return m_numKmers; }
-  void SetNumKmers( const int numKmers ) { m_numKmers = numKmers; }
+  OrientedKmerPathId  GetPathId() const {
+    return m_pathId;
+  }
+  void SetPathId( const OrientedKmerPathId& id ) {
+    m_pathId = id;
+  }
+
+  int  GetSegment() const  {
+    return m_segment;
+  }
+  void SetSegment( const int segment )  {
+    m_segment = segment;
+  }
+
+  int  GetNumKmers() const {
+    return m_numKmers;
+  }
+  void SetNumKmers( const int numKmers ) {
+    m_numKmers = numKmers;
+  }
 
   bool operator< ( const Mux& other ) const
   {
     return ( m_pathId < other.m_pathId ||
              m_pathId == other.m_pathId && m_segment < other.m_segment );
   }
-  
+
   bool operator== ( const Mux& other ) const
   {
-    return ( m_pathId == other.m_pathId && m_segment == other.m_segment ); 
+    return ( m_pathId == other.m_pathId && m_segment == other.m_segment );
   }
 
   friend struct OrderBySegment;

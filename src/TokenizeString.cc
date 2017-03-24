@@ -14,12 +14,12 @@
  * Tokenize (with standard separators).
  */
 int Tokenize( const String &a_string,
-	      vec<String> &tokens )
+              vec<String> &tokens )
 {
   vec<char> separators;
   separators.push_back( ' ' );
   separators.push_back( '\t' );
-  
+
   return Tokenize( a_string, separators, tokens );
 }
 
@@ -28,7 +28,7 @@ int Tokenize( const String &a_string,
  */
 int Tokenize( const String &a_string,
               const char sep,
-	          vec<String> &tokens )
+              vec<String> &tokens )
 {
   vec<char> separators;
   separators.push_back(sep);
@@ -40,11 +40,11 @@ int Tokenize( const String &a_string,
  * Tokenize (with user defined separators).
  */
 int Tokenize( const String &a_string,
-	      const vec<char> &separators,
-	      vec<String> &tokens )
+              const vec<char> &separators,
+              vec<String> &tokens )
 {
   tokens.clear( );
-  
+
   // Parse string.
   vec< pair<int, int> > token_interval;
   bool in_token = false;
@@ -53,20 +53,20 @@ int Tokenize( const String &a_string,
     bool matches_separator = false;
     for (int jj=0; jj<(int)separators.size( ); jj++)
       if ( separators[jj] ==a_string[ii] ) {
-	matches_separator = true;
-	break;
+        matches_separator = true;
+        break;
       }
 
     if ( matches_separator ) {
       if ( in_token ) {
-	token_interval.push_back( pair<int, int>( token_start, ii ) );
-	in_token = false;
+        token_interval.push_back( pair<int, int>( token_start, ii ) );
+        in_token = false;
       }
     }
     else {
       if ( !in_token ) {
-	token_start = ii;
-	in_token = true;
+        token_start = ii;
+        in_token = true;
       }
     }
   }
@@ -90,11 +90,11 @@ int Tokenize( const String &a_string,
  * Tokenize (with user defined separators).
  */
 int TokenizeStrictly( const String &a_string,
-		      const vec<char> &separators,
-		      vec<String> &tokens )
+                      const vec<char> &separators,
+                      vec<String> &tokens )
 {
   tokens.clear( );
-  
+
   // Parse string.
   vec< pair<int, int> > token_interval;
   int token_start = 0;
@@ -102,8 +102,8 @@ int TokenizeStrictly( const String &a_string,
     bool matches_separator = false;
     for (int jj=0; jj<(int)separators.size( ); jj++)
       if ( separators[jj] == a_string[ii] ) {
-	matches_separator = true;
-	break;
+        matches_separator = true;
+        break;
       }
 
     if ( matches_separator ) {
@@ -126,16 +126,17 @@ int TokenizeStrictly( const String &a_string,
 
 void RegexMatch(String regex, String &str, vec<String> &matches)
 {
-    char* command = new char[str.size() * 2];
-    memset(command, 0x01, (str.size() + regex.size()) * 10);
-    int number_of_parens = str.Freq("(");
+  char* command = new char[str.size() * 2];
+  memset(command, 0x01, (str.size() + regex.size()) * 10);
+  int number_of_parens = str.Freq("(");
 
-    sprintf(command, "echo \"%s\" | perl -ne 'my @matches = %s; print join(\",\", @matches) . \"\\n\";'", str.c_str(), regex.c_str()); 
-    String command_str(command);
-    String result = LineOfOutput(command_str, false);
-    
-    vector<char> a_comma(1); a_comma[0] = ',';
-    Tokenize(result, a_comma, matches);
+  sprintf(command, "echo \"%s\" | perl -ne 'my @matches = %s; print join(\",\", @matches) . \"\\n\";'", str.c_str(), regex.c_str());
+  String command_str(command);
+  String result = LineOfOutput(command_str, false);
 
-    delete[] command;
+  vector<char> a_comma(1);
+  a_comma[0] = ',';
+  Tokenize(result, a_comma, matches);
+
+  delete[] command;
 }

@@ -22,13 +22,15 @@
 #include "Qualvector.h"
 
 
-static inline 
-String Tag(String S = "FQTR") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "FQTR") {
+  return Date() + " (" + S + "): ";
+}
 
 int main(int argc, char *argv[])
 {
   RunTime();
-  
+
   BeginCommandArguments;
   CommandArgument_String(IN_HEAD);
   CommandArgument_String(OUT_HEAD);
@@ -36,7 +38,7 @@ int main(int argc, char *argv[])
   CommandArgument_Int_OrDefault(TRIM_END, 0);
   CommandArgument_Bool_OrDefault(REVERSE, False);
   EndCommandArguments;
-  
+
   // Dir and file names.
   String fn_reads_in = IN_HEAD + ".fastb";
   if (! IsRegularFile(fn_reads_in)) {
@@ -53,10 +55,10 @@ int main(int argc, char *argv[])
   String out_dir = ".";
   if (OUT_HEAD.Contains("/")) out_dir = OUT_HEAD.RevBefore("/");
   Mkpath(out_dir);
-  
+
   String fn_bases_out = OUT_HEAD + ".fastb";
   String fn_quals_out = OUT_HEAD + ".qualb";
-  
+
 
   size_t n_reads;
   vec<size_t> lens_reads;
@@ -71,7 +73,7 @@ int main(int argc, char *argv[])
       if (do_quals)
         lens_reads.push_back(bases[i].size());
 
-      const int end = ((TRIM_END > 0 && TRIM_END < int(bases[i].size())) ? 
+      const int end = ((TRIM_END > 0 && TRIM_END < int(bases[i].size())) ?
                        TRIM_END : bases[i].size() - 1);
       const int len = end - TRIM_START + 1;
 
@@ -79,7 +81,7 @@ int main(int argc, char *argv[])
 
       if (REVERSE)
         bases[i].ReverseComplement();
-      
+
       bwriter.add(bases[i]);
     }
     bwriter.close();
@@ -92,16 +94,16 @@ int main(int argc, char *argv[])
     QualVecVec quals(fn_quals_in);
     IncrementalWriter<QualVec> qwriter(fn_quals_out.c_str());
     for (size_t i = 0; i < n_reads; i++) {
-      
+
       if (lens_reads[i] != quals[i].size()) {
         if (n_warns < 20) {
-          cout << Tag() << "WARNING: inconsistent sizes for read " << i << ": " 
-               << lens_reads[i] << " bases and " << quals[i].size() << " quals." << endl; 
+          cout << Tag() << "WARNING: inconsistent sizes for read " << i << ": "
+               << lens_reads[i] << " bases and " << quals[i].size() << " quals." << endl;
         }
-        n_warns++;        
+        n_warns++;
       }
 
-      const int end = ((TRIM_END > 0 && TRIM_END < int(quals[i].size())) ? 
+      const int end = ((TRIM_END > 0 && TRIM_END < int(quals[i].size())) ?
                        TRIM_END : quals[i].size() - 1);
 
       const int len = end - TRIM_START + 1;
@@ -110,7 +112,7 @@ int main(int argc, char *argv[])
 
       if (REVERSE)
         quals[i].ReverseMe();
-    
+
       qwriter.add(quals[i]);
     }
     qwriter.close();
@@ -118,11 +120,11 @@ int main(int argc, char *argv[])
     if (n_warns > 0)
       cout << Tag() << "WARNING: found " << n_warns << " inconsistent read/qual sizes." << endl;
 
-  }  
-  
+  }
+
 
   // ---- done
   cout << Tag() << "Done." << endl;
-  
+
 }
 

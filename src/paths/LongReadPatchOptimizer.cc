@@ -26,8 +26,8 @@ class BasesAligned
 {
   uint8_t _base_a : 2;  // 2 bits for base in read A
   uint8_t _base_b : 2;  // 2 bits for base in read B
-  uint8_t _gap_a  : 1;  // 1 bit  for gap in read A (non-existent base in read A) 
-  uint8_t _gap_b  : 1;  // 1 bit  for gap in read B (non-existent base in read B) 
+  uint8_t _gap_a  : 1;  // 1 bit  for gap in read A (non-existent base in read A)
+  uint8_t _gap_b  : 1;  // 1 bit  for gap in read B (non-existent base in read B)
 
 public:
   BasesAligned(const unsigned ba, const unsigned bb,
@@ -37,16 +37,32 @@ public:
       _gap_a(ga),
       _gap_b(gb)
   {}
-  
-  unsigned base_a () const { return _base_a; }
-  unsigned base_b () const { return _base_b; }
-  bool     gap_a  () const { return _gap_a; }
-  bool     gap_b  () const { return _gap_b; }
 
-  bool     gapped       () const { return gap_a() || gap_b(); }
-  bool     supported    () const { return !gapped(); }
-  bool     matched      () const { return supported() && base_a() == base_b(); }
-  bool     substitution () const { return supported() && base_a() != base_b(); }
+  unsigned base_a () const {
+    return _base_a;
+  }
+  unsigned base_b () const {
+    return _base_b;
+  }
+  bool     gap_a  () const {
+    return _gap_a;
+  }
+  bool     gap_b  () const {
+    return _gap_b;
+  }
+
+  bool     gapped       () const {
+    return gap_a() || gap_b();
+  }
+  bool     supported    () const {
+    return !gapped();
+  }
+  bool     matched      () const {
+    return supported() && base_a() == base_b();
+  }
+  bool     substitution () const {
+    return supported() && base_a() != base_b();
+  }
 };
 
 
@@ -63,17 +79,17 @@ class AlignmentIndexes
 
   // below is optimizable but not now. Only one is enough.
 
-  vec<int> _ia_le_j;   // ia as a function of j (if gap choose lower ia) 
-  vec<int> _ia_ge_j;   // ia as a function of j (if gap choose higher ia) 
-  vec<int> _ib_le_j;   // ib as a function of j (if gap choose lower ib) 
-  vec<int> _ib_ge_j;   // ib as a function of j (if gap choose higher ib) 
+  vec<int> _ia_le_j;   // ia as a function of j (if gap choose lower ia)
+  vec<int> _ia_ge_j;   // ia as a function of j (if gap choose higher ia)
+  vec<int> _ib_le_j;   // ib as a function of j (if gap choose lower ib)
+  vec<int> _ib_ge_j;   // ib as a function of j (if gap choose higher ib)
 
   vec<BasesAligned> _bases; // stores all the bases and gaps as a function of j
-    
-public:  
-  AlignmentIndexes(const BaseVec & bv_a, 
+
+public:
+  AlignmentIndexes(const BaseVec & bv_a,
                    const BaseVec & bv_b,
-                   const alignment & al) 
+                   const alignment & al)
   {
     int ia;
     int ib;
@@ -85,10 +101,10 @@ public:
     //cout << "ib = " << ib << endl;
     //cout << "ngaps = " << gaps.length << endl;
     //cout << "nlens = " << lengths.length << endl;
-    
-    for (int i = 0; i != ia; i++) _j_of_ia.push_back(i - ia); 
+
+    for (int i = 0; i != ia; i++) _j_of_ia.push_back(i - ia);
     for (int i = 0; i != ib; i++) _j_of_ib.push_back(i - ib);
-    
+
     int j = 0;
 
     const int n_blocks = gaps.length + lengths.length;
@@ -143,53 +159,109 @@ public:
     }
     //cout << endl;
   }
-  
-  int index_B_le_index_A(const int ia) const { return _ib_le_j[_j_of_ia[ia]]; }
-  int index_B_ge_index_A(const int ia) const { return _ib_ge_j[_j_of_ia[ia]]; }
-  int index_A_le_index_B(const int ib) const { return _ia_le_j[_j_of_ib[ib]]; }
-  int index_A_ge_index_B(const int ib) const { return _ia_ge_j[_j_of_ib[ib]]; }
+
+  int index_B_le_index_A(const int ia) const {
+    return _ib_le_j[_j_of_ia[ia]];
+  }
+  int index_B_ge_index_A(const int ia) const {
+    return _ib_ge_j[_j_of_ia[ia]];
+  }
+  int index_A_le_index_B(const int ib) const {
+    return _ia_le_j[_j_of_ib[ib]];
+  }
+  int index_A_ge_index_B(const int ib) const {
+    return _ia_ge_j[_j_of_ib[ib]];
+  }
 
 
-  unsigned base_A_at_A(const int ia) const { return _bases[_j_of_ia[ia]].base_a(); }
-  unsigned base_B_at_B(const int ib) const { return _bases[_j_of_ib[ib]].base_b(); }
+  unsigned base_A_at_A(const int ia) const {
+    return _bases[_j_of_ia[ia]].base_a();
+  }
+  unsigned base_B_at_B(const int ib) const {
+    return _bases[_j_of_ib[ib]].base_b();
+  }
 
-  bool supported_B_at_A(const int ia) const { return _bases[_j_of_ia[ia]].supported(); }
-  bool supported_A_at_B(const int ib) const { return _bases[_j_of_ib[ib]].supported(); }
- 
-  bool matched_B_at_A(const int ia) const { return _bases[_j_of_ia[ia]].matched(); }
-  bool matched_A_at_B(const int ib) const { return _bases[_j_of_ib[ib]].matched(); }
-  
-  bool deletion_B_at_A(const int ia) const { return _bases[_j_of_ia[ia]].gap_b(); }
-  bool deletion_A_at_B(const int ib) const { return _bases[_j_of_ib[ib]].gap_a(); }
+  bool supported_B_at_A(const int ia) const {
+    return _bases[_j_of_ia[ia]].supported();
+  }
+  bool supported_A_at_B(const int ib) const {
+    return _bases[_j_of_ib[ib]].supported();
+  }
 
-  bool substitution_B_at_A(const int ia) const { return _bases[_j_of_ia[ia]].substitution(); }
-  bool substitution_A_at_B(const int ib) const { return _bases[_j_of_ib[ib]].substitution(); }
+  bool matched_B_at_A(const int ia) const {
+    return _bases[_j_of_ia[ia]].matched();
+  }
+  bool matched_A_at_B(const int ib) const {
+    return _bases[_j_of_ib[ib]].matched();
+  }
 
-  unsigned base_B_at_A(const int ia) const { return _bases[_j_of_ia[ia]].base_b(); }
-  unsigned base_A_at_B(const int ib) const { return _bases[_j_of_ib[ib]].base_a(); }
+  bool deletion_B_at_A(const int ia) const {
+    return _bases[_j_of_ia[ia]].gap_b();
+  }
+  bool deletion_A_at_B(const int ib) const {
+    return _bases[_j_of_ib[ib]].gap_a();
+  }
+
+  bool substitution_B_at_A(const int ia) const {
+    return _bases[_j_of_ia[ia]].substitution();
+  }
+  bool substitution_A_at_B(const int ib) const {
+    return _bases[_j_of_ib[ib]].substitution();
+  }
+
+  unsigned base_B_at_A(const int ia) const {
+    return _bases[_j_of_ia[ia]].base_b();
+  }
+  unsigned base_A_at_B(const int ib) const {
+    return _bases[_j_of_ib[ib]].base_a();
+  }
 
 
-  bool deletion_B_before_A(const int ia) const { return _bases[_j_of_ia[ia] - 1].gap_b(); }
-  bool deletion_A_before_B(const int ib) const { return _bases[_j_of_ib[ib] - 1].gap_a(); }
+  bool deletion_B_before_A(const int ia) const {
+    return _bases[_j_of_ia[ia] - 1].gap_b();
+  }
+  bool deletion_A_before_B(const int ib) const {
+    return _bases[_j_of_ib[ib] - 1].gap_a();
+  }
 
-  bool insertion_B_before_A(const int ia) const { return _bases[_j_of_ia[ia] - 1].gap_a(); }
-  bool insertion_A_before_B(const int ib) const { return _bases[_j_of_ib[ib] - 1].gap_b(); }
+  bool insertion_B_before_A(const int ia) const {
+    return _bases[_j_of_ia[ia] - 1].gap_a();
+  }
+  bool insertion_A_before_B(const int ib) const {
+    return _bases[_j_of_ib[ib] - 1].gap_b();
+  }
 
-  unsigned base_B_before_A(const int ia) const { return _bases[_j_of_ia[ia] - 1].base_b(); }
-  unsigned base_A_before_B(const int ib) const { return _bases[_j_of_ib[ib] - 1].base_a(); }
+  unsigned base_B_before_A(const int ia) const {
+    return _bases[_j_of_ia[ia] - 1].base_b();
+  }
+  unsigned base_A_before_B(const int ib) const {
+    return _bases[_j_of_ib[ib] - 1].base_a();
+  }
 
 
-  bool deletion_B_after_A(const int ia) const { return _bases[_j_of_ia[ia] + 1].gap_b(); }
-  bool deletion_A_after_B(const int ib) const { return _bases[_j_of_ib[ib] + 1].gap_a(); }
+  bool deletion_B_after_A(const int ia) const {
+    return _bases[_j_of_ia[ia] + 1].gap_b();
+  }
+  bool deletion_A_after_B(const int ib) const {
+    return _bases[_j_of_ib[ib] + 1].gap_a();
+  }
 
-  bool insertion_B_after_A(const int ia) const { return _bases[_j_of_ia[ia] + 1].gap_a(); }
-  bool insertion_A_after_B(const int ib) const { return _bases[_j_of_ib[ib] + 1].gap_b(); }
+  bool insertion_B_after_A(const int ia) const {
+    return _bases[_j_of_ia[ia] + 1].gap_a();
+  }
+  bool insertion_A_after_B(const int ib) const {
+    return _bases[_j_of_ib[ib] + 1].gap_b();
+  }
 
-  unsigned base_B_after_A(const int ia) const { return _bases[_j_of_ia[ia] + 1].base_b(); }
-  unsigned base_A_after_B(const int ib) const { return _bases[_j_of_ib[ib] + 1].base_a(); }
-          
+  unsigned base_B_after_A(const int ia) const {
+    return _bases[_j_of_ia[ia] + 1].base_b();
+  }
+  unsigned base_A_after_B(const int ib) const {
+    return _bases[_j_of_ib[ib] + 1].base_a();
+  }
 
-  void print_simple(ostream & out = cout) const 
+
+  void print_simple(ostream & out = cout) const
   {
     vec<String> b(4);
     b[0] = "a";
@@ -200,19 +272,19 @@ public:
     const int n = _bases.size();
     for (int j = 0; j != n; j++) out << (j % 10);
     out << endl;
-    for (int j = 0; j != n; j++) 
-      out << (_bases[j].gap_a() ? " " : 
+    for (int j = 0; j != n; j++)
+      out << (_bases[j].gap_a() ? " " :
               (_bases[j].base_a() == _bases[j].base_b() || _bases[j].gap_b() ?
                "-" : b[_bases[j].base_a()]));
     out << endl;
-    for (int j = 0; j != n; j++) 
-      out << (_bases[j].gap_b() ? " " : 
+    for (int j = 0; j != n; j++)
+      out << (_bases[j].gap_b() ? " " :
               (_bases[j].base_a() == _bases[j].base_b() || _bases[j].gap_a() ?
                "-" : b[_bases[j].base_b()]));
     out << endl;
   }
 
-  void print(ostream & out = cout) const 
+  void print(ostream & out = cout) const
   {
     vec<String> b(4);
     b[0] = "a";
@@ -223,14 +295,14 @@ public:
     const int n = _bases.size();
     for (int j = 0; j != n; j++) out << (j % 10);
     out << endl;
-    for (int j = 0; j != n; j++) 
+    for (int j = 0; j != n; j++)
       out << (_bases[j].gap_a() ? " " : b[_bases[j].base_a()]);
     out << endl;
-    for (int j = 0; j != n; j++) 
+    for (int j = 0; j != n; j++)
       out << (_bases[j].gap_b() ? " " : b[_bases[j].base_b()]);
     out << endl;
   }
- 
+
 
 };
 
@@ -250,7 +322,7 @@ class Deletion
 public:
   int ib;
   int d_dist;
-  Deletion(const int ib, const int d_dist) 
+  Deletion(const int ib, const int d_dist)
     : ib(ib), d_dist(d_dist) {}
 };
 
@@ -261,7 +333,7 @@ public:
   int ib;
   int d_dist;
   unsigned base;
-  Insertion(const int ib, const int d_dist, const unsigned base) 
+  Insertion(const int ib, const int d_dist, const unsigned base)
     : ib(ib), d_dist(d_dist), base(base) {}
 };
 
@@ -281,8 +353,8 @@ typedef Insertion Substitution;
 // aligns bv1 to all of bvs2 with Smith-Waterman
 // and returns a vector of AligmentIndexes
 
-int dist_base_vecs_SW(const BaseVec & bv1, 
-                      const BaseVecVec & bvs2, 
+int dist_base_vecs_SW(const BaseVec & bv1,
+                      const BaseVecVec & bvs2,
                       vec<AlignmentIndexes> * p_alis = 0,
                       const unsigned verbosity = 0)
 {
@@ -292,7 +364,7 @@ int dist_base_vecs_SW(const BaseVec & bv1,
   //cout << endl;
   for (size_t i2 = 0; i2 < n2; i2++) {
     const BaseVec & bv2 = bvs2[i2];
-   
+
     int best_loc;
     int mismatch_penalty = 1;
     int gap_penalty = 1;
@@ -309,9 +381,9 @@ int dist_base_vecs_SW(const BaseVec & bv1,
         al.Flip();
       }
     }
-    
+
     if (verbosity >= 4) {
-      #pragma omp critical 
+      #pragma omp critical
       {
         cout << "-------------------- i2= " << i2 << " dist= " << dist << endl;
         PrintVisualAlignment(true, cout, bv1, bv2, al);
@@ -321,7 +393,7 @@ int dist_base_vecs_SW(const BaseVec & bv1,
   }
 
   //cout << "SW: " << bv1.size() << " x " << bv2.size() << " score= " << score << endl;
-  
+
   //AlignmentIndexes an(bv1, bv2, *p_al);
   //an.print();
   //exit(0);
@@ -340,8 +412,8 @@ int dist_base_vecs_SW(const BaseVec & bv1,
 
 
 
-void deletions_find(const BaseVec & bv, 
-                    const int nb_left, 
+void deletions_find(const BaseVec & bv,
+                    const int nb_left,
                     const int nb_right,
                     const BaseVecVec & bvs,
                     const vec<AlignmentIndexes> & alis,
@@ -384,15 +456,15 @@ void deletions_find(const BaseVec & bv,
 
       const int jb0 = alis[ibv].index_B_ge_index_A(ib0_sub);
       const int jb1 = alis[ibv].index_B_le_index_A(ib1_sub);
-      if (jb0 >= bvs[ibv].isize() || 
+      if (jb0 >= bvs[ibv].isize() ||
           jb1 > bvs[ibv].isize()) {
         cout << "OMFG!!! asking for sub bv out of range of bv" << endl
-             << " ib0= " << ib0 
-             << " ib= " << ib 
-             << " ib1= " << ib1 
+             << " ib0= " << ib0
+             << " ib= " << ib
+             << " ib1= " << ib1
              << " nb= " << nb << endl
              << "nbv= " << nbv
-             << " ibv= " << ibv 
+             << " ibv= " << ibv
              << " bvs[ibv].size= " << bvs[ibv].size() << endl
              << "jb0= " << jb0 << endl
              << "jb1= " << jb1 << endl
@@ -403,11 +475,11 @@ void deletions_find(const BaseVec & bv,
       }
       else if (jb1 - jb0 + 1 < 0) {
         cout << "OOOOPPPPSSSS!!!!! asking for negative sub bv" << endl
-             << " ib0= " << ib0 
-             << " ib= " << ib 
-             << " ib1= " << ib1 
+             << " ib0= " << ib0
+             << " ib= " << ib
+             << " ib1= " << ib1
              << " nb= " << nb << endl
-             << "nbv= " << nbv 
+             << "nbv= " << nbv
              << " ibv= " << ibv
              << " bvs[ibv].size= " << bvs[ibv].size() << endl
              << "jb0= " << jb0 << endl
@@ -422,7 +494,7 @@ void deletions_find(const BaseVec & bv,
     // ---- align  bv_sub_orig to bvs_sub
     const int dist_orig = dist_base_vecs_SW(bv_sub_orig, bvs_sub);
     if (time) *time += WallClockTime();
-      
+
     // ---- build bv_sub_mod
     BaseVec bv_sub_mod(nb_sub - 1);
     for (int jb = 0; jb < nb_rad; jb++) {
@@ -441,14 +513,14 @@ void deletions_find(const BaseVec & bv,
       ib += nb_rad; // so that no changes overlap
     }
   }
- 
+
 }
 
 
 
 
-void insertions_find(const BaseVec & bv, 
-                     const int nb_left, 
+void insertions_find(const BaseVec & bv,
+                     const int nb_left,
                      const int nb_right,
                      const BaseVecVec & bvs,
                      const vec<AlignmentIndexes> & alis,
@@ -484,14 +556,14 @@ void insertions_find(const BaseVec & bv,
     if (time) *time -= WallClockTime();
     const int dist_orig = dist_base_vecs_SW(bv_sub_orig, bvs_sub);
     if (time) *time += WallClockTime();
-    
+
     // ---- build bv_sub_mod and aligning it for each of 4 bases
     BaseVec bv_sub_mod(nb_sub + 1);
     for (int jb = 0; jb < nb_rad; jb++) {
       bv_sub_mod.set(             jb, bv_sub_orig[         jb]);
       bv_sub_mod.set(1 + nb_rad + jb, bv_sub_orig[nb_rad + jb]);
     }
-    
+
     Insertion ins(ib, 0, 0);
     if (time) *time -= WallClockTime();
     for (unsigned b_new = 0; b_new != 4; b_new++) {
@@ -500,8 +572,8 @@ void insertions_find(const BaseVec & bv,
       if (d_dist < ins.d_dist) {
         ins.d_dist = d_dist;
         ins.base = b_new;
-      } 
-    }     
+      }
+    }
     if (time) *time += WallClockTime();
 
     // ---- decide whether to keep modification
@@ -523,8 +595,8 @@ void insertions_find(const BaseVec & bv,
 
 
 
-void substitutions_find(const BaseVec & bv, 
-                        const int nb_left, 
+void substitutions_find(const BaseVec & bv,
+                        const int nb_left,
                         const int nb_right,
                         const BaseVecVec & bvs,
                         const vec<AlignmentIndexes> & alis,
@@ -558,7 +630,7 @@ void substitutions_find(const BaseVec & bv,
     // ---- align  bv_sub_orig to bvs_sub
     if (time) *time -= WallClockTime();
     int dist_orig = dist_base_vecs_SW(bv_sub_orig, bvs_sub);
-    
+
     // ---- build bv_sub_mod and aligning it for each of 3 bases
     BaseVec bv_sub_mod = bv_sub_orig;
 
@@ -570,7 +642,7 @@ void substitutions_find(const BaseVec & bv,
       if (d_dist < sub.d_dist) {
         sub.d_dist = d_dist;
         sub.base = b_new;
-      }      
+      }
     }
     if (time) *time += WallClockTime();
 
@@ -588,19 +660,19 @@ void substitutions_find(const BaseVec & bv,
 
 
 
-void deletions_apply(const vec<Deletion> & dels, 
+void deletions_apply(const vec<Deletion> & dels,
                      BaseVec * p_bv)
 {
   const size_t n_dels = dels.size();
-  
+
   const int nb = p_bv->size();
   BaseVec bv_new(nb - n_dels);
   size_t i_del = 0;
   for (int ib = 0; ib != nb; ib++) {
-    if (i_del != n_dels && 
-        ib == dels[i_del].ib) 
+    if (i_del != n_dels &&
+        ib == dels[i_del].ib)
       i_del++;
-    else 
+    else
       bv_new.set(ib - i_del, (*p_bv)[ib]);
   }
 
@@ -609,11 +681,11 @@ void deletions_apply(const vec<Deletion> & dels,
 
 
 
-void insertions_apply(const vec<Insertion> & inss, 
+void insertions_apply(const vec<Insertion> & inss,
                       BaseVec * p_bv)
 {
   const size_t n_inss = inss.size();
-  
+
   const int nb = p_bv->size();
   BaseVec bv_new(nb + n_inss);
   size_t i_ins = 0;
@@ -629,7 +701,7 @@ void insertions_apply(const vec<Insertion> & inss,
 
 
 
-void substitutions_apply(const vec<Substitution> & subs, 
+void substitutions_apply(const vec<Substitution> & subs,
                          BaseVec * p_bv)
 {
   const size_t n_subs = subs.size();
@@ -658,20 +730,20 @@ public:
   unsigned i0b;     // the start index of the tandem repeat
   unsigned period;  // the period
   unsigned nb;      // the number of bases in the repeat (might be != n * period)
-  
-  TandemRepeat(const unsigned _i0b, 
-               const unsigned _p, 
+
+  TandemRepeat(const unsigned _i0b,
+               const unsigned _p,
                const unsigned _nb) :
     i0b(_i0b), period(_p), nb(_nb) {}
-  
+
 
 
   bool in_range(const unsigned i0b_range,
                 const unsigned i1b_range)
   {
     return (i0b_range + period < i0b + nb  &&  i1b_range - period > i0b);
-  }  
-  
+  }
+
 };
 
 
@@ -683,7 +755,7 @@ void tandem_repeat_shrink(const unsigned n,
 {
   ForceAssertLe(tr_p->i0b, bv_p->size());
 
-  const unsigned nb_left  = tr_p->i0b;  
+  const unsigned nb_left  = tr_p->i0b;
   const unsigned nb_right = bv_p->size() - nb_left;
 
   const unsigned nb_del = n * tr_p->period;
@@ -694,8 +766,8 @@ void tandem_repeat_shrink(const unsigned n,
 
   *bv_p = Cat(BaseVec(*bv_p,       0, nb_left),
               BaseVec(*bv_p, nb_left + nb_del, nb_right - nb_del));
-} 
-  
+}
+
 
 // Expand a specific BaseVec tandem repeat by n periods
 
@@ -705,7 +777,7 @@ void tandem_repeat_expand(const unsigned n,
 {
   ForceAssertLe(tr_p->i0b, bv_p->size());
 
-  const unsigned nb_left  = tr_p->i0b;   
+  const unsigned nb_left  = tr_p->i0b;
   const unsigned nb_right = bv_p->size() - nb_left;
 
   const unsigned nb_ins = n * tr_p->period;
@@ -719,7 +791,7 @@ void tandem_repeat_expand(const unsigned n,
   *bv_p = Cat(BaseVec(*bv_p, 0, nb_left),
               bv_ins,
               BaseVec(*bv_p, nb_left, nb_right));
-} 
+}
 
 
 
@@ -728,7 +800,7 @@ void tandem_repeat_expand(const unsigned n,
 
 
 
-void tandem_repeats_print(const BaseVec & bv, 
+void tandem_repeats_print(const BaseVec & bv,
                           const vec<TandemRepeat> & trs)
 {
   const unsigned ntr = trs.size();
@@ -736,18 +808,21 @@ void tandem_repeats_print(const BaseVec & bv,
   bool is_repeat = false;
   for (unsigned ib = 0; ib < bv.size(); ib++) {
     if (itr < ntr && ib == trs[itr].i0b) is_repeat = true;
-    if (itr < ntr && ib == trs[itr].i0b + trs[itr].nb) { is_repeat = false; itr++; }
+    if (itr < ntr && ib == trs[itr].i0b + trs[itr].nb) {
+      is_repeat = false;
+      itr++;
+    }
     if (is_repeat) cout << as_base(bv[ib]);
     else           cout << ".";
-    
-  }     
+
+  }
 }
 
 
 
 // takes a BaseVec and finds tandem repeats in it.
 
-void tandem_repeats_find(const BaseVec & bv, 
+void tandem_repeats_find(const BaseVec & bv,
                          vec<TandemRepeat> * trs_p)
 {
   trs_p->clear();
@@ -762,12 +837,12 @@ void tandem_repeats_find(const BaseVec & bv,
     unsigned period = period_min;
     do {
       unsigned nb_min = period * n_copies_min;
-      if (nb_rep_min > nb_min) 
+      if (nb_rep_min > nb_min)
         nb_min = nb_rep_min;
       if (ib + nb_min < nb) {
         nb_rep = 1;
-        while (ib + nb_rep < nb && 
-               bv[ib + nb_rep] == bv[ib + nb_rep % period]) 
+        while (ib + nb_rep < nb &&
+               bv[ib + nb_rep] == bv[ib + nb_rep % period])
           nb_rep++;
         if (nb_rep >= nb_min) {
           found = true;
@@ -779,15 +854,15 @@ void tandem_repeats_find(const BaseVec & bv,
       ib += nb_rep - period;
   }
 }
-  
-  
+
+
 
 
 void tandem_repeats_optimize(const BaseVecVec & bvs,
                              const int dist0,
-                             const int nb_left, 
+                             const int nb_left,
                              const int nb_right,
-                             BaseVec * bv_p, 
+                             BaseVec * bv_p,
                              vec<TandemRepeat> * trs_p,
                              const unsigned verbosity,
                              const String & label)
@@ -807,7 +882,7 @@ void tandem_repeats_optimize(const BaseVecVec & bvs,
     BaseVec bv = *bv_p;         // local copy
     int dist = dist0;
     vec<AlignmentIndexes> alis;
-    
+
     // ---- try deletions
 
     bool improved = false;
@@ -817,10 +892,10 @@ void tandem_repeats_optimize(const BaseVecVec & bvs,
       unsigned i_pass = 0;
       do {
         if (tr.in_range(i0b, i1b)) {
-          
-          tandem_repeat_shrink(1, &bv, &tr); 
+
+          tandem_repeat_shrink(1, &bv, &tr);
           dist = dist_base_vecs_SW(bv, bvs, & alis, verbosity);
-          
+
           if (dist < dist_lowest) {
             *bv_p = bv;
             (*trs_p)[itr] = tr;
@@ -829,7 +904,7 @@ void tandem_repeats_optimize(const BaseVecVec & bvs,
             dist_lowest = dist;
             improved = true;
           }
-          if (verbosity >= 2) 
+          if (verbosity >= 2)
             #pragma omp critical
             cout << label
                  << " i_del= " << i_pass
@@ -843,12 +918,12 @@ void tandem_repeats_optimize(const BaseVecVec & bvs,
     }
 
     if (!improved) {   // ---- try insertions
-      
+
       unsigned i_pass = 0;
       do {
         if (tr.in_range(i0b, i1b)) {
 
-          tandem_repeat_expand(1, &bv, &tr); 
+          tandem_repeat_expand(1, &bv, &tr);
           dist = dist_base_vecs_SW(bv, bvs, & alis, verbosity);
 
           if (dist < dist_lowest) {
@@ -858,7 +933,7 @@ void tandem_repeats_optimize(const BaseVecVec & bvs,
             n_ins += tr.period;
             dist_lowest = dist;
           }
-          if (verbosity >= 2) 
+          if (verbosity >= 2)
             #pragma omp critical
             cout << label
                  << " i_ins= " << i_pass
@@ -867,13 +942,12 @@ void tandem_repeats_optimize(const BaseVecVec & bvs,
                  << " improved= " << improved
                  << endl;
         }
-        
+
       } while (i_pass++ < 2 && dist < dist_lowest);
     }
 
   }
 }
-                             
 
 
 
@@ -885,12 +959,13 @@ void tandem_repeats_optimize(const BaseVecVec & bvs,
 
 
 
-void consensus_compute_core(const BaseVecVec & bvs, 
+
+void consensus_compute_core(const BaseVecVec & bvs,
                             BaseVec * bv_best_p,
                             const int nb_best_left,
                             const int nb_best_right,
                             const int nb_rad_SW,
-                            double * time_short_p, 
+                            double * time_short_p,
                             double * time_large_p,
                             const unsigned verbosity,
                             const String label)
@@ -900,86 +975,86 @@ void consensus_compute_core(const BaseVecVec & bvs,
   vec<AlignmentIndexes> alis;
   int dist = dist_base_vecs_SW(*bv_best_p, bvs, & alis);
   int dist_new = dist;
-    
-  if (verbosity >= 1) 
+
+  if (verbosity >= 1)
     #pragma omp critical
     cout << label
-         << " i_pass= -1 dist0= " << dist 
-         << endl; 
+         << " i_pass= -1 dist0= " << dist
+         << endl;
 
-  
+
   // ---- Declare some stuff
   vec<Deletion> dels;
   vec<Insertion> inss;
   vec<Substitution> subs;
   unsigned n_corr;
-  
+
   const unsigned n_passes = 60;
   unsigned i_pass = 0;
-    
+
   do {
     dist = dist_new;
     n_corr = 0;
-      
+
     // -- Find deletions and correct them
-    deletions_find(*bv_best_p, nb_best_left, nb_best_right, bvs, alis, nb_rad_SW, & dels, 
+    deletions_find(*bv_best_p, nb_best_left, nb_best_right, bvs, alis, nb_rad_SW, & dels,
                    time_short_p, verbosity);
     deletions_apply(dels, bv_best_p);
 
-      
+
     // -- Score corrections and get new alignments
     *time_large_p -= WallClockTime();
     int dist_del = dist_new = dist_base_vecs_SW(*bv_best_p, bvs, & alis);
     *time_large_p += WallClockTime();
-      
-      
-      
+
+
+
     // -- Find insertions and correct them
-    insertions_find(*bv_best_p, nb_best_left, nb_best_right, bvs, alis, nb_rad_SW, & inss, 
+    insertions_find(*bv_best_p, nb_best_left, nb_best_right, bvs, alis, nb_rad_SW, & inss,
                     time_short_p);
     insertions_apply(inss, bv_best_p);
-      
-      
+
+
     // -- Score corrections and get new alignments
     *time_large_p -= WallClockTime();
     int dist_ins = dist_new = dist_base_vecs_SW(*bv_best_p, bvs, & alis);
     *time_large_p += WallClockTime();
-      
-      
-      
+
+
+
     // -- Find substitutions and correct them
-    substitutions_find(*bv_best_p, nb_best_left, nb_best_right, bvs, alis, nb_rad_SW, & subs, 
+    substitutions_find(*bv_best_p, nb_best_left, nb_best_right, bvs, alis, nb_rad_SW, & subs,
                        time_short_p);
     substitutions_apply(subs, bv_best_p);
-      
-    
+
+
     // -- Score corrections and get new alignments
     *time_large_p -= WallClockTime();
     int dist_sub = dist_new = dist_base_vecs_SW(*bv_best_p, bvs, & alis);
     *time_large_p += WallClockTime();
-      
-      
+
+
     n_corr = dels.size() + inss.size() + subs.size();
-      
-      
+
+
     if (verbosity >= 1)
       #pragma omp critical
       cout << label
-           << " i_pass= " << setw(4) << i_pass 
+           << " i_pass= " << setw(4) << i_pass
            << " dist= "   << setw(5) << dist_new
-           << " n_dels= " << setw(5) << dels.size() 
+           << " n_dels= " << setw(5) << dels.size()
            << " "         << setw(5) << dist_del - dist
-           << " n_inss= " << setw(5) << inss.size() 
+           << " n_inss= " << setw(5) << inss.size()
            << " "         << setw(5) << dist_ins - dist_del
-           << " n_subs= " << setw(5) << subs.size() 
+           << " n_subs= " << setw(5) << subs.size()
            << " "         << setw(5) << dist_sub - dist_ins
            << " n_corr= " << setw(3) << n_corr
            << endl;
 
     i_pass++;
 
-  } while (n_corr   != 0 && 
-           dist_new <  dist && 
+  } while (n_corr   != 0 &&
+           dist_new <  dist &&
            i_pass   <= n_passes);
 
 
@@ -992,16 +1067,16 @@ void consensus_compute_core(const BaseVecVec & bvs,
       #pragma omp critical
       {
         cout << label << " n_repeats= " << repeats.size() << " tandem= ";
-        if (repeats.size() > 0) 
+        if (repeats.size() > 0)
           tandem_repeats_print(*bv_best_p, repeats);
-        else 
+        else
           cout << "...no tandem repeats...";
         cout << endl;
       }
     }
-    
+
     if (repeats.size()) {
-      tandem_repeats_optimize(bvs, dist_new, 
+      tandem_repeats_optimize(bvs, dist_new,
                               nb_best_left, nb_best_right, bv_best_p, & repeats,
                               verbosity, label);
     }
@@ -1011,7 +1086,7 @@ void consensus_compute_core(const BaseVecVec & bvs,
 
 
 
-void consensus_compute_padded(const BaseVecVec & bvs, 
+void consensus_compute_padded(const BaseVecVec & bvs,
                               BaseVec * bv_best_p,
                               const int nb_pad_left,
                               const int nb_pad_right,
@@ -1021,10 +1096,10 @@ void consensus_compute_padded(const BaseVecVec & bvs,
 {
   ForceAssertGe(nb_pad_left, nb_rad_SW);
   ForceAssertGe(nb_pad_right, nb_rad_SW);
-  
+
   double time_short;
   double time_large;
-  consensus_compute_core(bvs, bv_best_p, nb_pad_left, nb_pad_right, nb_rad_SW, 
+  consensus_compute_core(bvs, bv_best_p, nb_pad_left, nb_pad_right, nb_rad_SW,
                          &time_short, &time_large, verbosity, label);
 }
 
@@ -1035,7 +1110,7 @@ void consensus_compute_padded(const BaseVecVec & bvs,
 
 
 
-void consensus_compute(const BaseVecVec & bvs, 
+void consensus_compute(const BaseVecVec & bvs,
                        BaseVec * bv_best_p,
                        const int nb_rad_SW,
                        const unsigned verbosity,
@@ -1048,10 +1123,10 @@ void consensus_compute(const BaseVecVec & bvs,
   bv_pad_left.SetToSubOf(bv_pad, 0, nb_rad_SW);
   BaseVec bv_pad_right;
   bv_pad_right.SetToSubOf(bv_pad, bv_pad.size() - nb_rad_SW, nb_rad_SW);
- 
+
   const int n = bvs.size();
   BaseVecVec bvs_pad(n);
-  for (int i = 0; i < n; i++) 
+  for (int i = 0; i < n; i++)
     bvs_pad[i] = Cat(bv_pad_left, bvs[i], bv_pad_right);
 
   BaseVec bv_best_pad = Cat(bv_pad_left, *bv_best_p, bv_pad_right);
@@ -1079,14 +1154,14 @@ void consensus_compute(const BaseVecVec & bvs,
 
 void patcher_optimal(const BaseVecVec & unibases,
                      const vec<GapPatcher> & patchers,
-                     const size_t ip_best, 
+                     const size_t ip_best,
                      const int L,
                      const int nb_rad_SW,
                      const int sz_padding_min,
                      const unsigned i_gap,
                      GapPatcher0 * patcher0_opt_p,
                      const unsigned PATCH_VERBOSITY,
-                     vec<double> * timers_p) 
+                     vec<double> * timers_p)
 {
   double & time_tot = (*timers_p)[0];
   double & time_short = (*timers_p)[1];
@@ -1127,31 +1202,31 @@ void patcher_optimal(const BaseVecVec & unibases,
 
   tpos2_max += nb_rad_SW + L;
   ForceAssertLt(tpos2_max, bv2.isize());
-  
+
   // ---- Output a whole bunch of stuff
   if (PATCH_VERBOSITY >= 1) {
     #pragma omp critical
     {
-      cout << "i_gap= " << i_gap   // this allows grep for 'i_gap= <number>' 
-           << "  ibv1= " << setw(10) << ibv1 
-           << "  size= " << setw(10) << bv1.size() 
-           << "  tpos1_min= " << setw(10) << tpos1_min << endl;
-      cout << "i_gap= " << i_gap  // this allows grep for 'i_gap= <number>' 
-           << "  ibv2= " << setw(10) << ibv2
-           << "  size= " << setw(10) << bv2.size() 
-           << "  tpos2_max= " << setw(10) << tpos2_max << endl;
+      cout << "i_gap= " << i_gap   // this allows grep for 'i_gap= <number>'
+      << "  ibv1= " << setw(10) << ibv1
+      << "  size= " << setw(10) << bv1.size()
+      << "  tpos1_min= " << setw(10) << tpos1_min << endl;
+      cout << "i_gap= " << i_gap  // this allows grep for 'i_gap= <number>'
+      << "  ibv2= " << setw(10) << ibv2
+      << "  size= " << setw(10) << bv2.size()
+      << "  tpos2_max= " << setw(10) << tpos2_max << endl;
       for (unsigned ip = 0; ip != np; ip++) {
-        cout << "i_gap= " << i_gap  // this allows grep for 'i_gap= <number>' 
-             << "  ip= " << setw(3) << ip
-             << "  rid= "   << setw(10) << patchers[ip].rid 
-             << "  rid/2= " << setw(10) << (patchers[ip].rid/2) 
-             << "  tpos1= " << setw(6) << patchers[ip].tpos1 
-             << "  tpos2= " << setw(6) << patchers[ip].tpos2 
-             << "  r.size()= " << setw(8) << patchers[ip].r.size() 
-             << "  gap= " << setw(6) 
-             << (int(patchers[ip].r.size()) + patchers[ip].tpos1 - int(bv1.size()) - patchers[ip].tpos2)
-             << (ip == ip_best ? "   BEST   " : "")
-             << endl;
+        cout << "i_gap= " << i_gap  // this allows grep for 'i_gap= <number>'
+        << "  ip= " << setw(3) << ip
+        << "  rid= "   << setw(10) << patchers[ip].rid
+        << "  rid/2= " << setw(10) << (patchers[ip].rid/2)
+        << "  tpos1= " << setw(6) << patchers[ip].tpos1
+        << "  tpos2= " << setw(6) << patchers[ip].tpos2
+        << "  r.size()= " << setw(8) << patchers[ip].r.size()
+        << "  gap= " << setw(6)
+        << (int(patchers[ip].r.size()) + patchers[ip].tpos1 - int(bv1.size()) - patchers[ip].tpos2)
+        << (ip == ip_best ? "   BEST   " : "")
+        << endl;
         cout << "i_gap= " << i_gap << " patcher= " << patchers[ip].r.ToString() << endl;
       }
       if (PATCH_VERBOSITY >= 3) {
@@ -1160,12 +1235,12 @@ void patcher_optimal(const BaseVecVec & unibases,
       }
     }
   }
- 
+
 
   // ---- Extend all BaseVecs to tpos1_min and tpos2_max
   BaseVecVec bvs(np);
   for (unsigned ip = 0; ip != np; ip++)
-    bvs[ip] = Cat(BaseVec(bv1, tpos1_min, patchers[ip].tpos1 - tpos1_min), 
+    bvs[ip] = Cat(BaseVec(bv1, tpos1_min, patchers[ip].tpos1 - tpos1_min),
                   patchers[ip].r,
                   BaseVec(bv2, patchers[ip].tpos2, tpos2_max - patchers[ip].tpos2));
 
@@ -1186,14 +1261,14 @@ void patcher_optimal(const BaseVecVec & unibases,
 
 
   ostringstream oss;
-  oss << "i_gap= " << i_gap 
-      << " nb_best_left= " << setw(5) << nb_best_left 
+  oss << "i_gap= " << i_gap
+      << " nb_best_left= " << setw(5) << nb_best_left
       << " nb_best_right= " << setw(5) << nb_best_right;
 
 
   // ---- build the consensus
 
-  consensus_compute_core(bvs, & bv_best, nb_best_left, nb_best_right, nb_rad_SW, 
+  consensus_compute_core(bvs, & bv_best, nb_best_left, nb_best_right, nb_rad_SW,
                          & time_short, & time_large,
                          PATCH_VERBOSITY, oss.str());
 
@@ -1204,16 +1279,16 @@ void patcher_optimal(const BaseVecVec & unibases,
   //      (NOTE: not entirely sure about the -1 at the end)
   const int nb_best_patch = bv_best.size() - nb_best_left - nb_best_right - 1;
 
-  *patcher0_opt_p = GapPatcher0(BaseVec(bv_best, nb_best_left, nb_best_patch), 
-                                tpos1_min + nb_best_left, 
+  *patcher0_opt_p = GapPatcher0(BaseVec(bv_best, nb_best_left, nb_best_patch),
+                                tpos1_min + nb_best_left,
                                 tpos2_max - nb_best_right - 1);
 
 
-  if (PATCH_VERBOSITY >= 1) { 
+  if (PATCH_VERBOSITY >= 1) {
     #pragma omp critical
     cout << "i_gap= "   << i_gap
          << " patcher_opt= " << patcher0_opt_p->r << endl;
-    if (PATCH_VERBOSITY >= 3) { 
+    if (PATCH_VERBOSITY >= 3) {
       #pragma omp critical
       patcher_short_print(i_gap, *patcher0_opt_p, bv1, bv2);
     }

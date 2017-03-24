@@ -27,7 +27,7 @@ typedef KmerFreqAffixes<Kmer_t>    KmerRec_t;
 
 
 // --------------------- class PolymorphismStats ------------------
-// stores various statistics 
+// stores various statistics
 
 
 class PolymorphismStats
@@ -41,93 +41,93 @@ class PolymorphismStats
 public:
   PolymorphismStats() : sz_min_lo(0), sz_min_hi(0), sz_max_lo(0), sz_max_hi(0) {}
 
-  void add(const unsigned sz_a, const unsigned sz_b) 
+  void add(const unsigned sz_a, const unsigned sz_b)
   {
     const unsigned sz_min = sz_a < sz_b ? sz_a : sz_b;
     const unsigned sz_max = sz_a < sz_b ? sz_b : sz_a;
     sz_alts[make_pair(sz_min, sz_max)]++;
-    if (sz_min < sz_min_lo || sz_min_lo == 0) sz_min_lo = sz_min; 
-    if (sz_min > sz_min_hi) sz_min_hi = sz_min; 
-    if (sz_max < sz_max_lo || sz_max_lo == 0) sz_max_lo = sz_max; 
-    if (sz_max > sz_max_hi) sz_max_hi = sz_max; 
+    if (sz_min < sz_min_lo || sz_min_lo == 0) sz_min_lo = sz_min;
+    if (sz_min > sz_min_hi) sz_min_hi = sz_min;
+    if (sz_max < sz_max_lo || sz_max_lo == 0) sz_max_lo = sz_max;
+    if (sz_max > sz_max_hi) sz_max_hi = sz_max;
   }
 
 
-  void to_text_file(const String & fn) const 
+  void to_text_file(const String & fn) const
   {
     ofstream os;
     os.open(fn.c_str());
-    os << "#    sz_min     sz_max       freq" << endl; 
+    os << "#    sz_min     sz_max       freq" << endl;
     for (unsigned sz_min = sz_min_lo; sz_min < sz_min_hi; sz_min++) {
       for (unsigned sz_max = sz_max_lo; sz_max < sz_max_hi; sz_max++) {
 
-	map<pair<unsigned, unsigned>, unsigned>::const_iterator it = 
-	  sz_alts.find(make_pair(sz_min, sz_max));
+        map<pair<unsigned, unsigned>, unsigned>::const_iterator it =
+          sz_alts.find(make_pair(sz_min, sz_max));
 
-	if (it != sz_alts.end()) {
-	  const unsigned n_alts = it->second;
-	  os << " " << setw(10) << sz_min
-	     << " " << setw(10) << sz_max 
-	     << " " << setw(10) << n_alts  
-	     << endl;
-	}
+        if (it != sz_alts.end()) {
+          const unsigned n_alts = it->second;
+          os << " " << setw(10) << sz_min
+             << " " << setw(10) << sz_max
+             << " " << setw(10) << n_alts
+             << endl;
+        }
       }
     }
     os.close();
   }
 
-  void print(const unsigned K) const 
+  void print(const unsigned K) const
   {
     const unsigned sz_snp = 2 * K - 1;
     unsigned n_indels_simple = 0;
     unsigned n_indels_complex = 0;
     unsigned n_snps = 0;
     unsigned n_mnps = 0;
-    
+
     for (unsigned sz_min = sz_min_lo; sz_min < sz_min_hi; sz_min++) {
       for (unsigned sz_max = sz_max_lo; sz_max < sz_max_hi; sz_max++) {
 
-	map<pair<unsigned, unsigned>, unsigned>::const_iterator it = 
-	  sz_alts.find(make_pair(sz_min, sz_max));
+        map<pair<unsigned, unsigned>, unsigned>::const_iterator it =
+          sz_alts.find(make_pair(sz_min, sz_max));
 
-	if (it != sz_alts.end()) {
-	  const unsigned n_alts = it->second;
+        if (it != sz_alts.end()) {
+          const unsigned n_alts = it->second;
 
           if (sz_min == sz_max) {
             if (sz_min == sz_snp) n_snps += n_alts;
-	    else                  n_mnps += n_alts;
+            else                  n_mnps += n_alts;
           }
           else {
             if (sz_min < sz_snp)  n_indels_simple  += n_alts;
             else                  n_indels_complex += n_alts;
-          }         
+          }
         }
       }
     }
-    
+
     const size_t n_tot = n_indels_simple + n_indels_complex + n_snps + n_mnps;
     cout << "  n_polys_total    = " << setw(10) << n_tot << endl;
 
-    cout << "  n_indels_simple  = " << setw(10) << n_indels_simple 
-         << " ( " << setw(4) << fixed << setprecision(1) 
+    cout << "  n_indels_simple  = " << setw(10) << n_indels_simple
+         << " ( " << setw(4) << fixed << setprecision(1)
          << 100 * float(n_indels_simple)/float(n_tot) << " % )" << endl;
 
-    cout << "  n_indels_complex = " << setw(10) << n_indels_complex 
-         << " ( " << setw(4) << fixed << setprecision(1) 
+    cout << "  n_indels_complex = " << setw(10) << n_indels_complex
+         << " ( " << setw(4) << fixed << setprecision(1)
          << 100 * float(n_indels_complex)/float(n_tot) << " % )" << endl;
 
-    cout << "  n_snps           = " << setw(10) << n_snps 
-         << " ( " << setw(4) << fixed << setprecision(1) 
+    cout << "  n_snps           = " << setw(10) << n_snps
+         << " ( " << setw(4) << fixed << setprecision(1)
          << 100 * float(n_snps)/float(n_tot) << " % )" << endl;
 
-    cout << "  n_mnps           = " << setw(10) << n_mnps 
-         << " ( " << setw(4) << fixed << setprecision(1) 
+    cout << "  n_mnps           = " << setw(10) << n_mnps
+         << " ( " << setw(4) << fixed << setprecision(1)
          << 100 * float(n_mnps)/float(n_tot) << " % )" << endl;
-    
+
   }
 
 
-}; 
+};
 
 
 
@@ -136,38 +136,48 @@ public:
 
 // -------------------- Class KmerIPoly -------------------
 //
-//  Associates a kmer with a polymorphism 
+//  Associates a kmer with a polymorphism
 //  In this context, a 'polymorphism' is just a sequence of kmers, or a BaseVec
-//  The polymorphism is identified by its index and it is stored externally 
+//  The polymorphism is identified by its index and it is stored externally
 //
-template<class KMER_t> 
+template<class KMER_t>
 class KmerIPoly : public KMER_t
 {
   int64_t _i_poly  : 31; // poly index
-  int64_t _is_fw   :  1; 
+  int64_t _is_fw   :  1;
   int64_t _ik      : 16; // the index of the kmer inside the polymorphism
   int64_t _nk      : 16; // the number of total kmers in the polymorphism
-  
+
 public:
-  KmerIPoly(const unsigned K = 0) : 
+  KmerIPoly(const unsigned K = 0) :
     KMER_t(K), _i_poly(0), _is_fw(0), _ik(0), _nk(0) {}
-  KmerIPoly(const KMER_t & kmer, 
-            const unsigned i_poly, 
+  KmerIPoly(const KMER_t & kmer,
+            const unsigned i_poly,
             const bool is_fw,
             const unsigned ik,
-            const unsigned nk) : 
+            const unsigned nk) :
     KMER_t(kmer), _i_poly(i_poly), _is_fw(is_fw), _ik(ik), _nk(nk) {}
-  
-  size_t i_poly()       const { return _i_poly; }
-  size_t n_kmers()      const { return _nk; }
-  size_t i_kmer()       const { return _ik; }
-  bool   is_fw()        const { return _is_fw; }
-  bool   is_end_point() const { return _ik == 0 || _ik == _nk - 1; }
-  
+
+  size_t i_poly()       const {
+    return _i_poly;
+  }
+  size_t n_kmers()      const {
+    return _nk;
+  }
+  size_t i_kmer()       const {
+    return _ik;
+  }
+  bool   is_fw()        const {
+    return _is_fw;
+  }
+  bool   is_end_point() const {
+    return _ik == 0 || _ik == _nk - 1;
+  }
+
   void print() const
   {
     cout << " i_poly= " << setw(8) << i_poly() << (is_fw() ? " fw" : " rc")
-         << " ik= "     << setw(3) << i_kmer() 
+         << " ik= "     << setw(3) << i_kmer()
          << " nk= "     << setw(3) << n_kmers();
   }
 };
@@ -184,7 +194,7 @@ TRIVIALLY_SERIALIZABLE(KmerIPoly<Kmer_t>);
 
 /*
 
-class Alleles 
+class Alleles
 {
   BaseVecVec                  _bvv;  // Alleles in BaseVec format
   vec<float>                  _kfv;  // mean kmer freq in allele
@@ -196,7 +206,7 @@ public:
             BaseVecVec * bvv_p,
             vec<float> * kfv_p,
             vec<KmerIPoly<Kmer_t> > * i_poly_vec_p);
-  
+
 
 // TODO later.
 
@@ -214,10 +224,10 @@ class BubbleValidator
 public:
   virtual
   bool operator () (const BaseVec & bv_a,
-		    const BaseVec & bv_b,
-		    const float  & kf_a,
-		    const float  & kf_b,
-		    bool * a_wins_p) const = 0;
+                    const BaseVec & bv_b,
+                    const float  & kf_a,
+                    const float  & kf_b,
+                    bool * a_wins_p) const = 0;
 };
 
 
@@ -229,8 +239,8 @@ class PolyBubbleValidator : public BubbleValidator
 
 public:
   PolyBubbleValidator(const size_t K,
-		      const float kf_min,
-		      const float kf_max) :
+                      const float kf_min,
+                      const float kf_max) :
     _K(K),
     _kf_min(kf_min),
     _kf_max(kf_max)
@@ -238,18 +248,18 @@ public:
 
 
   bool operator () (const BaseVec & bv_a,
-		    const BaseVec & bv_b,
-		    const float  & kf_a,
-		    const float  & kf_b,
-		    bool * a_wins_p) const
+                    const BaseVec & bv_b,
+                    const float  & kf_a,
+                    const float  & kf_b,
+                    bool * a_wins_p) const
   {
     const unsigned nb_a = bv_a.size();
     const unsigned nb_b = bv_b.size();
-  
+
     // ---- exclude very small bubbles
 
-    if (nb_a < _K + 2 || 
-	nb_b < _K + 2)
+    if (nb_a < _K + 2 ||
+        nb_b < _K + 2)
       return false;
 
     // ---- exclude bubbles where one of the branches is much larger than the other
@@ -257,12 +267,12 @@ public:
     const float ratio_max = 1.3;
     if (float(nb_a) > ratio_max * float(nb_b) ||
         float(nb_b) > ratio_max * float(nb_a))
-      return false;        
-  
+      return false;
+
     // ---- verify that final K-1 bases are identical
 
     for (unsigned i = 1; i < _K; i++)
-      if (bv_a[nb_a - i] != bv_b[nb_b - i]) 
+      if (bv_a[nb_a - i] != bv_b[nb_b - i])
         return false;
 
     // ---- validate mean kmer frequencies
@@ -297,18 +307,18 @@ public:
   {}
 
   bool operator () (const BaseVec & bv_a,
-		    const BaseVec & bv_b,
-		    const float  & kf_a,
-		    const float  & kf_b,
-		    bool * a_wins_p) const 
+                    const BaseVec & bv_b,
+                    const float  & kf_a,
+                    const float  & kf_b,
+                    bool * a_wins_p) const
   {
-    if (kf_a > _kf_min && 
-	kf_b < _kf_min) {
+    if (kf_a > _kf_min &&
+        kf_b < _kf_min) {
       *a_wins_p = true;
       return true;
     }
-    if (kf_a < _kf_min && 
-	kf_b > _kf_min) {
+    if (kf_a < _kf_min &&
+        kf_b > _kf_min) {
       *a_wins_p = false;
       return true;
     }
@@ -337,8 +347,8 @@ class Polymorphisms
   BaseVecVec                  _bvv_b;  // B alleles in BaseVec format
   vec<float>                  _kfv_a;  // mean kmer freq in A polys
   vec<float>                  _kfv_b;  // mean kmer freq in B polys
-  KmerMap<KmerIPoly<Kmer_t> > _poly_a; // map of A poly kmers to the poly index in _bvv_a 
-  KmerMap<KmerIPoly<Kmer_t> > _poly_b; // map of B poly kmers to the poly index in _bvv_b 
+  KmerMap<KmerIPoly<Kmer_t> > _poly_a; // map of A poly kmers to the poly index in _bvv_a
+  KmerMap<KmerIPoly<Kmer_t> > _poly_b; // map of B poly kmers to the poly index in _bvv_b
 
   vec<bool>                  _a_is_strong;
 
@@ -346,7 +356,7 @@ class Polymorphisms
 
 public:
   Polymorphisms(const size_t K) : _K(K) {}
-  
+
 private:
   void _add_single(const BaseVec & bv,
                    const float kf,
@@ -356,9 +366,9 @@ private:
 
   bool _add_poly(const BaseVec & bv_a,
                  const BaseVec & bv_b,
-		 const float kf_a,
-		 const float kf_b,
-		 const BubbleValidator & validator,
+                 const float kf_a,
+                 const float kf_b,
+                 const BubbleValidator & validator,
                  vec<KmerIPoly<Kmer_t> > * poly_a_vec_p,
                  vec<KmerIPoly<Kmer_t> > * poly_b_vec_p);
 
@@ -372,56 +382,84 @@ private:
 
 
 public:
-  unsigned K() const { return _K; }
-  unsigned size() const { return _bvv_a.size(); }
+  unsigned K() const {
+    return _K;
+  }
+  unsigned size() const {
+    return _bvv_a.size();
+  }
 
-  KmerIPoly<Kmer_t> kmer_poly_a(const Kmer_t & kmer) const { return _poly_a(kmer); }
-  KmerIPoly<Kmer_t> kmer_poly_b(const Kmer_t & kmer) const { return _poly_b(kmer); }
-  const BaseVec & base_vec_a(const unsigned i_poly) const { return _bvv_a[i_poly]; }
-  const BaseVec & base_vec_b(const unsigned i_poly) const { return _bvv_b[i_poly]; }
-  float kmer_freq_a(const unsigned i_poly) const { return _kfv_a[i_poly]; }
-  float kmer_freq_b(const unsigned i_poly) const { return _kfv_b[i_poly]; }
-  
-  bool a_is_strong(const size_t i_poly) const { return _a_is_strong[i_poly]; }
-  bool a_is_weak(const size_t i_poly)   const { return !_a_is_strong[i_poly]; }
-  bool b_is_strong(const size_t i_poly) const { return !_a_is_strong[i_poly]; }
-  bool b_is_weak(const size_t i_poly)   const { return _a_is_strong[i_poly]; }
+  KmerIPoly<Kmer_t> kmer_poly_a(const Kmer_t & kmer) const {
+    return _poly_a(kmer);
+  }
+  KmerIPoly<Kmer_t> kmer_poly_b(const Kmer_t & kmer) const {
+    return _poly_b(kmer);
+  }
+  const BaseVec & base_vec_a(const unsigned i_poly) const {
+    return _bvv_a[i_poly];
+  }
+  const BaseVec & base_vec_b(const unsigned i_poly) const {
+    return _bvv_b[i_poly];
+  }
+  float kmer_freq_a(const unsigned i_poly) const {
+    return _kfv_a[i_poly];
+  }
+  float kmer_freq_b(const unsigned i_poly) const {
+    return _kfv_b[i_poly];
+  }
+
+  bool a_is_strong(const size_t i_poly) const {
+    return _a_is_strong[i_poly];
+  }
+  bool a_is_weak(const size_t i_poly)   const {
+    return !_a_is_strong[i_poly];
+  }
+  bool b_is_strong(const size_t i_poly) const {
+    return !_a_is_strong[i_poly];
+  }
+  bool b_is_weak(const size_t i_poly)   const {
+    return _a_is_strong[i_poly];
+  }
 
 
-  KmerIPoly<Kmer_t> kmer_poly_strong(const Kmer_t & kmer) const 
-  { 
+  KmerIPoly<Kmer_t> kmer_poly_strong(const Kmer_t & kmer) const
+  {
     KmerIPoly<Kmer_t> kp_undef;
 
     const KmerIPoly<Kmer_t> & kp_a = _poly_a(kmer); // only defined if kmer is in poly_a
-    if (kp_a.is_valid_kmer()) 
+    if (kp_a.is_valid_kmer())
       return (a_is_strong(kp_a.i_poly())) ? kp_a : kp_undef;
 
     const KmerIPoly<Kmer_t> & kp_b = _poly_b(kmer); // only defined if kmer is in poly_b
-    if (kp_b.is_valid_kmer()) 
+    if (kp_b.is_valid_kmer())
       return (b_is_strong(kp_b.i_poly())) ? kp_b : kp_undef;
-    
+
     return kp_undef;
   }
 
-  KmerIPoly<Kmer_t> kmer_poly_weak(const Kmer_t & kmer) const 
-  { 
+  KmerIPoly<Kmer_t> kmer_poly_weak(const Kmer_t & kmer) const
+  {
     KmerIPoly<Kmer_t> kp_undef;
 
     const KmerIPoly<Kmer_t> & kp_a = _poly_a(kmer); // only defined if kmer is in poly_a
-    if (kp_a.is_valid_kmer()) 
+    if (kp_a.is_valid_kmer())
       return (a_is_weak(kp_a.i_poly())) ? kp_a : kp_undef;
 
     const KmerIPoly<Kmer_t> & kp_b = _poly_b(kmer); // only defined if kmer is in poly_b
-    if (kp_b.is_valid_kmer()) 
+    if (kp_b.is_valid_kmer())
       return (b_is_weak(kp_b.i_poly())) ? kp_b : kp_undef;
-    
+
     return kp_undef;
   }
 
-  const BaseVec & base_vec_strong(const size_t i_poly) const 
-  { return a_is_strong(i_poly) ? _bvv_a[i_poly] : _bvv_b[i_poly]; }
-  const BaseVec & base_vec_weak(const size_t i_poly)   const 
-  { return a_is_weak(i_poly)   ? _bvv_a[i_poly] : _bvv_b[i_poly]; }
+  const BaseVec & base_vec_strong(const size_t i_poly) const
+  {
+    return a_is_strong(i_poly) ? _bvv_a[i_poly] : _bvv_b[i_poly];
+  }
+  const BaseVec & base_vec_weak(const size_t i_poly)   const
+  {
+    return a_is_weak(i_poly)   ? _bvv_a[i_poly] : _bvv_b[i_poly];
+  }
 
 
   // ---- kmap not a const because follow_kmers() needs to tag the visited.
@@ -429,7 +467,7 @@ public:
              const BubbleValidator & validator);
 
 
-  void write_fastas(const String & HEAD_STRONG, 
+  void write_fastas(const String & HEAD_STRONG,
                     const String & HEAD_WEAK) const
   {
     const size_t n = size();
@@ -449,35 +487,39 @@ public:
 
   void write(const String & HEAD) const
   {
-    _bvv_a.WriteAll(HEAD + ".A.fastb"); 
-    _bvv_b.WriteAll(HEAD + ".B.fastb"); 
+    _bvv_a.WriteAll(HEAD + ".A.fastb");
+    _bvv_b.WriteAll(HEAD + ".B.fastb");
     _poly_a.write_binary(HEAD + ".kmer.poly.A.map");
     _poly_b.write_binary(HEAD + ".kmer.poly.B.map");
   }
 
   void read(const String & HEAD)
   {
-    _bvv_a.ReadAll(HEAD + ".A.fastb"); 
-    _bvv_b.ReadAll(HEAD + ".B.fastb"); 
+    _bvv_a.ReadAll(HEAD + ".A.fastb");
+    _bvv_b.ReadAll(HEAD + ".B.fastb");
     _poly_a.read_binary(HEAD + ".kmer.poly.A.map");
     _poly_b.read_binary(HEAD + ".kmer.poly.B.map");
   }
 
-  void print_stats() const { _stats.print(_K); }
-  void write_stats(const String & fn) const { _stats.to_text_file(fn); }
+  void print_stats() const {
+    _stats.print(_K);
+  }
+  void write_stats(const String & fn) const {
+    _stats.to_text_file(fn);
+  }
 
-  void print(const unsigned i_poly) const 
+  void print(const unsigned i_poly) const
   {
-    cout << "a: i_poly= " << setw(6) << i_poly 
-	 << " nb= " << _bvv_a[i_poly].size() 
-	 << " " << hieroglyphs(_bvv_a[i_poly]) 
-	 << " kf_mean= " << _kfv_a[i_poly] 
-	 << endl;
-    cout << "b: i_poly= " << setw(6) << i_poly 
-	 << " nb= " << _bvv_b[i_poly].size() 
-	 << " " << hieroglyphs(_bvv_b[i_poly]) 
-	 << " kf_mean= " << _kfv_b[i_poly] 
-	 << endl;
+    cout << "a: i_poly= " << setw(6) << i_poly
+         << " nb= " << _bvv_a[i_poly].size()
+         << " " << hieroglyphs(_bvv_a[i_poly])
+         << " kf_mean= " << _kfv_a[i_poly]
+         << endl;
+    cout << "b: i_poly= " << setw(6) << i_poly
+         << " nb= " << _bvv_b[i_poly].size()
+         << " " << hieroglyphs(_bvv_b[i_poly])
+         << " kf_mean= " << _kfv_b[i_poly]
+         << endl;
   }
 
 };
@@ -489,7 +531,7 @@ public:
 
 
 void polymorphisms_find_parallel(const unsigned      K,
-                                 const BaseVecVec  & bvv, 
+                                 const BaseVecVec  & bvv,
                                  Polymorphisms     * polys_p,
                                  KmerSpectrum      * kspec_p,
                                  const double        CN_max,
@@ -499,7 +541,7 @@ void polymorphisms_find_parallel(const unsigned      K,
 
 
 void polymorphisms_find_parallel(const unsigned      K,
-                                 const BaseVecVec  & bvv, 
+                                 const BaseVecVec  & bvv,
                                  Polymorphisms     * polys_p,
                                  KmerSpectrum      * kspec_p,
                                  const unsigned      VERBOSITY,
@@ -507,11 +549,11 @@ void polymorphisms_find_parallel(const unsigned      K,
                                  const size_t        mean_mem_ceil = 0);
 
 
-void polymorphisms_correlate(const PairsManager  & pairs, 
+void polymorphisms_correlate(const PairsManager  & pairs,
                              const BaseVecVec    & bvv,
                              Polymorphisms       * polys_p,
                              const unsigned        VERBOSITY);
-  
+
 
 
 size_t polymorphisms_remove_parallel(const Polymorphisms  & polys,

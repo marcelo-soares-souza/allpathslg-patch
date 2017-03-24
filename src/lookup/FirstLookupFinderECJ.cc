@@ -25,11 +25,12 @@
 #include <iostream>
 template <class Itr>
 void dumpBases(Itr begin, Itr const& end)
-{ 
-  while (begin != end) { 
-    std::cout << Base::val2Char(*begin); ++begin; 
+{
+  while (begin != end) {
+    std::cout << Base::val2Char(*begin);
+    ++begin;
   }
-  std::cout << std::endl; 
+  std::cout << std::endl;
 }
 #endif
 
@@ -41,81 +42,81 @@ void dumpBases(Itr begin, Itr const& end)
 
 namespace
 {
-  class AlignProcessor
+class AlignProcessor
+{
+private:
+  const FirstLookupFinderECJ & _flf;
+  const BaseVecVec           & _queries;
+  const VecQualNibbleVec     & _quals;
+
+  vec<first_look_align>      * _first_aligns;
+
+  LockedData                 & _lock;
+  const size_t                 _chunk_size;
+
+public:
+  AlignProcessor(const FirstLookupFinderECJ & flf,
+                 const BaseVecVec & queries,
+                 const VecQualNibbleVec & quals,
+                 vec<first_look_align> * first_aligns,
+                 LockedData& lock,
+                 const size_t chunkSize)
+    : _flf(flf),
+      _queries(queries),
+      _quals(quals),
+      _first_aligns(first_aligns),
+      _lock(lock),
+      _chunk_size(chunkSize)
+  {}
+
+  AlignProcessor(const AlignProcessor & that)
+    : _flf(that._flf),
+      _queries(that._queries),
+      _quals(that._quals),
+      _first_aligns(that._first_aligns),
+      _lock(that._lock),
+      _chunk_size(that._chunk_size)
+  {}
+
+  // copy-assignment prohibited by reference members
+  // compiler-supplied destructor is OK
+
+  void operator()( size_t batchNo ) const
   {
-  private:
-    const FirstLookupFinderECJ & _flf;
-    const BaseVecVec           & _queries;
-    const VecQualNibbleVec     & _quals;
+    size_t query_ID = batchNo*_chunk_size;
+    size_t end = std::min(query_ID + _chunk_size, _queries.size());
 
-    vec<first_look_align>      * _first_aligns;
+    std::list<first_look_align> results;
 
-    LockedData                 & _lock;
-    const size_t                 _chunk_size;
-
-  public:
-    AlignProcessor(const FirstLookupFinderECJ & flf, 
-                   const BaseVecVec & queries, 
-                   const VecQualNibbleVec & quals,
-                   vec<first_look_align> * first_aligns, 
-                   LockedData& lock,
-                   const size_t chunkSize)
-      : _flf(flf), 
-        _queries(queries), 
-        _quals(quals), 
-        _first_aligns(first_aligns), 
-        _lock(lock),
-	_chunk_size(chunkSize)
-    {}
-
-    AlignProcessor(const AlignProcessor & that)
-      : _flf(that._flf), 
-        _queries(that._queries), 
-        _quals(that._quals), 
-        _first_aligns(that._first_aligns),
-	_lock(that._lock), 
-        _chunk_size(that._chunk_size)
-    {}
-
-    // copy-assignment prohibited by reference members
-    // compiler-supplied destructor is OK
-
-    void operator()( size_t batchNo ) const
-    {
-      size_t query_ID = batchNo*_chunk_size;
-      size_t end = std::min(query_ID + _chunk_size, _queries.size());
-
-      std::list<first_look_align> results;
-
-      for (; query_ID < end; ++query_ID) {
-        std::list<first_look_align> aligns;
-        _flf.getAlignments(_queries[query_ID], _quals[query_ID], query_ID, & aligns);
-        results.insert(results.end(), aligns.begin(), aligns.end());
-      }
-
-      if (results.size()) {
-        Locker lock(_lock);
-        _first_aligns->insert(_first_aligns->end(), results.begin(), results.end());
-      }
+    for (; query_ID < end; ++query_ID) {
+      std::list<first_look_align> aligns;
+      _flf.getAlignments(_queries[query_ID], _quals[query_ID], query_ID, & aligns);
+      results.insert(results.end(), aligns.begin(), aligns.end());
     }
-   
-  };
+
+    if (results.size()) {
+      Locker lock(_lock);
+      _first_aligns->insert(_first_aligns->end(), results.begin(), results.end());
+    }
+  }
+
+};
 }
 
 
 
-void FirstLookupFinderECJ::getAlignmentsInternal(const BaseVec & query, 
-						 const QualNibbleVec * qual,
-						 const uint64_t query_ID,
-						 std::list<first_look_align> * result) const
+void FirstLookupFinderECJ::getAlignmentsInternal(const BaseVec & query,
+    const QualNibbleVec * qual,
+    const uint64_t query_ID,
+    std::list<first_look_align> * result) const
 {
 #if DUMP_BASES
   std::cout << "Query: " << query_ID << std::endl;
 #endif
-  vec<first_look_align> aligns; 
-  if (query.size() >= _lookup_tab.getK() && 
+  vec<first_look_align> aligns;
+  if (query.size() >= _lookup_tab.getK() &&
       query.size() >= _filter.min_size) {
-    
+
     const bool debug = is_in(query_ID, _filter.debug_reads);
 
 
@@ -133,8 +134,8 @@ void FirstLookupFinderECJ::getAlignmentsInternal(const BaseVec & query,
     bestMatchCount = max(alignR(query, query_ID), bestMatchCount);
     if (debug) PRINT2(query_ID, bestMatchCount);
 
-    if (_filter.min_match > 0 && 
-        bestMatchCount < static_cast<unsigned>(_filter.min_match)) 
+    if (_filter.min_match > 0 &&
+        bestMatchCount < static_cast<unsigned>(_filter.min_match))
       return;
 
     vec<unsigned int> scores;
@@ -160,8 +161,8 @@ void FirstLookupFinderECJ::getAlignmentsInternal(const BaseVec & query,
     if (locCountR)
       bestMatchCount = max(alignR(query, query_ID), bestMatchCount);
 
-    if (_filter.min_match > 0 && 
-        bestMatchCount < _filter.min_match) 
+    if (_filter.min_match > 0 &&
+        bestMatchCount < _filter.min_match)
       return;
 
     if (locCountF)
@@ -176,7 +177,7 @@ void FirstLookupFinderECJ::getAlignmentsInternal(const BaseVec & query,
       SortSync(scores, aligns);
 
       size_t n_to_return = scores.size();
-      if (_filter.max_placements > 0 && 
+      if (_filter.max_placements > 0 &&
           _filter.max_placements < n_to_return)
         n_to_return = _filter.max_placements;
 
@@ -190,8 +191,8 @@ void FirstLookupFinderECJ::getAlignmentsInternal(const BaseVec & query,
           result->insert(result->end(), 1, aligns[i]);
 
           if (debug) {
-            PRINT3(scores[i], 
-                   aligns[i].target_loc.getContig(), 
+            PRINT3(scores[i],
+                   aligns[i].target_loc.getContig(),
                    aligns[i].target_loc.getOffset());
           }
         }
@@ -204,26 +205,26 @@ void FirstLookupFinderECJ::getAlignmentsInternal(const BaseVec & query,
 }
 
 
-void FirstLookupFinderECJ::getAlignments(const BaseVec & query, 
-						 const QualNibbleVec & qual,
-						 const uint64_t query_ID,
-						 std::list<first_look_align> * result) const
+void FirstLookupFinderECJ::getAlignments(const BaseVec & query,
+    const QualNibbleVec & qual,
+    const uint64_t query_ID,
+    std::list<first_look_align> * result) const
 {
   getAlignmentsInternal(query, &qual, query_ID, result);
 }
 
-void FirstLookupFinderECJ::getAlignments(const BaseVec & query, 
-                                         const uint64_t query_ID,
-                                         std::list<first_look_align> * result) const
+void FirstLookupFinderECJ::getAlignments(const BaseVec & query,
+    const uint64_t query_ID,
+    std::list<first_look_align> * result) const
 {
   getAlignmentsInternal(query, NULL, query_ID, result);
 }
 
 
 void FirstLookupFinderECJ::getAllAlignments(const BaseVecVec & queries,
-                                            const VecQualNibbleVec & quals,
-                                            vec<first_look_align> * first_aligns,
-                                            const size_t n_threads) const
+    const VecQualNibbleVec & quals,
+    vec<first_look_align> * first_aligns,
+    const size_t n_threads) const
 {
   // Reserve memory for alignments.  We make a heuristic estimate for the
   // upper bound of the alignment frequency per read.
@@ -232,8 +233,8 @@ void FirstLookupFinderECJ::getAllAlignments(const BaseVecVec & queries,
 
   LockedData lock;
   AlignProcessor processor(*this, queries, quals,
-                             first_aligns, 
-                             lock, CHUNK_SIZE);
+                           first_aligns,
+                           lock, CHUNK_SIZE);
   parallelFor(0ul,(queries.size()+CHUNK_SIZE-1)/CHUNK_SIZE,processor,n_threads);
 }
 
@@ -370,7 +371,7 @@ size_t FirstLookupFinderECJ::alignF(const BaseVec & query,
       }
     }
   }
-  
+
   return matchLength;
 }
 
@@ -420,7 +421,7 @@ size_t FirstLookupFinderECJ::alignR(const BaseVec & query,
             // "was": mismatch nood_size bases ago, "is": mismatch this base
             int was = nhood_mismatch[nhood_index];
             int is = (*itr != *targetItr) ? 1 : 0;
-		      
+
             nhood_mismatch[nhood_index] = is;
             // advance circular index
             if (++nhood_index == nhood_size) nhood_index = 0;
@@ -458,14 +459,14 @@ size_t FirstLookupFinderECJ::alignR(const BaseVec & query,
 }
 
 
-void FirstLookupFinderECJ::scoreF(const BaseVec & query, 
+void FirstLookupFinderECJ::scoreF(const BaseVec & query,
                                   const QualNibbleVec * qual,
                                   const size_t query_ID,
                                   const size_t matchLength,
                                   vec<first_look_align> & alignments,
                                   vec<unsigned int> & scores) const
 {
-    
+
   if (_filter.orientation != FirstLookupFilterECJ::RC_ONLY &&
       matchLength > _lookup_tab.getK()) {
     unsigned int kmer = _lookup_tab.getKmer(query.Begin());
@@ -537,7 +538,7 @@ void FirstLookupFinderECJ::scoreF(const BaseVec & query,
   }
 }
 
-void FirstLookupFinderECJ::scoreR(const BaseVec & query, 
+void FirstLookupFinderECJ::scoreR(const BaseVec & query,
                                   const QualNibbleVec * qual,
                                   const size_t query_ID,
                                   const size_t matchLength,

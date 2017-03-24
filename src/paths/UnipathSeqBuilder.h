@@ -18,8 +18,8 @@
 #include "paths/UnipathSeq.h"
 
 class UnipathSeqBuilder {
- public:
-  UnipathSeqBuilder( const vecKmerPath* pUnipaths, 
+public:
+  UnipathSeqBuilder( const vecKmerPath* pUnipaths,
                      const KmerPathDatabase* pUnipathDB,
                      ostream* pLog = 0 );
 
@@ -31,7 +31,7 @@ class UnipathSeqBuilder {
               vecUnipathSeq& unipathSeqs,
               vec<Mux>& muxes ) const;
 
- private:
+private:
   const vecKmerPath* m_pUnipaths;
   const KmerPathDatabase* m_pUnipathDB;
   ostream* m_pLog;

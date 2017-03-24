@@ -26,23 +26,26 @@ typedef String dot_color_t;
    Various static methods to help with generating dot graphs.
 */
 class DotUtils {
- public:
+public:
   // Method: DotColors
   // Returns a constant array of dot color names, grouped into groups where colors
   // in the same group are similar while colors in different groups are different.
-  static const vec< vec<dot_color_t> >& DotColors() { if ( dotColors_.empty() ) InitDotColors(); return dotColors_; }
+  static const vec< vec<dot_color_t> >& DotColors() {
+    if ( dotColors_.empty() ) InitDotColors();
+    return dotColors_;
+  }
 
   static dot_color_t RandomColor();
 
   static void RandomFgBg( dot_color_t& fg, dot_color_t& bg );
 
- private:
+private:
   static vec< vec<dot_color_t> > dotColors_;
 
   static void InitDotColors();
   static void AddDotColors( const char *colors[], int ncolors );
 
   friend struct DotUtilsInitializer;
-  
+
 };
 

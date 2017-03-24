@@ -10,7 +10,7 @@
 /// \class Vec
 /// Vec.h defines class vec, which wraps the STL class vector, in such a way
 /// that if compiled with NDEBUG on, it is (or should be) the same as a vector
-/// (with some added functionality -- see below), but otherwise does run-time 
+/// (with some added functionality -- see below), but otherwise does run-time
 /// checking of each vector reference to make sure it is in range.
 ///
 /// In debug mode, resize and reserve will fail if you (in effect) ask for more
@@ -61,9 +61,9 @@ using StdVec = std::vector<T,typename DefaultAllocator<T>::type>;
 template <class T, class A=typename DefaultAllocator<T>::type> class vec
   : public std::vector<T,A>
 {
-    typedef std::vector<T,A> BaseT;
- public:
-    typedef typename BaseT::size_type size_type;
+  typedef std::vector<T,A> BaseT;
+public:
+  typedef typename BaseT::size_type size_type;
 
 // ===========================================================================
 //
@@ -75,27 +75,32 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
   vec( const initializer_list<T>& x, A const& a=A() ) : BaseT(x,a) {}
   explicit vec( size_type n ) : BaseT(n) {}
   vec( size_type n, const T& value, A const& a=A() )
-  : BaseT(ValidatedSize(n),value,a) {}
+    : BaseT(ValidatedSize(n),value,a) {}
 
   enum ConstructorBehavior { IDENTITY };
   vec( size_type n, ConstructorBehavior constructor_type, A const& a=A() )
-  : BaseT(ValidatedSize(n))
-  { for ( size_type i = 0; i < n; i++ ) (*this)[i] = i;    }
+    : BaseT(ValidatedSize(n))
+  {
+    for ( size_type i = 0; i < n; i++ ) (*this)[i] = i;
+  }
 
   template <class A1>
   vec( const std::vector<T,A1>& v, A const&a=A() )
-  : BaseT(v.begin(),v.end(),a) {}
+    : BaseT(v.begin(),v.end(),a) {}
 
   vec( vec const& v ) : BaseT(v.begin(),v.end(),A()) {}
   vec( vec const& v, A const& a ) : BaseT(v.begin(),v.end(),a) {}
 
   template<class Itr>
   vec( Itr const& first, Itr const& last, A const& a=A() )
-  : BaseT(first,last,a) {}
+    : BaseT(first,last,a) {}
 
   template <class A1>
   vec& operator=( std::vector<T,A1> const& v )
-  { BaseT::assign(v.begin(),v.end()); return *this; }
+  {
+    BaseT::assign(v.begin(),v.end());
+    return *this;
+  }
 
   vec& operator=( vec const& v ) = default;
 
@@ -104,7 +109,7 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
     AssertLt( i,  BaseT::size() ); // Asserts index within bounds
     return BaseT::operator[](i);   // ... and returns the element
   }
-  
+
   ///Asserts index within bounds.
   typename BaseT::const_reference operator[](size_type i) const {
     AssertLt( i, BaseT::size() );  // Asserts index within bounds
@@ -112,9 +117,13 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
   }
 
   void resize( size_type i, T const& c = T() )
-  {  BaseT::resize( ValidatedSize(i), c ); }
+  {
+    BaseT::resize( ValidatedSize(i), c );
+  }
 
-  void reserve( size_type i ) { BaseT::reserve(ValidatedSize(i)); }
+  void reserve( size_type i ) {
+    BaseT::reserve(ValidatedSize(i));
+  }
 
   typename BaseT::reference front( ) {
     AssertGt( BaseT::size( ), 0u ); // Asserts index within bounds
@@ -145,68 +154,105 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
   /// push_front (insert item before first element of vector)
 
   vec& push_front( const T& t1 )
-  {    BaseT::insert( BaseT::begin( ), t1 ); return *this;   }
+  {
+    BaseT::insert( BaseT::begin( ), t1 );
+    return *this;
+  }
 
   /// Generalized push_back, allowing up to 12 items pushed back at a time.
 
   vec& push_back( const T& t1 )
-  {    BaseT::push_back(t1); return *this;   }
+  {
+    BaseT::push_back(t1);
+    return *this;
+  }
   vec& push_back( const T& t1, const T& t2 )
-  {    return push_back(t1).push_back(t2);    }
+  {
+    return push_back(t1).push_back(t2);
+  }
   vec& push_back( const T& t1, const T& t2, const T& t3 )
-  {    return push_back(t1).push_back(t2).push_back(t3);    }
+  {
+    return push_back(t1).push_back(t2).push_back(t3);
+  }
   vec& push_back( const T& t1, const T& t2, const T& t3, const T& t4 )
-  {    return push_back(t1).push_back(t2).push_back(t3).push_back(t4);    }
+  {
+    return push_back(t1).push_back(t2).push_back(t3).push_back(t4);
+  }
   vec& push_back( const T& t1, const T& t2, const T& t3, const T& t4, const T& t5 )
-  {    return push_back(t1).push_back(t2).push_back(t3).push_back(t4).push_back(t5); }
+  {
+    return push_back(t1).push_back(t2).push_back(t3).push_back(t4).push_back(t5);
+  }
   vec& push_back( const T& t1, const T& t2, const T& t3, const T& t4, const T& t5,
-       const T& t6 )
-  {    return push_back( t1, t2, t3, t4, t5 ).push_back( t6 );     }
+                  const T& t6 )
+  {
+    return push_back( t1, t2, t3, t4, t5 ).push_back( t6 );
+  }
   vec& push_back( const T& t1, const T& t2, const T& t3, const T& t4, const T& t5,
-       const T& t6, const T& t7 )
-  {    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7 );     }
+                  const T& t6, const T& t7 )
+  {
+    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7 );
+  }
   vec& push_back( const T& t1, const T& t2, const T& t3, const T& t4, const T& t5,
-       const T& t6, const T& t7, const T& t8 )
-  {    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7, t8 );     }
+                  const T& t6, const T& t7, const T& t8 )
+  {
+    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7, t8 );
+  }
   vec& push_back( const T& t1, const T& t2, const T& t3, const T& t4, const T& t5,
-       const T& t6, const T& t7, const T& t8, const T& t9 )
-  {    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7, t8, t9 );     }
+                  const T& t6, const T& t7, const T& t8, const T& t9 )
+  {
+    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7, t8, t9 );
+  }
   vec& push_back( const T& t1, const T& t2, const T& t3, const T& t4, const T& t5,
-       const T& t6, const T& t7, const T& t8, const T& t9, const T& t10 )
-  {    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7, t8, t9, t10 ); }
+                  const T& t6, const T& t7, const T& t8, const T& t9, const T& t10 )
+  {
+    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7, t8, t9, t10 );
+  }
   vec& push_back( const T& t1, const T& t2, const T& t3, const T& t4, const T& t5,
-       const T& t6, const T& t7, const T& t8, const T& t9, const T& t10,
-       const T& t11 )
-  {    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7, t8, t9, t10, t11 );     }
+                  const T& t6, const T& t7, const T& t8, const T& t9, const T& t10,
+                  const T& t11 )
+  {
+    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7, t8, t9, t10, t11 );
+  }
   vec& push_back( const T& t1, const T& t2, const T& t3, const T& t4, const T& t5,
-       const T& t6, const T& t7, const T& t8, const T& t9, const T& t10,
-       const T& t11, const T& t12 )
-  {    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7, t8, t9, t10, t11, t12 );     }
+                  const T& t6, const T& t7, const T& t8, const T& t9, const T& t10,
+                  const T& t11, const T& t12 )
+  {
+    return push_back( t1, t2, t3, t4, t5 ).push_back( t6, t7, t8, t9, t10, t11, t12 );
+  }
 
   // push: construct object from up to ten arbitrary arguments, then push it back.
   template <class... Args>
   vec& push( Args&&... args )
-  { BaseT::emplace_back(std::forward<Args>(args)...); return *this; }
+  {
+    BaseT::emplace_back(std::forward<Args>(args)...);
+    return *this;
+  }
 
   void push_back_copies( const T& t, const size_type n )
-  { BaseT::resize(BaseT::size()+n,t); }
+  {
+    BaseT::resize(BaseT::size()+n,t);
+  }
 
   template <class U>
-  void append( const vec<U>& y ) 
-  {    this->insert( this->end( ), y.begin( ), y.end( ) );    }
+  void append( const vec<U>& y )
+  {
+    this->insert( this->end( ), y.begin( ), y.end( ) );
+  }
 
   template <class U>
-  void append( const SerfVec<U>& y ) 
-  {    this->insert( this->end( ), y.begin( ), y.end( ) );    }
-  
+  void append( const SerfVec<U>& y )
+  {
+    this->insert( this->end( ), y.begin( ), y.end( ) );
+  }
+
   void append( const vec<T>& y, size_type i, size_type j ) {
     if ( j == y.size( ) ) this->insert( this->end( ), y.begin( ) + i, y.end( ) );
-    else this->insert( this->end( ), y.begin( ) + i, y.begin( ) + j );   
+    else this->insert( this->end( ), y.begin( ) + i, y.begin( ) + j );
   }
 
   // appends values in y, but only those whose indices are in entries
   // IDX should be either (unsigned) int or longlong depending on the size of y
-  template<typename IDX> 
+  template<typename IDX>
   void append( const vec<T>& y, const vec<IDX>& entries ) {
     AssertLe(y.size(), numeric_limits<IDX>::max());
     const size_type n = this->size( );
@@ -219,7 +265,8 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
   { BinaryIteratingReader< vec<T> > rdr(filename.c_str());
     reserve(this->size()+rdr.remaining());
     T tmp;
-    while ( rdr.next(&tmp) ) push_back(tmp); }
+    while ( rdr.next(&tmp) ) push_back(tmp);
+  }
 
 // ===========================================================================
 //
@@ -227,18 +274,24 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
 //
 // ===========================================================================
 
-  bool nonempty( ) const { return ! this->empty( ); }
-  bool solo( ) const { return this->size( ) == 1; }
+  bool nonempty( ) const {
+    return ! this->empty( );
+  }
+  bool solo( ) const {
+    return this->size( ) == 1;
+  }
 
   bool Ordered( ) const
-  {    for ( size_type i = 1; i < this->size( ); i++ )
-            if ( (*this)[i] < (*this)[i-1] ) return False;
-       return True;    }
+  { for ( size_type i = 1; i < this->size( ); i++ )
+      if ( (*this)[i] < (*this)[i-1] ) return False;
+    return True;
+  }
 
   bool UniqueOrdered( ) const
-  {    for ( size_type i = 1; i < this->size( ); i++ )
-            if ( (*this)[i] <= (*this)[i-1] ) return False;
-       return True;    }
+  { for ( size_type i = 1; i < this->size( ); i++ )
+      if ( (*this)[i] <= (*this)[i-1] ) return False;
+    return True;
+  }
 
 // ===========================================================================
 //
@@ -252,10 +305,14 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
   { AssertLe(pos,that.size());
     AssertLe(len,that.size()-pos);
     if ( this != &that )
-    { this->assign(that.begin()+pos,that.begin()+pos+len); }
+    {
+      this->assign(that.begin()+pos,that.begin()+pos+len);
+    }
     else
     { this->resize(pos+len);
-      this->erase(this->begin(),this->begin()+pos); } }
+      this->erase(this->begin(),this->begin()+pos);
+    }
+  }
   // Implementation note:  the STL carefully accounts for self-assignment, so
   // a simpler implementation would be simply
   // this->assign(that.begin()+pos,that.begin()+pos+len);
@@ -294,7 +351,7 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
       s[i] = x[ indices[i] ];
     return s;
   }
-    
+
   void SetToRangeOf( const vec<T>& v, size_type i, size_type j ) {
     AssertLe( i, j );
     this->assign(v.begin() + i, v.begin() + j);
@@ -306,8 +363,12 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
     return r;
   }
 
-  int isize( ) const { return this->size( ); }
-  int64_t jsize( ) const { return this->size( ); }
+  int isize( ) const {
+    return this->size( );
+  }
+  int64_t jsize( ) const {
+    return this->size( );
+  }
 
   void SetCat( const vec<T>& v1, const vec<T>& v2 ) {
     *this = v1;
@@ -343,7 +404,7 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
     size_type j;
     for ( j = 0; j < v.size( ); j++ )
       if ( (*this)[pos+j] != v[j] )
-	break;
+        break;
     return j == v.size( );
   }
 
@@ -377,7 +438,8 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
 
   /// print values to ostream, separated by sep, with newline at end.
   void Println(ostream & os, const char * sep = " ") const {
-    Print(os, sep); os << endl;
+    Print(os, sep);
+    os << endl;
   }
 
   ///Set myself from text stream containing list of values of unknown length.
@@ -394,14 +456,15 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
   /// ReadSubset: read selected entries from file written with BinaryWrite.
   /// The type T must have a fixed external size.
   void ReadSubset( String const& filename, vec<int> const& ids,
-                          bool append = false )
+                   bool append = false )
   { BinaryReader br(filename.c_str());
     size_t nnn;
     br.read(&nnn);
     size_t sz = br.externalSizeof( static_cast<T*>(0) );
     if ( !sz )
     { FatalErr("Can't randomly access the binary file " << filename
-                << " which contains variable-sized elements."); }
+               << " which contains variable-sized elements.");
+    }
     if ( !append ) this->clear();
     reserve(this->size()+ids.size());
     T tmp;
@@ -409,7 +472,9 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
     for ( Itr itr(ids.begin()), end(ids.end()); itr != end; ++itr )
     { br.seekAndFill( *itr*sz + br.tell(), sz );
       br.read(&tmp);
-      push_back(tmp); }  }
+      push_back(tmp);
+    }
+  }
 
   /// ReadRange: read selected entries from file written with BinaryWrite.
   /// The type T must have a fixed external size.
@@ -422,14 +487,17 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
     size_t sz = br.externalSizeof( static_cast<T*>(0) );
     if ( !sz )
     { FatalErr("Can't randomly access the binary file " << filename
-                << " which contains variable-sized elements."); }
+               << " which contains variable-sized elements.");
+    }
     br.seek( from*sz + br.tell() );
     this->clear();
     reserve(to-from);
     T tmp;
     for ( size_t idx = from; idx != to; ++idx )
     { br.read(&tmp);
-      push_back(tmp); }  }
+      push_back(tmp);
+    }
+  }
 
 
 // ===========================================================================
@@ -500,41 +568,50 @@ template <class T, class A=typename DefaultAllocator<T>::type> class vec
   /// the ith element.
 
   inline size_type NextDiff( size_type i ) const
-  {    size_type j;
-       for ( j = i + 1; j < this->size( ); j++ )
-            if ( (*this)[j] != (*this)[i] ) break;
-       return j;    }
+  { size_type j;
+    for ( j = i + 1; j < this->size( ); j++ )
+      if ( (*this)[j] != (*this)[i] ) break;
+    return j;
+  }
 
   friend int compare( vec const& v1, vec const& v2 )
-  {   auto itr1 = v1.begin();
-      auto itr2 = v2.begin();
-      using std::min;
-      auto end = itr1 + min(v1.size(),v2.size());
-      int result = 0;
-      while ( !result && itr1 != end )
-      { result = compare(*itr1,*itr2); ++itr1; ++itr2; }
-      if ( !result ) result = compare(v1.size(),v2.size());
-      return result;
+  { auto itr1 = v1.begin();
+    auto itr2 = v2.begin();
+    using std::min;
+    auto end = itr1 + min(v1.size(),v2.size());
+    int result = 0;
+    while ( !result && itr1 != end )
+    {
+      result = compare(*itr1,*itr2);
+      ++itr1;
+      ++itr2;
+    }
+    if ( !result ) result = compare(v1.size(),v2.size());
+    return result;
   }
 
   friend void swap( vec& v1, vec& v2 )
-  { v1.swap(v2); }
+  {
+    v1.swap(v2);
+  }
 
- private:
+private:
   static size_t ValidatedSize( size_t nnn )
   {
 #ifndef NDEBUG
-      if ( nnn > 1000ul*1000ul*1000ul*1000ul/sizeof(T) )
-          FatalErr( "Vector too big: Attempt to resize vec<T> object to " << nnn
-                      << ", where sizeof(T) = " << sizeof(T) << ".");
+    if ( nnn > 1000ul*1000ul*1000ul*1000ul/sizeof(T) )
+      FatalErr( "Vector too big: Attempt to resize vec<T> object to " << nnn
+                << ", where sizeof(T) = " << sizeof(T) << ".");
 #endif
-      return nnn;
+    return nnn;
   }
 };
 
 template <class T>
 struct Serializability< vec<T> >
-{ typedef ExternallySerializable type; };
+{
+  typedef ExternallySerializable type;
+};
 
 //
 //  End of vec Class Declaration and Template Definitions
@@ -549,15 +626,21 @@ struct Serializability< vec<T> >
 
 template<class V>
 V Reverse( V const& v )
-{ return V( v.rbegin( ), v.rend( ) ); }
+{
+  return V( v.rbegin( ), v.rend( ) );
+}
 
 template<class T,class A>
 void ReverseThis( vec<T,A>& v )
-{ v.ReverseMe(); }
+{
+  v.ReverseMe();
+}
 
 template<class T,class A>
 void RandomShuffle( vec<T,A>& v )
-{ random_shuffle( v.begin( ), v.end( ) ); }
+{
+  random_shuffle( v.begin( ), v.end( ) );
+}
 
 //
 // OverlapAppend - Given a sequence like A B C D C D and C D C D E F
@@ -575,55 +658,55 @@ void RandomShuffle( vec<T,A>& v )
 //
 
 template <
-     template <typename , typename... > class V1,     // e.g. vec<T,A1>
-     template <typename , typename... > class V2,     // e.g. SerfVec<T,A2,A3>
-     typename T,
-     typename... Args1,
-     typename... Args2>
+  template <typename, typename... > class V1,      // e.g. vec<T,A1>
+  template <typename, typename... > class V2,      // e.g. SerfVec<T,A2,A3>
+  typename T,
+  typename... Args1,
+  typename... Args2>
 size_t BrokenOverlapAppend( V1<T,Args1...>& v1, V2<T,Args2...> const& v2 ) {
-     size_t best = 0;
-     size_t size1 = v1.size();
-     size_t size2 = v2.size();
-     size_t overl = std::min(size1, size2);     // possible overlap sizes
-     // for each possible overlap, from shortest to longest...
-     for ( size_t i = 1; i <= overl; ++i ) {
-          // test all of the bases for that length overlap
-          for ( size_t j = 0; j < i; ++j ) {
-               // any misses and we abort this attempt
-               // if we get its all the way until i-1, then
-               // this is the largest overlap so far
-               if ( v1[size1-1-j] != v2[j] ) break;
-               else if ( j == i-1 ) best = i;
-          }
-     }
+  size_t best = 0;
+  size_t size1 = v1.size();
+  size_t size2 = v2.size();
+  size_t overl = std::min(size1, size2);     // possible overlap sizes
+  // for each possible overlap, from shortest to longest...
+  for ( size_t i = 1; i <= overl; ++i ) {
+    // test all of the bases for that length overlap
+    for ( size_t j = 0; j < i; ++j ) {
+      // any misses and we abort this attempt
+      // if we get its all the way until i-1, then
+      // this is the largest overlap so far
+      if ( v1[size1-1-j] != v2[j] ) break;
+      else if ( j == i-1 ) best = i;
+    }
+  }
 
-     std::copy( v2.begin()+best, v2.end(), std::back_inserter(v1));
+  std::copy( v2.begin()+best, v2.end(), std::back_inserter(v1));
 
-     return best;
+  return best;
 }
 
 
 template <
-     template <typename , typename... > class V1,     // e.g. vec<T,A1>
-     template <typename , typename... > class V2,     // e.g. SerfVec<T,A2,A3>
-     typename T,
-     typename... Args1,
-     typename... Args2>
+  template <typename, typename... > class V1,      // e.g. vec<T,A1>
+  template <typename, typename... > class V2,      // e.g. SerfVec<T,A2,A3>
+  typename T,
+  typename... Args1,
+  typename... Args2>
 size_t OverlapAppend( V1<T,Args1...>& v1, V2<T,Args2...> const& v2 ) {
-     size_t best = 0;
-     size_t v1_size = v1.size(), v2_size = v2.size();
-     size_t max_overl = std::min(v1_size, v2_size);     // max possible overlap
-     // for each possible overlap, from longest to shortest...
-     for ( size_t  overl = max_overl;  overl; --overl ) {
-          if ( std::equal(v1.end()-overl, v1.end(), v2.begin() ) ) {
-               best = overl;
-               break;
-          }
-     }
+  size_t best = 0;
+  size_t v1_size = v1.size(), v2_size = v2.size();
+  size_t max_overl = std::min(v1_size, v2_size);     // max possible overlap
+  // for each possible overlap, from longest to shortest...
+  for ( size_t  overl = max_overl;  overl; --overl ) {
+    if ( std::equal(v1.end()-overl, v1.end(), v2.begin() ) ) {
+      best = overl;
+      break;
+    }
+  }
 
-     std::copy( v2.begin()+best, v2.end(), std::back_inserter(v1));
+  std::copy( v2.begin()+best, v2.end(), std::back_inserter(v1));
 
-     return best;
+  return best;
 }
 
 
@@ -634,15 +717,21 @@ size_t OverlapAppend( V1<T,Args1...>& v1, V2<T,Args2...> const& v2 ) {
 
 template<class T,class A>
 typename vec<T,A>::size_type LowerBound( const vec<T,A>& v, const T& x )
-{ return std::lower_bound( v.begin( ), v.end( ), x ) - v.begin( ); }
+{
+  return std::lower_bound( v.begin( ), v.end( ), x ) - v.begin( );
+}
 
 template<class T,class A>
 typename vec<T,A>::size_type UpperBound( const vec<T,A>& v, const T& x )
-{ return std::upper_bound( v.begin( ), v.end( ), x ) - v.begin( ); }
+{
+  return std::upper_bound( v.begin( ), v.end( ), x ) - v.begin( );
+}
 
 template<class T,class A>
 inline bool Member( vec<T,A> const& v, const T& x )
-{ return (std::find(v.begin(), v.end(), x) != v.end()); }
+{
+  return (std::find(v.begin(), v.end(), x) != v.end());
+}
 
 /// Return the position of an element in a vector, else -1.
 template<class T,class A>
@@ -660,44 +749,51 @@ inline long Position( vec<T,A> const& v, const T& x )
 
 template<class T,class A>
 inline int64_t Position( const vec<T,A>& v, const vec<T,A>& w )
-{    int64_t pos = std::search(v.begin(),v.end(),w.begin(),w.end()) - v.begin();
-     int64_t end = v.jsize( );
-     if ( pos == end ) return -1;
-     else return pos;    }
+{ int64_t pos = std::search(v.begin(),v.end(),w.begin(),w.end()) - v.begin();
+  int64_t end = v.jsize( );
+  if ( pos == end ) return -1;
+  else return pos;
+}
 
 /// BinPosition.  Return the position of an element in a sorted vector, else -1.
 /// If the element appears more than once, the position of one of its instances
 /// is returned.
 template<class V,class U>
 inline long BinPosition( V const& v, const U& x1 )
-{    if ( v.size( ) == 0 ) return -1;
-     typename V::const_reference& x(x1);
-     typename V::size_type first = 0, last = v.size( ) - 1, next;
-     while (1)
-     {    if (first == last) return ( !(x < v[last]) && !(v[last] < x) ) ? last : -1;
-          next = first + (last - first) / 2;
-          if ( x < v[next] ) last = next;
-          else if ( v[next] < x ) first = next + 1;
-          else return next;    }    }
+{ if ( v.size( ) == 0 ) return -1;
+  typename V::const_reference& x(x1);
+  typename V::size_type first = 0, last = v.size( ) - 1, next;
+  while (1)
+  { if (first == last) return ( !(x < v[last]) && !(v[last] < x) ) ? last : -1;
+    next = first + (last - first) / 2;
+    if ( x < v[next] ) last = next;
+    else if ( v[next] < x ) first = next + 1;
+    else return next;
+  }
+}
 
 template<class V,class U>
 inline bool BinMember( V const& v, const U& x )
-{ return std::binary_search(v.begin(),v.end(),x); }
+{
+  return std::binary_search(v.begin(),v.end(),x);
+}
 
 /// BinSubset: determine if v is a subset of w; assumes w only is sorted and that there
 /// is no repetition.
 template<class V>
 inline bool BinSubset( V const& v, V const& w )
-{    for ( typename V::const_reference e : v )
-          if ( !BinMember(w,e) ) return False;
-     return True;    }
+{ for ( typename V::const_reference e : v )
+    if ( !BinMember(w,e) ) return False;
+  return True;
+}
 
 /// Determine if v is a subset of w; assumes that there is no repetition.
 template<class T,class A,class A1>
 inline bool Subset( const vec<T,A>& v, const vec<T,A1>& w )
-{    for ( T const& e : v )
-          if ( !Member(w,e) ) return False;
-     return True;    }
+{ for ( T const& e : v )
+    if ( !Member(w,e) ) return False;
+  return True;
+}
 
 
 
@@ -710,12 +806,14 @@ template<class T,class A>
 size_t SizeSum( vec<T,A> const& v, typename T::value_type* = 0 )
 { size_t sum = 0;
   for ( T const& e : v ) sum += e.size();
-  return sum; }
+  return sum;
+}
 
 template<class A>
 inline bool Nonnegative( const vec<int,A>& v )
 { for ( int e : v ) if ( e < 0 ) return false;
-  return true;    }
+  return true;
+}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -723,12 +821,15 @@ inline bool Nonnegative( const vec<int,A>& v )
 // Destroy - returns the memory used by a vector, more or less
 //
 
-// Method given in Stroustrup's book, The C++ Programming Language, Special 
+// Method given in Stroustrup's book, The C++ Programming Language, Special
 // Edition (2000), p. 457.
 
 template<class T,class A>
 inline void Destroy( vec<T,A>& v )
-{ vec<T,A> empty; swap(v,empty); }
+{
+  vec<T,A> empty;
+  swap(v,empty);
+}
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -740,7 +841,8 @@ template<class T,class A>
 inline void Sort( vec<T,A>& v )
 {
   TRACEVAL_STOP_TRACING_COPIES;
-  using std::sort; sort( v.begin( ), v.end( ) );
+  using std::sort;
+  sort( v.begin( ), v.end( ) );
   TRACEVAL_START_TRACING_COPIES;
 }
 
@@ -748,7 +850,8 @@ template<class T,class A,class StrictWeakOrdering>
 inline void Sort( vec<T,A>& v, StrictWeakOrdering comp )
 {
   TRACEVAL_STOP_TRACING_COPIES;
-  using std::sort; sort( v.begin( ), v.end( ), comp );
+  using std::sort;
+  sort( v.begin( ), v.end( ), comp );
   TRACEVAL_START_TRACING_COPIES;
 }
 
@@ -756,7 +859,8 @@ template<class T,class A>
 inline void ReverseSort( vec<T,A>& v )
 {
   TRACEVAL_STOP_TRACING_COPIES;
-  using std::sort; sort( v.rbegin( ), v.rend( ) );
+  using std::sort;
+  sort( v.rbegin( ), v.rend( ) );
   TRACEVAL_START_TRACING_COPIES;
 }
 
@@ -764,27 +868,28 @@ template<class T,class A,class StrictWeakOrdering>
 inline void ReverseSort( vec<T,A>& v, StrictWeakOrdering comp )
 {
   TRACEVAL_STOP_TRACING_COPIES;
-  using std::sort; sort( v.rbegin( ), v.rend( ), comp );
+  using std::sort;
+  sort( v.rbegin( ), v.rend( ), comp );
   TRACEVAL_START_TRACING_COPIES;
 }
 
 template <class T,class A,class Comp=std::equal_to<T>>
 void Unique( vec<T,A>& v, Comp isEqual=Comp() )
 {
-    if ( v.size() <= 1 )
-        return;
+  if ( v.size() <= 1 )
+    return;
 
-    TRACEVAL_STOP_TRACING_COPIES;
+  TRACEVAL_STOP_TRACING_COPIES;
 
-    using std::iter_swap;
-    auto dest(v.begin());
-    auto end(v.end());
-    for ( auto itr(dest+1); itr != end; ++itr )
-        if ( !isEqual(*itr,*dest) )
-            iter_swap(itr, ++dest);
-    v.erase(dest+1,end);
+  using std::iter_swap;
+  auto dest(v.begin());
+  auto end(v.end());
+  for ( auto itr(dest+1); itr != end; ++itr )
+    if ( !isEqual(*itr,*dest) )
+      iter_swap(itr, ++dest);
+  v.erase(dest+1,end);
 
-    TRACEVAL_START_TRACING_COPIES;
+  TRACEVAL_START_TRACING_COPIES;
 }
 
 /// Leaves only unique elements in a vector \c v; these elements
@@ -792,10 +897,10 @@ void Unique( vec<T,A>& v, Comp isEqual=Comp() )
 template <class T,class A,class StrictWeakOrdering,class EqualPredicate>
 inline void UniqueSort(vec<T,A>& v,StrictWeakOrdering comp,EqualPredicate equal)
 {
-    if ( v.size() <= 1 )
-        return;
-    Sort(v, comp);
-    Unique(v, equal);
+  if ( v.size() <= 1 )
+    return;
+  Sort(v, comp);
+  Unique(v, equal);
 }
 
 /// Leaves only unique elements in a vector \c v; these elements
@@ -830,7 +935,7 @@ void EraseIf( vec<T,A>& v, const vec<Bool,A1>& erase )
   typename vec<T,A>::size_type count = 0;
   for ( typename vec<T,A>::size_type i = 0; i < v.size( ); i++ ) {
     if ( ! erase[i] ) {
-      if ( count != i ) 
+      if ( count != i )
         v[count] = v[i];
       ++count;
     }
@@ -847,7 +952,7 @@ void EraseUnless( vec<T,A>& v, const vec<Bool,A1>& keep )
   typename vec<T,A>::size_type count = 0;
   for ( typename vec<T,A>::size_type i = 0; i < v.size( ); i++ ) {
     if ( keep[i] ) {
-      if ( count != i ) 
+      if ( count != i )
         v[count] = v[i];
       ++count;
     }
@@ -865,9 +970,11 @@ void EraseTheseIndices( vec<T,A>& v, const vec<IDX,A1>& these )
   TRACEVAL_STOP_TRACING_COPIES;
   typename vec<T,A>::size_type count = 0;
   for ( typename vec<T,A>::size_type i = 0; i < v.size( ); i++ )
-    {    if ( !BinMember( these, i ) )
-      {    if ( count != i ) v[count] = v[i];
-      ++count;    }    }
+  { if ( !BinMember( these, i ) )
+    { if ( count != i ) v[count] = v[i];
+      ++count;
+    }
+  }
   v.resize(count);
   TRACEVAL_START_TRACING_COPIES;
 }
@@ -889,36 +996,41 @@ bool IsAsciiVec( const String &filename );
 longlong AsciiVecSize( const String& filename );
 
 inline void AsciiBoolVecReadSubset( const String& filename,
-                                         const vec<int>& ids,
-                                         vec<Bool>& v )
-{    String ns;
-     {    Ifstream( in, filename );
-          in >> ns;    }
-     ForceAssert( ns.IsInt() );
-     longlong n = ns.Int();
-     int k = ns.size()+1;
-     FileReader fr(filename.c_str());
-     v.resize( ids.size( ) );
-     for ( int i = 0; i < ids.isize( ); i++ )
-     {    ForceAssertGe( ids[i], 0 );
-          ForceAssertLt( ids[i], n );
-          fr.seek( k + ids[i] );
-          fr.read( &v[i], 1 );    }    }
+                                    const vec<int>& ids,
+                                    vec<Bool>& v )
+{ String ns;
+  { Ifstream( in, filename );
+    in >> ns;
+  }
+  ForceAssert( ns.IsInt() );
+  longlong n = ns.Int();
+  int k = ns.size()+1;
+  FileReader fr(filename.c_str());
+  v.resize( ids.size( ) );
+  for ( int i = 0; i < ids.isize( ); i++ )
+  { ForceAssertGe( ids[i], 0 );
+    ForceAssertLt( ids[i], n );
+    fr.seek( k + ids[i] );
+    fr.read( &v[i], 1 );
+  }
+}
 
 /// Return number of elements in binary file of a vec<T> of some sort.
 inline size_t BinaryVecNumElements( const String & filename )
-{   BinaryReader br(filename.c_str());
-    size_t nnn;
-    br.read(&nnn);
-    return nnn; }
+{ BinaryReader br(filename.c_str());
+  size_t nnn;
+  br.read(&nnn);
+  return nnn;
+}
 
 inline size_t BinaryVecElementSize( String const& filename )
-{    BinaryReader br(filename.c_str());
-     size_t nnn;
-     br.read(&nnn);
-     size_t dataLen = br.getFilesize() - br.tell();
-     ForceAssertEq(dataLen%nnn,0ul);
-     return dataLen / nnn; }
+{ BinaryReader br(filename.c_str());
+  size_t nnn;
+  br.read(&nnn);
+  size_t dataLen = br.getFilesize() - br.tell();
+  ForceAssertEq(dataLen%nnn,0ul);
+  return dataLen / nnn;
+}
 
 #define BREAD2( FILE, TYPE, DATA ) \
     TYPE DATA; BinaryReader::readFile( FILE, &DATA )
@@ -929,50 +1041,55 @@ inline size_t BinaryVecElementSize( String const& filename )
 // ========================================================================
 
 void PrettyPrint( ostream& o, const vec<int>& v, int max_items = 0,
-     String terminator = "\n" );
+                  String terminator = "\n" );
 
 void PrettyPrint( ostream& o, const vec<longlong>& v, int max_items = 0,
-     String terminator = "\n" );
+                  String terminator = "\n" );
 
 void PrettyPrint( ostream& o, const vec<double>& v, int max_items = 0,
-     String terminator = "\n" );
+                  String terminator = "\n" );
 
 void PrettyPrint( ostream& o, const vec<TraceInt>& v, int max_items = 0,
-     String terminator = "\n" );
+                  String terminator = "\n" );
 
 
 // CompactPrint: print a vector of objects, separated by blanks (default) or
 // a user-specified separator.
 
 template<class T> void CompactPrint( ostream& out, const vec<T>& v,
-    String separator = " " )
-{    for ( typename vec<T>::size_type i = 0; i < v.size( ); i++ )
-     {    if ( i > 0 ) out << separator;
-          out << v[i];    }    }
+                                     String separator = " " )
+{ for ( typename vec<T>::size_type i = 0; i < v.size( ); i++ )
+  { if ( i > 0 ) out << separator;
+    out << v[i];
+  }
+}
 
 
 /// WriteAppend has an implementation for T = alignment_plus in Alignment.{h,cc}.
 
 template<class T> void WriteAppend( const String& f, const vec<T>& v )
-{    ForceAssert( !IsRegularFile( f + ".gz" ) );
-     if ( !IsRegularFile(f) )
-     {    std::ofstream out(f.c_str());
-          out << setfill('0') << setw(15) << v.size() << setfill(' ') << '\n';
-          for ( typename vec<T>::size_type i = 0; i <  v.size( ); i++ )
-               out << v[i];
-          out.close();   }
-     else
-     {    std::fstream out(f.c_str(),std::ios_base::in|std::ios_base::out);
-          size_t n;
-          out >> n;
-          size_t const max_size_bound = 10000000ul * 100000000ul;
-          ForceAssertLt( n+v.size(), max_size_bound );
-          out.seekp( 0, std::ios_base::beg );
-          out << setfill('0') << setw(15) << n+v.size( ) << setfill(' ') << '\n';
-          out.seekp( 0, std::ios_base::end );
-          for ( typename vec<T>::size_type i = 0; i <  v.size( ); i++ )
-               out << v[i];
-          out.close(); }    }
+{ ForceAssert( !IsRegularFile( f + ".gz" ) );
+  if ( !IsRegularFile(f) )
+  { std::ofstream out(f.c_str());
+    out << setfill('0') << setw(15) << v.size() << setfill(' ') << '\n';
+    for ( typename vec<T>::size_type i = 0; i <  v.size( ); i++ )
+      out << v[i];
+    out.close();
+  }
+  else
+  { std::fstream out(f.c_str(),std::ios_base::in|std::ios_base::out);
+    size_t n;
+    out >> n;
+    size_t const max_size_bound = 10000000ul * 100000000ul;
+    ForceAssertLt( n+v.size(), max_size_bound );
+    out.seekp( 0, std::ios_base::beg );
+    out << setfill('0') << setw(15) << n+v.size( ) << setfill(' ') << '\n';
+    out.seekp( 0, std::ios_base::end );
+    for ( typename vec<T>::size_type i = 0; i <  v.size( ); i++ )
+      out << v[i];
+    out.close();
+  }
+}
 
 /// a specialized version of WriteAppend for String
 
@@ -980,10 +1097,11 @@ template <>
 void WriteAppend( const String& f, const vec<String>& v );
 
 template<class T> ostream& operator<<(ostream& s, const vec<T>& v)
-{    s << v.size( ) << "\n";
-     for ( typename vec<T>::size_type i = 0; i < v.size( ); i++ )
-          s << v[i];
-     return s;    }
+{ s << v.size( ) << "\n";
+  for ( typename vec<T>::size_type i = 0; i < v.size( ); i++ )
+    s << v[i];
+  return s;
+}
 
 ostream& operator<<(ostream& s, const vec<unsigned short>& v);
 ostream& operator<<(ostream& s, const vec<int>& v);
@@ -993,14 +1111,15 @@ ostream& operator<<(ostream& s, const vec<double>& v);
 ostream& operator<<(ostream& s, const vec<String>& v);
 
 template<class T> istream& operator>>(istream& s, vec<T>& v)
-{    typename vec<T>::size_type n;
-     s >> n;
-     v.resize(n);
-     char c;
-     s.get(c);
-     for ( typename vec<T>::size_type i = 0; i < v.size( ); i++ )
-       s >> v[i];   // Breaks cxx
-     return s;    }
+{ typename vec<T>::size_type n;
+  s >> n;
+  v.resize(n);
+  char c;
+  s.get(c);
+  for ( typename vec<T>::size_type i = 0; i < v.size( ); i++ )
+    s >> v[i];   // Breaks cxx
+  return s;
+}
 
 
 istream& operator>>(istream& s, vec<String>& v);
@@ -1010,7 +1129,7 @@ istream& operator>>(istream& s, vec<String>& v);
 /// consisting of a string of l's and r's.)
 
 void PrintTabular( ostream& out, const vec< vec<String> >& rows, int sep,
-     String justify = String( ) );
+                   String justify = String( ) );
 
 void PrintCSV(ostream& out, const vec< vec<String> >& rows);
 

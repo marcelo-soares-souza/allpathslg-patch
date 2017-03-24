@@ -29,14 +29,14 @@ public:
   efasta efa;
 
   Edit(const int _i0, const int _i1, const efasta & _efa)
-    : i0(_i0), i1(_i1), efa(_efa) 
+    : i0(_i0), i1(_i1), efa(_efa)
   {
     ValidateEfastaRecord(_efa);
   }
 
   friend
-  bool operator < (const Edit & a, const Edit & b) 
-  { 
+  bool operator < (const Edit & a, const Edit & b)
+  {
     if (a.i0 < b.i0) return true;
     if (a.i0 > b.i0) return false;
     if (a.i1 < b.i1) return true;
@@ -49,12 +49,12 @@ public:
 
 
 
-void markups_read(const String & SCAFFOLDS_IN, 
+void markups_read(const String & SCAFFOLDS_IN,
                   vec<triple<int,int,int> > * markups_p,
                   const VecEFasta & tigs_orig,
                   const int TIG,
                   const Bool VERBOSE)
-{     
+{
   if (IsRegularFile(SCAFFOLDS_IN + ".markup")) {
     cout << Date() << ": loading markups" << endl;
     fast_ifstream in(SCAFFOLDS_IN + ".markup");
@@ -62,7 +62,7 @@ void markups_read(const String & SCAFFOLDS_IN,
     while (1) {
       getline(in, line);
       if (in.fail()) break;
-      int it; 
+      int it;
       int start;
       int stop;
       istringstream iline(line.c_str());
@@ -85,35 +85,35 @@ void markups_read(const String & SCAFFOLDS_IN,
 
 
 
-void edits_compile(const efasta & tig_orig, 
+void edits_compile(const efasta & tig_orig,
                    const vec< triple<int,int,int> > & markups,
                    const size_t it,
                    vec<Edit> * edits_p)
 {
-           
+
   // Make a list of the ambiguities in the efasta contig.
-           
-  for (int i = 0; i < tig_orig.isize(); i++) {    
-    if (tig_orig[i] == '{') {    
+
+  for (int i = 0; i < tig_orig.isize(); i++) {
+    if (tig_orig[i] == '{') {
       const int i0 = i;
-      for (i++; i < tig_orig.isize(); i++) if (tig_orig[i] == ',') break;    
+      for (i++; i < tig_orig.isize(); i++) if (tig_orig[i] == ',') break;
       for (i++; i < tig_orig.isize(); i++) if (tig_orig[i] == '}') break;
       const int i1 = i + 1;
-      edits_p->push(i0, i1, tig_orig.substr(i0, i1 - i0)); 
-    }   
+      edits_p->push(i0, i1, tig_orig.substr(i0, i1 - i0));
+    }
   }
-           
+
   // Add in markups.
-           
-  for (size_t im = 0; im < markups.size(); im++) {    
+
+  for (size_t im = 0; im < markups.size(); im++) {
     if (markups[im].first == int(it)) {
       const int i0 = markups[im].second;
       const int i1 = markups[im].third;
       edits_p->push(i0, i1, tig_orig.substr(i0, i1 - i0));
-    }    
+    }
   }
-           
-           
+
+
   // Sort
   Sort(*edits_p);
 }
@@ -126,7 +126,7 @@ bool handle_true_tandem(const efasta & tig_orig,
                         Edit * edit_p,
                         const int MIN_PERIOD,
                         const bool USE_TANDEM)
-{         
+{
   if (edit_p->efa.Contains("{")) {
     vec<basevector> bvv;
     edit_p->efa.ExpandTo(bvv);
@@ -163,7 +163,7 @@ bool handle_true_tandem(const efasta & tig_orig,
   }
   return true;
 }
-         
+
 
 
 
@@ -185,7 +185,7 @@ int main(int argc, char *argv[])
   CommandArgument_Int_OrDefault(FLANK, 100);
   CommandArgument_Bool_OrDefault(WRITE, True);
   CommandArgument_Bool_OrDefault(VERBOSE, False);
-  CommandArgument_Int_OrDefault_Doc(TIG, -1, 
+  CommandArgument_Int_OrDefault_Doc(TIG, -1,
                                     "if specified, use only this contig");
   CommandArgument_Bool_OrDefault(USE_MARKUPS, True);
   CommandArgument_Bool_OrDefault(USE_TANDEM, True);
@@ -203,18 +203,18 @@ int main(int argc, char *argv[])
 
   const size_t nt_orig = tigs_orig.size();
 
-     
+
   // validate contigs
 
   for (size_t it = 0; it < nt_orig; it++)
-    if (TIG < 0 || int(it) == TIG) 
+    if (TIG < 0 || int(it) == TIG)
       ValidateEfastaRecord(tigs_orig[it]);
 
 
   // Load markups.
 
   vec< triple<int,int,int> > markups;
-     
+
   if (USE_MARKUPS)
     markups_read(SCAFFOLDS_IN, & markups, tigs_orig, TIG, VERBOSE);
 
@@ -236,15 +236,15 @@ int main(int argc, char *argv[])
       edits_compile(tig_orig, markups, it, & edits);
 
       // Identify ambiguities that are tandem repeats having sufficiently large
-      // period and sufficiently large ambiguity-free flanks.  
+      // period and sufficiently large ambiguity-free flanks.
       // Form revised list of edits.
-       
+
       const size_t n_edits = edits.size();
       for (size_t ie = 0; ie < n_edits; ie++) {
 
         Edit & edit = edits[ie];
         ValidateEfastaRecord(edit.efa);
-           
+
         const bool valid = handle_true_tandem(tig_orig, &edit, MIN_PERIOD, USE_TANDEM);
 
         if (valid) {
@@ -253,17 +253,17 @@ int main(int argc, char *argv[])
 
           // make sure edits don't overlap each other
 
-          if (i0_flank > 0 && 
+          if (i0_flank > 0 &&
               i1_flank < tig_orig.isize() &&
               (ie == 0           || i0_flank > edits[ie-1].i1) &&
               (ie == n_edits - 1 || i1_flank < edits[ie+1].i0)) {
-               
+
             const String left  = tig_orig.substr(i0_flank, FLANK);
             const String right = tig_orig.substr(edit.i1, FLANK);
             const String all   = tig_orig.substr(i0_flank, i1_flank - i0_flank);
-               
+
             if (VERBOSE) PRINT7(it, i0_flank, i1_flank, left, edit.efa, right, all);
-               
+
             edits_vec[it].push(i0_flank, i1_flank, left + edit.efa + right);
             n_edits_tot++;
           }
@@ -271,7 +271,7 @@ int main(int argc, char *argv[])
         }
 
       }
-       
+
     }
   }
   cout << Date() << ": found " << n_edits_tot << " edits" << endl;
@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
 
 
 
-  // Go through the scaffolds and edit them.  
+  // Go through the scaffolds and edit them.
   // We set the deviation of the new gaps to zero.
 
 
@@ -299,7 +299,7 @@ int main(int argc, char *argv[])
   for (size_t is = 0; is < ns; is++) {
 
     superb & scaffold = scaffolds[is];
-       
+
     for (int ist = scaffold.Ntigs() - 1; ist >= 0; ist--) {
       size_t it = scaffold.Tig(ist);
 
@@ -307,7 +307,7 @@ int main(int argc, char *argv[])
 
       const vec<Edit> & edits = edits_vec[it];
       const size_t n_edits = edits.size();
-         
+
       const size_t nt_edit_loc = n_edits + 1;
       VecEFasta tigs_edit_loc(nt_edit_loc);
 
@@ -317,10 +317,10 @@ int main(int argc, char *argv[])
       else {
         tigs_edit_loc[0] = tig_orig.substr(0, edits[0].i0);
         for (size_t l = 0; l < n_edits - 1; l++)
-          tigs_edit_loc[l+1] = tig_orig.substr(edits[l].i1, 
+          tigs_edit_loc[l+1] = tig_orig.substr(edits[l].i1,
                                                edits[l+1].i0 - edits[l].i1);
-         
-        tigs_edit_loc.back() = tig_orig.substr(edits.back().i1, 
+
+        tigs_edit_loc.back() = tig_orig.substr(edits.back().i1,
                                                tig_orig.isize() - edits.back().i1);
       }
 
@@ -332,7 +332,7 @@ int main(int argc, char *argv[])
         gap2[l] = edits[l].efa.Length1();
         vec<basevector> bvv_rep;
         edits[l].efa.ExpandTo(bvv_rep);
-        a_edit2.push(assembly_edit::GAP_CLOSER, nt_tot + l, 
+        a_edit2.push(assembly_edit::GAP_CLOSER, nt_tot + l,
                      tigs_edit_loc[l].Length1(), nt_tot + l + 1, 0, bvv_rep);
         i2.push_back(nt_tot + l);
       }
@@ -359,7 +359,7 @@ int main(int argc, char *argv[])
       // update scaffold and new contigs
 
       scaffold.ReplaceTigBySuper(ist, scaffold_edit);
-         
+
       for (size_t it2 = 0; it2 < tigs_edit_loc.size(); it2++)
         tigs_edit.push_back(tigs_edit_loc[it2]);
 
@@ -383,7 +383,7 @@ int main(int argc, char *argv[])
     A.check_integrity();
     A.WriteAll(SCAFFOLDS_OUT);
     String outputFile = SCAFFOLDS_OUT + ".edits";
-    BinaryWriter::writeFile(outputFile.c_str(), a_edit2);    
+    BinaryWriter::writeFile(outputFile.c_str(), a_edit2);
     UniqueSort(i2);
     Ofstream(out, SCAFFOLDS_OUT + ".tig_ids");
     for (int j = 0; j < i2.isize(); j++)

@@ -14,9 +14,9 @@
 #include "efasta/EfastaTools.h"
 
 // class specifying all FASTG specifications
-class fastg_meta{
+class fastg_meta {
 
- public:
+public:
   static size_t GetDefaultGapSize(); //the number of 'N' in a gap's canonical sequence
   static String GetVersion();
   static String GetFileHeader(const String assembly_name);
@@ -34,8 +34,8 @@ class fastg_meta{
 //
 
   enum efasta_mode {MODE_0,MODE_1,MODE_2,N_MODE};
-  
- private:
+
+private:
   //these are implmenetation dependent and are defined in the implementation file FastgTools.cc
   static const String sVersion_;
   static const size_t uDefaultGapSize_; //the number of 'N' in the canonical sequence
@@ -47,9 +47,9 @@ class recfastg;
 // Class basefastg represents bases record in fastg string.
 
 class basefastg : public String {
-   
- public:
-  
+
+public:
+
   basefastg( );
   basefastg( const String& s );
   basefastg( const efasta& ef );
@@ -57,7 +57,7 @@ class basefastg : public String {
   basefastg( const superb& s, const VecEFasta& econtigs);
   basefastg( const superb& s, const vec<basefastg>& fcontigs);
   basefastg( const superb& s, const vec<recfastg>& fcontigs);
-  
+
   void AsSections( vec<String>& sections ) const;
 
   int Length1(const Bool count_Ns = false) const;
@@ -79,9 +79,9 @@ class basefastg : public String {
 
 
 class headfastg : public String {
-   
- public:
-  
+
+public:
+
   headfastg( );
   headfastg( const String& id );
   headfastg( const String& id, const vec<String>& next_ids );
@@ -91,13 +91,13 @@ class headfastg : public String {
 
 class recfastg {
 
- private:
+private:
   headfastg header_;
   basefastg bases_;
 
- public:
+public:
   recfastg();
-  recfastg( const headfastg& header, const basefastg& bases); 
+  recfastg( const headfastg& header, const basefastg& bases);
 
 
   void Set( const headfastg& header, const basefastg& bases);
@@ -124,7 +124,7 @@ class recfastg {
   // long sequences nicely into 80-character lines
 
   void Print( ostream& out ) const;
-  
+
   void Print( ostream& out, const String& id ) const;
 
   void AsScaffold( superb& s, vec<recfastg>& fcontigs, int& lastTid ) const;
@@ -133,7 +133,7 @@ class recfastg {
   void AsFastb( basevector& fb ) const;
 
   // convert to EFASTA, MODE_0==MODE_1, with gap=max(1,avg-gap), and MODE_2 for gap=max(0,avg-gap)
-  void AsEfasta( efasta& fe , const fastg_meta::efasta_mode uMode) const;
+  void AsEfasta( efasta& fe, const fastg_meta::efasta_mode uMode) const;
 
 };
 
@@ -144,7 +144,7 @@ void WriteFastg( const String& fn, const vec<recfastg>& records );
 
 // take a vec of recfastg and convert and create FASTA and EFASTA files
 void WriteFastaEfasta( const String& fasta_file, const String& efasta_file
-                     , const vec<recfastg>& records, const Bool ncbi_format=false);
+                       , const vec<recfastg>& records, const Bool ncbi_format=false);
 
 
 

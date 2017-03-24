@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   CommandArgument_String_OrDefault(SCAFFOLDS_IN, "linear_scaffolds0.patched");
   CommandArgument_String_OrDefault(SCAFFOLDS_OUT, "linear_scaffolds0.patched.fixed");
   CommandArgument_StringSet_OrDefault(EDITS_IN,
-      "linear_scaffolds0.patched.fixed.edits, linear_scaffolds0.patched.fixed2.edits");
+                                      "linear_scaffolds0.patched.fixed.edits, linear_scaffolds0.patched.fixed2.edits");
   CommandArgument_Bool_OrDefault(VERBOSE, False);
   EndCommandArguments;
 
@@ -67,25 +67,25 @@ int main(int argc, char *argv[])
       // check conflicts
       bool overLap = false;
       for ( size_t i = 0; i < all_edits[tigId].size(); i++ )
-      {    if ( Overlap( all_edits[tigId][i], e ) )
-	   {
-	     overLap = true;
-	     break;
-	   }
+      { if ( Overlap( all_edits[tigId][i], e ) )
+        {
+          overLap = true;
+          break;
+        }
       }
       if ( overLap ) {
-	if (VERBOSE) 
-	  cout << " Overlapping edits skipped: " << e << endl;
+        if (VERBOSE)
+          cout << " Overlapping edits skipped: " << e << endl;
       } else {
-	if ( VERBOSE) 
-	  cout << " read edits: " << e << endl;
-	if ( e.PureDeletion( ) && e.Start( ) == 0 ) { // left trimming
-	  left_trim[tigId] = e.Stop( );
-	}
-	if ( e.PureDeletion( ) && (unsigned) e.Stop( ) == contigs[tigId].size() ) { // right trimming
-	  right_trim[tigId] = e.Stop( ) - e.Start( );
-	}
-	all_edits[tigId].push( e );
+        if ( VERBOSE)
+          cout << " read edits: " << e << endl;
+        if ( e.PureDeletion( ) && e.Start( ) == 0 ) { // left trimming
+          left_trim[tigId] = e.Stop( );
+        }
+        if ( e.PureDeletion( ) && (unsigned) e.Stop( ) == contigs[tigId].size() ) { // right trimming
+          right_trim[tigId] = e.Stop( ) - e.Start( );
+        }
+        all_edits[tigId].push( e );
       }
     }
   }
@@ -98,44 +98,43 @@ int main(int argc, char *argv[])
     Sort( edits );
     FastaVec& contig = contigs[tig];
     size_t contig_size = contig.size(), ie = 0;
-    for ( size_t i = 0; i < contig_size; i++ ) 
-    { 
+    for ( size_t i = 0; i < contig_size; i++ )
+    {
       if ( ie < edits.size() && i == (unsigned)edits[ie].Start( ) )
-      {    
+      {
         efasta e( edits[ie].Reps( ) );
         econtigs_new[tig].append(e);
-	i += edits[ie].Stop( ) - edits[ie].Start( ) - 1;
-	ie++;    
+        i += edits[ie].Stop( ) - edits[ie].Start( ) - 1;
+        ie++;
       }
-      else  
-	if (  contig[i] == 'A' || contig[i] == 'C' || contig[i] == 'G' || contig[i] == 'T' )
-	  econtigs_new[tig].push_back( contig[i] );
-	else
-	  econtigs_new[tig].append( ExpandAmbCode(contig[i]) );
+      else if (  contig[i] == 'A' || contig[i] == 'C' || contig[i] == 'G' || contig[i] == 'T' )
+        econtigs_new[tig].push_back( contig[i] );
+      else
+        econtigs_new[tig].append( ExpandAmbCode(contig[i]) );
     }
   }
 
   // Write output
 
-  cout << "\n" << Date( ) << ": Writing fixed efasta files to : " 
-    << out_head << ".*" << endl;
+  cout << "\n" << Date( ) << ": Writing fixed efasta files to : "
+       << out_head << ".*" << endl;
   vec<FastaVec> flattened_fasta(econtigs_new.size());
   vec<FastaVec> flattened_fasta_max(econtigs_new.size());
   vecbasevector flattened_fastb(econtigs_new.size());
-  {    
+  {
     Ofstream(out_e, out_head + ".contigs.efasta");
     Ofstream(out_a, out_head + ".contigs.fasta");
     Ofstream(out_m, out_head + ".contigs.max.fasta");
-    for (size_t it = 0; it < n_tigs; it++) 
-    {    
+    for (size_t it = 0; it < n_tigs; it++)
+    {
       econtigs_new[it].FlattenTo(flattened_fasta[it]);
       econtigs_new[it].FlattenNMaxTo(flattened_fasta_max[it]);
       econtigs_new[it].FlattenTo(flattened_fastb[it]);
       econtigs_new[it].Print(out_e, ToString(it));
-      flattened_fasta[it].Print(out_a, ToString(it));   
-      flattened_fasta_max[it].Print(out_m, ToString(it));  
+      flattened_fasta[it].Print(out_a, ToString(it));
+      flattened_fasta_max[it].Print(out_m, ToString(it));
     }
-    flattened_fastb.WriteAll( out_head + ".contigs.fastb" );     
+    flattened_fastb.WriteAll( out_head + ".contigs.fastb" );
   }
   vecfastavector flattened_fasta2(econtigs_new.size());
   for (size_t it = 0; it < n_tigs; it++)
@@ -143,18 +142,18 @@ int main(int argc, char *argv[])
   flattened_fasta2.WriteAll( out_head + ".contigs.vecfasta" );
   vec<superb> scaffolds;
   ReadSuperbs(sub_dir + "/" + SCAFFOLDS_IN + ".superb", scaffolds);
-  for (int ii=0; ii<scaffolds.isize( ); ii++) 
-  { 
+  for (int ii=0; ii<scaffolds.isize( ); ii++)
+  {
     superb& S = scaffolds[ii];
-    for ( int jj=0; jj < S.Ntigs( ); jj++ ) 
+    for ( int jj=0; jj < S.Ntigs( ); jj++ )
     {
       int tig_id = S.Tig( jj );
       int tig_len = flattened_fastb[tig_id].size( );
-      S.SetLen( jj, tig_len );    
+      S.SetLen( jj, tig_len );
       if ( jj > 0 ) S.SetGap( jj-1, S.Gap(jj-1) + left_trim[tig_id] );
-      if ( jj < S.Ngaps( ) - 1 ) 
-	S.SetGap( jj, S.Gap(jj) + right_trim[tig_id] );    
-    }    
+      if ( jj < S.Ngaps( ) - 1 )
+        S.SetGap( jj, S.Gap(jj) + right_trim[tig_id] );
+    }
   }
   WriteScaffoldedEFasta(out_head + ".assembly.efasta", econtigs_new, scaffolds);
   WriteScaffoldedFasta(out_head + ".assembly.fasta", flattened_fasta, scaffolds);
@@ -162,5 +161,5 @@ int main(int argc, char *argv[])
   WriteSuperbs( out_head + ".superb", scaffolds );
   WriteSummary( out_head + ".summary", scaffolds );
   // Done.
-  cout << "time used = " << TimeSince(clock) << endl;    
+  cout << "time used = " << TimeSince(clock) << endl;
 }

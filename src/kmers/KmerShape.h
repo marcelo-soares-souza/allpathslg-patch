@@ -67,19 +67,19 @@
    To invoke the right instantiation of code templatized on kmer shape, you do the following:
 
         - take a string command-line argument identifying the shape,
-	
+
 	- define a macro that takes kmer shape (i.e. the name of the
         concrete class that models KmerShape and denotes a particular
         kmer shape) and calls your code instantiated with that kmer
         shape,
-	
+
 	- invoke the <DISPATCH_ON_KSHAPE()> macro, passing it the
           command-line argument and your macro as arguments.
-	
+
 	- define a macro that takes two arguments, kmer shape and a
 	  second value (normally ignored), and explicitly instantiates
 	  your templatized code for the passed kmer shape
-	  
+
 	- in the declarations section of your .cc file, invoke the
 	<FOR_ALL_KSHAPE()> macro passing it your instantiation macro
 	as first argument, and a dummy value as second argument.  (The
@@ -102,7 +102,7 @@
 	   denote kmer shapes of this form.  On the command line, use
 	   the string "K" (as in "16") to specify kmers of size K of
 	   the default form.
-	   
+
 	the midgap kmer form - has a gap of G bases in the middle.
 	   Extracts K/2 bases followed by a G-base gap followed by
 	   extracting the remaining K/2 bases.  Use
@@ -110,12 +110,12 @@
 	   form.  On the command line, use the string "KgG" (as in
 	   "16g4") to specify kmers of size K with a gap of G bases in
 	   the middle.
-	   
+
 	the zebra shape - extracts every other base, until K bases are
 	   extrated.  Use <KmerShapeZebraClass()> to denote kmer
 	   shapes of this form.  On the command line, use the string
 	   "Kz" to denote kmers of zebra form of size K.
-   
+
    Note that for a kmer, exactly K bases are always extracted from the
    base vector; and after extraction, the k bases are represented as a
    continuous k-base array.  However, when we have a <kmer_record>
@@ -136,7 +136,7 @@
    members of a KmerShape class are used to implement a particular
    version of kmer extraction.
 
-  A class that is a model of KmerShape must define the _static_ members described below. 
+  A class that is a model of KmerShape must define the _static_ members described below.
 
   Constant: KSIZE
   The size of the kmer: the number of bases extracted from the base vector.
@@ -168,12 +168,12 @@
   >static unsigned int getSpan() { return K + GAPLEN; }
 
   Method: extractKmer
-  
+
   Extract the kmer from the given position of a read, and store it in a kmer.
   The kmer shape *must* be symmetric!
 
   Parameters:
-  
+
       fwdKmer -the extracted kmer (forward version) is put here
       read - the read from which to extract the kmer
       posInRead - the position in the read, at which the kmer begins.
@@ -197,7 +197,9 @@
 /// Local function: KmerShapeDefaultStringId
 /// Return the string id denoting kmers of the <default form> and given size --
 /// must be just the string version of the size, for backwards compatibility.
-inline String KmerShapeDefaultStringId(int K) { return ToString(K); }
+inline String KmerShapeDefaultStringId(int K) {
+  return ToString(K);
+}
 
 /**
    Class: KmerShapeId
@@ -212,12 +214,12 @@ inline String KmerShapeDefaultStringId(int K) { return ToString(K); }
    See also: <DISPATCH_ON_KSHAPE()>.
 */
 class KmerShapeId {
- public:
+public:
   /// Constructor: KmerShapeId(int)
   /// Create a kmer shape id for the <default kmer form> of the given size.
   explicit KmerShapeId(int ksize): id_(KmerShapeDefaultStringId(ksize)), ksize_(ksize) {
   }
-  
+
   /// Constructor: KmerShapeId(const String&)
   /// Create a kmer shape id from a string description.
   //  The currently supported kmer shape ids are:
@@ -236,20 +238,26 @@ class KmerShapeId {
   KmerShapeId(): id_(""), ksize_(0) { }
 
   KmerShapeId& operator= (const KmerShapeId& ksi) {
-    id_ = ksi.id_; ksize_ = ksi.ksize_; return *this;
+    id_ = ksi.id_;
+    ksize_ = ksi.ksize_;
+    return *this;
   }
 
   KmerShapeId& operator= (const String& ksi) {
-    id_ = ksi;  extractKmerSize_(); return *this;
+    id_ = ksi;
+    extractKmerSize_();
+    return *this;
   }
 
   KmerShapeId& operator= (int ksize) {
-    id_ = KmerShapeDefaultStringId(ksize); ksize_ = ksize; return *this;
+    id_ = KmerShapeDefaultStringId(ksize);
+    ksize_ = ksize;
+    return *this;
   }
 
   //operator int() const { return ksize_; }
 
- private:
+private:
   /// Field: id_
   /// A unique string identifying this kmer shape, as returned by <KmerShape::getStringId()>.
   String id_;
@@ -268,10 +276,10 @@ class KmerShapeId {
 
     ksize_ = num.Int();
   }
-  
+
   friend bool operator==(const KmerShapeId& ksi1, const KmerShapeId& ksi2);
   friend bool operator<(const KmerShapeId& ksi1, const KmerShapeId& ksi2);
-  
+
   friend int GetKmerSize(const KmerShapeId& kmerShapeStringId);
   friend String ToString(const KmerShapeId& ksi);
   friend ostream& operator<< ( ostream& out, const KmerShapeId& ksi );
@@ -323,7 +331,7 @@ inline int GetKmerSize(const KmerShapeId& kmerShapeId) {
    string format.
 */
 inline void ParseKmerShapeIdSet( String descrip, vec<KmerShapeId>& answer,
-				 Bool ABORT_IF_BAD = False, bool sortAnswer = true  ) {
+                                 Bool ABORT_IF_BAD = False, bool sortAnswer = true  ) {
   vec<String> answerStrings;
   ParseStringSet( descrip, answerStrings );
   if (sortAnswer) {
@@ -333,7 +341,9 @@ inline void ParseKmerShapeIdSet( String descrip, vec<KmerShapeId>& answer,
     answer.push_back( KmerShapeId( answerStrings[i] ) );
 }
 
-inline String ToString(const KmerShapeId& ksi) { return ksi.id_; }
+inline String ToString(const KmerShapeId& ksi) {
+  return ksi.id_;
+}
 
 #define CommandArgument_KShape(NAME) \
      KmerShapeId NAME; \
@@ -374,13 +384,13 @@ inline String ToString(const KmerShapeId& ksi) { return ksi.id_; }
 
 /**
    Class: kmer_shape_mid_gap
-   
+
    The kmer shape with one specified gap of the given length in the middle.
    Make sure that the gap is not so large as to make the <span> exceed the typical read length!!
 */
 template <int K, int GAPLEN=0>
 class kmer_shape_mid_gap {
- public:
+public:
   /// Constant: KSIZE
   /// The size of the kmer.
   static const int KSIZE = K;
@@ -388,37 +398,45 @@ class kmer_shape_mid_gap {
   /// Constant: KSPAN
   /// The span from which the kmer is extracted
   static const int KSPAN = K + GAPLEN;
-  
+
   /// Return the kmer size.
-  static int getKmerSize() { return K; }
-  
+  static int getKmerSize() {
+    return K;
+  }
+
   /// Return the offset of the i'th base of the shape, from the leftmost base of the shape.
-  static unsigned int getShapeOffset(int posInShape) { return posInShape < K/2 ? posInShape : posInShape+GAPLEN; }
+  static unsigned int getShapeOffset(int posInShape) {
+    return posInShape < K/2 ? posInShape : posInShape+GAPLEN;
+  }
 
   /// Return the number of inner gaps (where each position counts as a separate gap) in the shape.
-  static unsigned int getNumGaps() { return GAPLEN; }
+  static unsigned int getNumGaps() {
+    return GAPLEN;
+  }
 
   /// Return the offset of the i'th gap, from the leftmost base of the shape.
   static unsigned int getGapOffset(int gapNum) {
     Assert( 0 < gapNum  &&  gapNum < GAPLEN );
     return K/2 + gapNum;
   }
-  
+
   /// The size of the region from which we gather a shape.
-  static unsigned int getSpan() { return K + GAPLEN; }
+  static unsigned int getSpan() {
+    return K + GAPLEN;
+  }
 
   /**
      Method: extractKmer
-     
+
      Extract the kmer from the given position of a read, and store it in a kmer.
-     
+
      Input parameters:
-     
+
         read - the read from which to extract the kmer
         posInRead - the position in the read, at which the kmer begins.
 
      Output parameters:
-     
+
         fwdKmer - the extracted kmer (forward version) is put here
 
      See also: <SORT_CORE()>.
@@ -426,20 +444,24 @@ class kmer_shape_mid_gap {
   static void extractKmer( basevector& fwdKmer, const basevector& read, int posInRead ) {
     fwdKmer.SetToSubOf(read, posInRead, K);
     CopyBases(read, posInRead+K/2+GAPLEN, fwdKmer,
-	      K/2 /* start writing in the middle of extractedKmer*/,
-	      K/2 /* copy the remainder */);
+              K/2 /* start writing in the middle of extractedKmer*/,
+              K/2 /* copy the remainder */);
   }
 
- // Method: getId
- // Return a <KmerShapeId> object that uniquely identifies this particular kmer shape
-  static KmerShapeId getId() { return KmerShapeId( getStringId() ); }
+// Method: getId
+// Return a <KmerShapeId> object that uniquely identifies this particular kmer shape
+  static KmerShapeId getId() {
+    return KmerShapeId( getStringId() );
+  }
 
- private:
- //  Method: getStringId
- //  Return a string that uniquely identifies this particular kmer shape.
- static String getStringId() { return ToString(K) + "g" + ToString(GAPLEN); }
- 
-};  // class kmer_shape_mid_gap 
+private:
+//  Method: getStringId
+//  Return a string that uniquely identifies this particular kmer shape.
+  static String getStringId() {
+    return ToString(K) + "g" + ToString(GAPLEN);
+  }
+
+};  // class kmer_shape_mid_gap
 
 /**
    The default kmer shape, ungapped: K contiguous letters.
@@ -456,26 +478,37 @@ public:
   // Constant: KSPAN
   // The span from which the kmer is extracted
   static const int KSPAN = K;
-  
-  
+
+
   /// Return the kmer size.
-  static int getKmerSize() { return K; }
-  
+  static int getKmerSize() {
+    return K;
+  }
+
   /// Return the offset of the i'th base of the shape.
-  static unsigned int getShapeOffset(int posInShape) { return posInShape; }
-  
+  static unsigned int getShapeOffset(int posInShape) {
+    return posInShape;
+  }
+
   /// Return the number of inner gaps (where each position counts as a separate gap) in the shape.
-  static unsigned int getNumGaps() { return 0; }
-  
+  static unsigned int getNumGaps() {
+    return 0;
+  }
+
   /// Return the offset of the i'th gap, from the leftmost base of the shape.
-  static unsigned int getGapOffset(int gapNum) { ForceAssert( 0 ) ; return 0; }
-    
+  static unsigned int getGapOffset(int gapNum) {
+    ForceAssert( 0 ) ;
+    return 0;
+  }
+
   /// The size of the region from which we gather a shape.
-  static unsigned int getSpan() { return K; }
+  static unsigned int getSpan() {
+    return K;
+  }
 
   /**
      Method: extractKmer
-     
+
      Extract the shape from the given position of a read, and store it in a kmer.
 
      Parameters:
@@ -490,15 +523,19 @@ public:
     fwdKmer.SetToSubOf(read, posInRead, K);
   }
 
- // Method: getId
- // Return a <KmerShapeId> object that uniquely identifies this particular kmer shape
- static KmerShapeId getId() { return KmerShapeId( getStringId() ); }
+// Method: getId
+// Return a <KmerShapeId> object that uniquely identifies this particular kmer shape
+  static KmerShapeId getId() {
+    return KmerShapeId( getStringId() );
+  }
 
- private:
+private:
   // Method: getStringId
   // Return a string that uniquely identifies this particular kmer shape.
-  static String getStringId() { return KmerShapeDefaultStringId(K); }
- 
+  static String getStringId() {
+    return KmerShapeDefaultStringId(K);
+  }
+
 };  // class kmer_shape_mid_gap<K,0>
 
 /**
@@ -523,21 +560,31 @@ public:
   /// Constant: KSPAN
   /// The span from which the kmer is extracted
   static const int KSPAN = 2 * K;
-  
+
   /// Return the kmer size.
-  static int getKmerSize() { return K; }
-  
+  static int getKmerSize() {
+    return K;
+  }
+
   /// Return the offset of the i'th base of the shape.
-  static unsigned int getShapeOffset(int posInShape) { return 2*posInShape + (posInShape < K/2  ?  0 : 1) ; }
-  
+  static unsigned int getShapeOffset(int posInShape) {
+    return 2*posInShape + (posInShape < K/2  ?  0 : 1) ;
+  }
+
   /// Return the number of inner gaps (where each position counts as a separate gap) in the shape.
-  static unsigned int getNumGaps() { return K; }
-  
+  static unsigned int getNumGaps() {
+    return K;
+  }
+
   /// Return the offset of the i'th gap, from the leftmost base of the shape.
-  static unsigned int getGapOffset(int gapNum) { return 2*gapNum + (gapNum < K/2 ? 1 : 0); }
-    
+  static unsigned int getGapOffset(int gapNum) {
+    return 2*gapNum + (gapNum < K/2 ? 1 : 0);
+  }
+
   /// The size of the region from which we gather a shape.
-  static unsigned int getSpan() { return KSPAN; }
+  static unsigned int getSpan() {
+    return KSPAN;
+  }
 
   /**
      Extract the shape from the given position of a read, and store it in a kmer.
@@ -561,15 +608,19 @@ public:
       fwdKmer.Set( i, read[ readPos ] );
   }
 
- // Method: getId
- // Return a <KmerShapeId> object that uniquely identifies this particular kmer shape
- static KmerShapeId getId() { return getStringId(); }
+// Method: getId
+// Return a <KmerShapeId> object that uniquely identifies this particular kmer shape
+  static KmerShapeId getId() {
+    return getStringId();
+  }
 
- private:
+private:
   // Method: getStringId
   // Return a string that uniquely identifies this particular kmer shape.
-  static String getStringId() { return ToString(K) + "z"; }
- 
+  static String getStringId() {
+    return ToString(K) + "z";
+  }
+
 };  // class kmer_shape_zebra<K>
 
 
@@ -577,7 +628,7 @@ public:
    Class: KmerShapeDefault
 
    The standard kmer shape, which extracts K consequtive bases: a kmer shape without any gaps.
-  
+
    Alternative name for kmer_shape_mid_gap<K,0>, designating the default kmer shape.
 
    The definition below works because the second template argument of kmer_shape_mid_gap
@@ -590,7 +641,7 @@ public:
 
 /*
    Macro: KmerShapeMidGapType
-   
+
    Return the typedef name for kmer_shape_mid_gap<K,GAP>.  The resulting name has no commas, which makes it
    usable in various macros -- if you use kmer_shape_mid_gap<K,GAP> as an actual macro argument, the preprocessor
    will get confused, thinking it got two tokens separated by a comma, since it does not treat angle brackets as paired brackets.
@@ -639,19 +690,19 @@ FOR_ALL_K(CreateKmerShapeMidGapTypedef, 8);
    if ( KmerShapeId( KSHAPE_CASE_GET_shapeId shapeId_handleShape ) == shapeType::getId()) {  \
       foundKShape = true;                                                    \
       KSHAPE_CASE_GET_handleShape shapeId_handleShape (shapeType) ;          \
-    }                                               
-   
+    }
+
 /**
    Macro: DISPATCH_ON_KSHAPE
 
    Call the given macro on the shape specified by the given <shape id>.
-   
+
    Parameters:
-   
+
       shapeId - the <shape id> value, of type KmerShapeId; can be a variable (not a constant)
       handleShape - a macro that takes one argument -- the <kmer shape> (the name of the class
          representing that shape), and specifies what to do for a given shape.
-        
+
 */
 #define DISPATCH_ON_KSHAPE(shapeId,handleShape) do {                        \
      bool foundKShape = false;                                              \
@@ -678,7 +729,7 @@ FOR_ALL_K(CreateKmerShapeMidGapTypedef, 8);
 /// macros, if you want to leave a particular one of these macros empty.
 /// This macro makes it ok to add a semicolon after instantiating these macros
 /// in the declarations section of a .cc file.
-#define NO_KSHAPES(X) typedef int no_kshapes_ ## X ## _ 
+#define NO_KSHAPES(X) typedef int no_kshapes_ ## X ## _
 
 /*
    Macro: FOR_ALL_KSHAPES
@@ -706,7 +757,7 @@ FOR_ALL_K(CreateKmerShapeMidGapTypedef, 8);
 
 #define FOR_MAIN_KSHAPES(M, arg) \
    M(KmerShapeDefaultType(20), arg); \
-   M(KmerShapeDefaultType(21), arg) 
+   M(KmerShapeDefaultType(21), arg)
 
 #define K_CASE_GET_KVAR(Kvar,handleK) Kvar
 #define K_CASE_GET_handleK(Kvar,handleK) handleK
@@ -715,8 +766,8 @@ FOR_ALL_K(CreateKmerShapeMidGapTypedef, 8);
    if (K_CASE_GET_KVAR Kvar_handleK == K) {             \
       foundK = true;                                    \
       K_CASE_GET_handleK Kvar_handleK (K) ;             \
-    }                                               
-   
+    }
+
 /**
    Macro: DISPATCH_ON_K_WITH_K_PLUS_1
 
@@ -724,13 +775,13 @@ FOR_ALL_K(CreateKmerShapeMidGapTypedef, 8);
    and construct a dispatcher that calls the macro's body for the kmer size matching the value
    of the variable. Only allowed for values of K for which there is also a valid K+1 value.
    See FOR_ALL_K_WITH_K_PLUS_1
-   
+
    Parameters:
-   
+
       Kvar - the kmer size value; can be a variable (not a constant)
       handleK - a macro that takes one argument -- the kmer size, and specifies what to
          do for that kmer size.
-        
+
 */
 #define DISPATCH_ON_K_WITH_K_PLUS_1(Kvar,handleK) do {                               \
      bool foundK = false;                                              \
@@ -748,13 +799,13 @@ FOR_ALL_K(CreateKmerShapeMidGapTypedef, 8);
    Take kmer size passed as a variable, and a macro that takes kmer size as a constant argument,
    and construct a dispatcher that calls the macro's body for the kmer size matching the value
    of the variable.
-   
+
    Parameters:
-   
+
       Kvar - the kmer size value; can be a variable (not a constant)
       handleK - a macro that takes one argument -- the kmer size, and specifies what to
          do for that kmer size.
-        
+
 */
 #define DISPATCH_ON_K(Kvar,handleK) do {                               \
      bool foundK = false;                                              \
@@ -771,7 +822,7 @@ FOR_ALL_K(CreateKmerShapeMidGapTypedef, 8);
 
     Take a constant kmer size value, and invoke code to handle that value.
 */
-#define FOR_SUPPORTED_K(Kval,handleK) DISPATCH_ON_K(Kval, handleK)   
+#define FOR_SUPPORTED_K(Kval,handleK) DISPATCH_ON_K(Kval, handleK)
 
 inline void ForceAssertSupportedK(int K) {
 #define CHK_K(_K)  // do nothing: if K is not supported, we'll get an error message

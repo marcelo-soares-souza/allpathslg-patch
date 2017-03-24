@@ -23,28 +23,32 @@ template <class T, class C=std::less<T>>
 using StdMultiset = std::multiset<T,C,typename DefaultAllocator<T>::type>;
 
 template<class T,class C,class A> bool Member( std::set<T,C,A>& the_set, const T& value )
-{    return the_set.find(value) != the_set.end( );    }
+{
+  return the_set.find(value) != the_set.end( );
+}
 
 template<class T> ostream& operator<<(ostream& out, const set<T>& the_set)
-{    out << the_set.size( ) << "\n";
-     typename set<T>::const_iterator the_set_iter = the_set.begin(); 
-     for ( ; the_set_iter != the_set.end(); ++the_set_iter )
-       out << *the_set_iter << "\n";
-     return out;    }
+{ out << the_set.size( ) << "\n";
+  typename set<T>::const_iterator the_set_iter = the_set.begin();
+  for ( ; the_set_iter != the_set.end(); ++the_set_iter )
+    out << *the_set_iter << "\n";
+  return out;
+}
 
 template<class T> istream& operator>>(istream& in, set<T>& s)
-{    int n;
-     in >> n;
-     char c;
-     in.get(c);
- 
-     T temp;
-     for ( int idx = 0; idx < n; ++idx )
-     {
-       in >> temp;
-       s.insert( temp );
-     }
-     return in;    }
+{ int n;
+  in >> n;
+  char c;
+  in.get(c);
+
+  T temp;
+  for ( int idx = 0; idx < n; ++idx )
+  {
+    in >> temp;
+    s.insert( temp );
+  }
+  return in;
+}
 
 
 /// Get all values in a set

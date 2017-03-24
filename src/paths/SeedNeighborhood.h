@@ -60,70 +60,72 @@
 class SeedNeighborhood
 {
 public:
-  
+
   // Constructor: immediately loads all global data structures (by reference)
   SeedNeighborhood( const int K,
-		    const int ploidy,
-		    const int mcn_other,
-		    const vecKmerPath * paths,
-		    const vecKmerPath * paths_rc,
-		    const vec<tagged_rpint> * pathsdb,
-		    const vec<int> * unipath_lengths,
-		    const vec<int> * read_lengths,
-		    const vec<int> * predicted_CNs,
-		    const PairsManager * pairs,
-		    const vec<ReadLocationLG> * unilocs,
-		    const vec<longlong> * unilocs_index,
+                    const int ploidy,
+                    const int mcn_other,
+                    const vecKmerPath * paths,
+                    const vecKmerPath * paths_rc,
+                    const vec<tagged_rpint> * pathsdb,
+                    const vec<int> * unipath_lengths,
+                    const vec<int> * read_lengths,
+                    const vec<int> * predicted_CNs,
+                    const PairsManager * pairs,
+                    const vec<ReadLocationLG> * unilocs,
+                    const vec<longlong> * unilocs_index,
                     const vec<String>& LOCAL_DUMP = vec<String>( ) );
-  
+
   ~SeedNeighborhood( );
-  
+
   /* ACTION FUNCTIONS
    *
    * These functions work together to assemble a HyperKmerPath that is local to
    * this neighborhood.  It is best to run them in the order they appear here.
    *
    ****************************************************************************/
-  
+
   // REQUIRED
-  void SetSeedID( const int seed_ID ) { _seed_ID = seed_ID; }
-  
+  void SetSeedID( const int seed_ID ) {
+    _seed_ID = seed_ID;
+  }
+
   // Optional: Set up logging for this SeedNeighborhood
   // All diagnostic output goes to the file "logfile", except in two cases:
   // logfile = "stdout": output goes to stdout
   // logfile = "": output silenced (as if SetLog were never called)
   void SetLog( const String & logfile );
-  
+
   // Optional: Activate eval_subdir, which will be used to dump
   // (large!) files for the evaluation of the nhood.
   void SetEvalSubdir( const String &evaldir );
-  
+
   // Make the cloud of unipaths in the vicinity of this seed
   void MakeUnipathCloud( const digraphE<fsepdev> & LG,
-			 const vec<int> & predicted_CNs,
-			 const vec<Bool> & branches );
-  
+                         const vec<int> & predicted_CNs,
+                         const vec<Bool> & branches );
+
   // Find the reads and pairs in this neighborhood
   void MakeReadCloud( const vecbvec &global_reads_bases,
-		      const vecbvec &unibases, const Bool& LOCAL_PRIMARY );
-  
+                      const vecbvec &unibases, const Bool& LOCAL_PRIMARY );
+
   // Assemble this seed's local reads into a unipath graph and HyperKmerPath
   void MakeLocalAssembly( const vecbasevector& unibases,
-     const vec< vec<int> >& unibases_next, const vec<int>& to_rc, const int pass );
-  
+                          const vec< vec<int> >& unibases_next, const vec<int>& to_rc, const int pass );
+
   // Experimental code from David (add global connections to _reads).
   void AddGlobalConnections( const vecbasevector& unibases,
-     const vec< vec<int> >& unibases_next, const vec<int>& to_rc );
+                             const vec< vec<int> >& unibases_next, const vec<int>& to_rc );
 
   // Walk inserts in this neighborhood with the help of fragments
   // returns 'false' on irregular exit (e.g. timeout)
   bool MakeInsertWalks( );
-  
+
   // Write the HyperBasevector of this assembly to files
   void Write( size_t iSeed, BinaryWriter& hbvWriter,
               bool LOCAL_DOT, bool LOCAL_FASTA );
-  
-  
+
+
   /* EVALUATION FUNCTIONS
    *
    * These functions evaluate the local assembly in progress, writing useful
@@ -134,16 +136,16 @@ public:
    * functions with empty unput objects.
    *
    ****************************************************************************/
-  
-  void EvalUnipathCloud( const vecbasevector & genome, 
-			 const VecPlacementVec& unipath_POGs ) const;
-  void EvalReadCloud( const vecbasevector & genome, 
-		      const VecPlacementVec& unipath_POGs,
-		      const vec<ReadLocationLG> & read_POGs ) const;
+
+  void EvalUnipathCloud( const vecbasevector & genome,
+                         const VecPlacementVec& unipath_POGs ) const;
+  void EvalReadCloud( const vecbasevector & genome,
+                      const VecPlacementVec& unipath_POGs,
+                      const vec<ReadLocationLG> & read_POGs ) const;
   void EvalLocalAssembly( ) const;
   void EvalInsertWalks( ) const;
-  
-  
+
+
   /* HELPER FUNCTIONS
    *
    * These functions are helpers for the action functions, above.
@@ -158,24 +160,26 @@ public:
   void FindUnipathCloud( const digraphE<fsepdev> & LG, const vec<int> & predicted_CNs, const vec<Bool> & branches, const int MAX_DEV );
   void ExpandUnipathCloud( const digraphE<fsepdev> & LG, const vec<int> & predicted_CNs, const int MAX_DEV );
   void FindPrimaryReadCloud( const vecbvec& global_reads_bases,
-       const Bool& LOCAL_PRIMARY );
+                             const Bool& LOCAL_PRIMARY );
   void FindSecondaryReadCloud( );
   vec<longlong> SelectPairsToWalk( const int n_to_select, int & n_logical_pairs ) const;
   HyperKmerPath MakeAcyclicHKP( const vecKmerPath & new_unipaths, const vecbasevector & new_unibases, const int min_size ) const;
   HyperKmerPath WalkInserts( const vec<longlong> & selected_pair_IDs, const int STRETCH, TaskTimer & timer, int & n_to_walk, int & n_walked, vec<Bool>& walked ) const;
   void MergeInsertWalks( const vec<HyperKmerPath>& HKPs, const vecKmerPath& new_unipaths, const vecbasevector & new_unibases );
-  
-  
+
+
   /* QUERY FUNCTIONS
    *
    * These functions are all const and public.
    *
    ****************************************************************************/
-  vec<ustart> GetCloudUnipaths() const { return _cloud_unipaths; }
+  vec<ustart> GetCloudUnipaths() const {
+    return _cloud_unipaths;
+  }
 
-  
-  
-  
+
+
+
   /* GLOBAL DATA STRUCTURES
    *
    * These objects have implicit indices/kmer_ids/etc. that apply to the general
@@ -201,8 +205,8 @@ private:
   const vec<ReadLocationLG> * _global_unilocs;
   const vec<longlong>       * _global_unilocs_index;
   const vec<String>         _LOCAL_DUMP;
-  
-  
+
+
   /* LOCAL DATA STRUCTURES
    *
    * These data structures are created by the SeedNeighborhood object itself.
@@ -215,18 +219,18 @@ private:
   // TODO: potentially dangerous truncation of index by these int members
   int _seed_ID; // in global space
   int _n_cloud_unipaths, _n_reads, _n_pairs, _n_local_unipaths;
-  
+
   vec<ustart> _cloud_unipaths; // Cloud unipaths - with global unipath numbering
-  
+
   vec< pair<longlong, Bool> > _read_IDs; // Local read IDs, with orientations
   vec<int> _read_locs; // (Estimated) locations of reads in local neighborhood
   vecbasevector _reads; // Local reads
   vecbasevector _reads_fw;
-  
+
   vec<longlong> _local_to_global; // Read ID map
-  
+
   vec<longlong> _pair_IDs; // Map from local to global pair numbering
-  
+
   digraph _AG; // Local unipath adjacency graph
   vecKmerPath _local_unipaths;
   vec<Bool> _local_unipaths_fw;
@@ -236,21 +240,21 @@ private:
   HyperKmerPath _hkp; // Local HyperKmerPath
   // Final output: the local HyperBasevector containing the merged assembly
   HyperBasevector _hbv;
-  
-  
-  
+
+
+
   /* Tallies and runtime counters */
 public:
   int _n_inserts_walked, _n_inserts_total;
   double _T_pathing, _T_insert_walking, _T_insert_merging;
-  
-  
-  
-  
+
+
+
+
   /* Heuristic parameters */
   // These are all adapted from arguments to LocalizeReads (not LG)
 public:
-  
+
   // Neighborhood radius: Unipaths are only added to this neighborhood if their
   // distance to the seed unipath (expressed as a gap) is less than NHOD_RADIUS
   static int _NHOOD_RADIUS;
@@ -261,7 +265,7 @@ public:
   static Bool _DUMP_LOCAL_UNIBASES;
   static Bool _USE_ACYCLIC;
   String _outhead;
-  
+
 private:
   ostream * _log; // logfile output stream
   String * _eval_subdir; // save here intermediate (possibly large) files

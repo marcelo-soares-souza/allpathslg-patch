@@ -12,8 +12,8 @@
 
 #include "CoreTools.h"
 
-void PrintEpsHeader( ostream& out, 
-                     const float horizSize, 
+void PrintEpsHeader( ostream& out,
+                     const float horizSize,
                      const float vertSize,
                      const float border );
 

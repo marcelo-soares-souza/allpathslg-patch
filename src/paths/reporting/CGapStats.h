@@ -33,32 +33,42 @@ public:
       n_gaps_in_supers_ = supers->NContigs( ) - supers->Size( );
     }
   }
-  
-  void Reserve( int ngaps ) { gaps_.reserve( ngaps ); }
-  
-  void SetSigma( double sigma ) { sigma_ = sigma; }
 
-  void SetNSupers( int n_supers ) { n_supers_ = n_supers; }
+  void Reserve( int ngaps ) {
+    gaps_.reserve( ngaps );
+  }
 
-  void SetNGapsInSupers( int n_gaps ) { n_gaps_in_supers_ = n_gaps; }
-  
+  void SetSigma( double sigma ) {
+    sigma_ = sigma;
+  }
+
+  void SetNSupers( int n_supers ) {
+    n_supers_ = n_supers;
+  }
+
+  void SetNGapsInSupers( int n_gaps ) {
+    n_gaps_in_supers_ = n_gaps;
+  }
+
   void Add( int observed, int gap_size, int gap_dev ) {
     gaps_.push_back( triple<int,int,int>( observed, gap_size, gap_dev ) );
   }
 
   // How many gaps in dataset.
-  int Size( ) const { return gaps_.isize( ); }
+  int Size( ) const {
+    return gaps_.isize( );
+  }
 
   // Discrepancy with observed gap.
   int Delta( int ii ) const {
     int observed = gaps_[ii].first;
     int gsize = gaps_[ii].second;
     int gdev = gaps_[ii].third;
-    
+
     int rad = sigma_ * (double)gdev;
     int winl = gsize - rad;
     int winr = gsize + rad;
-    
+
     if ( winl > observed ) return ( winl - observed );   // gap is bigger
     if ( winr < observed ) return ( winr - observed );   // gap is smaller
     return 0;   // on target
@@ -70,7 +80,7 @@ public:
     smaller = 0;
     equal = 0;
     bigger = 0;
-    
+
     for (size_t ii=0; ii<gaps_.size( ); ii++) {
       int delta = this->Delta( ii );
       total += Abs( delta );
@@ -81,11 +91,11 @@ public:
 
     return total;
   }
-  
+
   // Set sigma and generate table-line report for the given sigma (or legend).
   vec<String> TableLine( const double sigma, bool legend = false ) const {
     sigma_ = sigma;
-    
+
     vec<String> tline;
     if ( legend ) {
       tline.push_back( "sigma" );
@@ -96,7 +106,7 @@ public:
 
       return tline;
     }
-    
+
     int smaller = 0;
     int equal = 0;
     int bigger = 0;
@@ -115,18 +125,18 @@ public:
 
     ratio = 100.0 * SafeQuotient( bigger, n_gaps );
     tline.push_back( ToString( bigger ) + " (" + ToString( ratio, 2 ) + "%)" );
-    
+
     return tline;
   }
 
   void PrintReport( ostream &out ) const {
     int n_gaps = gaps_.isize( );
-    
+
     out << "GAP STATISTICS (" << n_gaps
-	<< " valid gaps, over a total of " << n_gaps_in_supers_
-	<< " gaps in " << n_supers_
-	<< " supers):\n" << endl;
-   
+        << " valid gaps, over a total of " << n_gaps_in_supers_
+        << " gaps in " << n_supers_
+        << " supers):\n" << endl;
+
     if ( n_gaps < 1 ) {
       out << " No valid gaps found.\n" << endl;
       return;
@@ -140,15 +150,15 @@ public:
     PrintTabular( out, table, 4, "rrrrr" );
     out << endl;
   }
-  
-  
+
+
 private:
 
   mutable double sigma_;              // allowed stretch for reported gaps
   int n_supers_;                      // total number of supers
   int n_gaps_in_supers_;              // total numer of gaps in supers
   vec< triple<int,int,int> > gaps_;   // observed, gap_size, gap_dev
-  
+
 };
 
 #endif

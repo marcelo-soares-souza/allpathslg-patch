@@ -26,7 +26,7 @@ public:
   float    ratio_loser;
   set<size_t> i_reads_print;
 
-  PC_Params() : 
+  PC_Params() :
     n_kmers_min(6),
     q_high(20),
     n_q_high_max_to_lose(1),
@@ -69,33 +69,33 @@ public:
   bool qcr_always;
   set<size_t> i_reads_print;
 
-  EF_Params(int p1, int p2, double p3, double p4, double p5, int p6, int p7, 
-            int p8, int p9, int p10, bool p11, int p12, int p13, int p14, 
+  EF_Params(int p1, int p2, double p3, double p4, double p5, int p6, int p7,
+            int p8, int p9, int p10, bool p11, int p12, int p13, int p14,
             int p15, int p16, int p17, bool p18, bool p19, int p20, int p21,
             int p22, bool p23, vec<longlong> plast)
-  : min_Q_to_support(p1),
-    min_n_bases_to_support(p2),
-    max_QSsum_ratio_to_correct(p3),
-    max_QSsum_ratio_to_correct2(p4),
-    max_QSsum_ratio_to_confirm(p5),
-    min_QSsum_to_confirm(p6),
-    min_QSsum_to_win(p7),
-    min_readstack_depth(p8),
-    max_readstack_depth(p9),
-    min_basestack_depth(p10),
-    skip_under(p11),
-    auto_confirm(p12),
-    print_stack_n(p13),
-    print_stack_n0(p14),
-    print_stack_min_depth(p15),
-    print_stack_max_depth(p16),
-    print_stack_style(p17),
-    do_palindromes(p18),
-    do_branches(p19),
-    min_QSsum_to_support(p20),
-    min_n_bases_to_confirm(p21),
-    qual_ceil_radius(p22),
-    qcr_always(p23)    
+    : min_Q_to_support(p1),
+      min_n_bases_to_support(p2),
+      max_QSsum_ratio_to_correct(p3),
+      max_QSsum_ratio_to_correct2(p4),
+      max_QSsum_ratio_to_confirm(p5),
+      min_QSsum_to_confirm(p6),
+      min_QSsum_to_win(p7),
+      min_readstack_depth(p8),
+      max_readstack_depth(p9),
+      min_basestack_depth(p10),
+      skip_under(p11),
+      auto_confirm(p12),
+      print_stack_n(p13),
+      print_stack_n0(p14),
+      print_stack_min_depth(p15),
+      print_stack_max_depth(p16),
+      print_stack_style(p17),
+      do_palindromes(p18),
+      do_branches(p19),
+      min_QSsum_to_support(p20),
+      min_n_bases_to_confirm(p21),
+      qual_ceil_radius(p22),
+      qcr_always(p23)
   {
     i_reads_print.insert(plast.begin(), plast.end());
   };
@@ -103,7 +103,7 @@ public:
 
 
 
-static 
+static
 const EF_Params efp_default(20,               // min_Q_to_support(p1)
                             2,                // min_n_bases_to_support(p2)
                             0.25,             // max_QSsum_ratio_to_correct(p3)
@@ -140,10 +140,10 @@ public:
   uint64_t rc             :  1;   // for kmers, whether it is RC of FW
   uint64_t palindrome     :  1;   // for kmers, whether it is a palindrome
   uint64_t base           :  2;   // to store a new base
-  
+
   friend
   bool operator < (const BVLocBase & a, const BVLocBase & b)
-  { 
+  {
     if (a.i_read < b.i_read) return true;
     if (a.i_read > b.i_read) return false;
     return (a.i_base < b.i_base);
@@ -161,11 +161,11 @@ template<class KMER_t>
 class KmerBVLocBase : public KMER_t, public BVLocBase
 {
 public:
- explicit KmerBVLocBase(const unsigned K = 0) : KMER_t(K) {}
+  explicit KmerBVLocBase(const unsigned K = 0) : KMER_t(K) {}
 
   friend
   bool operator < (const KmerBVLocBase & a, const KmerBVLocBase & b)
-  { 
+  {
     if (static_cast<const KMER_t &>(a) < static_cast<const KMER_t &>(b)) return true;
     if (static_cast<const KMER_t &>(b) < static_cast<const KMER_t &>(a)) return false;
     return (static_cast<const BVLocBase &>(a) < static_cast<const BVLocBase &>(b));
@@ -209,16 +209,16 @@ public:
 // when the flanking bases that built a pile are themselves suspect).  Whenever
 // a correction is adopted, the associated quality score for that call is set
 // to 0.
-  
+
 
 template<class QVV_t>
-void pre_correct_parallel(const PC_Params  & pcp, 
+void pre_correct_parallel(const PC_Params  & pcp,
                           const unsigned     K,
-                          BaseVecVec       * bases_p, 
-                          QVV_t            * quals_p, 
-                          KmerSpectrum     * kspec_p, 
+                          BaseVecVec       * bases_p,
+                          QVV_t            * quals_p,
+                          KmerSpectrum     * kspec_p,
                           const int          VERBOSITY,
-                          const unsigned     NUM_THREADS, 
+                          const unsigned     NUM_THREADS,
                           const size_t       mem_mean_ceil = 0);
 
 
@@ -229,13 +229,13 @@ void pre_correct_parallel(const PC_Params  & pcp,
 
 
 template<class QVV_t>
-void find_errors_parallel(const EF_Params  & efp, 
-                          const size_t       K, 
-                          BaseVecVec       * bases_p, 
-                          QVV_t            * quals_p, 
+void find_errors_parallel(const EF_Params  & efp,
+                          const size_t       K,
+                          BaseVecVec       * bases_p,
+                          QVV_t            * quals_p,
                           const size_t       NUM_CYCLES,
                           const unsigned     VERBOSITY,
-                          const unsigned     NUM_THREADS, 
+                          const unsigned     NUM_THREADS,
                           const size_t       mem_mean_ceil = 0);
 
 
@@ -245,10 +245,10 @@ void find_errors_parallel(const EF_Params  & efp,
 //      Useful when correcting small local read sets in modules other than FindErrors
 
 template<class QVV_t>
-void find_errors(const EF_Params  & efp, 
-                 const size_t       K, 
-                 BaseVecVec       * bases_p, 
-                 QVV_t            * quals_p, 
+void find_errors(const EF_Params  & efp,
+                 const size_t       K,
+                 BaseVecVec       * bases_p,
+                 QVV_t            * quals_p,
                  const size_t       NUM_CYCLES,
                  const size_t       VERBOSITY);
 

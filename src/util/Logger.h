@@ -31,62 +31,71 @@
 class Logger
 {
 public:
-    /// log to the specified stream
-    explicit Logger( std::ostream& os,
-                        size_t maxInstances = DFLT_MAX_INSTANCES )
+  /// log to the specified stream
+  explicit Logger( std::ostream& os,
+                   size_t maxInstances = DFLT_MAX_INSTANCES )
     : mOS(os), mMaxInstances(maxInstances)
+  {}
+
+  // compiler-supplied copy constructor is OK
+  // assignment won't work because of reference
+
+  /// flushes pending error messages on its way to oblivion
+  ~Logger()
+  {
+    flush();
+  }
+
+  /// log an error message.  sprintf semantics.
+  /// the format string really, really has to be a static string.
+  /// we're using its address to figure out classes of error messages.
+  void log( char const* str ... );
+
+  /// flush pending error messages
+  void flush();
+
+  class MsgPacket
+  {
+  public:
+    MsgPacket()
+      : mCount(0), mOverflow(false)
     {}
 
-    // compiler-supplied copy constructor is OK
-    // assignment won't work because of reference
+    // compiler-supplied copying and destructor are OK
 
-    /// flushes pending error messages on its way to oblivion
-    ~Logger()
-    { flush(); }
-
-    /// log an error message.  sprintf semantics.
-    /// the format string really, really has to be a static string.
-    /// we're using its address to figure out classes of error messages.
-    void log( char const* str ... );
-
-    /// flush pending error messages
-    void flush();
-
-    class MsgPacket
+    size_t getCount() const
     {
-    public:
-        MsgPacket()
-        : mCount(0), mOverflow(false)
-        {}
+      return mCount;
+    }
 
-        // compiler-supplied copying and destructor are OK
+    size_t incrementCount()
+    {
+      return mCount += 1;
+    }
 
-        size_t getCount() const
-        { return mCount; }
+    void setMessage( std::string const& msg )
+    {
+      mMessage = msg;
+      mOverflow = true;
+    }
 
-        size_t incrementCount()
-        { return mCount += 1; }
+    void flush( std::ostream& os, size_t maxInstances ) const;
 
-        void setMessage( std::string const& msg )
-        { mMessage = msg; mOverflow = true; }
+  private:
+    std::string mMessage; // first overflow message
+    size_t mCount;
+    bool mOverflow;
+  };
 
-        void flush( std::ostream& os, size_t maxInstances ) const;
-
-    private:
-        std::string mMessage; // first overflow message
-        size_t mCount;
-        bool mOverflow;
-    };
-
-    static Logger nullLogger();
+  static Logger nullLogger();
 
 private:
-    std::ostream& mOS;
-    size_t mMaxInstances;
-    std::map<char const*,MsgPacket> mMap;
+  std::ostream& mOS;
+  size_t mMaxInstances;
+  std::map<char const*,MsgPacket> mMap;
 
-    static size_t const DFLT_MAX_INSTANCES = 3;
-    static size_t const BUF_SIZE = 8192;
+  static size_t const DFLT_MAX_INSTANCES = 3;
+  static size_t const BUF_SIZE = 8192;
 };
 
 #endif /* UTIL_LOGGER_H_ */

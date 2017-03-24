@@ -81,10 +81,10 @@ void FetchReads( vecbasevector& b, vecqualvector& q, vecString * names,
     while(1) {
       getline( in, line );
       if ( line.Contains( gt, 0 ) ) {
-	if (names && ( ids_to_read == 0 || BinMember( *ids_to_read, nseq ) )) {
-	  names->push_back_reserve(line.After(gt));
-	}
-	++nseq;
+        if (names && ( ids_to_read == 0 || BinMember( *ids_to_read, nseq ) )) {
+          names->push_back_reserve(line.After(gt));
+        }
+        ++nseq;
       }
       else totalbases += line.size( );
       if ( in.fail( ) ) break;
@@ -111,8 +111,8 @@ void FetchReads( vecbasevector& b, vecqualvector& q, vecString * names,
   text.get(c);
 
   if ( c != '>' ) FatalErr( "File " << fasta_file << " is supposed to be in "
-                            << "fasta format.  In particular, each sequence should be prefaced by a "
-                            << "line which starts with >.  Problem at line 1." );
+                              << "fasta format.  In particular, each sequence should be prefaced by a "
+                              << "line which starts with >.  Problem at line 1." );
   text.putback(c);
   vector<char> read;
   read.reserve(1000);
@@ -122,9 +122,9 @@ void FetchReads( vecbasevector& b, vecqualvector& q, vecString * names,
   for ( i = 0; n == 0 || i < n; i++ ) {
     if ( !text ) {
       if ( n > 0 ) {
-	cerr << "FetchReads: failed on read " << i+1 << "\n";
-	cerr << "Check n (argument 2) " << "\n";
-	exit(1);
+        cerr << "FetchReads: failed on read " << i+1 << "\n";
+        cerr << "Check n (argument 2) " << "\n";
+        exit(1);
       }
       break;
     }
@@ -142,107 +142,109 @@ void FetchReads( vecbasevector& b, vecqualvector& q, vecString * names,
     read.resize(0);
     while ( true )
     {
-        text.get(c);
-        if ( text.fail() )
-            break;
-        if ( c == '\n' )
-            ++line;
-        if ( isspace(c) )
-            continue;
-        if ( c == '>' )
-        {
-            text.putback(c);
-            break;
-        }
-        if ( !GeneralizedBase::isGeneralizedBase(c) )
-            FatalErr( "FetchReads: unrecognized character " << c << " in " << fasta_file << ", at line " << line << "." );
-        read.push_back(c);
-        ++read_ptr;
+      text.get(c);
+      if ( text.fail() )
+        break;
+      if ( c == '\n' )
+        ++line;
+      if ( isspace(c) )
+        continue;
+      if ( c == '>' )
+      {
+        text.putback(c);
+        break;
+      }
+      if ( !GeneralizedBase::isGeneralizedBase(c) )
+        FatalErr( "FetchReads: unrecognized character " << c << " in " << fasta_file << ", at line " << line << "." );
+      read.push_back(c);
+      ++read_ptr;
     }
 
     // Convert it to a basevector.
 
     if ( read_ptr >= min_size )
     {
-        if ( min_size > 0 )
-            out << i << " --> " << ia << "\n";
+      if ( min_size > 0 )
+        out << i << " --> " << ia << "\n";
 
-        bx.Setsize(read_ptr);
+      bx.Setsize(read_ptr);
+      if ( !no_q )
+        qx.resize(read_ptr);
+
+      for ( int j = 0; j < read_ptr; j++ )
+      {
+        qual_t qVal = HighQuality;
+        GeneralizedBase const& base = GeneralizedBase::fromChar(read[j]);
+        if ( !base.isAmbiguous() )
+          bx.Set(j,static_cast<Base const&>(base).val());
+        else
+        {
+          if ( allowX && read[j] == 'X' ) {
+            GeneralizedBase const& baseN = GeneralizedBase::fromChar('N');
+            bx.Set(j,baseN.random(rngen));
+          } else {
+            bx.Set(j,base.random(rngen));
+            qVal = LowQuality;
+          }
+        }
         if ( !no_q )
-            qx.resize(read_ptr);
-
-        for ( int j = 0; j < read_ptr; j++ )
-        {
-            qual_t qVal = HighQuality;
-            GeneralizedBase const& base = GeneralizedBase::fromChar(read[j]);
-            if ( !base.isAmbiguous() )
-                bx.Set(j,static_cast<Base const&>(base).val());
-            else
-	    {
-	      if ( allowX && read[j] == 'X' ){
-		GeneralizedBase const& baseN = GeneralizedBase::fromChar('N');
-		bx.Set(j,baseN.random(rngen));
-	      }else{
-		bx.Set(j,base.random(rngen));
-		qVal = LowQuality;
-	      }
-            }
-            if ( !no_q )
-                qx[j] = qVal;
-        }
-        if ( ids_to_read == 0 || BinMember(*ids_to_read, count) )
-        {
-            b.push_back(bx);
-            if ( !no_q )
-                q.push_back(qx);
-            ++ia;
-        }
+          qx[j] = qVal;
+      }
+      if ( ids_to_read == 0 || BinMember(*ids_to_read, count) )
+      {
+        b.push_back(bx);
+        if ( !no_q )
+          q.push_back(qx);
+        ++ia;
+      }
     }
     ++count;
-    }
+  }
 
   b.resize(ia);
 }
 
 void FetchReads( vecbasevector& b, unsigned int n, String fasta_file,
                  int amb_break, int min_size, ostream& out,
-		 const vec<int>* ids_to_read, const Bool allowX )
+                 const vec<int>* ids_to_read, const Bool allowX )
 {
   vecqualvector q;
   FetchReads( b, q, n, fasta_file, amb_break, min_size, out, True,
-	      ids_to_read, allowX );
+              ids_to_read, allowX );
 }
 
 void FetchReads( vecbasevector& b, vecString * names, unsigned int n, String fasta_file,
                  int amb_break, int min_size, ostream& out,
-		 const vec<int>* ids_to_read, const Bool allowX )
+                 const vec<int>* ids_to_read, const Bool allowX )
 {
   vecqualvector q;
   FetchReads( b, q, names, n, fasta_file, amb_break, min_size, out, True,
-	      ids_to_read, allowX );
+              ids_to_read, allowX );
 }
 
 
 void FetchReads( VecFloatVec& f, const String& fasta_file )
-{    f.clear( );
-     String line;
-     FloatVec x;
-     fast_ifstream in(fasta_file);
-     getline( in, line );
-     ForceAssert( line.Contains( ">", 0 ) );
-     while(1)
-     {    getline( in, line );
-          if ( in.fail( ) )
-          {    f.push_back_reserve(x);
-               break;    }
-          if ( line.Contains( ">", 0 ) )
-          {    f.push_back_reserve(x);
-               x.clear( );    }
-          else
-          {   istringstream iline( line.c_str( ) );
-              float a;
-              while ( iline >> a )
-                  x.push_back(a);
-          }
-     }
+{ f.clear( );
+  String line;
+  FloatVec x;
+  fast_ifstream in(fasta_file);
+  getline( in, line );
+  ForceAssert( line.Contains( ">", 0 ) );
+  while(1)
+  { getline( in, line );
+    if ( in.fail( ) )
+    { f.push_back_reserve(x);
+      break;
+    }
+    if ( line.Contains( ">", 0 ) )
+    { f.push_back_reserve(x);
+      x.clear( );
+    }
+    else
+    { istringstream iline( line.c_str( ) );
+      float a;
+      while ( iline >> a )
+        x.push_back(a);
+    }
+  }
 }

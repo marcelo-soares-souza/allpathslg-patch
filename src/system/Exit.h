@@ -30,6 +30,8 @@ HOOKFUNC installExitHook( HOOKFUNC fHook );
 
 } // end namespace CRD
 
-inline void TracebackThisProcess() { CRD::exit(1); }
+inline void TracebackThisProcess() {
+  CRD::exit(1);
+}
 
 #endif /* SYSTEM_EXIT_H_ */

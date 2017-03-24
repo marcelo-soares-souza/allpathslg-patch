@@ -13,7 +13,7 @@
 /** Map.h File with helper methods for std::maps.
 \file Map.h
 
-Tests for these methods are in testing/MapTest.cc. Please add appropriate 
+Tests for these methods are in testing/MapTest.cc. Please add appropriate
 tests if you add more methods.
 */
 
@@ -32,48 +32,48 @@ template <class K, class V, class H=std::hash<K>, class P=std::equal_to<K>>
 using StdUnorderedMap = std::unordered_map<K,V,H,P,typename DefaultAllocator<std::pair<K const,V>>::type>;
 
 ///Return true if k is a key in map m
-template<class Key, class Value, typename Cmp> 
-bool IsKey( const map<Key, Value, Cmp> & m, const Key & k ){    
-  return m.find(k) != m.end( );    
-}  
+template<class Key, class Value, typename Cmp>
+bool IsKey( const map<Key, Value, Cmp> & m, const Key & k ) {
+  return m.find(k) != m.end( );
+}
 
 ///Return true if k is a key in map m
-template<class Key, class Value, typename Hash> 
-bool IsKey( const hash_map<Key, Value, Hash> & m, const Key & k ){    
-  return m.find(k) != m.end( );    
-}  
+template<class Key, class Value, typename Hash>
+bool IsKey( const hash_map<Key, Value, Hash> & m, const Key & k ) {
+  return m.find(k) != m.end( );
+}
 
-template<class Key, class Value, typename Cmp> 
-std::ostream & operator<<( std::ostream & os, const map<Key, Value, Cmp> & m){
+template<class Key, class Value, typename Cmp>
+std::ostream & operator<<( std::ostream & os, const map<Key, Value, Cmp> & m) {
   os << " map size : " << m.size() << endl;
-  for (typename std::map<Key,Value,Cmp>::const_iterator iter = m.begin(); 
-       iter != m.end(); 
+  for (typename std::map<Key,Value,Cmp>::const_iterator iter = m.begin();
+       iter != m.end();
        ++iter) {
     os << iter->first << "\t" << iter->second << "\n";
   }
   return os;
 }
-  
-template<class Key, class Value, typename Hash> 
-std::ostream & operator<<( std::ostream & os, 
-                           const hash_map<Key, Value, Hash> & m){
+
+template<class Key, class Value, typename Hash>
+std::ostream & operator<<( std::ostream & os,
+                           const hash_map<Key, Value, Hash> & m) {
   os << " map size : " << m.size() << endl;
-  for (typename std::map<Key,Value,Hash>::const_iterator iter = m.begin(); 
-       iter != m.end(); 
+  for (typename std::map<Key,Value,Hash>::const_iterator iter = m.begin();
+       iter != m.end();
        ++iter) {
     os << iter->first << "\t" << iter->second << "\n";
   }
   return os;
 }
-  
+
 
 ///Get all keys in a map (simple expensive version).
-template<class Key, class Value, typename Cmp> 
+template<class Key, class Value, typename Cmp>
 vec<Key> keys(const std::map<Key,Value,Cmp> &  m) {
   vec<Key> ret(m.size());
   int i = 0;
-  for (typename std::map<Key,Value,Cmp>::const_iterator iter = m.begin(); 
-       iter != m.end(); 
+  for (typename std::map<Key,Value,Cmp>::const_iterator iter = m.begin();
+       iter != m.end();
        ++i, ++iter) {
     ret[i] = iter->first;
   }
@@ -81,12 +81,12 @@ vec<Key> keys(const std::map<Key,Value,Cmp> &  m) {
 }
 
 ///Get all keys in a hash_map (simple expensive version).
-template<class Key, class Value, typename Hash> 
+template<class Key, class Value, typename Hash>
 vec<Key> keys(const hash_map<Key,Value,Hash> &  m) {
   vec<Key> ret(m.size());
   int i = 0;
-  for (typename hash_map<Key,Value,Hash>::const_iterator iter = m.begin(); 
-       iter != m.end(); 
+  for (typename hash_map<Key,Value,Hash>::const_iterator iter = m.begin();
+       iter != m.end();
        ++i, ++iter) {
     ret[i] = iter->first;
   }
@@ -94,7 +94,7 @@ vec<Key> keys(const hash_map<Key,Value,Hash> &  m) {
 }
 
 ///Get all values in a map (simple expensive version).
-template<class Key, class Value, typename Cmp> 
+template<class Key, class Value, typename Cmp>
 vec<Value> values(const std::map<Key,Value,Cmp> &  m) {
   vec<Value> ret(m.size());
   int i = 0;
@@ -107,7 +107,7 @@ vec<Value> values(const std::map<Key,Value,Cmp> &  m) {
 }
 
 ///Get all keys in a map (cheap but more complex version).
-template<class Key, class Value, typename Cmp> 
+template<class Key, class Value, typename Cmp>
 void keyPointers(const std::map<Key,Value,Cmp> &  m, vec<const Key *> & v) {
   v.resize(m.size());
   int i = 0;
@@ -119,9 +119,9 @@ void keyPointers(const std::map<Key,Value,Cmp> &  m, vec<const Key *> & v) {
 }
 
 ///Get all values in a map (cheap but more complex version).
-template<class Key, class Value, typename Cmp> 
+template<class Key, class Value, typename Cmp>
 void valuePointers(const std::map<Key,Value,Cmp> &  m,
-                                 vec<const Value *> & v) {
+                   vec<const Value *> & v) {
   v.resize(m.size());
   int i = 0;
   for (typename std::map<Key,Value,Cmp>::const_iterator iter = m.begin();
@@ -135,8 +135,8 @@ void valuePointers(const std::map<Key,Value,Cmp> &  m,
 /// Adds or updates entry in a map. Use for expensive to construct value objects
 template <typename MapType, typename KeyArgType, typename ValueArgType>
 typename MapType::iterator efficientAddOrUpdate( MapType& m,
-						 const KeyArgType& k,
-						 const ValueArgType& v) {
+    const KeyArgType& k,
+    const ValueArgType& v) {
   typename MapType::iterator lb = m.lower_bound(k);
 
   if (lb != m.end() && !(m.key_comp()(k, lb->first))) {
@@ -173,7 +173,7 @@ each, a simple expensive one and a cheap more complex one). Put them in new
 file Map.h, by analogy to Set.h.
 
 CV: ----------------------------------------------------------------------
-  
-*/  
-    
-  
+
+*/
+
+

@@ -13,24 +13,24 @@ class MuxToPath {
 public:
   MuxToPath( const vecKmerPath* pathsFw, const vecKmerPath* pathsRc ) :
     mp_pathsFw( pathsFw ), mp_pathsRc( pathsRc ) { }
-  // It should be OK to instantiate this class with garbage pointers, 
+  // It should be OK to instantiate this class with garbage pointers,
   // as long as you never call any member functions.
 
-  // If the kmer_path is empty, then the read corresponding to the 
+  // If the kmer_path is empty, then the read corresponding to the
   // first Mux in the vec is copied over in its entirety.
   // Otherwise, the first mux should extend the end of kmer_path.
-  void ToPath( const vec<Mux>& muxes, 
-	       const KmerPath& path_so_far, 
-	       KmerPath& ans ) const;
+  void ToPath( const vec<Mux>& muxes,
+               const KmerPath& path_so_far,
+               KmerPath& ans ) const;
 
-  void ExtendByMux( const Mux& the_mux, 
-		    const KmerPath& path_so_far,
-		    KmerPath& ans ) const;
+  void ExtendByMux( const Mux& the_mux,
+                    const KmerPath& path_so_far,
+                    KmerPath& ans ) const;
 
   bool ExtendByKmersIfMatch( const OrientedKmerPathId& okpid,
-			     const int numKmers,
-			     const KmerPath& path_so_far,
-			     KmerPath& ans ) const;
+                             const int numKmers,
+                             const KmerPath& path_so_far,
+                             KmerPath& ans ) const;
 
 private:
   const vecKmerPath* mp_pathsFw;

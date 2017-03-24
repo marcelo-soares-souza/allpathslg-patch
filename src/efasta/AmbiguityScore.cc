@@ -26,13 +26,13 @@ int AmbiguityScore(const vec<basevector>& x)
 {
   const size_t nv = x.size();
   vec<EdgeWeight<int> > edges;
-  
+
   {
     int best_loc;
     alignment a;
-    for (size_t iv = 0; iv < nv; iv++) { 
+    for (size_t iv = 0; iv < nv; iv++) {
       for (size_t jv = iv + 1; jv < nv; jv++) {
-        
+
         int score;
         if (x[iv].size() == 0 || x[jv].size() == 0)
           score = Abs(x[iv].isize() - x[jv].isize());
@@ -49,7 +49,7 @@ int AmbiguityScore(const vec<basevector>& x)
 
   vec<size_t> i_edges_tree;
   minimum_spanning_tree_kruskal(nv, edges, & i_edges_tree);
-  
+
   const size_t ne = i_edges_tree.size();
 
   int total = nv - 2;
@@ -58,7 +58,7 @@ int AmbiguityScore(const vec<basevector>& x)
     total += edges[ie].weight;
   }
 
-  return total; 
+  return total;
 }
 
 
@@ -67,8 +67,10 @@ int AmbiguityScore(const vec<basevector>& x)
 
 
 int64_t AmbiguityScoreCost( const vec<basevector>& x )
-{    int64_t cost = 0;
-     for ( int i = 0; i < x.isize( ); i++ )
-     {    for ( int j = i+1; j < x.isize( ); j++ )
-               cost += x[i].size( ) * x[j].size( );    }
-     return cost;    }
+{ int64_t cost = 0;
+  for ( int i = 0; i < x.isize( ); i++ )
+  { for ( int j = i+1; j < x.isize( ); j++ )
+      cost += x[i].size( ) * x[j].size( );
+  }
+  return cost;
+}

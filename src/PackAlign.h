@@ -12,11 +12,11 @@
 // Added: class placement_mark.
 
 // Class packalign is optimized to reduced memory usage to a bare minimum.
-// A packalign stores the starting position of the alignment on both sequences 
-// (pos1 and pos2), plus a sequence of integers 
+// A packalign stores the starting position of the alignment on both sequences
+// (pos1 and pos2), plus a sequence of integers
 //             (length, gap, length, ..., length, gap, length),
 // where a "length" is the length of an aligning portion of the sequences
-// (possibly with mismatches), and a "gap" is a positive integer if there's a gap on 
+// (possibly with mismatches), and a "gap" is a positive integer if there's a gap on
 // the first sequence, else negative.  For backward compatibility we also allow
 // a "gap" before the first length [denoted gap(0)], but it is almost always zero.
 
@@ -28,7 +28,7 @@
 //                       ACGGTACG TT ACTATTT
 //                    AAAACGCT  GTTTTAGTAT
 //
-// Then the packalign object would have pos1 = 0, pos2 = 3, 
+// Then the packalign object would have pos1 = 0, pos2 = 3,
 // (length 5, gap -2, length 1, gap 1, length 2, gap 1, length 5).
 
 // (So length(0) = 5, gap(1) = -2, length(1) = 1, gap(2) = 1, etc.)
@@ -48,7 +48,7 @@
 //          for all i and |gap(i)| <= 2 for all i.
 //          storage: 12 bytes
 
-// Type 1.  not type 0 and pos1 <= 4095 and pos2 <= 4095 and length(i) <= 4095 for 
+// Type 1.  not type 0 and pos1 <= 4095 and pos2 <= 4095 and length(i) <= 4095 for
 //          all i and |gap(i)| <= 8 for all i.
 //          storage: 12 + (2 * nblocks) bytes + overhead for one memory allocation
 
@@ -89,7 +89,7 @@
 // pos2 -      12 bits
 // pointer -   64 bits
 //
-// at pointer: 
+// at pointer:
 // nblocks -    16 bits
 // gap(0) -     4  bits
 // length(0) -  12 bits
@@ -131,46 +131,48 @@
 #include "pairwise_aligners/Mutmer.h"
 #include "feudal/BinaryStream.h"
 
-const int Bits2  = 3, Bits3  = 7, Bits4 = 15, Bits10 = 1023, Bits12 = 4095, 
-  Bits16 = 65535;
+const int Bits2  = 3, Bits3  = 7, Bits4 = 15, Bits10 = 1023, Bits12 = 4095,
+          Bits16 = 65535;
 
 class short_pointer_or_words {
- public:
+public:
   union {
     unsigned short* p;
-    unsigned int x[2];    
+    unsigned int x[2];
   };
 };
 
 class int_pointer_or_words {
- public:
+public:
   union {
     unsigned int* p;
-    unsigned int x[2];    
+    unsigned int x[2];
   };
 };
 
-namespace allpathslg { class align; }
+namespace allpathslg {
+class align;
+}
 
 class packalign {
 
- public:
+public:
   // ========================================================================
   // Here are the packalign members which are MOST important for external use:
-  // the constructor, a Set operator, and the reverse operation (Unpack).Note 
+  // the constructor, a Set operator, and the reverse operation (Unpack).Note
   // that gaps and and lengths are assumed to have the same size.
   // ========================================================================
 
-  packalign( int pos1, int pos2, const avector<int>& gaps, 
+  packalign( int pos1, int pos2, const avector<int>& gaps,
              const avector<int>& lengths );
 
-  void Set( int pos1, int pos2, const avector<int>& gaps, 
+  void Set( int pos1, int pos2, const avector<int>& gaps,
             const avector<int>& lengths, int nblocks = -1 );
 
-  void Unpack( int& pos1, int& pos2, avector<int>& gaps, 
+  void Unpack( int& pos1, int& pos2, avector<int>& gaps,
                avector<int>& lengths ) const;
 
-  void Unpack( int& pos1, int& pos2, avector<int>& gaps, 
+  void Unpack( int& pos1, int& pos2, avector<int>& gaps,
                avector<int>& lengths, int& nblocks ) const;
 
   // ==========================================================================
@@ -187,21 +189,39 @@ class packalign {
   int pos2( ) const;
   int Pos2( ) const;
 
-  int Offset( ) const { return pos1( ) - pos2( ); }
+  int Offset( ) const {
+    return pos1( ) - pos2( );
+  }
 
-  int extent1( ) const { return Pos1( ) - pos1( ); }
-  int extent2( ) const { return Pos2( ) - pos2( ); }
-  ho_interval Extent1( ) const { return ho_interval( pos1( ), Pos1( ) ); }
-  ho_interval Extent2( ) const { return ho_interval( pos2( ), Pos2( ) ); }
+  int extent1( ) const {
+    return Pos1( ) - pos1( );
+  }
+  int extent2( ) const {
+    return Pos2( ) - pos2( );
+  }
+  ho_interval Extent1( ) const {
+    return ho_interval( pos1( ), Pos1( ) );
+  }
+  ho_interval Extent2( ) const {
+    return ho_interval( pos2( ), Pos2( ) );
+  }
 
-  int StartOnQuery() const { return pos1(); }
-  int EndOnQuery() const { return Pos1(); }
-  int StartOnTarget() const { return pos2(); }
-  int EndOnTarget() const { return Pos2(); }
+  int StartOnQuery() const {
+    return pos1();
+  }
+  int EndOnQuery() const {
+    return Pos1();
+  }
+  int StartOnTarget() const {
+    return pos2();
+  }
+  int EndOnTarget() const {
+    return Pos2();
+  }
 
   // ========================================================================
   // The following members change a packalign.  Flip switches the role of the two
-  // sequences.  Reverse produces the alignment that one would have if one 
+  // sequences.  Reverse produces the alignment that one would have if one
   // reversed both sequences; it takes as input the lengths of the two sequences.
   // =======================================================================
 
@@ -221,7 +241,9 @@ class packalign {
   // The remaining public members are boring utilities:
   // =========================================================================
 
-  packalign( ) { word_[0] = 7u << 29; } // type 7 means UNINITIALIZED
+  packalign( ) {
+    word_[0] = 7u << 29;  // type 7 means UNINITIALIZED
+  }
 
   packalign( const packalign& p );
 
@@ -235,49 +257,51 @@ class packalign {
   // Everything else is private!
   // =========================================================================
 
- private:
+private:
 
   void ConstructorCore( int pos1, int pos2,
                         const avector<int>& gaps, const avector<int>& lengths,
                         int nblocks = -1 );
 
-  int Control( ) const { return (word_[0] >> 29) & Bits3; }
+  int Control( ) const {
+    return (word_[0] >> 29) & Bits3;
+  }
 
-  void ConvertToType0( int pos1, int pos2, 
-       const avector<int>& gaps, const avector<int>& lengths, int nblocks = -1 );
+  void ConvertToType0( int pos1, int pos2,
+                       const avector<int>& gaps, const avector<int>& lengths, int nblocks = -1 );
 
-  void Unpack0( int& pos1, int& pos2, avector<int>& gaps, 
+  void Unpack0( int& pos1, int& pos2, avector<int>& gaps,
                 avector<int>& lengths, int& n ) const;
 
   void DeleteType0( ) { }
 
-  void ConvertToType1( int pos1, int pos2, 
-       const avector<int>& gaps, const avector<int>& lengths, int nblocks = -1 );
+  void ConvertToType1( int pos1, int pos2,
+                       const avector<int>& gaps, const avector<int>& lengths, int nblocks = -1 );
 
-  void Unpack1( int& pos1, int& pos2, avector<int>& gaps, 
+  void Unpack1( int& pos1, int& pos2, avector<int>& gaps,
                 avector<int>& lengths, int& n ) const;
 
-  void DeleteType1( ) 
+  void DeleteType1( )
   {
     short_pointer_or_words pw;
     pw.x[0] = word_[1];
     pw.x[1] = word_[2];
-    delete [ ] pw.p;    
+    delete [ ] pw.p;
   }
 
-  void ConvertToType2( int pos1, int pos2, 
-                       const avector<int>& gaps, const avector<int>& lengths, 
+  void ConvertToType2( int pos1, int pos2,
+                       const avector<int>& gaps, const avector<int>& lengths,
                        int nblocks = -1 );
 
-  void Unpack2( int& pos1, int& pos2, avector<int>& gaps, 
+  void Unpack2( int& pos1, int& pos2, avector<int>& gaps,
                 avector<int>& lengths, int& n ) const;
 
-  void DeleteType2( ) 
+  void DeleteType2( )
   {
     int_pointer_or_words pw;
     pw.x[0] = word_[1];
     pw.x[1] = word_[2];
-    delete [ ] pw.p;    
+    delete [ ] pw.p;
   }
 
   unsigned int word_[3];
@@ -285,7 +309,7 @@ class packalign {
 };
 
 /**
-    Class: align 
+    Class: align
 
     Alignment of query to target, possibly with gaps.
     Models type concept Align.
@@ -295,7 +319,7 @@ namespace allpathslg {
 
 class align  {
 
- public:
+public:
 
   // Gambiarra Debugando void SetToFlipOf( allpathslg::align  a );
 
@@ -305,26 +329,26 @@ class align  {
     lengths_.Setsize(0);
   }
 
-  align ( int pos1, int pos2, const avector<int>& gaps, 
-         const avector<int>& lengths )
-    : pos1_(pos1), pos2_(pos2), nblocks_( gaps.length ), gaps_(gaps), 
+  align ( int pos1, int pos2, const avector<int>& gaps,
+          const avector<int>& lengths )
+    : pos1_(pos1), pos2_(pos2), nblocks_( gaps.length ), gaps_(gaps),
       lengths_(lengths) { }
-  
-    // copy ctor
+
+  // copy ctor
   align ( const allpathslg::align  & a ) {
     pos1_ = a.pos1_;
     pos2_ = a.pos2_;
     nblocks_ = a.nblocks_;
     if ( (int) gaps_.length < nblocks_ ) {
       gaps_.Setsize(nblocks_);
-      lengths_.Setsize(nblocks_);   
+      lengths_.Setsize(nblocks_);
     }
     memcpy( gaps_.x, a.gaps_.x, nblocks_ * sizeof(int) );
     memcpy( lengths_.x, a.lengths_.x, nblocks_ * sizeof(int) );
   }
 
   void Set( int p1, int p2, const avector<int>& g, const avector<int>& l,
-     int nblocks = -1 )
+            int nblocks = -1 )
   {
     pos1_ = p1;
     pos2_ = p2;
@@ -332,10 +356,10 @@ class align  {
     else nblocks_ = nblocks;
     if ( (int) gaps_.length < nblocks_ ) {
       gaps_.Setsize(nblocks_);
-      lengths_.Setsize(nblocks_);    
+      lengths_.Setsize(nblocks_);
     }
     memcpy( gaps_.x, g.x, nblocks_ * sizeof(int) );
-    memcpy( lengths_.x, l.x, nblocks_ * sizeof(int) );    
+    memcpy( lengths_.x, l.x, nblocks_ * sizeof(int) );
   }
 
   align & operator=( const allpathslg::align & a )
@@ -345,44 +369,68 @@ class align  {
     nblocks_ = a.nblocks_;
     if ( (int) gaps_.length < nblocks_ ) {
       gaps_.Setsize(nblocks_);
-      lengths_.Setsize(nblocks_);   
+      lengths_.Setsize(nblocks_);
     }
     memcpy( gaps_.x, a.gaps_.x, nblocks_ * sizeof(int) );
     memcpy( lengths_.x, a.lengths_.x, nblocks_ * sizeof(int) );
-    return *this;    
+    return *this;
   }
 
   align ( const packalign& p )
-  {    p.Unpack( pos1_, pos2_, gaps_, lengths_, nblocks_ );    }
+  {
+    p.Unpack( pos1_, pos2_, gaps_, lengths_, nblocks_ );
+  }
 
   void writeBinary( BinaryWriter& writer ) const;
   void readBinary( BinaryReader& reader );
-  static size_t externalSizeof() { return 0; }
+  static size_t externalSizeof() {
+    return 0;
+  }
 
   /// Set start position of the alignment on the query sequence; cryptic legacy interface
-  void Setpos1( int p1 ) { pos1_ = p1; }
+  void Setpos1( int p1 ) {
+    pos1_ = p1;
+  }
   /// Set start position of the alignment on the query sequence
-  void SetStartOnQuery( int p1 ) { pos1_ = p1; }
+  void SetStartOnQuery( int p1 ) {
+    pos1_ = p1;
+  }
   /// Set start position of the alignment on the target.
-  void Setpos2( int p2 ) { pos2_ = p2; }
+  void Setpos2( int p2 ) {
+    pos2_ = p2;
+  }
   /// Set start position of the alignment on the target.
-  void SetStartOnTarget( int p2 ) { pos2_ = p2; }
+  void SetStartOnTarget( int p2 ) {
+    pos2_ = p2;
+  }
 
   Bool FullLength( const int query_length )
-  {    return pos1( ) == 0 && Pos1( ) == query_length;    }
+  {
+    return pos1( ) == 0 && Pos1( ) == query_length;
+  }
 
   void UnpackFrom( const packalign& p );
 
   /// Start position of the alignment on the query sequence; cryptic legacy interface
-  int pos1( ) const { return pos1_; }
+  int pos1( ) const {
+    return pos1_;
+  }
   /// Start position of the alignment on the query sequence
-  int StartOnQuery( ) const { return pos1_; }
+  int StartOnQuery( ) const {
+    return pos1_;
+  }
   /// Start position of the alignment on the target sequence; cryptic legacy interface
-  int pos2( ) const { return pos2_; }
+  int pos2( ) const {
+    return pos2_;
+  }
   /// Start position of the alignment on the target sequence
-  int StartOnTarget( ) const { return pos2_; }
+  int StartOnTarget( ) const {
+    return pos2_;
+  }
 
-  int Offset( ) const { return pos1_ - pos2_; }
+  int Offset( ) const {
+    return pos1_ - pos2_;
+  }
 
   ///End position of the alignment on the query sequence
   int Pos1( ) const
@@ -390,9 +438,9 @@ class align  {
     int p1 = pos1( );
     for ( int j = 0; j < nblocks_; j++ ) {
       if ( gaps_(j) < 0 ) p1 -= gaps_(j);
-      p1 += lengths_(j);    
+      p1 += lengths_(j);
     }
-    return p1;    
+    return p1;
   }
 
   ///End position of the alignment on the query sequence
@@ -401,64 +449,90 @@ class align  {
     int p1 = pos1( );
     for ( int j = 0; j < nblocks_; j++ ) {
       if ( gaps_(j) < 0 ) p1 -= gaps_(j);
-      p1 += lengths_(j);    
+      p1 += lengths_(j);
     }
-    return p1;    
+    return p1;
   }
 
   ///End position of the alignment on the target sequence
   int Pos2( ) const
   {
     int p2 = pos2( );
-    for ( int j = 0; j < nblocks_; j++ ) {   
+    for ( int j = 0; j < nblocks_; j++ ) {
       if ( gaps_(j) > 0 ) p2 += gaps_(j);
-      p2 += lengths_(j);    
+      p2 += lengths_(j);
     }
-    return p2;    
+    return p2;
   }
 
   ///End position of the alignment on the target sequence
   int EndOnTarget( ) const
   {
     int p2 = pos2( );
-    for ( int j = 0; j < nblocks_; j++ ) {   
+    for ( int j = 0; j < nblocks_; j++ ) {
       if ( gaps_(j) > 0 ) p2 += gaps_(j);
-      p2 += lengths_(j);    
+      p2 += lengths_(j);
     }
-    return p2;    
+    return p2;
   }
 
   /// Advance start position of the alignment on the query sequence; legacy
-  void AddToPos1( int a ) { pos1_ += a; }
+  void AddToPos1( int a ) {
+    pos1_ += a;
+  }
   /// Advance start position of the alignment on the query sequence
-  void AddToStartOnQuery( int a ) { pos1_ += a; }
+  void AddToStartOnQuery( int a ) {
+    pos1_ += a;
+  }
   /// Advance start position of the alignment on the target sequence; legacy
-  void AddToPos2( int a ) { pos2_ += a; }
+  void AddToPos2( int a ) {
+    pos2_ += a;
+  }
   /// Advance start position of the alignment on the target sequence
-  void AddToStartOnTarget( int a ) { pos2_ += a; }
-
-  nbases_t extent1( ) const { return Pos1( ) - pos1( ); }
-  nbases_t extent2( ) const { return Pos2( ) - pos2( ); }
-  ho_interval Extent1( ) const { return ho_interval( pos1( ), Pos1( ) ); }
-  ho_interval Extent2( ) const { return ho_interval( pos2( ), Pos2( ) ); }
-
-  int Nblocks( ) const { return nblocks_; }
-
-  void SetNblocks( int n ) 
-  {    
-    if ( n > (int) gaps_.length ) {
-      gaps_.resize(n);
-      lengths_.resize(n);    
-    }
-    nblocks_ = n;    
+  void AddToStartOnTarget( int a ) {
+    pos2_ += a;
   }
 
-  const avector<int>& Gaps( ) const { return gaps_; }
-  const avector<int>& Lengths( ) const { return lengths_; }
+  nbases_t extent1( ) const {
+    return Pos1( ) - pos1( );
+  }
+  nbases_t extent2( ) const {
+    return Pos2( ) - pos2( );
+  }
+  ho_interval Extent1( ) const {
+    return ho_interval( pos1( ), Pos1( ) );
+  }
+  ho_interval Extent2( ) const {
+    return ho_interval( pos2( ), Pos2( ) );
+  }
 
-  int Gaps( int i ) const { return gaps_(i); }
-  int Lengths( int i ) const { return lengths_(i); }
-     
+  int Nblocks( ) const {
+    return nblocks_;
+  }
+
+  void SetNblocks( int n )
+  {
+    if ( n > (int) gaps_.length ) {
+      gaps_.resize(n);
+      lengths_.resize(n);
+    }
+    nblocks_ = n;
+  }
+
+  const avector<int>& Gaps( ) const {
+    return gaps_;
+  }
+  const avector<int>& Lengths( ) const {
+    return lengths_;
+  }
+
+  int Gaps( int i ) const {
+    return gaps_(i);
+  }
+  int Lengths( int i ) const {
+    return lengths_(i);
+  }
+
   ///return position on 1 corresponding to pos2 on 2, -1 if not possible.
   ///not possible means pos2 is in indel or off end of alignment.
   int PosOn1(int pos2) const;
@@ -466,26 +540,32 @@ class align  {
   ///not possible means pos2 is in indel or off end of alignment.
   int PosOn2(int pos1) const;
 
-  void SetGap( int i, int val ) 
+  void SetGap( int i, int val )
   {
     AssertLt( i, nblocks_ );
-    gaps_(i) = val;    
+    gaps_(i) = val;
   }
 
-  void SetLength( int i, int val ) 
+  void SetLength( int i, int val )
   {
     AssertLt( i, nblocks_ );
-    lengths_(i) = val;    
+    lengths_(i) = val;
   }
 
-  void AddToGap( int i, int addend ) { gaps_(i) += addend; }
-  void AddToLength( int i, int addend ) { lengths_(i) += addend; }
+  void AddToGap( int i, int addend ) {
+    gaps_(i) += addend;
+  }
+  void AddToLength( int i, int addend ) {
+    lengths_(i) += addend;
+  }
 
   void ReverseThis( int b1_len, int b2_len );
 
   void Compactify( int len1, int len2 );
 
-  void Kill( ) { SetNblocks(0); }
+  void Kill( ) {
+    SetNblocks(0);
+  }
 
   void Flip( );
 
@@ -511,28 +591,31 @@ class align  {
     if ( a1.pos2_ != a2.pos2_ ) return False;
     if ( a1.nblocks_ != a2.nblocks_ ) return False;
     for ( int i = 0; i < a1.nblocks_; i++ )
-      if ( a1.gaps_(i) != a2.gaps_(i) 
+      if ( a1.gaps_(i) != a2.gaps_(i)
            || a1.lengths_(i) != a2.lengths_(i) ) return False;
-    return True; 
+    return True;
   }
 
   friend Bool operator<( const allpathslg::align & a1, const allpathslg::align & a2 )
-  {    if ( a1.pos1_ < a2.pos1_ ) return True;
-       if ( a1.pos1_ > a2.pos1_ ) return False;
-       if ( a1.pos2_ < a2.pos2_ ) return True;
-       if ( a1.pos2_ > a2.pos2_ ) return False;
-       if ( a1.nblocks_ < a2.nblocks_ ) return True;
-       if ( a1.nblocks_ > a2.nblocks_ ) return False;
-       if ( a1.gaps_ < a2.gaps_ ) return True;
-       if ( a1.gaps_ > a2.gaps_ ) return False;
-       if ( a1.lengths_ < a2.lengths_ ) return True;
-       return False;    }
+  { if ( a1.pos1_ < a2.pos1_ ) return True;
+    if ( a1.pos1_ > a2.pos1_ ) return False;
+    if ( a1.pos2_ < a2.pos2_ ) return True;
+    if ( a1.pos2_ > a2.pos2_ ) return False;
+    if ( a1.nblocks_ < a2.nblocks_ ) return True;
+    if ( a1.nblocks_ > a2.nblocks_ ) return False;
+    if ( a1.gaps_ < a2.gaps_ ) return True;
+    if ( a1.gaps_ > a2.gaps_ ) return False;
+    if ( a1.lengths_ < a2.lengths_ ) return True;
+    return False;
+  }
 
   ///Return a pair with insertion and deletion information.
   /// first = gaps on 1, second = gaps on 2.
   std::pair<int,int> Gap1Gap2() const;
 
-  Bool GapFree( ) const { return Gap1Gap2( ) == make_pair( 0, 0 ); } 
+  Bool GapFree( ) const {
+    return Gap1Gap2( ) == make_pair( 0, 0 );
+  }
 
   /// Return the total number of errors.
   /// Calls MutationsGap1Gap2.
@@ -544,15 +627,15 @@ class align  {
 
   ///Return a three element vector with error information.
   /// elem 0 = substitutions, elem 1= gaps on 1, elem2 = gaps on 2.
-  vector<int> MutationsGap1Gap2( const basevector& rd1, 
+  vector<int> MutationsGap1Gap2( const basevector& rd1,
                                  const basevector& rd2 ) const;
 
   ///Return a three element vector with error information.
   /// elem 0 = substitutions, elem 1= gaps on 1, elem2 = gaps on 2.
   /// The errors will only be counted if they are between from1 and to1 on rd1
   /// and also between from2 and to2 on rd2.
-  vector<int> MutationsGap1Gap2( const basevector& rd1, 
-                                 int from1, int to1, const basevector& rd2, 
+  vector<int> MutationsGap1Gap2( const basevector& rd1,
+                                 int from1, int to1, const basevector& rd2,
                                  int from2, int to2 ) const;
 
   int Mutations( const basevector& rd1, const basevector& rd2,
@@ -562,7 +645,7 @@ class align  {
               const qualvector& q1, int min_score ) const;
   int MatchingBases( const basevector& rd1, const basevector& rd2 );
 
-  // PerfectIntervals1, PerfectIntervals2: return vector containing intervals of 
+  // PerfectIntervals1, PerfectIntervals2: return vector containing intervals of
   // perfect match on first or second sequence
 
   void PerfectIntervals1( const basevector& rd1, const basevector& rd2,
@@ -572,26 +655,26 @@ class align  {
   void PerfectIntervals2( const fastavector& rd1, const fastavector& rd2,
                           vec<ho_interval>& perfs ) const;
 
-  void CreateFromMutmers( int k, shortvector<mutmer>& m, const basevector& rd1, 
+  void CreateFromMutmers( int k, shortvector<mutmer>& m, const basevector& rd1,
                           const basevector& rd2, int max_errors, float max_badness,
-                          int local_max_errors, int end_stretch, int local_max_errors_done, 
+                          int local_max_errors, int end_stretch, int local_max_errors_done,
                           int& errors_found );
 
-  void CreateFromMutmersAndSW( int k, shortvector<mutmer>& m, 
-                               const basevector& rd1, const basevector& rd2, int max_errors, 
+  void CreateFromMutmersAndSW( int k, shortvector<mutmer>& m,
+                               const basevector& rd1, const basevector& rd2, int max_errors,
                                int end_stretch, int& errors_found, bool affine_penalties );
 
-  void CreateFromMutmersMT( int k, shortvector<mutmer>& m, const basevector& rd1, 
+  void CreateFromMutmersMT( int k, shortvector<mutmer>& m, const basevector& rd1,
                             const basevector& rd2, int max_errors, float max_badness,
-                            int local_max_errors, int end_stretch, int local_max_errors_done, 
+                            int local_max_errors, int end_stretch, int local_max_errors_done,
                             int& errors_found );
 
- private:
+private:
   int pos1_, pos2_; // TODO: potentially dangerous truncation of indices
   int nblocks_;
   avector<int> gaps_, lengths_;
 
-};  // class align 
+};  // class align
 
 }
 
@@ -604,29 +687,29 @@ ostream & operator<<(ostream & os, const allpathslg::align  & a);
 
 Bool Proper( const allpathslg::align & a, int len1, int len2 );
 
-void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2, 
+void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2,
                     const vecbasevector& EE, int test_no, Bool fatal = True );
 
-void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2, 
+void RequireProper( const allpathslg::align & a, int id1, int id2, Bool rc2,
                     const vec<int>& EE_length, int test_no, Bool fatal = True );
 
 // Compute the number of errors in an alignment.
 
 template<class BASEVEC1, class BASEVEC2>
-int ActualErrors( const BASEVEC1& rd1, const BASEVEC2& rd2, 
+int ActualErrors( const BASEVEC1& rd1, const BASEVEC2& rd2,
                   const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
 
 template<class BASEVEC1, class BASEVEC2>
-int ActualErrors( Bool rc, const BASEVEC1& rd1, const BASEVEC2& rd2, 
+int ActualErrors( Bool rc, const BASEVEC1& rd1, const BASEVEC2& rd2,
                   const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
 
-int ActualErrors( const basevector& rd1, const basevector& rd2, 
+int ActualErrors( const basevector& rd1, const basevector& rd2,
                   const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
-int ActualErrors( const fastavector& rd1, const basevector& rd2, 
+int ActualErrors( const fastavector& rd1, const basevector& rd2,
                   const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
-int ActualErrors( const vec<char>& rd1, const basevector& rd2, 
+int ActualErrors( const vec<char>& rd1, const basevector& rd2,
                   const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
-int ActualErrors( const fastavector& rd1, const fastavector& rd2, 
+int ActualErrors( const fastavector& rd1, const fastavector& rd2,
                   const allpathslg::align & a, int mismatch_penalty = 1, int gap_penalty = 2 );
 
 int Bandwidth( allpathslg::align & a );
@@ -635,97 +718,120 @@ int CorrelatePositions( const allpathslg::align & a, int x1 );
 
 /// Trim a basevector and an alignment on that basevector in sync.
 
-void Trim1Together(const basevector & b1, const basevector & b2, 
-		   const allpathslg::align  & a, int startOn1, int len, 
-		   basevector & trimmedb1, allpathslg::align  & trimmeda); 
+void Trim1Together(const basevector & b1, const basevector & b2,
+                   const allpathslg::align  & a, int startOn1, int len,
+                   basevector & trimmedb1, allpathslg::align  & trimmeda);
 
 /// Class placement_mark: small-size structure to keep only the
-/// target (contig) index/start position and query sequence orientation 
+/// target (contig) index/start position and query sequence orientation
 /// for the alignment of the query sequence against the target(s).
 
 class placement_mark {
 
-     public:
+public:
 
-     placement_mark( ) { }
+  placement_mark( ) { }
 
-     /// Constructor. Create placement mark for an alignment of a query
-     /// (no information on the query will be kept except the orientation!) 
-     /// starting at position 
-     /// \c pos on the target contig \c tig. If the alignment is for the 
-     /// query itself (for reverse complemented query), use \c fw1=true
-     /// (\c fw1=false).
-     placement_mark( const int tig, const bool fw1, const unsigned int pos )
-          : tig_or_( tig | ( fw1 ? TopBit32 : 0 ) ), pos_(pos) { }
+  /// Constructor. Create placement mark for an alignment of a query
+  /// (no information on the query will be kept except the orientation!)
+  /// starting at position
+  /// \c pos on the target contig \c tig. If the alignment is for the
+  /// query itself (for reverse complemented query), use \c fw1=true
+  /// (\c fw1=false).
+  placement_mark( const int tig, const bool fw1, const unsigned int pos )
+    : tig_or_( tig | ( fw1 ? TopBit32 : 0 ) ), pos_(pos) { }
 
-     /// Set placement mark for a query
-     /// (no information on the query will be kept except the orientation!) 
-     /// aligning at position 
-     /// \c pos on the target contig \c tig. If the alignment is for the 
-     /// query itself (for reverse complemented query), use \c fw1=true
-     /// (\c fw1=false).
-     void Set( const int tig, const bool fw1, const unsigned int pos )
-     {    tig_or_ = tig | ( fw1 ? TopBit32 : 0 );
-          pos_ = pos;    }
+  /// Set placement mark for a query
+  /// (no information on the query will be kept except the orientation!)
+  /// aligning at position
+  /// \c pos on the target contig \c tig. If the alignment is for the
+  /// query itself (for reverse complemented query), use \c fw1=true
+  /// (\c fw1=false).
+  void Set( const int tig, const bool fw1, const unsigned int pos )
+  { tig_or_ = tig | ( fw1 ? TopBit32 : 0 );
+    pos_ = pos;
+  }
 
-     /// Index of the target sequence (usually contig); this is old interface
-     int Tig( ) const { return tig_or_ & Bits31; }
-     
-     /// Index of the target sequence (usually contig) (more verbose
-     /// alias for Tig(); 
-     /// this method signature is expected to be preserved among
-     /// different alignment classes: intended for use with generic interfaces)
-     int TargetId( ) const { return tig_or_ & Bits31; }
-     
-     /// Returns \c true if query itself (fw) was aligned to the target; old interface.
-     bool Fw1( ) const { return ( tig_or_ & TopBit32 ) != 0; }
+  /// Index of the target sequence (usually contig); this is old interface
+  int Tig( ) const {
+    return tig_or_ & Bits31;
+  }
 
-     /// Returns \c true if query itself (fw) was aligned to the target
-     /// (more verbose alias for Fw1(); this method signature is expected to 
-     /// be preserved among different alignment classes: intended for use 
-     /// with generic interfaces)
-     Bool IsQueryFW( ) const { return ( tig_or_ & TopBit32 ) != 0; }
+  /// Index of the target sequence (usually contig) (more verbose
+  /// alias for Tig();
+  /// this method signature is expected to be preserved among
+  /// different alignment classes: intended for use with generic interfaces)
+  int TargetId( ) const {
+    return tig_or_ & Bits31;
+  }
 
-     /// Returns \c true if reverse complemented query was aligned to the target; 
-     /// old interface.
-     bool Rc1( ) const { return (tig_or_ & TopBit32) == 0 ; }
+  /// Returns \c true if query itself (fw) was aligned to the target; old interface.
+  bool Fw1( ) const {
+    return ( tig_or_ & TopBit32 ) != 0;
+  }
 
-     /// Returns \c true if reverse complemented query was aligned to the target
-     /// (more verbose alias for Rc11(); this method signature is expected to 
-     /// be preserved among different alignment classes: intended for use 
-     /// with generic interfaces)
-     Bool IsQueryRC( ) const { return (tig_or_ & TopBit32) == 0 ; }
+  /// Returns \c true if query itself (fw) was aligned to the target
+  /// (more verbose alias for Fw1(); this method signature is expected to
+  /// be preserved among different alignment classes: intended for use
+  /// with generic interfaces)
+  Bool IsQueryFW( ) const {
+    return ( tig_or_ & TopBit32 ) != 0;
+  }
 
-     /// Position on the target sequence; this is old interface.
-     unsigned int Pos( ) const { return pos_; }
-     
-     /// Position on the target sequence (more verbose alias for Pos();
-     /// this method signature is expected to be preserved among
-     /// different alignment classes: intended for use with generic interfaces)
-     unsigned int StartOnTarget() const { return pos_; }
+  /// Returns \c true if reverse complemented query was aligned to the target;
+  /// old interface.
+  bool Rc1( ) const {
+    return (tig_or_ & TopBit32) == 0 ;
+  }
 
-     friend Bool operator<( const placement_mark& m1, const placement_mark& m2 )
-     {    if ( m1.TargetId( ) < m2.TargetId( ) ) return True;
-          if ( m1.TargetId( ) > m2.TargetId( ) ) return False;
-          if ( m1.StartOnTarget( ) < m2.StartOnTarget( ) ) return True;
-          if ( m1.StartOnTarget( ) > m2.StartOnTarget( ) ) return False;
-          if ( m1.IsQueryFW( ) < m2.IsQueryFW( ) ) return True;
-          return False;    }
+  /// Returns \c true if reverse complemented query was aligned to the target
+  /// (more verbose alias for Rc11(); this method signature is expected to
+  /// be preserved among different alignment classes: intended for use
+  /// with generic interfaces)
+  Bool IsQueryRC( ) const {
+    return (tig_or_ & TopBit32) == 0 ;
+  }
 
-     friend Bool operator==( const placement_mark& m1, const placement_mark& m2 )
-     {    return m1.tig_or_ == m2.tig_or_ && m1.pos_ == m2.pos_;    }
+  /// Position on the target sequence; this is old interface.
+  unsigned int Pos( ) const {
+    return pos_;
+  }
 
-     friend Bool operator!=( const placement_mark& m1, const placement_mark& m2 )
-     {    return m1.tig_or_ != m2.tig_or_ || m1.pos_ != m2.pos_;    }
+  /// Position on the target sequence (more verbose alias for Pos();
+  /// this method signature is expected to be preserved among
+  /// different alignment classes: intended for use with generic interfaces)
+  unsigned int StartOnTarget() const {
+    return pos_;
+  }
 
-     friend ostream& operator<<( ostream& out, const placement_mark& m )
-     {    return out << m.Tig( ) << " " << m.Pos( ) << " " 
-               << ( m.Fw1( ) ? "fw" : "rc" ) << "\n";    }
+  friend Bool operator<( const placement_mark& m1, const placement_mark& m2 )
+  { if ( m1.TargetId( ) < m2.TargetId( ) ) return True;
+    if ( m1.TargetId( ) > m2.TargetId( ) ) return False;
+    if ( m1.StartOnTarget( ) < m2.StartOnTarget( ) ) return True;
+    if ( m1.StartOnTarget( ) > m2.StartOnTarget( ) ) return False;
+    if ( m1.IsQueryFW( ) < m2.IsQueryFW( ) ) return True;
+    return False;
+  }
 
-     private:
+  friend Bool operator==( const placement_mark& m1, const placement_mark& m2 )
+  {
+    return m1.tig_or_ == m2.tig_or_ && m1.pos_ == m2.pos_;
+  }
 
-     unsigned int tig_or_;
-     unsigned int pos_;
+  friend Bool operator!=( const placement_mark& m1, const placement_mark& m2 )
+  {
+    return m1.tig_or_ != m2.tig_or_ || m1.pos_ != m2.pos_;
+  }
+
+  friend ostream& operator<<( ostream& out, const placement_mark& m )
+  { return out << m.Tig( ) << " " << m.Pos( ) << " "
+           << ( m.Fw1( ) ? "fw" : "rc" ) << "\n";
+  }
+
+private:
+
+  unsigned int tig_or_;
+  unsigned int pos_;
 
 };
 
@@ -759,7 +865,7 @@ extern template class OuterVec<PlacementMarkVec>;
    >Bool IsQueryRC( ) const;
    >int QueryId() const;
    >int TargetId() const;
-   
+
  */
 
 // Semantic Type: align_id_t

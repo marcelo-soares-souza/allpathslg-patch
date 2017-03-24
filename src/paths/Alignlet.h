@@ -29,20 +29,35 @@ public:
   }
 
   alignlet( const int pos2, const int Pos2, const int target_id,
-       const int target_length, const Bool fw1 ) 
-       : pos2_(pos2), Pos2_(Pos2), target_id(target_id)
-  {    target_length_ = fw1 ? target_length : -target_length - 1;    }
-  
-  int pos2( ) const { return pos2_; }
-  int Pos2( ) const { return Pos2_; }
-  int Fw1( ) const { return target_length_ >= 0; }
-  void Shift(int offset) { pos2_ += offset; Pos2_ += offset; }
-  int TargetId( ) const { return target_id; }
+            const int target_length, const Bool fw1 )
+    : pos2_(pos2), Pos2_(Pos2), target_id(target_id)
+  {
+    target_length_ = fw1 ? target_length : -target_length - 1;
+  }
+
+  int pos2( ) const {
+    return pos2_;
+  }
+  int Pos2( ) const {
+    return Pos2_;
+  }
+  int Fw1( ) const {
+    return target_length_ >= 0;
+  }
+  void Shift(int offset) {
+    pos2_ += offset;
+    Pos2_ += offset;
+  }
+  int TargetId( ) const {
+    return target_id;
+  }
   int TargetLength( ) const {
     return target_length_ < 0 ? - target_length_ - 1 : target_length_;
   }
 
-  void SetTargetId( const int id ) { target_id = id; }
+  void SetTargetId( const int id ) {
+    target_id = id;
+  }
   void SetTargetLength( const int length, const bool fw ) {
     target_length_ = ( fw ? length : - length - 1 );
   }
@@ -56,11 +71,11 @@ public:
   }
 
   void PrintReadableBrief( ostream& out, const String& query_name ) const {
-    out << query_name << ( target_length_ < 0 ? "rc" : "fw" ) << " vs " << target_id << " from " << pos2_ << " to " << Pos2_ 
-	<< " (of " << ( target_length_ < 0 ? - target_length_ -1 : target_length_ ) << ")\n";
+    out << query_name << ( target_length_ < 0 ? "rc" : "fw" ) << " vs " << target_id << " from " << pos2_ << " to " << Pos2_
+        << " (of " << ( target_length_ < 0 ? - target_length_ -1 : target_length_ ) << ")\n";
 
   }
-  
+
 private:
 
   int pos2_, Pos2_;

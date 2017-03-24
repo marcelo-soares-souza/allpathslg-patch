@@ -54,27 +54,27 @@ struct FarEnd {
 
 
 void GapSkipLeft( KmerPathLoc loc1orig,
-		  KmerPathLoc loc2orig,
-		  vec<FarEnd>& far_ends,
-		  const NegativeGapValidator* ngv = NULL );
+                  KmerPathLoc loc2orig,
+                  vec<FarEnd>& far_ends,
+                  const NegativeGapValidator* ngv = NULL );
 void GapSkipRight( KmerPathLoc loc1orig,
-		   KmerPathLoc loc2orig,
-		   vec<FarEnd>& far_ends, 
-		   const NegativeGapValidator* ngv = NULL );
+                   KmerPathLoc loc2orig,
+                   vec<FarEnd>& far_ends,
+                   const NegativeGapValidator* ngv = NULL );
 
 
 void GapOnGapRight( KmerPathLoc loc1orig,
-		    KmerPathLoc loc2orig,
-		    int min_gap_used, int max_gap_used,
-		    vec<FarEnd>& far_ends,
-		    vec< pair<int,int> >& real_gap_used,
-		    const NegativeGapValidator* ngv = NULL );
+                    KmerPathLoc loc2orig,
+                    int min_gap_used, int max_gap_used,
+                    vec<FarEnd>& far_ends,
+                    vec< pair<int,int> >& real_gap_used,
+                    const NegativeGapValidator* ngv = NULL );
 void GapOnGapLeft( KmerPathLoc loc1orig,
-		   KmerPathLoc loc2orig,
-		   int min_gap_used, int max_gap_used,
-		   vec<FarEnd>& far_ends,
-		   vec< pair<int,int> >& real_gap_used,
-		   const NegativeGapValidator* ngv = NULL );
+                   KmerPathLoc loc2orig,
+                   int min_gap_used, int max_gap_used,
+                   vec<FarEnd>& far_ends,
+                   vec< pair<int,int> >& real_gap_used,
+                   const NegativeGapValidator* ngv = NULL );
 
 
 

@@ -17,9 +17,9 @@
 typedef void ArachneSignalHandler(int, siginfo_t*, void*);
 
 void arachne_signal_handler( int signal_number, siginfo_t* info, void* context,
-    Bool no_ctrlc = False );
+                             Bool no_ctrlc = False );
 void arachne_signal_handler_standard( int signal_number, siginfo_t* info,
-    void* context );
+                                      void* context );
 void arachne_signal_handler_no_ctrlc_traceback( int signal_number,
     siginfo_t* info, void* context );
 void ArachneInterruptHandler(ArachneSignalHandler* func);
@@ -31,10 +31,14 @@ void RunTime( int no_dump=1,
 
 // RunTimeLax is now just a synonym for RunTime
 inline void RunTimeLax( )
-{    RunTime();    }
+{
+  RunTime();
+}
 
 inline void RunTimeNoTraceback( )
-{    RunTime( 1, &arachne_signal_handler_no_ctrlc_traceback );    }
+{
+  RunTime( 1, &arachne_signal_handler_no_ctrlc_traceback );
+}
 
 void print_signal_handler_message( int signal_number, siginfo_t* info );
 

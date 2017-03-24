@@ -43,13 +43,13 @@ template<typename dataT>
 struct NamedData {
   const String *mp_name;
   const dataT  *mp_data;
-  
+
   NamedData()
     : mp_name( 0 ), mp_data( 0 ) {}
-  
+
   NamedData( const String *p_name, const dataT *p_data )
     : mp_name( p_name ), mp_data( p_data ) {}
-  
+
   bool operator< ( const NamedData<dataT> &other ) const
   {
     return ( *mp_name < *(other.mp_name) );
@@ -65,8 +65,8 @@ struct NamedData {
 template<typename vecT, typename dataT, typename filestreamT>
 class FastaFilesetTemplate
 {
- public:
-  
+public:
+
   FastaFilesetTemplate( const vec<String>& filenames,
                         FastaNameParser *nameParser = 0,
                         ostream &log = cout );
@@ -76,39 +76,39 @@ class FastaFilesetTemplate
 
   /// Get the number of sequences found.
   int GetSize();
-  
+
   /// Get the number of bases found.
   longlong GetNumberOfBases();
-  
+
   /// Retrieve the next parsed sequence, returning false if the last
-  /// sequence has already been returned. Sequences are ordered 
+  /// sequence has already been returned. Sequences are ordered
   /// alphabetically by name.
   bool GetNext( String &name, dataT &bases );
 
   /// Retrieve the sequence at index i, returning false if the index is out
-  /// of bounds. Sequences are ordered 
+  /// of bounds. Sequences are ordered
   /// in the order they were in in the original files.
   bool GetAtIndex( typename vecT::size_type i, String &name, dataT &bases );
 
   /// Retrieve the next parsed sequence's name, returning false if the last
-  /// sequence has already been returned. Sequences are ordered 
-  /// alphabetically by name. 
+  /// sequence has already been returned. Sequences are ordered
+  /// alphabetically by name.
   bool GetNextName( String &name );
 
   /// Start over at beginning of sequences.
   void Reset();
- 
+
   /// If the parsed sequences contain exactly one piece of data with
   /// the given name, copy it to the parameter and return true.
   /// Otherwise, return false.  Has no effect on iteration via
   /// GetNext().
   bool GetByName( const String &name, dataT &bases );
 
- private:
+private:
   longlong EstimateVecSize( longlong totalSeqSize );
 
   vec<String> m_filenames;
-  
+
   vecString m_names;
   vecT      m_data;
 
@@ -124,10 +124,10 @@ class FastaFilesetTemplate
 };
 
 // Typedefs for commonly used FastaFilesetTemplates.
-typedef FastaFilesetTemplate<veccompseq,CompressedSequence,FastaSequenceFilestream> 
+typedef FastaFilesetTemplate<veccompseq,CompressedSequence,FastaSequenceFilestream>
 FastaSequenceFileset;
 
-typedef FastaFilesetTemplate<vecqualvector,qualvector,FastaQualityFilestream> 
+typedef FastaFilesetTemplate<vecqualvector,qualvector,FastaQualityFilestream>
 FastaQualityFileset;
 
 
@@ -135,9 +135,9 @@ FastaQualityFileset;
 /// FastaSequenceFileset and a FastaQualityFileset.
 class FastaPairedFileset {
 
- public:
-  
-  FastaPairedFileset( const vec<String>& sequenceFilenames, 
+public:
+
+  FastaPairedFileset( const vec<String>& sequenceFilenames,
                       const vec<String>& qualityFilenames,
                       FastaNameParser *nameParser = 0,
                       ostream &log = cout );
@@ -151,7 +151,7 @@ class FastaPairedFileset {
   /// and qual data, returning true if such a sequence was found.
   /// Sequences are ordered alphabetically by name.
   bool GetNext( String &name, CompressedSequence &bases, qualvector &quals );
- 
+
   /// If the parsed sequences contain exactly one set each of bases and
   /// quals with the given name, copy them to the parameters and return
   /// true.  Otherwise, return false.  Has no effect on iteration via
@@ -161,7 +161,7 @@ class FastaPairedFileset {
   void GetUnmatchedSequenceNames( vec<String> &unmatchedNames );
   void GetUnmatchedQualityNames( vec<String> &unmatchedNames );
 
- private:
+private:
   FastaSequenceFileset m_basesFileset;
   FastaQualityFileset  m_qualsFileset;
 

@@ -24,8 +24,8 @@
 // class SuperSeqBuilder
 
 class SuperSeqBuilder {
- public:
-  // Given the unipath sequences in unipathSeqsFw and unipathSeqsRc, 
+public:
+  // Given the unipath sequences in unipathSeqsFw and unipathSeqsRc,
 
   void Build( const vecUnipathSeq& unipathSeqsFw,
               const vecUnipathSeq& unipathSeqsRc,
@@ -37,12 +37,12 @@ class SuperSeqBuilder {
 };
 
 
-void FindSuperSeqMuxes( const vecKmerPath& unipaths, 
+void FindSuperSeqMuxes( const vecKmerPath& unipaths,
                         const vecUnipathSeq& superSeqs,
                         MuxGraph& muxGraph,
                         MuxGraph& inverseMuxGraph );
 
-longlong FindSuperSeqSubs( const vecKmerPath& unipaths, 
+longlong FindSuperSeqSubs( const vecKmerPath& unipaths,
                            const vecUnipathSeq& superSeqs,
                            SubsumptionList& subList );
 
@@ -64,15 +64,15 @@ void PrintSuperDotFile( const String& dotfile,
                         const vecUnipathSeq& unipathSeqsRc );
 
 
-void AddSuperReads( const vecKmerPath& pathsFw, 
-                    const vecKmerPath& pathsRc, 
+void AddSuperReads( const vecKmerPath& pathsFw,
+                    const vecKmerPath& pathsRc,
                     const vec<read_pairing>& pairs,
                     const int K,
                     const int maxSep,
                     const Float sdMult,
-                    vecKmerPath& allPathsFw, 
+                    vecKmerPath& allPathsFw,
                     vecKmerPath& allPathsRc,
-                    MuxGraph& allMuxes, 
+                    MuxGraph& allMuxes,
                     SubsumptionList& allSubs,
                     OffsetTracker* pTracker )
 {
@@ -110,7 +110,7 @@ void AddSuperReads( const vecKmerPath& pathsFw,
   vecUnipathSeq unextendedSuperSeqs;
   MuxGraph origMuxGraph( numReads );
   SubsumptionList origSubList( numReads );
-  SuperSeqBuilder().Build( unipathSeqsFw, unipathSeqsRc, 
+  SuperSeqBuilder().Build( unipathSeqsFw, unipathSeqsRc,
                            unextendedSuperSeqs,
                            muxesFw, muxesRc,
                            origMuxGraph, origSubList );
@@ -169,7 +169,7 @@ void AddSuperReads( const vecKmerPath& pathsFw,
   SubsumptionList superSubList( numSuperSeqs );
   longlong numSubs = FindSuperSeqSubs( unipaths, superSeqs, superSubList );
   // cout << "done." << endl;
-  
+
   // cout << "Found " << numSubs << " subsumptions." << endl;
 
   // We now want to add in all the muxes and subsumptions that map
@@ -197,7 +197,7 @@ void AddSuperReads( const vecKmerPath& pathsFw,
       Mux origMux = muxes.front();
       numKmers += origMux.GetNumKmers();
       segment += origMux.GetSegment();
-      
+
       // We then look up the mux of that unextended unipath sequence
       // to the unique extended unipath sequence it is subsumed by.
       unextendedSuperMuxGraph.GetMuxesOf( origMux.GetPathId(), muxes );
@@ -210,7 +210,7 @@ void AddSuperReads( const vecKmerPath& pathsFw,
       allMuxes.SetMuxOf( okpid, Mux( OrientedKmerPathId( superId, false ), segment, numKmers ) );
 
       int leftOverhang = 0;
-      
+
       vec<SubsumptionRecord> subRecs;
 
       origSubList.GetFullRecordsFor( okpid, subRecs );
@@ -220,20 +220,20 @@ void AddSuperReads( const vecKmerPath& pathsFw,
       unextendedSuperSubList.GetFullRecordsFor( origSubRec.GetSuperPathId(), subRecs );
       SubsumptionRecord unextendedSuperSubRec = subRecs.front();
       leftOverhang += unextendedSuperSubRec.GetLeftOverhang();
-      
+
       ForceAssertEq( unextendedSuperSubRec.GetSuperPathId().GetId() + numReads, superId );
 
       vec<BriefSubsumptionRecord> newSubRecs;
-      
+
       newSubRecs.push_back( BriefSubsumptionRecord( OrientedKmerPathId( superId, false ),
-                                                    leftOverhang ) );
+                            leftOverhang ) );
 
       superSubList.GetFullRecordsFor( unextendedSuperSubRec.GetSuperPathId(), subRecs );
       for ( unsigned int r = 0; r < subRecs.size(); ++r ) {
         OrientedKmerPathId superPathId( numReads + subRecs[r].GetSuperPathId().GetId(), false );
         int transitiveLeftOverhang = leftOverhang + subRecs[r].GetLeftOverhang();
         newSubRecs.push_back( BriefSubsumptionRecord( superPathId,
-                                                      transitiveLeftOverhang ) );
+                              transitiveLeftOverhang ) );
       }
       allSubs.SetBriefRecordsFor( okpid, newSubRecs );
     }
@@ -248,31 +248,31 @@ void AddSuperReads( const vecKmerPath& pathsFw,
   //PrintSuperDotFile( "tmp/super.dot", superMuxGraph, numReads, unipathSeqsFw, unipathSeqsRc );
 
   MuxGraph allInverseMuxes( numReads + numSuperSeqs );
-    
+
   for ( int i = 0; i < numSuperSeqs; ++i ) {
     allSeqsFw.push_back( superSeqs[i] );
     allSeqsRc.push_back( UnipathSeq() );
-    
+
     allPathsFw.push_back( superPaths[i] );
     allPathsRc.push_back( KmerPath() );
-    
+
     vec<Mux> muxes;
     superMuxGraph.GetMuxesOf( OrientedKmerPathId( i, false ), muxes );
-    
+
     for ( unsigned int m = 0; m < muxes.size(); ++m )
       muxes[m].SetPathId( OrientedKmerPathId( numReads + muxes[m].GetPathId().GetId(), false ) );
-    
+
     allMuxes.SetMuxesOf( OrientedKmerPathId( numReads + i, false ), muxes );
-    
-      
+
+
     superInverseMuxGraph.GetMuxesOf( OrientedKmerPathId( i, false ), muxes );
-    
+
     for ( unsigned int m = 0; m < muxes.size(); ++m )
       muxes[m].SetPathId( OrientedKmerPathId( numReads + muxes[m].GetPathId().GetId(), false ) );
-    
+
     allInverseMuxes.SetMuxesOf( OrientedKmerPathId( numReads + i, false ), muxes );
   }
-  
+
   if ( pTracker ) {
     vec<int> maxOffsets;
     CalculateMaxOffsets( pathsFw, pathsRc,
@@ -282,12 +282,12 @@ void AddSuperReads( const vecKmerPath& pathsFw,
 
     TaskTimer offsetsTimer;
     offsetsTimer.Start();
-    pTracker->ConvertFrom( MutableOffsetTracker( allSeqsFw, 
-                                                 allInverseMuxes, 
-                                                 numReads, 
-                                                 maxOffsets ) );
+    pTracker->ConvertFrom( MutableOffsetTracker( allSeqsFw,
+                           allInverseMuxes,
+                           numReads,
+                           maxOffsets ) );
     offsetsTimer.Stop();
-    
+
     PRINT( offsetsTimer );
   }
 }
@@ -328,26 +328,26 @@ void SuperSeqBuilder::Build( const vecUnipathSeq& unipathSeqsFw,
 
   for ( vecUnipathSeq::size_type i = 0; i < unipathSeqsFw.size(); ++i )
     if ( unipathSeqsFw[i].size() )
-      seqPtrs.push_back( UnipathSeqPtr_Okpid( &(unipathSeqsFw[i]), 
+      seqPtrs.push_back( UnipathSeqPtr_Okpid( &(unipathSeqsFw[i]),
                                               OrientedKmerPathId( i, false ) ) );
 
   for ( vecUnipathSeq::size_type i = 0; i < unipathSeqsRc.size(); ++i )
     if ( unipathSeqsRc[i].size() )
-      seqPtrs.push_back( UnipathSeqPtr_Okpid( &(unipathSeqsRc[i]), 
+      seqPtrs.push_back( UnipathSeqPtr_Okpid( &(unipathSeqsRc[i]),
                                               OrientedKmerPathId( i, true ) ) );
 
   // cout << "Sorting unipath seqs... " << flush;
   sort( seqPtrs.begin(), seqPtrs.end() );
   // cout << "done." << endl;
- 
+
   vec<UnipathSeqPtr_Okpid>::iterator rangeBegin, rangeEnd;
 
   // cout << "Finding unique unipath seqs... " << flush;
-  for ( rangeBegin = seqPtrs.begin(); 
+  for ( rangeBegin = seqPtrs.begin();
         rangeBegin != seqPtrs.end();
         rangeBegin = rangeEnd ) {
     rangeEnd = upper_bound( rangeBegin, seqPtrs.end(), *rangeBegin );
-    
+
     int superSeqId = superSeqs.size();
     superSeqs.push_back_reserve( *(rangeBegin->pSeq), 0, 2.0 );
 
@@ -362,7 +362,7 @@ void SuperSeqBuilder::Build( const vecUnipathSeq& unipathSeqsFw,
       vec<BriefSubsumptionRecord> finalSubRecs;
       finalSubRecs.push_back( BriefSubsumptionRecord( superOkpid, theMux.GetNumKmers() ) );
       subList.SetBriefRecordsFor( readOkpid, finalSubRecs );
-    
+
       muxGraph.SetMuxOf( readOkpid, Mux( superOkpid, theMux.GetSegment(), theMux.GetNumKmers() ) );
     }
   }
@@ -374,7 +374,7 @@ void SuperSeqBuilder::Build( const vecUnipathSeq& unipathSeqsFw,
 // Is otherRec an extension of thisRec?
 bool FirstExtendsSecond( const vecUnipathSeq& superSeqs,
                          const UnipathSeqDatabase::Record& first,
-                         const UnipathSeqDatabase::Record& second, 
+                         const UnipathSeqDatabase::Record& second,
                          bool verbose ) {
   if ( verbose ) {
     cout << "FirstExtendsSecond( ";
@@ -386,12 +386,12 @@ bool FirstExtendsSecond( const vecUnipathSeq& superSeqs,
 
   int thisId = second.seqId;
   int thisIndex = second.index;
-  
+
   int otherId = first.seqId;
   int otherIndex = first.index;
 
   if ( thisIndex > otherIndex ) {
-    if ( verbose ) 
+    if ( verbose )
       cout << "no" << endl;
     return false;
   }
@@ -399,9 +399,9 @@ bool FirstExtendsSecond( const vecUnipathSeq& superSeqs,
   int maxOverlapLeft = min( thisIndex, otherIndex );
   int overlapLeft = 0;
   for ( ; overlapLeft < maxOverlapLeft; ++overlapLeft )
-    if ( superSeqs[thisId][thisIndex-overlapLeft-1] != 
+    if ( superSeqs[thisId][thisIndex-overlapLeft-1] !=
          superSeqs[otherId][otherIndex-overlapLeft-1] ) {
-      if ( verbose ) 
+      if ( verbose )
         cout << "no" << endl;
       return false;
     }
@@ -410,9 +410,9 @@ bool FirstExtendsSecond( const vecUnipathSeq& superSeqs,
                              superSeqs[otherId].size() - otherIndex );
   int overlapRight = 1;
   for ( ; overlapRight < maxOverlapRight; ++overlapRight )
-    if ( superSeqs[thisId][thisIndex+overlapRight] != 
+    if ( superSeqs[thisId][thisIndex+overlapRight] !=
          superSeqs[otherId][otherIndex+overlapRight] ) {
-      if ( verbose ) 
+      if ( verbose )
         cout << "no" << endl;
       return false;
     }
@@ -422,25 +422,25 @@ bool FirstExtendsSecond( const vecUnipathSeq& superSeqs,
 
     // A superSeq cannot be a coterminal extension of itself.
     if ( otherId == thisId ) {
-      if ( verbose ) 
+      if ( verbose )
         cout << "no" << endl;
       return false;
     }
 
     // A superSeq cannot have a coterminal extension that is longer than itself.
     if ( superSeqs[thisId].size() < superSeqs[otherId].size() ) {
-      if ( verbose ) 
+      if ( verbose )
         cout << "no" << endl;
       return false;
     }
-        
+
     // A coterminal extension should never be the same size as the
     // original, since they would then be identical.  SuperSeqs
     // are supposed to be unique.
     ForceAssert( superSeqs[thisId].size() != superSeqs[otherId].size() );
   }
-  
-  if ( verbose ) 
+
+  if ( verbose )
     cout << "yes" << endl;
   return true;
 }
@@ -486,11 +486,11 @@ void FindSuperSeqMuxes( const vecKmerPath& unipaths,
     // Find minimal extensions.
     vec<Bool> isMinimal( extensions.size(), True );
 
-    for ( unsigned int i = 0; i < extensions.size(); ++i ) 
+    for ( unsigned int i = 0; i < extensions.size(); ++i )
       for ( unsigned int j = i+1; j < extensions.size(); ++j ) {
         if ( FirstExtendsSecond( superSeqs, extensions[i], extensions[j], verbose ) )
           isMinimal[i] = False;
-        else if ( FirstExtendsSecond( superSeqs, extensions[j], extensions[i], verbose ) ) 
+        else if ( FirstExtendsSecond( superSeqs, extensions[j], extensions[i], verbose ) )
           isMinimal[j] = False;
       }
 
@@ -509,16 +509,16 @@ void FindSuperSeqMuxes( const vecKmerPath& unipaths,
       for ( int i = 0; i < index; ++i ) {
         numKmers += unipaths[ superSeqs[otherId][i] ].KmerCount();
         segment += unipaths[ superSeqs[otherId][i] ].NSegments();
-        if ( i > 0 && 
+        if ( i > 0 &&
              unipaths[ superSeqs[otherId][i-1] ].End().GetKmer() + 1 ==
              unipaths[ superSeqs[otherId][i] ].Begin().GetKmer() )
           --segment;
       }
-          
+
       OrientedKmerPathId otherOkpid( otherId, false );
 
       muxes.push_back( Mux( otherOkpid, segment, numKmers ) );
-      
+
       inverseMuxGraph.GetMuxesOf( otherOkpid, inverseMuxes );
       inverseMuxes.push_back( Mux( thisOkpid, segment, numKmers ) );
       inverseMuxGraph.SetMuxesOf( otherOkpid, inverseMuxes );
@@ -528,9 +528,9 @@ void FindSuperSeqMuxes( const vecKmerPath& unipaths,
 }
 
 
-longlong FindSuperSeqSubs( const vecKmerPath& unipaths, 
+longlong FindSuperSeqSubs( const vecKmerPath& unipaths,
                            const vecUnipathSeq& superSeqs,
-                           SubsumptionList& subList ) 
+                           SubsumptionList& subList )
 {
   UnipathSeqDatabase superSeqDB( superSeqs );
 
@@ -549,9 +549,9 @@ longlong FindSuperSeqSubs( const vecKmerPath& unipaths,
       vecUnipathSeq::size_type otherId = records[r].seqId;
       UnipathSeq::size_type otherIndex = records[r].index;
 
-      if ( otherId == thisId ) 
+      if ( otherId == thisId )
         continue;
-      
+
       if ( superSeqs[otherId].size() - otherIndex < superSeqs[thisId].size() )
         continue;
 
@@ -567,11 +567,11 @@ longlong FindSuperSeqSubs( const vecKmerPath& unipaths,
       for ( UnipathSeq::size_type i = 0; i < otherIndex; ++i )
         numKmers += unipaths[ superSeqs[otherId][i] ].KmerCount();
 
-      subsumptions.push_back( BriefSubsumptionRecord( OrientedKmerPathId( otherId, false ), 
-                                                      numKmers ) );
+      subsumptions.push_back( BriefSubsumptionRecord( OrientedKmerPathId( otherId, false ),
+                              numKmers ) );
       ++subsFound;
     }
-    
+
     subList.SetBriefRecordsFor( OrientedKmerPathId( thisId, false ), subsumptions );
   }
 
@@ -589,7 +589,7 @@ void CalculateMaxOffsets( const vecKmerPath& pathsFw,
                           vec<int>& maxOffsets ) {
   maxOffsets.clear();
   maxOffsets.resize( muxGraph.size(), 0 );
-  
+
   for ( unsigned int p = 0; p < pairs.size(); ++p ) {
     int id1 = pairs[p].id1;
     int id2 = pairs[p].id2;
@@ -598,7 +598,7 @@ void CalculateMaxOffsets( const vecKmerPath& pathsFw,
 
     if ( maxSep > 0 && sep > maxSep )
       continue;
-    
+
     if ( pathsFw[id1].IsEmpty() || pathsRc[id2].IsEmpty() )
       continue;
 
@@ -634,7 +634,7 @@ void PrintSuperDotFile( const String& dotfile,
                         const vecUnipathSeq& unipathSeqsRc )
 {
   ofstream dot( dotfile.c_str() );
-  
+
   dot << "digraph G {" << endl;
   dot << "  node [shape=box];" << endl;
   dot << "  rankdir=LR;" << endl;
@@ -645,16 +645,16 @@ void PrintSuperDotFile( const String& dotfile,
     for ( int rc = 0; rc < 2; ++rc ) {
       OrientedKmerPathId thisOkpid( thisId, (rc==1) );
       muxGraph.GetMuxesOf( thisOkpid, muxes );
-    
+
       const UnipathSeq& thisUnipathSeq = ( rc==1 ? unipathSeqsRc[thisId] : unipathSeqsFw[thisId] );
       for ( vec<Mux>::iterator iMux = muxes.begin(); iMux != muxes.end(); ++iMux ) {
         int otherId = iMux->GetPathId().GetId();
         const UnipathSeq& otherUnipathSeq = ( iMux->GetPathId().IsFw() ?
                                               unipathSeqsFw[otherId] :
                                               unipathSeqsRc[otherId] );
-        if ( otherId < numReads ) 
+        if ( otherId < numReads )
           dot << '"' << iMux->GetPathId() << '"';
-        else 
+        else
           dot << '"' << otherUnipathSeq << '"';
         dot << " -> ";
         if ( thisId < numReads )
@@ -665,7 +665,7 @@ void PrintSuperDotFile( const String& dotfile,
       }
     }
   }
-                                         
+
   dot << "}" << endl;
 }
 

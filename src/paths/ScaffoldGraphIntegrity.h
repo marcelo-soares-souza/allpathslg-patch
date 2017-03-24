@@ -18,6 +18,6 @@
  * Consistency tests for a scaffold graph.
  */
 bool ScaffoldGraphIntegrity( const digraphE<CLinkBundle> &graph,
-			     ostream *log = 0 );
+                             ostream *log = 0 );
 
 #endif

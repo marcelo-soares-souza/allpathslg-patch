@@ -17,11 +17,11 @@
  * Constructor
  */
 CSublink::CSublink( const int bid,
-		    const int sid,
-		    const bool rc,
-		    const int start,
-		    const int dev,
-		    const int weight ) :
+                    const int sid,
+                    const bool rc,
+                    const int start,
+                    const int dev,
+                    const int weight ) :
   big_id_ ( bid ),
   small_id_ ( sid ),
   small_rc_ ( rc ),
@@ -35,11 +35,11 @@ CSublink::CSublink( const int bid,
  * Set
  */
 bool CSublink::Set( const int &pair_sep,
-		    const int &pair_stdev,
-		    const shandler &supers,
-		    const alignlet &hit1,
-		    const alignlet &hit2,
-		    const int weight )
+                    const int &pair_stdev,
+                    const shandler &supers,
+                    const alignlet &hit1,
+                    const alignlet &hit2,
+                    const int weight )
 {
   // Detect which scaffold is big and which is small. Return false on failure!
   const alignlet *big_hit = 0;
@@ -60,15 +60,15 @@ bool CSublink::Set( const int &pair_sep,
   }
   else
     return false;
-  
+
   // Set ids and orientation.
   big_id_ = supers.ToSuper( big_hit->TargetId( ) );
   small_id_ = supers.ToSuper( small_hit->TargetId( ) );
   small_rc_ = ( big_hit->Fw1( ) == small_hit->Fw1( ) );
-  
+
   // Set weight.
   weight_ = weight;
-  
+
   // Implied start of small with respect to big.
   int big_contig = big_hit->TargetId( );
   int big_super = supers.ToSuper( big_contig );
@@ -82,7 +82,7 @@ bool CSublink::Set( const int &pair_sep,
   int small_begin = small_hit->Pos2( ) + supers.StartOnSuper( small_contig );
   int small_len = small_hit->Pos2( ) - small_hit->pos2( );
   int small_end = small_begin + small_len;
-  
+
   dev_ = pair_stdev;
   if ( big_hit->Fw1( ) ) {
     start_ = big_end + pair_sep;
@@ -92,10 +92,10 @@ bool CSublink::Set( const int &pair_sep,
     start_ = big_begin - pair_sep;
     start_ -= small_hit->Fw1( ) ? small_end : small_superlen  - small_begin;
   }
-  
+
   // Is small truly embedded?
   return ( start_ >= 0 & start_ + small_superlen <= big_superlen );
-  
+
 }
 
 /**
@@ -103,12 +103,12 @@ bool CSublink::Set( const int &pair_sep,
  * IsConsistentWith
  */
 bool CSublink::IsConsistentWith( const CSublink &other,
-				 const double max_stretch ) const
+                                 const double max_stretch ) const
 {
   if ( this->SmallId( ) != other.SmallId( ) ) return false;
   if ( this->BigId( ) != other.BigId( ) ) return false;
   if ( this->SmallRc( ) != other.SmallRc( ) ) return false;
-  
+
   double dev = Min( this->Dev( ), other.Dev( ) );
   double delta = Abs( this->Start( ) - other.Start( ) );
   return ( delta <= dev * max_stretch );
@@ -133,7 +133,7 @@ int CSublink::ClosestGap( const vec<superb> &scaffolds ) const
 {
   const superb &sup = scaffolds[big_id_];
   if ( sup.Ntigs( ) < 2 ) return -1;
-  
+
   int onsuper_pos = sup.Len( 0 );
   int distance = Abs( start_ - onsuper_pos );
   for (int ii=1; ii<sup.Ntigs( )-1; ii++) {
@@ -141,7 +141,7 @@ int CSublink::ClosestGap( const vec<superb> &scaffolds ) const
     if ( Abs( start_ - onsuper_pos ) > distance ) return ( ii - 1 );
     else distance = Abs( start_ - onsuper_pos );
   }
-  
+
   return sup.Ntigs( ) - 2;
 }
 

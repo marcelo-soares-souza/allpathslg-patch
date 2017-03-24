@@ -42,58 +42,60 @@
 #include "paths/ReadsToPathsCoreX.h"
 #include "util/ReadTracker.h"
 
-static inline 
-String Tag(String S = "MRS") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "MRS") {
+  return Date() + " (" + S + "): ";
+}
 
 int main(int argc, char *argv[])
 {
   RunTime();
-  
+
   BeginCommandArguments;
   CommandDoc("Merges two or more fastb files into one, but also merges associated qualb, "
-	      "paths, pairing, and qltout files together too. Optionally recomputes paths if the kmer "
-	      "space differs between the various input paths.");
+             "paths, pairing, and qltout files together too. Optionally recomputes paths if the kmer "
+             "space differs between the various input paths.");
   CommandArgument_StringSet_Doc(READS_IN,
-    "Comma separated list of fastb files to merge.");
+                                "Comma separated list of fastb files to merge.");
   CommandArgument_String_Doc(READS_OUT,
-    "Merged fastb filename.");
+                             "Merged fastb filename.");
   CommandArgument_String_OrDefault_Doc(DIR, "",
-    "Location of <READS_IN> files to merge and the output files.");
+                                       "Location of <READS_IN> files to merge and the output files.");
   CommandArgument_Int_OrDefault_Doc(K, 0,
-    "K size if merging paths or REPATHing");
+                                    "K size if merging paths or REPATHing");
   CommandArgument_Bool_OrDefault_Doc(REPATH, False,
-    "Recompute paths instead of merging. Set to true if the existing paths don't share "
-    "the same kmer space");
-  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0, 
-    "Number of threads to use when REPATHing (use all available processors if set to 0)");
+                                     "Recompute paths instead of merging. Set to true if the existing paths don't share "
+                                     "the same kmer space");
+  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0,
+      "Number of threads to use when REPATHing (use all available processors if set to 0)");
   CommandArgument_Bool_OrDefault_Doc(TRACK_READS, True,
-    "Use ReadTracker to track source of merged reads");
+                                     "Use ReadTracker to track source of merged reads");
   CommandArgument_Bool_OrDefault_Doc(MERGE_QUALS, True,
-    "If available, merge qualb files.");
+                                     "If available, merge qualb files.");
   CommandArgument_Bool_OrDefault_Doc(MERGE_PATHS, True,
-    "If available, merge paths files.");
+                                     "If available, merge paths files.");
   CommandArgument_Bool_OrDefault_Doc(MERGE_PAIRS, True,
-    "If available, merge pairs or pairto files.");
+                                     "If available, merge pairs or pairto files.");
   CommandArgument_Bool_OrDefault_Doc(MERGE_ALIGNS, True,
-    "If available, merge qltout files.  If the input qltout files use different reference sequences, the output qltout file will be nonsensical.");
+                                     "If available, merge qltout files.  If the input qltout files use different reference sequences, the output qltout file will be nonsensical.");
   CommandArgument_Bool_OrDefault_Doc(MERGE_DISTRIBS, True,
-    "If available, merge paired read separations distribution files.");
+                                     "If available, merge paired read separations distribution files.");
   CommandArgument_Bool_OrDefault_Doc(MERGE_NAMES, True,
-          "If available, merge .names files");
+                                     "If available, merge .names files");
   CommandArgument_Bool_OrDefault_Doc(FORCE_MERGE_DISTRIBS, False,
-    "merge paired read separations distribution files. Make them up if none available.");
+                                     "merge paired read separations distribution files. Make them up if none available.");
   EndCommandArguments;
-  
+
   // Thread control
-   
+
   NUM_THREADS = configNumThreads(NUM_THREADS);
 
   String head_out = (DIR == "" ? "" : DIR + "/") + READS_OUT.SafeBefore(".fastb");
- 
+
   String paths_suffix = ".paths.k" + ToString(K);
-  
+
   // Expand input filenames, stripping off .fastb extension if necessary
- 
+
   vec<String> heads_in(READS_IN.size());
   for (size_t i = 0; i < READS_IN.size(); ++i) {
     heads_in[i] = (DIR == "" ? "" : DIR + "/") + READS_IN[i].SafeBefore(".fastb");
@@ -104,10 +106,10 @@ int main(int argc, char *argv[])
 
 
   // Check to see which files are available to merge.
-  
+
   if (CheckFileSetExists(heads_in, ".fastb", true) == false)
     FatalErr("Fastb file missing - see above for details");
-  
+
   bool found_paths    = MERGE_PATHS && CheckFileSetExists(heads_in, paths_suffix);
   bool found_quals    = MERGE_QUALS && CheckFileSetExists(heads_in, ".qualb");
   bool found_pairs    = MERGE_PAIRS && CheckFileSetExists(heads_in, ".pairs");
@@ -121,24 +123,24 @@ int main(int argc, char *argv[])
   for (size_t i = 0; i < READS_IN.size(); i++)
     sizes.push_back(MastervecFileObjectCount(heads_in[i] + ".fastb"));
   size_t size_sum = BigSum(sizes);
-  
+
   cout << Tag() << "Merging Details:" << endl;
   if (DIR != "")
-    cout << "In directory:" << endl 
-	 << "  " << DIR << endl;
+    cout << "In directory:" << endl
+         << "  " << DIR << endl;
   cout << "Merging the following readsets:" << endl;
-  for (size_t i = 0; i < READS_IN.size(); ++i) 
+  for (size_t i = 0; i < READS_IN.size(); ++i)
     cout << "  " << READS_IN[i].SafeBefore(".fastb") << ".*\t\t[n reads = "
-	 << sizes[i] << "]" << endl;
+         << sizes[i] << "]" << endl;
   cout << "To create output readset:" << endl;
   cout << "  " << READS_OUT.SafeBefore(".fastb") << ".*\t\t\t[will have n reads = "
        << size_sum << "]" << endl;
 
   // ---- Merge fastb files
-  
+
   cout << Tag() << "Merging fastb files" << endl;
   MergeFeudal(head_out, heads_in, ".fastb", sizes);
-  
+
   // ---- Merge qualb files
 
   if (found_quals) {
@@ -148,8 +150,8 @@ int main(int argc, char *argv[])
 
   // ---- Merge name info
   if ( found_names ) {
-      cout << Tag() << "Merging names files" << endl;
-      MergeFeudal( head_out, heads_in, ".names", sizes );
+    cout << Tag() << "Merging names files" << endl;
+    MergeFeudal( head_out, heads_in, ".names", sizes );
   }
 
   // ---- Merge pairing info
@@ -161,28 +163,28 @@ int main(int argc, char *argv[])
     for (size_t i = 0; i < n_sets; ++i) {
       PairsManager pairs_loc;
       if (found_pairs) {
-	pairs_loc.Read(heads_in[i] + ".pairs");
+        pairs_loc.Read(heads_in[i] + ".pairs");
       } else {
-	size_t n_reads = MastervecFileObjectCount(heads_in[i] + ".fastb");
-	pairs_loc.ReadFromPairtoFile(heads_in[i] + ".pairto", n_reads);
+        size_t n_reads = MastervecFileObjectCount(heads_in[i] + ".fastb");
+        pairs_loc.ReadFromPairtoFile(heads_in[i] + ".pairto", n_reads);
       }
       ForceAssertEq(pairs_loc.nReads(), sizes[i]);
       pairs.Append(pairs_loc);
       inLibNames[i] = pairs_loc.getLibraryNames();
     }
-  
-    if (found_pairs || found_pairto) {  
+
+    if (found_pairs || found_pairto) {
       if (found_pairs) {
-	cout << Tag() << "Writing merged pairs files" << endl;
-	pairs.Write(head_out + ".pairs");
+        cout << Tag() << "Writing merged pairs files" << endl;
+        pairs.Write(head_out + ".pairs");
       }
       else {
-	cout << Tag() << "Writing merged pairto files" << endl;
-	vec<read_pairing> pairings = pairs.convert_to_read_pairings();
-	WritePairs(pairings, pairs.nReads(), head_out, false);
+        cout << Tag() << "Writing merged pairto files" << endl;
+        vec<read_pairing> pairings = pairs.convert_to_read_pairings();
+        WritePairs(pairings, pairs.nReads(), head_out, false);
       }
     }
-    
+
     // ---- Merge separation distributions
 
     if (found_distribs || FORCE_MERGE_DISTRIBS) {
@@ -194,28 +196,28 @@ int main(int argc, char *argv[])
 
         const size_t n_libs = inLibNames[i].size();
 
-	if (IsRegularFile(heads_in[i] + ".distribs")) {
+        if (IsRegularFile(heads_in[i] + ".distribs")) {
 
-	  vec<IntDistribution> distribs_loc;
-	  const String fileIn = heads_in[i] + ".distribs";
-	  BinaryReader::readFile((heads_in[i] + ".distribs").c_str(), &distribs_loc);      
-          
+          vec<IntDistribution> distribs_loc;
+          const String fileIn = heads_in[i] + ".distribs";
+          BinaryReader::readFile((heads_in[i] + ".distribs").c_str(), &distribs_loc);
+
           ForceAssertEq(n_libs, distribs_loc.size());
-          
-	  for (size_t j = 0; j < n_libs; j++) {
-	    const String libName = inLibNames[i][j];
-	    const size_t i_lib = pairs.libraryID(libName);
+
+          for (size_t j = 0; j < n_libs; j++) {
+            const String libName = inLibNames[i][j];
+            const size_t i_lib = pairs.libraryID(libName);
             cout << Tag() << "distribution[" << setw(2) << i_lib << "]("
                  << setw(20) << libName << ") set= " << i << "," << setw(2) << j
                  << " from file" << endl;
-	    distribs.at(i_lib) = distribs_loc[j];
-	  }
-	}
+            distribs.at(i_lib) = distribs_loc[j];
+          }
+        }
         else { // can't find file. assume gaussian.
 
-	  for (size_t j = 0; j < n_libs; j++) {
-	    const String libName = inLibNames[i][j];
-	    const size_t i_lib = pairs.libraryID(libName);
+          for (size_t j = 0; j < n_libs; j++) {
+            const String libName = inLibNames[i][j];
+            const size_t i_lib = pairs.libraryID(libName);
             const int inv_sz_mean = pairs.getLibrarySep(i_lib);
             const int inv_sz_sd   = pairs.getLibrarySD(i_lib);
             cout << Tag() << "distribution[" << setw(2) << i_lib << "]("
@@ -232,14 +234,14 @@ int main(int argc, char *argv[])
   }
 
   // ---- Merge qltout files.
-  
+
   // If the input qltout files use different reference sequences, this output
   // will be nonsensical.
   if (found_qltout) {
     cout << Tag() << "Merging qltout files" << endl;
     MergeQltout(head_out, heads_in, sizes);
   }
-  
+
   // ---- Merge/Recompute kmer paths
 
   // If the input paths come from the same kmer numbering system, then we can
@@ -247,20 +249,20 @@ int main(int argc, char *argv[])
   // must re-path via the slow ReadsToPathsCoreY.  The user is responsible for
   // knowing whether the kmer numbering systems are the same, and setting the
   // REPATH flag accordingly.
-  
+
 
   if (!REPATH && found_paths) {
     cout << Tag() << "Merging path files" << endl;
     MergeFeudal(head_out, heads_in, paths_suffix, sizes);
   }
-  
+
   if (REPATH) {
 
     cout << Tag() << "Re-creating paths files (REPATH=True)" << endl;
     vecbasevector fastb;
     for (size_t i = 0; i < n_sets; ++i)
       fastb.ReadAll((heads_in[i] + ".fastb").c_str(), true);
-    
+
     vecKmerPath paths;
     ReadsToPathsCoreY(fastb, K, paths, head_out + ".fastb", NUM_THREADS);
     ForceAssertEq(paths.size(), size_sum);
@@ -268,7 +270,7 @@ int main(int argc, char *argv[])
   }
 
   // Create read tracker
- 
+
   if (TRACK_READS) {
     cout << Tag() << "Generating read tracker" << endl;
 
@@ -283,15 +285,15 @@ int main(int argc, char *argv[])
     for (size_t i = 0; i < n_sets; ++i) {
       uint32_t source_id = sources[i];
       size_t n_reads = MastervecFileObjectCount(heads_in[i] + ".fastb");
-      
+
       for (size_t in_read_ID = 0; in_read_ID != n_reads; in_read_ID++)
-	rt.AddRead(source_id, in_read_ID);
+        rt.AddRead(source_id, in_read_ID);
     }
 
     ForceAssertEq(rt.size(), size_sum);
     rt.Dump(head_out);
   }
-  
+
   cout << Tag() << "Done with MergeReadSets!" << endl;
 
 }

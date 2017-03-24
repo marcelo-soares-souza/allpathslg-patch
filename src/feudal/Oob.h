@@ -23,7 +23,7 @@
 
 struct OutOfBoundsReporter
 {
-    static void oob( char const* className, size_t idx, size_t siz );
+  static void oob( char const* className, size_t idx, size_t siz );
 };
 
 #endif /* FEUDAL_OOB_H_ */

@@ -62,7 +62,7 @@ struct tag_NEWRECORD
 
 const int numRecordsPerBlock = 2000;
 
-typedef 
+typedef
 struct tag_NEWRECORDBLOCK
 {
   struct tag_NEWRECORDBLOCK *mp_next;
@@ -80,8 +80,8 @@ const unsigned long bigPrime = 999983l;
 static NewRecord** sp_newRecordHashTables[2] = { 0, 0 };
 
 enum {
- objectsTable = 0,
- arraysTable  = 1
+  objectsTable = 0,
+  arraysTable  = 1
 };
 
 static char* sz_unknownFile = "unknown";
@@ -111,7 +111,7 @@ NewRecord* find_record( int hashTableIndex, void *pointer )
     return 0;
 
   // Find the head of the list in the appropriate bucket.
-  NewRecord *p_thisRecord 
+  NewRecord *p_thisRecord
     = hashTable[ reinterpret_cast<unsigned long>(pointer) % bigPrime ];
 
   // Walk through the bucket looking for the pointer.
@@ -124,7 +124,7 @@ NewRecord* find_record( int hashTableIndex, void *pointer )
 
 
 // A function to add a record to the list.
-void add_record( int hashTableIndex, 
+void add_record( int hashTableIndex,
                  void *pointer, std::size_t size, const char* file, const int line )
 {
   NewRecord ** &hashTable = sp_newRecordHashTables[ hashTableIndex ];
@@ -159,7 +159,7 @@ void add_record( int hashTableIndex,
          sp_newRecordBlockListHead->m_nextFreeRecordIndex == numRecordsPerBlock )
     {
       NewRecordBlock *p_newBlock = (NewRecordBlock*) ::malloc( sizeof(NewRecordBlock) );
-      
+
       if ( p_newBlock == 0 )
       {
         fprintf( stderr, "\nUnable to allocate memory to track allocation from %s:%d.\n",
@@ -169,23 +169,23 @@ void add_record( int hashTableIndex,
         s_trackingOn = false;
         TracebackThisProcess();
       }
-      
+
       p_newBlock->m_nextFreeRecordIndex = 0;
       p_newBlock->mp_next = sp_newRecordBlockListHead;
       sp_newRecordBlockListHead = p_newBlock;
     }
-    
+
     // Get a pointer to the next free record in the current block.
     p_thisRecord =
-      sp_newRecordBlockListHead->m_records + 
-      sp_newRecordBlockListHead->m_nextFreeRecordIndex; 
-  
+      sp_newRecordBlockListHead->m_records +
+      sp_newRecordBlockListHead->m_nextFreeRecordIndex;
+
     ++sp_newRecordBlockListHead->m_nextFreeRecordIndex;
-  
+
     // Figure out which bucket this record should go in.
-    NewRecord **pp_newRecordListHead 
+    NewRecord **pp_newRecordListHead
       = hashTable + (reinterpret_cast<unsigned long>(pointer) % bigPrime);
-  
+
     // Stick the record in its bucket.
     p_thisRecord->mp_next  = *pp_newRecordListHead;
     *pp_newRecordListHead   = p_thisRecord;
@@ -226,7 +226,7 @@ NewRecord* delete_record( int hashTableIndex, void *pointer )
   if ( p_thisRecord->mb_deleted )
   {
     fprintf( stderr, "\nDouble deletion of block of size %ld allocated at %s:%d!\n",
-             p_thisRecord->m_size, 
+             p_thisRecord->m_size,
              p_thisRecord->msz_file,
              p_thisRecord->m_line );
     // We turn off tracking so we don't put ourselves in an infinite
@@ -245,7 +245,7 @@ NewRecord* delete_record( int hashTableIndex, void *pointer )
 }
 
 
-void * 
+void *
 alloc_memory( std::size_t size, const char *file, const int line )
 {
   if ( USE_BOOKENDS )
@@ -264,7 +264,7 @@ alloc_memory( std::size_t size, const char *file, const int line )
     // Set the bookends to trap overruns.
     memcpy( pointer, sz_bufferBookend, bufferBookendSize );
     memcpy( pointer + size - bufferBookendSize, sz_bufferBookend, bufferBookendSize );
-    
+
     pointer += bufferBookendSize;
   }
 
@@ -280,17 +280,17 @@ check_bookends( NewRecord *p_record )
   // Check the bookends for overruns.
   char *p_headBookend = ((char*) p_record->mp_data) - bufferBookendSize;
   char *p_tailBookend = ((char*) p_record->mp_data) + p_record->m_size;
-    
+
   if ( memcmp( p_headBookend, sz_bufferBookend, bufferBookendSize ) ) {
-    printf( "\nThe block allocated at %s:%d has had\n", 
-	    p_record->msz_file, p_record->m_line );
+    printf( "\nThe block allocated at %s:%d has had\n",
+            p_record->msz_file, p_record->m_line );
     printf( "the %d bytes before it tampered with.\n", bufferBookendSize );
     tamperedWith = true;
   }
-  
+
   if ( memcmp( p_tailBookend, sz_bufferBookend, bufferBookendSize ) ) {
-    printf( "\nThe block allocated at %s:%d has had\n", 
-	    p_record->msz_file, p_record->m_line );
+    printf( "\nThe block allocated at %s:%d has had\n",
+            p_record->msz_file, p_record->m_line );
     printf( "the %d bytes after it tampered with.\n", bufferBookendSize );
     tamperedWith = true;
   }
@@ -317,7 +317,7 @@ free_memory( void *pointer, NewRecord *p_record )
 
 // User-defined braindead versions of the new and delete operators.
 
-void * 
+void *
 operator new ( std::size_t size, const char *file, const int line ) throw()
 {
   void *pointer = alloc_memory( size, file, line );
@@ -325,8 +325,8 @@ operator new ( std::size_t size, const char *file, const int line ) throw()
     add_record( objectsTable, pointer, size, file, line );
   return pointer;
 }
-  
-void * 
+
+void *
 operator new[] ( std::size_t size, const char *file, const int line ) throw()
 {
   void *pointer = alloc_memory( size, file, line );
@@ -335,7 +335,7 @@ operator new[] ( std::size_t size, const char *file, const int line ) throw()
   return pointer;
 }
 
-void * 
+void *
 operator new ( std::size_t size ) throw(std::bad_alloc)
 {
   void *pointer = ::operator new ( size, sz_unknownFile, 0 );
@@ -343,8 +343,8 @@ operator new ( std::size_t size ) throw(std::bad_alloc)
     throw std::bad_alloc();
   return pointer;
 }
-  
-void * 
+
+void *
 operator new[] ( std::size_t size ) throw(std::bad_alloc)
 {
   void *pointer = ::operator new[] ( size, sz_unknownFile, 0 );
@@ -353,13 +353,13 @@ operator new[] ( std::size_t size ) throw(std::bad_alloc)
   return pointer;
 }
 
-void * 
+void *
 operator new ( std::size_t size, const std::nothrow_t& ) throw()
 {
   return ::operator new ( size, sz_unknownFile, 0 );
 }
-  
-void * 
+
+void *
 operator new[] ( std::size_t size, const std::nothrow_t& ) throw()
 {
   return ::operator new[] ( size, sz_unknownFile, 0 );
@@ -436,14 +436,14 @@ check_malloc_bookends()
       for ( unsigned int index = 0; index < bigPrime; ++index )
       {
         NewRecord *p_thisRecord = hashTable[index];
-        
+
         while ( p_thisRecord != 0 ) {
           if ( ! p_thisRecord->mb_deleted &&
                p_thisRecord->msz_file != sz_unknownFile )
-	    if ( check_bookends( p_thisRecord ) ) 
-	      bookendTrampled = true;
+            if ( check_bookends( p_thisRecord ) )
+              bookendTrampled = true;
           p_thisRecord = p_thisRecord->mp_next;
-	}
+        }
       }
     }
   }
@@ -453,27 +453,27 @@ check_malloc_bookends()
     for ( int listIndex = 0; listIndex < 2; ++listIndex )
     {
       NewRecord** hashTable = sp_newRecordHashTables[listIndex];
-      
+
       if ( hashTable != 0 )
       {
-	for ( unsigned int index = 0; index < bigPrime; ++index )
+        for ( unsigned int index = 0; index < bigPrime; ++index )
         {
-	  NewRecord *p_thisRecord = hashTable[index];
-        
-	  while ( p_thisRecord != 0 ) {
-	    if ( ! p_thisRecord->mb_deleted &&
-		 p_thisRecord->msz_file != sz_unknownFile )
-	      fprintf( stderr, "  %ld bytes\tallocated at %s:%d (%p)\n",
-		       p_thisRecord->m_size,
-		       p_thisRecord->msz_file,
-		       p_thisRecord->m_line,
-		       p_thisRecord->mp_data );
-	    p_thisRecord = p_thisRecord->mp_next;
-	  }
-	}
+          NewRecord *p_thisRecord = hashTable[index];
+
+          while ( p_thisRecord != 0 ) {
+            if ( ! p_thisRecord->mb_deleted &&
+                 p_thisRecord->msz_file != sz_unknownFile )
+              fprintf( stderr, "  %ld bytes\tallocated at %s:%d (%p)\n",
+                       p_thisRecord->m_size,
+                       p_thisRecord->msz_file,
+                       p_thisRecord->m_line,
+                       p_thisRecord->mp_data );
+            p_thisRecord = p_thisRecord->mp_next;
+          }
+        }
       }
     }
-    
+
     s_trackingOn = false;
     TracebackThisProcess();
   }
@@ -481,7 +481,7 @@ check_malloc_bookends()
     fprintf( stderr, "\nAll bookends are intact.\n" );
   }
 }
-  
+
 
 // A function called at exit to print out the undeleted records.
 
@@ -515,9 +515,9 @@ check_memory_tracker_records()
       {
         NewRecord *p_thisRecord = hashTable[index];
         NewRecord *p_deadRecord;
-        
+
         int usage = 0;
-        
+
         while ( p_thisRecord != 0 )
         {
           // We don't print out allocations of unknown origin, as we
@@ -536,16 +536,16 @@ check_memory_tracker_records()
                      p_thisRecord->m_size,
                      p_thisRecord->msz_file,
                      p_thisRecord->m_line,
-		     p_thisRecord->mp_data );
-	    if ( USE_BOOKENDS )
-	      check_bookends( p_thisRecord );
+                     p_thisRecord->mp_data );
+            if ( USE_BOOKENDS )
+              check_bookends( p_thisRecord );
           }
           p_deadRecord = p_thisRecord;
-	  
+
           p_thisRecord = p_thisRecord->mp_next;
           ++usage;
         }
-        
+
         if ( usage > 0 )
         {
           ++numUsed;
@@ -569,7 +569,7 @@ check_memory_tracker_records()
   //     fprintf( stderr, "  maximum size of used bin: %d\n", maxUsage );
   //     fprintf( stderr, "  average size of used bin: %f\n", avgUsage );
   //   }
-}  
+}
 
 long
 get_memory_usage()

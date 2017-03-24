@@ -23,25 +23,29 @@
 class Location
 {
 public:
-    Location()
+  Location()
     : mContigID(~0U), mOffset(~0U)
-    {}
+  {}
 
-    Location( unsigned int contigID, unsigned int offset )
+  Location( unsigned int contigID, unsigned int offset )
     : mContigID(contigID), mOffset(offset)
-    {}
+  {}
 
-    // compiler-supplied copying and destructor are OK
+  // compiler-supplied copying and destructor are OK
 
-    unsigned int getContig() const
-    { return mContigID; }
+  unsigned int getContig() const
+  {
+    return mContigID;
+  }
 
-    unsigned int getOffset() const
-    { return mOffset; }
+  unsigned int getOffset() const
+  {
+    return mOffset;
+  }
 
 private:
-    unsigned int mContigID;
-    unsigned int mOffset;
+  unsigned int mContigID;
+  unsigned int mOffset;
 };
 
 TRIVIALLY_SERIALIZABLE(Location);
@@ -53,51 +57,70 @@ extern template class OuterVec<LocationVec>;
 class LookupTab : public VecLocationVec
 {
 public:
-    LookupTab() { init(); }
-    LookupTab( int K ) : VecLocationVec(1 << 2*K), mK(K) {}
+  LookupTab() {
+    init();
+  }
+  LookupTab( int K ) : VecLocationVec(1 << 2*K), mK(K) {}
 
-    /// File must exist.  This constructor reads in a lookup table from the file.
-    LookupTab( String const& fileName ) : VecLocationVec(fileName) { init(); }
+  /// File must exist.  This constructor reads in a lookup table from the file.
+  LookupTab( String const& fileName ) : VecLocationVec(fileName) {
+    init();
+  }
 
-    /// K, the length of the kmer, for this table.
-    unsigned int getK() const
-    { return mK; }
+  /// K, the length of the kmer, for this table.
+  unsigned int getK() const
+  {
+    return mK;
+  }
 
-    /// the usual definition: 2-bits per base with the more 5' bases occupying the most significant bits
-    typedef unsigned int kmer_t;
+  /// the usual definition: 2-bits per base with the more 5' bases occupying the most significant bits
+  typedef unsigned int kmer_t;
 
-    /// Find all locations for a specified kmer.
-    LocationVec& getLocations( kmer_t kmer )
-    { return operator[](kmer); }
+  /// Find all locations for a specified kmer.
+  LocationVec& getLocations( kmer_t kmer )
+  {
+    return operator[](kmer);
+  }
 
-    /// Find all locations (const version) for a specified kmer.
-    LocationVec const& getLocations( kmer_t kmer ) const
-    { return operator[](kmer); }
+  /// Find all locations (const version) for a specified kmer.
+  LocationVec const& getLocations( kmer_t kmer ) const
+  {
+    return operator[](kmer);
+  }
 
-    /// Find the number of locations for a specified kmer.
-    unsigned int getFreq( kmer_t kmer ) const
-    { return operator[](kmer).size(); }
+  /// Find the number of locations for a specified kmer.
+  unsigned int getFreq( kmer_t kmer ) const
+  {
+    return operator[](kmer).size();
+  }
 
-    /// Helper function to turn a base sequence into a kmer.
-    /// The Itr class is an input iterator that derefs to a code for a base (i.e., a number from 0 to 3).
-    template <class Itr> static unsigned int getKmer( Itr start, Itr const& end )
-    { unsigned int result = 0;
-      while ( start != end )
-      { result = (result << 2) | *start; ++start; }
-      return result; }
+  /// Helper function to turn a base sequence into a kmer.
+  /// The Itr class is an input iterator that derefs to a code for a base (i.e., a number from 0 to 3).
+  template <class Itr> static unsigned int getKmer( Itr start, Itr const& end )
+  { unsigned int result = 0;
+    while ( start != end )
+    {
+      result = (result << 2) | *start;
+      ++start;
+    }
+    return result;
+  }
 
-    /// Helper function to turn a base sequence into a kmer.
-    /// The Itr class is a random-access iterator that derefs to a code for a base (i.e., a number from 0 to 3).
-    template <class Itr> unsigned int getKmer( Itr start ) const
-    { return getKmer(start,start+mK); }
+  /// Helper function to turn a base sequence into a kmer.
+  /// The Itr class is a random-access iterator that derefs to a code for a base (i.e., a number from 0 to 3).
+  template <class Itr> unsigned int getKmer( Itr start ) const
+  {
+    return getKmer(start,start+mK);
+  }
 
 private:
-    void init()
-    { unsigned int nnn = size();
-      mK = 0;
-      while ( nnn >>= 2 ) mK += 1; }
+  void init()
+  { unsigned int nnn = size();
+    mK = 0;
+    while ( nnn >>= 2 ) mK += 1;
+  }
 
-    unsigned int mK;
+  unsigned int mK;
 };
 
 

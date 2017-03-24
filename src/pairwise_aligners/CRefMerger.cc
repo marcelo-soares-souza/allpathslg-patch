@@ -22,11 +22,11 @@
  * Constructor
  */
 CRefMerger::CRefMerger( const int min_overlap,
-			const int swband_ratio,
-			const int max_gap,
-			const int min_gap,
-			const int min_gap_dev,
-			const vecbvec &ref ) :
+                        const int swband_ratio,
+                        const int max_gap,
+                        const int min_gap,
+                        const int min_gap_dev,
+                        const vecbvec &ref ) :
   min_overlap_ ( min_overlap ),
   swband_ratio_ ( swband_ratio ),
   max_gap_ ( max_gap ),
@@ -40,13 +40,13 @@ CRefMerger::CRefMerger( const int min_overlap,
  * Constructor
  */
 CRefMerger::CRefMerger( const int min_overlap,
-			const int swband_ratio,
-			const int max_gap,
-			const int min_gap,
-			const int min_gap_dev,
-			const vecbvec &ref,
-			const vecbvec &in_contigs,
-			const vec<look_align> &in_aligns ) :
+                        const int swband_ratio,
+                        const int max_gap,
+                        const int min_gap,
+                        const int min_gap_dev,
+                        const vecbvec &ref,
+                        const vecbvec &in_contigs,
+                        const vec<look_align> &in_aligns ) :
   min_overlap_ ( min_overlap ),
   swband_ratio_ ( swband_ratio ),
   max_gap_ ( max_gap ),
@@ -56,13 +56,13 @@ CRefMerger::CRefMerger( const int min_overlap,
 {
   this->Setup( in_contigs, in_aligns );
 }
-  
+
 /**
  * class CRefMerger
  * Setup
  */
 void CRefMerger::Setup( const vecbvec &in_contigs,
-			const vec<look_align> &in_aligns )
+                        const vec<look_align> &in_aligns )
 {
   orcontigs_.clear( );
   orcontigsU_.clear( );
@@ -81,7 +81,7 @@ void CRefMerger::Setup( const vecbvec &in_contigs,
   vec< vec<int> > align_indexes( in_contigs.size( ) );
   for (int ii=0; ii<in_aligns.isize( ); ii++)
     align_indexes[in_aligns[ii].query_id].push_back( ii );
-  
+
   // Unmapped contigs (first iteration to reserve memory).
   int n_unmapped = 0;
   for (int iter=0; iter<2; iter++) {
@@ -92,7 +92,7 @@ void CRefMerger::Setup( const vecbvec &in_contigs,
       else orcontigsU_.push_back( in_contigs[ii] );
     }
   }
-  
+
   // Deal with not fully embedded contigs.
   for (int cid=0; cid<(int)in_contigs.size( ); cid++) {
     const vec<int> &indexes = align_indexes[cid];
@@ -102,29 +102,29 @@ void CRefMerger::Setup( const vecbvec &in_contigs,
     for (int ii=0; ii<indexes.isize( ); ii++) {
       const look_align &al = in_aligns[ indexes[ii] ];
       if ( al.pos1( ) > 0 || al.Pos1( ) < (int)al.query_length ) {
-	int id = indexes[ii];
-	int len = al.Pos2( ) - al.pos2( );
-	pair<int,int> new_entry = make_pair( len, id );
-	len2idx.push_back( new_entry );
+        int id = indexes[ii];
+        int len = al.Pos2( ) - al.pos2( );
+        pair<int,int> new_entry = make_pair( len, id );
+        len2idx.push_back( new_entry );
       }
     }
 
     // No partial aligns for this contig, nothing to do.
     if ( len2idx.size( ) < 1 ) continue;
-    
+
     // Contig is both fully embedded and partially aligned (skip partials).
     if ( len2idx.size( ) < indexes.size( ) ) {
       vec<int> select;
       select.reserve( indexes.size( ) - len2idx.size( ) );
       for (int ii=0; ii<indexes.isize( ); ii++) {
-	const look_align &al = in_aligns[ indexes[ii] ];
-	if ( al.pos1( ) > 0 || al.Pos1( ) < (int)al.query_length ) continue;
-	select.push_back( indexes[ii] );
+        const look_align &al = in_aligns[ indexes[ii] ];
+        if ( al.pos1( ) > 0 || al.Pos1( ) < (int)al.query_length ) continue;
+        select.push_back( indexes[ii] );
       }
       align_indexes[cid] = select;
       continue;
     }
-    
+
     // Only partial aligns for contig, pick best partial only.
     sort( len2idx.rbegin( ), len2idx.rend( ) );
     int winner_idx = len2idx[0].second;
@@ -136,7 +136,7 @@ void CRefMerger::Setup( const vecbvec &in_contigs,
   int n_contigs = 0;
   for (int ii=0; ii<align_indexes.isize( ); ii++)
     n_contigs += Min( 1, align_indexes.isize( ) );
-  
+
   contigs_.reserve( n_contigs );
   aligns_.reserve( n_contigs );
   orig_ids_.reserve( n_contigs );
@@ -155,10 +155,10 @@ void CRefMerger::Setup( const vecbvec &in_contigs,
       aligns_.push_back( al );
     }
   }
-  
+
   // Sort aligns by start on target.
   sort( aligns_.begin( ), aligns_.end( ), order_lookalign_TargetBeginEnd( ) );
-  
+
   // Store original copies.
   orcontigs_ = contigs_;
   oraligns_ = aligns_;
@@ -171,7 +171,7 @@ void CRefMerger::Setup( const vecbvec &in_contigs,
 void CRefMerger::Merge( ostream *log )
 {
   if ( log ) *log << "\n" << this->BriefStats( 0 ) << endl;
-  
+
   int iter = 0;
   while ( 1 ) {
     int n_merges = this->MergeIteration( );
@@ -187,8 +187,8 @@ void CRefMerger::Merge( ostream *log )
  * Save
  */
 void CRefMerger::Save( const String &out_head,
-		       const int min_clen,
-		       ostream *log )
+                       const int min_clen,
+                       ostream *log )
 {
   // Remove short (merged) contigs.
   this->CompactifyData( min_clen );
@@ -197,20 +197,20 @@ void CRefMerger::Save( const String &out_head,
   vec<superb> supers;
   vec<fastavector> contigs;
   vec<look_align> aligns;
-  
+
   for (int alx=0; alx<aligns_.isize( ); alx++) {
     const look_align &la = aligns_[alx];
     int cid = la.query_id;
     if ( (int)contigs_[cid].size( ) < min_clen ) continue;
-    
+
     fastavector fvec( contigs_[cid] );
     int current_id = contigs.size( );
-    
+
     superb newsup;
     newsup.SetNtigs( 1 );
     newsup.SetTig( 0, current_id );
     newsup.SetLen( 0, fvec.size( ) );
-    
+
     contigs.push_back( fvec );
     supers.push_back( newsup );
     aligns.push_back( la );
@@ -220,23 +220,23 @@ void CRefMerger::Save( const String &out_head,
   // Unmapped contigs.
   for (int ii=0; ii<(int)orcontigsU_.size( ); ii++) {
     if ( (int)orcontigsU_[ii].size( ) < min_clen ) continue;
-    
+
     int current_id = contigs.size( );
     fastavector fvec( orcontigsU_[ii] );
-    
+
     superb newsup;
     newsup.SetNtigs( 1 );
     newsup.SetTig( 0, current_id );
     newsup.SetLen( 0, fvec.size( ) );
-    
+
     contigs.push_back( fvec );
     supers.push_back( newsup );
   }
 
   // Scaffold contigs.
   ScaffoldContigsOnRef( supers, contigs, aligns, out_head,
-			max_gap_, -min_gap_, min_gap_dev_, log );
-  
+                        max_gap_, -min_gap_, min_gap_dev_, log );
+
 }
 
 /**
@@ -255,11 +255,11 @@ String CRefMerger::BriefStats( const int iter, const int *merges ) const
   String str_count = ToString( lens.size( ) );
   String str_n50 = ToString( N50 ( lens ) );
   String str_iter = ToString( iter );
-  
+
   String answer = Date( ) + ": iter " + str_iter + " (";
   if ( merges ) answer += ToString( *merges ) + " merges, ";
   answer += str_count + " contigs, N50: " + str_n50 + ")";
-  
+
   return answer;
 }
 
@@ -288,7 +288,7 @@ int CRefMerger::MergeIteration( )
     }
   }
   sort( candidates.begin( ), candidates.end( ) );
-  
+
   // Merge pairs of overlapping contigs.
   int n_merges = 0;
   vec<bool> tagged( aligns_.size( ), false );
@@ -323,7 +323,7 @@ bool CRefMerger::MergeContigs( const int idx1, const int idx2 )
   int overlap = ImpliedOverlap( idx1, idx2 );
   if ( overlap < min_overlap_ ) return false;
 
-  // Second contig appears fully embedded, skip it. 
+  // Second contig appears fully embedded, skip it.
   const look_align &al1 = aligns_[idx1];
   const look_align &al2 = aligns_[idx2];
   if ( al1.a.pos2( ) <= al2.a.pos2( ) && al2.a.Pos2( ) <= al1.a.Pos2( ) )
@@ -332,14 +332,14 @@ bool CRefMerger::MergeContigs( const int idx1, const int idx2 )
   // Align contigs.
   int offset = this->PosOn1( al2.a.pos2( ), al1.a );
   int band = Max( 1, overlap / swband_ratio_ );
-  
+
   allpathslg::align  al;
   int dummy;
   const bvec &b1 = contigs_[al1.query_id];
   const bvec &b2 = contigs_[al2.query_id];
   SmithWatBandedA2<unsigned int>( b1, b2, offset, band, al, dummy );
   if ( ! this->IsPerfect( b1, b2, al ) ) return false;
-  
+
   // Insufficient observed overlap.
   if ( al.Pos1( ) - al.pos1( ) < min_overlap_ ) return false;
 
@@ -356,12 +356,12 @@ bool CRefMerger::MergeContigs( const int idx1, const int idx2 )
     aligns_[idx2].query_length = 0;
     return true;
   }
-  
+
   // Merge contig from al2 onto contig from al1, and zero contig from al2.
   bvec frag1( b1, 0, al.pos1( ) );
   contigs_[al1.query_id] = Cat( frag1, b2 );
   contigs_[al2.query_id].resize( 0 );
-  
+
   // Update orig_ids_.
   orig_ids_[al1.query_id].append( orig_ids_[al2.query_id] );
   orig_ids_[al2.query_id].clear( );
@@ -375,30 +375,30 @@ bool CRefMerger::MergeContigs( const int idx1, const int idx2 )
     for (int jj=0; jj<al.Nblocks( ); jj++)
       nBand += Abs( al.Gaps( jj ) );
   }
-  
+
   const bvec &nB1 = contigs_[al1.query_id];
   const bvec &nB2 = ref_[al1.target_id];
   SmithWatBandedA2<unsigned int>( nB1, nB2, nOff, nBand, nAl1, dummy );
-  
-  #ifdef VERBOSE
+
+#ifdef VERBOSE
   cout << "ALIGN between " << al1.query_id
        << " and " << al2.query_id << "  (offset = " << offset << ")\n"
        << " al1:   " << this->BriefAlignInfo( al1.a ) << "\n"
        << " al2:   " << this->BriefAlignInfo( al2.a ) << "\n"
        << " al1+2: " << this->BriefAlignInfo( nAl1 ) << "\n";
   PrintVisualAlignment( True, cout, nB1, nB2, nAl1 );
-  #endif
-  
+#endif
+
   aligns_[idx1].query_length = (unsigned int)contigs_[al1.query_id].size( );
   aligns_[idx1].a = nAl1;
   aligns_[idx2].query_length = 0;
-  
+
   // Align found.
   ForceAssert( this->IsValid( idx1, &cout ) );
   ForceAssert( this->IsValid( idx2, &cout ) );
   return true;
 }
-  
+
 /**
  * class CRefMerger
  * CompactifyData
@@ -408,7 +408,7 @@ void CRefMerger::CompactifyData( const int min_clen )
 {
   vec<look_align> keeper_als;
   keeper_als.reserve( aligns_.size( ) );
-  
+
   // Keep only valid aligns: query_length > 0 (and optionally >= min_clen ).
   for (int ii=0; ii<aligns_.isize( ); ii++) {
     if ( (int)aligns_[ii].query_length < Max( 1, min_clen ) )
@@ -416,7 +416,7 @@ void CRefMerger::CompactifyData( const int min_clen )
     keeper_als.push_back( aligns_[ii] );
   }
   swap( keeper_als, aligns_ );
-  
+
   // Internal consistency check.
   int n_errors = 0;
   for (int ii=0; ii<aligns_.isize( ); ii++)
@@ -437,7 +437,7 @@ void CRefMerger::CompactifyData( const int min_clen )
 int CRefMerger::PosOn1( int pos2, const allpathslg::align  &al ) const
 {
   if ( pos2 < al.pos2( ) || pos2 > al.Pos2( ) ) return -1;
-  
+
   int p1 = al.pos1( );
   int p2 = al.pos2( );
   for (int jj=0; jj<al.Nblocks( ); jj++) {
@@ -447,7 +447,7 @@ int CRefMerger::PosOn1( int pos2, const allpathslg::align  &al ) const
       if ( p2 <= pos2 && p2 + gap >= pos2 ) return p1 + gap;
       p2 += gap;
     }
-    if ( gap < 0 ) p1 += -gap; 
+    if ( gap < 0 ) p1 += -gap;
     for (int kk=0; kk<len; kk++) {
       if ( p2 == pos2 ) return p1;
       if ( p2 > pos2 ) return -1;
@@ -472,7 +472,7 @@ int CRefMerger::PosOn1( int pos2, const allpathslg::align  &al ) const
 int CRefMerger::PosOn2( int pos1, const allpathslg::align  &al ) const
 {
   if ( pos1 < al.pos1( ) || pos1 > al.Pos1( ) ) return -1;
-  
+
   int p1 = al.pos1( );
   int p2 = al.pos2( );
   for (int jj=0; jj<al.Nblocks( ); jj++) {
@@ -490,7 +490,7 @@ int CRefMerger::PosOn2( int pos1, const allpathslg::align  &al ) const
       p2++;
     }
   }
-  
+
   return -1;
 }
 
@@ -500,8 +500,8 @@ int CRefMerger::PosOn2( int pos1, const allpathslg::align  &al ) const
  * private
  */
 bool CRefMerger::IsPerfect( const bvec &b1,
-			    const bvec &b2,
-			    const allpathslg::align  &al ) const
+                            const bvec &b2,
+                            const allpathslg::align  &al ) const
 {
   return al.Errors( b1, b2 ) < 1;
 }
@@ -516,7 +516,7 @@ int CRefMerger::ImpliedOverlap( const int idx1, const int idx2 ) const
   const look_align &al1 = aligns_[idx1];
   const look_align &al2 = aligns_[idx2];
   if ( al1.target_id != al2.target_id ) return 0;
-  
+
   return al1.a.Pos2( ) - al2.a.pos2( );
 }
 
@@ -535,68 +535,68 @@ bool CRefMerger::IsValid( const int idx, ostream *log ) const
   if ( contigs_[qid].size( ) < 1 || al.query_length < 1 ) {
     if ( ! ( contigs_[qid].size( ) < 1 && al.query_length < 1 ) ) {
       if ( log )
-	*log << "al." << idx
-	     << ": query_length is " << al.query_length
-	     << ", but contig_[" << qid
-	     << "] has length " << contigs_[qid].size( )
-	     << " (improperly deleted align ?)\n";
+        *log << "al." << idx
+             << ": query_length is " << al.query_length
+             << ", but contig_[" << qid
+             << "] has length " << contigs_[qid].size( )
+             << " (improperly deleted align ?)\n";
       return false;
     }
     return true;
   }
-  
+
   // query_length and size of contig do not match.
   if ( (int)contigs_[qid].size( ) != (int)al.query_length ) {
     is_valid = false;
     if ( log )
       *log << "al." << idx
-	   << ": query_length is " << al.query_length
-	   << ", but contig_[" << qid
-	   << "] has length " << contigs_[qid].size( )
-	   << "\n";
+           << ": query_length is " << al.query_length
+           << ", but contig_[" << qid
+           << "] has length " << contigs_[qid].size( )
+           << "\n";
   }
-  
+
   // Invalid align .
   int pos1 = al.a.pos1( );
   if ( pos1 < 0 || pos1 > (int)al.query_length ) {
     is_valid = false;
     if ( log )
       *log << "al." << idx
-	   << ": pos1 is " << pos1
-	   << ", but query has length " << al.query_length
-	   << "\n";
+           << ": pos1 is " << pos1
+           << ", but query has length " << al.query_length
+           << "\n";
   }
-  
+
   int Pos1 = al.a.Pos1( );
   if ( Pos1 < 0 || Pos1 > (int)al.query_length ) {
     is_valid = false;
     if ( log )
       *log << "al." << idx
-	   << ": Pos1 is " << Pos1
-	   << ", but query has length " << al.query_length
-	   << "\n";
+           << ": Pos1 is " << Pos1
+           << ", but query has length " << al.query_length
+           << "\n";
   }
-  
+
   int pos2 = al.a.pos2( );
   if ( pos2 < 0 || pos2 > (int)al.target_length ) {
     is_valid = false;
     if ( log )
       *log << "al." << idx
-	   << ": pos2 is " << pos2
-	   << ", but target has length " << al.target_length
-	   << "\n";
+           << ": pos2 is " << pos2
+           << ", but target has length " << al.target_length
+           << "\n";
   }
-  
+
   int Pos2 = al.a.Pos2( );
   if ( Pos2 < 0 || Pos2 > (int)al.target_length ) {
     is_valid = false;
     if ( log )
       *log << "al." << idx
-	   << ": Pos2 is " << Pos2
-	   << ", but target has length " << al.target_length
-	   << "\n";
+           << ": Pos2 is " << Pos2
+           << ", but target has length " << al.target_length
+           << "\n";
   }
-  
+
   // Done.
   return is_valid;
 }
@@ -610,16 +610,16 @@ String CRefMerger::BriefAlignInfo( const allpathslg::align  &al ) const
 {
   String str_al
     = "[p1, " + ToString( al.pos1( ) ) + "]  "
-    + "[p2, " + ToString( al.pos2( ) ) + "]  ";
+      + "[p2, " + ToString( al.pos2( ) ) + "]  ";
   for (int ii=0; ii<al.Nblocks( ); ii++)
     str_al
-      += "[" + ToString( al.Gaps( ii ) )
-      +  ", " + ToString( al.Lengths( ii ) )
-      +  "]  ";
+    += "[" + ToString( al.Gaps( ii ) )
+       +  ", " + ToString( al.Lengths( ii ) )
+       +  "]  ";
   str_al
-    += "[P1, " + ToString( al.Pos1( ) ) + "]  "
-    +  "[P2, " + ToString( al.Pos2( ) ) + "]";
-  
+  += "[P1, " + ToString( al.Pos1( ) ) + "]  "
+     +  "[P2, " + ToString( al.Pos2( ) ) + "]";
+
   return str_al;
 }
 

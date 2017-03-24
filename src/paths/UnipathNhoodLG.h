@@ -32,34 +32,34 @@
 
 // FuncDecl: BuildUnipathLinkGraph
 //
-// Build the unipath graph, in which vertices are 
+// Build the unipath graph, in which vertices are
 // normal unipaths and edges come from read pairs.
 //
 // Instantiated for sepdev and fsepdev in the .cc file.
 template<class T>
-void BuildUnipathLinkGraph( 
+void BuildUnipathLinkGraph(
 
-     // inputs:
+  // inputs:
 
-     const int K,                              // as in Kmer
-     const int ploidy,
-     const PairsManager& pairs,                // read pairs
-     const vec<ReadLocationLG>& ulocs,         // locations of reads on unipaths
-     const VecULongVec& ulocs_indexr,          // index to it by reads
-     const vec<Bool>& normal,                  // is a given unipath normal
-     const vec<int>& ulen,                     // unipath lengths
-     const vec<int>& rlen,                     // read lengths (in kmers)
-     const vec<unipath_id_t>& to_rc,           // map unipath to its rc
-     const int min_edge_multiplicity,          // else ignore edge
-     const vec<int>& CNs,                      // unipath copy numbers
+  const int K,                              // as in Kmer
+  const int ploidy,
+  const PairsManager& pairs,                // read pairs
+  const vec<ReadLocationLG>& ulocs,         // locations of reads on unipaths
+  const VecULongVec& ulocs_indexr,          // index to it by reads
+  const vec<Bool>& normal,                  // is a given unipath normal
+  const vec<int>& ulen,                     // unipath lengths
+  const vec<int>& rlen,                     // read lengths (in kmers)
+  const vec<unipath_id_t>& to_rc,           // map unipath to its rc
+  const int min_edge_multiplicity,          // else ignore edge
+  const vec<int>& CNs,                      // unipath copy numbers
 
-     // output:
+  // output:
 
-     digraphE< Tsepdev<T> >& G,                // the graph
+  digraphE< Tsepdev<T> >& G,                // the graph
 
-     // verbosity:
+  // verbosity:
 
-     Bool verbose = False );
+  Bool verbose = False );
 
 /// FuncDecl: FillInTransitiveEdges
 ///
@@ -76,13 +76,13 @@ void BuildUnipathLinkGraph(
 ///
 /// Do not replace an edge unless its deviation decreases by percent_improvement.
 template<class T>   // defined for int and double
-void FillInTransitiveEdges( digraphE< Tsepdev<T> >& graph, 
-			    const int radius, 
+void FillInTransitiveEdges( digraphE< Tsepdev<T> >& graph,
+                            const int radius,
                             const double max_dev,
                             const double percent_improvement,
-			    const vec<int>& predicted_copyno,
+                            const vec<int>& predicted_copyno,
                             const int ploidy,
-			    const vec<nbases_t>& unipath_len, 
+                            const vec<nbases_t>& unipath_len,
                             const int min_unipath = 0 );
 
 

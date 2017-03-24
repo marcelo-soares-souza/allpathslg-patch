@@ -20,24 +20,32 @@
 
 // Offset where both superseqs are explicit.
 class ExplicitOffset {
- public:
+public:
   ExplicitOffset() {}
-  
+
   ExplicitOffset( int from, int to, int amount, int source = 0 )
-    : m_from( from ), m_to( to ), m_amt( amount ), m_source( source ) 
+    : m_from( from ), m_to( to ), m_amt( amount ), m_source( source )
   {}
-  
-  int GetFrom() const { return m_from; }
-  int GetTo() const { return m_to; }
-  int GetAmount() const { return m_amt; }
-  int GetSource() const { return m_source; }
-  
+
+  int GetFrom() const {
+    return m_from;
+  }
+  int GetTo() const {
+    return m_to;
+  }
+  int GetAmount() const {
+    return m_amt;
+  }
+  int GetSource() const {
+    return m_source;
+  }
+
   bool operator< ( const ExplicitOffset& other ) const {
     return ( m_to < other.m_to ||
              m_to == other.m_to && ( m_from < other.m_from ||
                                      m_from == other.m_from && m_amt < other.m_amt ) );
   }
-  
+
   bool operator== ( const ExplicitOffset& other ) const {
     return ( m_from == other.m_from &&
              m_to == other.m_to &&
@@ -56,7 +64,7 @@ class ExplicitOffset {
     }
   };
 
- private:
+private:
   // TODO: potentially dangerous truncation of index
   int m_from;
   int m_to;
@@ -67,13 +75,17 @@ class ExplicitOffset {
 
 // Offset where "to" superseq is implicit.
 class ImplicitOffset {
- public:
+public:
   ImplicitOffset() {}
   ImplicitOffset( int from, int amount )
     : m_from( from ), m_amt( amount ) {}
 
-  int GetFrom() const { return m_from; }
-  int GetAmount() const { return m_amt; }
+  int GetFrom() const {
+    return m_from;
+  }
+  int GetAmount() const {
+    return m_amt;
+  }
 
   bool operator< ( const ImplicitOffset& other ) const {
     return ( m_from < other.m_from ||
@@ -86,7 +98,7 @@ class ImplicitOffset {
     }
   };
 
- private:
+private:
   // TODO: potentially dangerous truncation of index
   int m_from;
   int m_amt;
@@ -99,9 +111,9 @@ extern template class SmallVec< ImplicitOffset, MempoolAllocator<ImplicitOffset>
 extern template class OuterVec<ImplicitOffsetVec>;
 
 class MutableOffsetTracker {
- public:
+public:
   MutableOffsetTracker() {}
-  
+
   MutableOffsetTracker( const int size )
     : m_offsets( size ) {}
 
@@ -110,9 +122,13 @@ class MutableOffsetTracker {
                         const int firstSuperSeq,
                         const vec<int>& maxOffsets );
 
-  int size() const { return m_offsets.size(); }
+  int size() const {
+    return m_offsets.size();
+  }
 
-  void resize( const int size ) { m_offsets.resize( size ); }
+  void resize( const int size ) {
+    m_offsets.resize( size );
+  }
 
   bool Add( int from, int to, int offsetAmount ) {
     pair<set<ImplicitOffset>::iterator,bool> result =
@@ -130,15 +146,15 @@ class MutableOffsetTracker {
     return m_offsets[ to ];
   }
 
- private:
+private:
   vec< StdSet<ImplicitOffset> > m_offsets;
 };
 
 
 class OffsetTracker {
- public:
+public:
   OffsetTracker() {}
-  
+
   OffsetTracker( const int size )
     : m_offsets( size ) {}
 
@@ -146,16 +162,20 @@ class OffsetTracker {
 
   void ConvertFrom( const MutableOffsetTracker& mutableTracker );
 
-  int size() const { return m_offsets.size(); }
+  int size() const {
+    return m_offsets.size();
+  }
 
-  void resize( const int size ) { m_offsets.resize( size ); }
+  void resize( const int size ) {
+    m_offsets.resize( size );
+  }
 
   const ImplicitOffsetVec& GetOffsetsTo( const int to ) const {
     return m_offsets[ to ];
   }
 
   typedef pair<ImplicitOffsetVec::const_iterator,
-               ImplicitOffsetVec::const_iterator> Range;
+          ImplicitOffsetVec::const_iterator> Range;
 
   Range
   GetOffsetsToFrom( const int to, const int from ) const {
@@ -173,7 +193,7 @@ class OffsetTracker {
 
   friend class OffsetTrackerBuilder;
 
- private:
+private:
   VecImplicitOffsetVec m_offsets;
 };
 

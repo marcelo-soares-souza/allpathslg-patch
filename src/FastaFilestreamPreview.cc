@@ -34,7 +34,7 @@ FastaFilestreamPreview::FastaFilestreamPreview(istream& filestream)
     return;
 
   bool end_of_file = false;
-      
+
   // what is the offset in the file of the data now in the buffer
   streamoff offset_of_buffer = 0;
 
@@ -44,11 +44,11 @@ FastaFilestreamPreview::FastaFilestreamPreview(istream& filestream)
     start_offset_ = 0;
   else
   {
-    do 
+    do
     {
       while ( breakPoints[ static_cast<unsigned char>(*bufptr) ] == 0 )
         ++bufptr;
-      if ( *bufptr == '>' && 
+      if ( *bufptr == '>' &&
            bufptr > buffer &&
            *(bufptr-1) == '\n' )
       {
@@ -80,7 +80,7 @@ FastaFilestreamPreview::FastaFilestreamPreview(istream& filestream)
     return;
 
   max_sequence_size_ = start_offset_;
-  
+
   streampos size_of_curr_sequence = 0;
   streampos offset_of_last_sequence = start_offset_;
 
@@ -124,7 +124,7 @@ FastaFilestreamPreview::FastaFilestreamPreview(istream& filestream)
 
   // we need to make sure it reads to the end of the file,
   // so we insert the offset to the position of the eof
-  size_of_curr_sequence = 
+  size_of_curr_sequence =
     offset_of_buffer
     + static_cast<int>( bufptr - buffer )
     - offset_of_last_sequence + 1;

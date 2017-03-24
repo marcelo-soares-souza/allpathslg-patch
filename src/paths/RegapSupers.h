@@ -25,12 +25,12 @@
  * Regap super_id (supers is changed).
  */
 void RegapSupersCore( ostream &log,
-		      vec<superb> &supers,
-		      const int super_id,
-		      const vec< pair<int,CBundle> > &bundles,
-		      const bool VERBOSE,
-		      const int MAX_OVERLAP,
-		      const bool FIX_NEG_GAPS );
+                      vec<superb> &supers,
+                      const int super_id,
+                      const vec< pair<int,CBundle> > &bundles,
+                      const bool VERBOSE,
+                      const int MAX_OVERLAP,
+                      const bool FIX_NEG_GAPS );
 
 /**
  * FindInSuperBundles
@@ -45,16 +45,16 @@ void RegapSupersCore( ostream &log,
  * to_pairs: if not null, use OffsetDistribution to estimate gap sizes
  */
 void FindInSuperBundles( ostream &log,
-			 vec< pair<int,CBundle> > &bundles,
-			 const PairsManager &pairs,
-			 const vec<alignlet> &aligns,
-			 const vec<int> &index,
-			 const vec<superb> &supers,
-			 const bool VERBOSE,
-			 const int MIN_LINKS,
-			 const int MAX_DISCREPANCY,
-			 const UInt64VecVec *to_pairs,
-			 const vec<IntDistribution> *distr );
+                         vec< pair<int,CBundle> > &bundles,
+                         const PairsManager &pairs,
+                         const vec<alignlet> &aligns,
+                         const vec<int> &index,
+                         const vec<superb> &supers,
+                         const bool VERBOSE,
+                         const int MIN_LINKS,
+                         const int MAX_DISCREPANCY,
+                         const UInt64VecVec *to_pairs,
+                         const vec<IntDistribution> *distr );
 
 /**
  * BreakUnlinked
@@ -62,9 +62,9 @@ void FindInSuperBundles( ostream &log,
  * Break supers into connected components.
  */
 void BreakUnlinked( ostream &log,
-		    vec<superb> &supers,
-		    const vec< pair<int,CBundle> > &bundles,
-		    const bool VERBOSE );
+                    vec<superb> &supers,
+                    const vec< pair<int,CBundle> > &bundles,
+                    const bool VERBOSE );
 
 /**
  * RegapSupers
@@ -80,15 +80,15 @@ void BreakUnlinked( ostream &log,
  * lib_dist: if not empty, use OffsetDistribution to estimate gaps
  */
 int RegapSupers( ostream &log,
-		 vec<superb> &supers, 
-		 const PairsManager &pairs,
-		 const vec<alignlet> &aligns,
-		 const vec<int> &index,
-		 const bool VERBOSE = false,
-		 const int MAX_OVERLAP = 1500,
-		 const int MIN_LINKS = 1,
-		 const int MAX_DISCREPANCY = 12000,
-		 const bool FIX_NEG_GAPS = True,
-		 const vec<IntDistribution> *lib_dist = 0 );
+                 vec<superb> &supers,
+                 const PairsManager &pairs,
+                 const vec<alignlet> &aligns,
+                 const vec<int> &index,
+                 const bool VERBOSE = false,
+                 const int MAX_OVERLAP = 1500,
+                 const int MIN_LINKS = 1,
+                 const int MAX_DISCREPANCY = 12000,
+                 const bool FIX_NEG_GAPS = True,
+                 const vec<IntDistribution> *lib_dist = 0 );
 
 #endif

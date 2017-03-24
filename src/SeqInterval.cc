@@ -95,12 +95,12 @@ bool seq_interval::HasOverlapWith( const seq_interval &other ) const
  */
 int seq_interval::HasAmountOfOverlapWith( const seq_interval &other ) const
 {
-   if ( seq_id_ != other.SeqId())
-     return 0;
+  if ( seq_id_ != other.SeqId())
+    return 0;
 
-   int begin = max(begin_, other.Begin());
-   int end = min(end_, other.End());
-   return max(0, end - begin);
+  int begin = max(begin_, other.Begin());
+  int end = min(end_, other.End());
+  return max(0, end - begin);
 }
 
 
@@ -114,7 +114,7 @@ ostream& operator<< ( ostream &out, const seq_interval &seq_int )
       << seq_int.seq_id_ << "\t"
       << seq_int.begin_ << "\t"
       << seq_int.end_;
-  
+
   return out;
 }
 
@@ -130,7 +130,7 @@ istream& operator>> ( istream &in, seq_interval &seq_int )
      >> seq_int.seq_id_
      >> seq_int.begin_
      >> seq_int.end_;
-  
+
   return in;
 }
 

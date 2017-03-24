@@ -9,20 +9,20 @@
 
 // CloseUnipathGaps.
 //
-// Purpose: Align fragment reads to the unipath graph with the specific goal of 
-// aiding in the closure of "gaps" in the unipath graph.  Therefore we have to 
-// allow for alignments that go off the end of a unipath.  For computational 
-// efficiency we may also decide to keep only the alignments that are relevant 
+// Purpose: Align fragment reads to the unipath graph with the specific goal of
+// aiding in the closure of "gaps" in the unipath graph.  Therefore we have to
+// allow for alignments that go off the end of a unipath.  For computational
+// efficiency we may also decide to keep only the alignments that are relevant
 // to the problem at hand.
 //
 // Seeding: We seed on perfect 20-mer matches, using the Kmer Parcel paradigm.
 // We use only the first 20-mer in each read.
 //
-// Extension: We allow all possible paths through the unipath graph, including 
-// those that "go off an end".  But see below: some searches will be truncated, 
+// Extension: We allow all possible paths through the unipath graph, including
+// those that "go off an end".  But see below: some searches will be truncated,
 // and the final output is restricted.  Indels are not allowed.
 //
-// Scoring: A placement of a read of length n is assigned scores s1,..., sn, where 
+// Scoring: A placement of a read of length n is assigned scores s1,..., sn, where
 // si is the sum of the read quality scores at mismatches, up to position i.
 //
 // Assessment: Partial placements can be rejected according to the following rules:
@@ -32,7 +32,7 @@
 //
 // Uniqueness: For a given read, we require that only one alignment passes.
 //
-// Output: We only keep the alignments that start on a terminal unipath and come 
+// Output: We only keep the alignments that start on a terminal unipath and come
 // within 50 bases of its end.
 //
 // Note: now this does TWO passes.  One the second pass the reads are reversed.
@@ -66,44 +66,69 @@ public:
 
   partial_placement(const int u1, const int pos1)
     : pos1(pos1)
-  {    uni.push_back(u1);    }
-  
+  {
+    uni.push_back(u1);
+  }
+
   // Pre-reserve memory for the score vector (since we know how big it is
   // likely to get)
-  void ReserveScore(const int N) { score.reserve(N); }
+  void ReserveScore(const int N) {
+    score.reserve(N);
+  }
 
-  void AddAgree() { score.push_back(LastScore()); }
+  void AddAgree() {
+    score.push_back(LastScore());
+  }
 
-  void AddDisagree(const int q) { score.push_back(LastScore() + q); }
+  void AddDisagree(const int q) {
+    score.push_back(LastScore() + q);
+  }
 
-  int Score(const int i) const { return score[i]; }
+  int Score(const int i) const {
+    return score[i];
+  }
 
-  size_t NScores() const { return score.size(); }
+  size_t NScores() const {
+    return score.size();
+  }
 
   int LastScore() const
-  {    return (score.empty() ? 0 : score.back());    }
+  {
+    return (score.empty() ? 0 : score.back());
+  }
 
   void AddUnipath(const int u) {
     uni.push_back(u);
   }
 
-  Bool IsFirstUni() const { return uni.solo(); }
+  Bool IsFirstUni() const {
+    return uni.solo();
+  }
 
-  int LastUni() const { return uni.back(); }
+  int LastUni() const {
+    return uni.back();
+  }
 
-  int Uni(const int i) const { return uni[i]; }
+  int Uni(const int i) const {
+    return uni[i];
+  }
 
-  int NUni() const { return uni.size(); }
+  int NUni() const {
+    return uni.size();
+  }
 
-  int FirstPos() const { return pos1; }
+  int FirstPos() const {
+    return pos1;
+  }
 
   friend ostream& operator<<(ostream& out, const partial_placement& p)
-  {    out << p.Uni(0) << "." << p.FirstPos();
-  for (int j = 1; j < p.NUni(); j++)
-    out << ", " << p.Uni(j);
-  return out << ": " << p.NScores()
-             << " scores recorded, last score = " 
-             << p.LastScore();    }
+  { out << p.Uni(0) << "." << p.FirstPos();
+    for (int j = 1; j < p.NUni(); j++)
+      out << ", " << p.Uni(j);
+    return out << ": " << p.NScores()
+           << " scores recorded, last score = "
+           << p.LastScore();
+  }
 
 };
 
@@ -111,14 +136,14 @@ public:
 
 
 
-void FindUnipathGapSeeds(const vecbasevector & bases, 
+void FindUnipathGapSeeds(const vecbasevector & bases,
                          const vecbasevector & unibases,
-                         const size_t K, 
-                         const size_t n_threads, 
-                         const String & work_dir, 
+                         const size_t K,
+                         const size_t n_threads,
+                         const String & work_dir,
                          VecULongVec * seeds)
 {
-  
+
   // Create coupled KmerParcel files for the reference unibases and the read bases.
   // We combine the datasets with GetMatchingKmerParcelBatches
   cout << Date() << ": Creating KmerParcel files for FindUnipathGapSeeds" << endl;
@@ -132,17 +157,17 @@ void FindUnipathGapSeeds(const vecbasevector & bases,
     vecbasevector bases_trunc(bases);
     for (size_t i = 0; i < n_reads; i++)
       if (bases_trunc[i].size() >= K) bases_trunc[i].resize(K);
-    
-    
+
+
     // build identical number of parcels for unibases and bases_trunc
-    KmerParcelsCoupledBuilder builder(unibases, bases_trunc, 
-				      parcels_unibases, parcels_bases_trunc,
-				      n_threads);
+    KmerParcelsCoupledBuilder builder(unibases, bases_trunc,
+                                      parcels_unibases, parcels_bases_trunc,
+                                      n_threads);
     builder.Build();
   }
 
 
-  
+
   // We will ignore any read that has more than 20 seed kmers; these
   // reads are probably repetitive.  This cutoff is necessary to prevent
   // the runtime from exploding.
@@ -159,49 +184,49 @@ void FindUnipathGapSeeds(const vecbasevector & bases,
   // Loop over all KmerParcels, and parallelize over the loops.
 
   cout << Date() << ": compute seeds[query_ID].size() for each query_ID." << endl;
-  
+
   seeds->clear();
   seeds->resize(n_reads);
 
   size_t n_parcels = parcels_unibases.GetNumParcels();
 
-  // ---- pass 1: 
+  // ---- pass 1:
   //      Figure out the amount of space needed.
-  //      We need this step to know how much memory to reserve for 
-  //      each seeds[query_ID].  
-  //      If we just do seeds[query_ID].push_back(seed), we impact dramatically 
+  //      We need this step to know how much memory to reserve for
+  //      each seeds[query_ID].
+  //      If we just do seeds[query_ID].push_back(seed), we impact dramatically
   //      both time and memory because of repeated reallocations.
-  //              
-#pragma omp parallel for
+  //
+  #pragma omp parallel for
   for (size_t parcel_ID = 0; parcel_ID < n_parcels; parcel_ID++) {
-    
+
     // Open the KmerParcels for reference and reads.
     KmerParcelReader reader_unibases   (parcels_unibases,    parcel_ID);
     KmerParcelReader reader_bases_trunc(parcels_bases_trunc, parcel_ID);
 
     while (GetNextMatchingKmerBatches(reader_unibases, reader_bases_trunc)) {
-      
+
       const vec<KmerLoc> & kmer_locs_unibases    = reader_unibases.CurrentKmerLocs();
       const vec<KmerLoc> & kmer_locs_bases_trunc = reader_bases_trunc.CurrentKmerLocs();
       const size_t n_kmers_unibases    = kmer_locs_unibases.size();
       const size_t n_kmers_bases_trunc = kmer_locs_bases_trunc.size();
-      
+
       // keep going if this is NOT a repetitive kmer in the unibases
       if (n_kmers_unibases <= kmer_freq_max) {
-      
-        // Loop over every instance of this kmer in the bases_trunc 
+
+        // Loop over every instance of this kmer in the bases_trunc
         // and over every instance in the unibases.
         for (size_t i = 0; i != n_kmers_bases_trunc; i++) {
 
           const size_t query_ID = kmer_locs_bases_trunc[i].GetReadID();
           if (n_seeds[query_ID] < MAX_SEEDS) {
-            
+
             for (size_t j = 0; j != n_kmers_unibases; j++) {
-              
-              if (kmer_locs_unibases[j].IsRC() == kmer_locs_bases_trunc[i].IsRC() && 
+
+              if (kmer_locs_unibases[j].IsRC() == kmer_locs_bases_trunc[i].IsRC() &&
                   n_seeds[query_ID] < MAX_SEEDS)
 
-                  ++n_seeds[query_ID];
+                ++n_seeds[query_ID];
 
             }
 
@@ -223,36 +248,36 @@ void FindUnipathGapSeeds(const vecbasevector & bases,
   cout << Date() << ": store seeds in seeds[query_ID]." << endl;
   std::atomic_size_t n_seeds_total;
   vec<std::atomic_uchar> cur_seed(n_reads);
-#pragma omp parallel for
+  #pragma omp parallel for
   for (size_t parcel_ID = 0; parcel_ID < n_parcels; parcel_ID++) {
-    
+
     // Open the KmerParcels for reference and reads.
     KmerParcelReader reader_unibases   (parcels_unibases,    parcel_ID);
     KmerParcelReader reader_bases_trunc(parcels_bases_trunc, parcel_ID);
 
     while (GetNextMatchingKmerBatches(reader_unibases, reader_bases_trunc)) {
-      
+
       const vec<KmerLoc> & kmer_locs_unibases    = reader_unibases.CurrentKmerLocs();
       const vec<KmerLoc> & kmer_locs_bases_trunc = reader_bases_trunc.CurrentKmerLocs();
       const size_t n_kmers_unibases    = kmer_locs_unibases.size();
       const size_t n_kmers_bases_trunc = kmer_locs_bases_trunc.size();
-      
+
       // keep going if this is NOT a repetitive kmer in the unibases
       if (n_kmers_unibases <= kmer_freq_max) {
-      
-        // Loop over every instance of this kmer in the bases_trunc 
+
+        // Loop over every instance of this kmer in the bases_trunc
         // and over every instance in the unibases.
         for (size_t i = 0; i != n_kmers_bases_trunc; i++) {
 
           const size_t query_ID = kmer_locs_bases_trunc[i].GetReadID();
           if (n_seeds[query_ID] < MAX_SEEDS) {
-            
+
             for (size_t j = 0; j != n_kmers_unibases; j++) {
-              
+
               if (kmer_locs_unibases[j].IsRC() == kmer_locs_bases_trunc[i].IsRC()) {
                 ULongVec& seedVec = (*seeds)[query_ID];
                 uint64_t seed = ((kmer_locs_unibases[j].GetReadID() << 32) |
-                                   kmer_locs_unibases[j].GetUnsignedPos());
+                                 kmer_locs_unibases[j].GetUnsignedPos());
 
                 seedVec[cur_seed[query_ID]++] = seed;
                 n_seeds_total++;
@@ -267,8 +292,8 @@ void FindUnipathGapSeeds(const vecbasevector & bases,
   }
 
   for ( VecULongVec::iterator oItr(seeds->begin()), oEnd(seeds->end()); oItr != oEnd; ++oItr )
-      for ( ULongVec::iterator itr(oItr->begin()), end(oItr->end()); itr != end; ++itr )
-          ForceAssertNe(*itr,~0ul);
+    for ( ULongVec::iterator itr(oItr->begin()), end(oItr->end()); itr != end; ++itr )
+      ForceAssertNe(*itr,~0ul);
 
   cout << Date() << ": " << n_reads << " number of reads processed." << endl;
   cout << Date() << ": " << n_seeds_total << " seeds created." << endl;
@@ -281,17 +306,17 @@ void FindUnipathGapSeeds(const vecbasevector & bases,
 // - second = start position of read on unipath
 // - third = identifier of read.
 
-void CloseUnipathGapsCore( const vecbasevector & bases, 
-			    const vecqualvector & quals,
-			    const vecbasevector & unibases, 
-			    const vec< vec<int> > & nexts, 
-			    const vec<int> & to_rc, 
-			    const size_t K, 
-                             const size_t UNIBASES_K,
-			    const VecULongVec & seeds,
-			    const VecULongVec & seeds_rc,
-			    vec< triple<int,int,longlong> > & extenders, 
-			    const int VERBOSITY, ostream& log)
+void CloseUnipathGapsCore( const vecbasevector & bases,
+                           const vecqualvector & quals,
+                           const vecbasevector & unibases,
+                           const vec< vec<int> > & nexts,
+                           const vec<int> & to_rc,
+                           const size_t K,
+                           const size_t UNIBASES_K,
+                           const VecULongVec & seeds,
+                           const VecULongVec & seeds_rc,
+                           vec< triple<int,int,longlong> > & extenders,
+                           const int VERBOSITY, ostream& log)
 {
   // Go through two passes, one for each orientation of the reads.
 
@@ -307,7 +332,7 @@ void CloseUnipathGapsCore( const vecbasevector & bases,
 
     // Go through the reads one by one.
 
-#pragma omp parallel for private(places, places_active)
+    #pragma omp parallel for private(places, places_active)
     for (size_t id = 0; id < n_reads; id++) {
       if (pass == 2 && placed[id]) continue;
 
@@ -316,7 +341,7 @@ void CloseUnipathGapsCore( const vecbasevector & bases,
       const size_t read_length = b.size();
       const size_t n_seeds = SEEDS[id].size();
       if ( read_length < K ) continue;
-      
+
       // For each position on the read, after the first K positions, we
       // keep track of the best observed score thus far.
 
@@ -331,9 +356,9 @@ void CloseUnipathGapsCore( const vecbasevector & bases,
 
       places.clear();
       places.reserve(n_seeds);
-	       
+
       for (size_t si = 0; si < n_seeds; si++) {
-        
+
         // Find all places arising from the seed.
 
         places_active.clear();
@@ -346,23 +371,23 @@ void CloseUnipathGapsCore( const vecbasevector & bases,
         while(places_active.nonempty()) {
           partial_placement p = places_active.back(); // override p def
           places_active.pop_back();
-	  p.ReserveScore(read_length - K);
+          p.ReserveScore(read_length - K);
           int u = p.LastUni();
           ForceAssertGe(u, 0); // trying to catch bug
           const basevector& U = unibases[u];
           Bool reject = False;
           int start = (p.IsFirstUni() ? pos + K : UNIBASES_K - 1);
           for (size_t j = start; j < U.size(); j++) {
-	    int read_pos = p.NScores() + K;
-	    if (read_pos == (int)read_length) break;
-	    
-	    // On second pass, use the inverted basevector/qualvector.
-	    if (pass == 2) read_pos = read_length - 1 - read_pos;
+            int read_pos = p.NScores() + K;
+            if (read_pos == (int)read_length) break;
+
+            // On second pass, use the inverted basevector/qualvector.
+            if (pass == 2) read_pos = read_length - 1 - read_pos;
             if (U[j] == (pass == 1 ? b[read_pos] : GetComplementaryBase(b[read_pos]))) p.AddAgree();
             else p.AddDisagree(q[read_pos]);
-	    
-            if (p.LastScore() > max_qual_err || 
-                 p.LastScore() > best[p.NScores() - 1] + max_qual_err_diff) {
+
+            if (p.LastScore() > max_qual_err ||
+                p.LastScore() > best[p.NScores() - 1] + max_qual_err_diff) {
               reject = True;
               break;
             }
@@ -375,7 +400,7 @@ void CloseUnipathGapsCore( const vecbasevector & bases,
           else {
             for (size_t j = 0; j < nexts[u].size(); j++) {
               partial_placement pn(p);
-	      pn.ReserveScore(read_length - K);
+              pn.ReserveScore(read_length - K);
               pn.AddUnipath(nexts[u][j]);
               places_active.push_back(pn);
             }
@@ -391,9 +416,9 @@ void CloseUnipathGapsCore( const vecbasevector & bases,
         const partial_placement& p = places[j];
         for (size_t l = 0; l < p.NScores(); l++)
           if (places[j].Score(l) > best[l] + max_qual_err_diff) {
-	    reject_places.push_back(j);
-	    break;
-	  }
+            reject_places.push_back(j);
+            break;
+          }
       }
       EraseTheseIndices(places, reject_places);
       Destroy(reject_places);
@@ -402,7 +427,7 @@ void CloseUnipathGapsCore( const vecbasevector & bases,
 
       vec<Bool> to_delete(places.size(), False);
       for (size_t i1 = 0; i1 < places.size(); i1++) {
-	const partial_placement &p1 = places[i1];
+        const partial_placement &p1 = places[i1];
         for (size_t i2 = 0; i2 < places.size(); i2++) {
           const partial_placement &p2 = places[i2];
           if (p1.LastUni() != p2.LastUni()) continue;
@@ -419,12 +444,12 @@ void CloseUnipathGapsCore( const vecbasevector & bases,
         log << "\nread " << id << (pass == 1 ? " fw" : " rc") << "\n";
         log << "found " << places.size() << " placements\n";
         for (size_t i = 0; i < places.size(); i++) {
-          log << "[" << i+1 << "] " 
-               << (pass == 1 ? "fw" : "rc") << " "
-               << places[i] << "\n";
+          log << "[" << i+1 << "] "
+              << (pass == 1 ? "fw" : "rc") << " "
+              << places[i] << "\n";
         }
       }
-      
+
       // Reject placements that are not solo, in an appropriate sense.
 
       if (places.empty() || places.size() > 2) continue;
@@ -460,20 +485,20 @@ void CloseUnipathGapsCore( const vecbasevector & bases,
         }
 
         if (!close_to_end) continue;
-        if (VERBOSITY == 1) 
+        if (VERBOSITY == 1)
           log << "\nread " << id << "\n" << p << "\n";
         if (pass == 1) {
-#pragma omp critical 
-	  {
-	    extenders.push(u, p.FirstPos(), id);    
-	    placed[id] = True;
-	  }
+          #pragma omp critical
+          {
+            extenders.push(u, p.FirstPos(), id);
+            placed[id] = True;
+          }
         }
         else {
-#pragma omp critical
-	  {
-	    extenders.push(ru, nu - (p.FirstPos() + read_length), id);
-	  }
+          #pragma omp critical
+          {
+            extenders.push(ru, nu - (p.FirstPos() + read_length), id);
+          }
         }
       }
     }

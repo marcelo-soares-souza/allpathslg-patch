@@ -28,211 +28,227 @@
 class FastaParser
 {
 public:
-    FastaParser( char const* fileName )
+  FastaParser( char const* fileName )
     : mLocalIS(fileName), mIS(mLocalIS), mLineNumber(0UL)
-    { init(); }
+  {
+    init();
+  }
 
-    FastaParser( std::istream& is )
+  FastaParser( std::istream& is )
     : mIS(is), mLineNumber(0UL)
-    { init(); }
+  {
+    init();
+  }
 
-    ~FastaParser()
-    { if ( mLocalIS.is_open() ) mLocalIS.close(); }
+  ~FastaParser()
+  {
+    if ( mLocalIS.is_open() ) mLocalIS.close();
+  }
 
 protected:
-    ulong getLineNumber()
-    { return mLineNumber; }
+  ulong getLineNumber()
+  {
+    return mLineNumber;
+  }
 
-    char* getBuf()
-    { return mBuf; }
+  char* getBuf()
+  {
+    return mBuf;
+  }
 
-    char* readLine();
+  char* readLine();
 
 private:
-    FastaParser( FastaParser const& ); // unimplemented:  no copying
-    FastaParser& operator=( FastaParser const& ); // unimplemented:  no copying
+  FastaParser( FastaParser const& ); // unimplemented:  no copying
+  FastaParser& operator=( FastaParser const& ); // unimplemented:  no copying
 
-    void init();
+  void init();
 
-    static int const BUF_SIZE = 8192;
+  static int const BUF_SIZE = 8192;
 
-    ifstream mLocalIS;
-    istream& mIS;
-    char mBuf[BUF_SIZE];
-    ulong mLineNumber;
+  ifstream mLocalIS;
+  istream& mIS;
+  char mBuf[BUF_SIZE];
+  ulong mLineNumber;
 };
 
 /// Reads sequence from a FASTA file.
 class SeqParser : public FastaParser
 {
 public:
-    SeqParser( char const* fileName )
+  SeqParser( char const* fileName )
     :FastaParser(fileName)
-    {}
+  {}
 
-    SeqParser( std::istream& is )
+  SeqParser( std::istream& is )
     :FastaParser(is)
+  {}
+
+  /// Ref args are set to the data from the next comma-delimited chunk of the file.
+  /// The returned comment has the inital '>' trimmed.
+  /// Returns false at eof.
+  bool nextChunk( std::string& comment, std::vector<char>& bases );
+
+  /// Ref args are set to the data from the next comma-delimited chunk of the file.
+  /// The returned comment has the inital '>' trimmed.
+  /// Ambiguous bases are silently replaced by a random base.
+  /// Returns false at eof.
+  bool nextChunk( std::string& comment, basevector& bases )
+  {
+    return nextChunk(comment,bases,0);
+  }
+
+  struct RandomizedBase
+  {
+    RandomizedBase( uint offset, char originalBase )
+      : mOffset(offset), mOriginalBase(originalBase)
     {}
 
-    /// Ref args are set to the data from the next comma-delimited chunk of the file.
-    /// The returned comment has the inital '>' trimmed.
-    /// Returns false at eof.
-    bool nextChunk( std::string& comment, std::vector<char>& bases );
+    uint mOffset;
+    char mOriginalBase;
+  };
 
-    /// Ref args are set to the data from the next comma-delimited chunk of the file.
-    /// The returned comment has the inital '>' trimmed.
-    /// Ambiguous bases are silently replaced by a random base.
-    /// Returns false at eof.
-    bool nextChunk( std::string& comment, basevector& bases )
-    { return nextChunk(comment,bases,0); }
+  /// Ref args are set to the data from the next comma-delimited chunk of the file.
+  /// The returned comment has the inital '>' trimmed.
+  /// Ambiguous bases are replaced by a random base, and the offset and original
+  /// value are returned.
+  /// Returns false at eof.
+  bool nextChunk( std::string& comment, basevector& bases, std::vector<RandomizedBase>& randomizedBases )
+  {
+    return nextChunk(comment,bases,&randomizedBases);
+  }
 
-    struct RandomizedBase
+  struct NullTrimmer
+  {
+    void operator()( basevector& /*bases*/ ) {}
+  };
+
+  struct LengthTrimmer
+  {
+    LengthTrimmer( int rightTrim, int truncLen )
+      : mRightTrim(rightTrim), mTruncLen(truncLen)
+    {}
+
+    void operator()( basevector& bases )
     {
-        RandomizedBase( uint offset, char originalBase )
-        : mOffset(offset), mOriginalBase(originalBase)
-        {}
+      bases.resize(max(0,min(mTruncLen,bases.isize()-mRightTrim)));
+    }
 
-        uint mOffset;
-        char mOriginalBase;
-    };
+    int mRightTrim;
+    int mTruncLen;
+  };
 
-    /// Ref args are set to the data from the next comma-delimited chunk of the file.
-    /// The returned comment has the inital '>' trimmed.
-    /// Ambiguous bases are replaced by a random base, and the offset and original
-    /// value are returned.
-    /// Returns false at eof.
-    bool nextChunk( std::string& comment, basevector& bases, std::vector<RandomizedBase>& randomizedBases )
-    { return nextChunk(comment,bases,&randomizedBases); }
+  struct Trimmer
+  {
+    Trimmer( int leftTrim, int rightTrim, int truncLen )
+      : mLeftTrim(leftTrim), mTotTrim(leftTrim+rightTrim), mTruncLen(truncLen)
+    {}
 
-    struct NullTrimmer
+    void operator()( basevector& bases )
     {
-        void operator()( basevector& /*bases*/ ) {}
-    };
+      basevector tmp;
+      tmp.SetToSubOf(bases,mLeftTrim,max(0,min(mTruncLen,bases.isize()-mTotTrim)));
+      tmp.Swap(bases);
+    }
 
-    struct LengthTrimmer
-    {
-        LengthTrimmer( int rightTrim, int truncLen )
-        : mRightTrim(rightTrim), mTruncLen(truncLen)
-        {}
+    int mLeftTrim;
+    int mTotTrim;
+    int mTruncLen;
+  };
 
-        void operator()( basevector& bases )
-        { bases.resize(max(0,min(mTruncLen,bases.isize()-mRightTrim))); }
-
-        int mRightTrim;
-        int mTruncLen;
-    };
-
-    struct Trimmer
-    {
-        Trimmer( int leftTrim, int rightTrim, int truncLen )
-        : mLeftTrim(leftTrim), mTotTrim(leftTrim+rightTrim), mTruncLen(truncLen)
-        {}
-
-        void operator()( basevector& bases )
-        {
-            basevector tmp;
-            tmp.SetToSubOf(bases,mLeftTrim,max(0,min(mTruncLen,bases.isize()-mTotTrim)));
-            tmp.Swap(bases);
-        }
-
-        int mLeftTrim;
-        int mTotTrim;
-        int mTruncLen;
-    };
-
-    /// Reads sequence from a FASTA file, and creates a fastb file from it.
-    /// Optionally creates a fastamb and/or a names file.
-    /// Can also trim reads as they're written.
-    template <class T>
-    static void fastaToFastb( char const* fastaFile, char const* fastbFile, char const* fastambFile = 0, char const* namesFile = 0, T trimmer = T() );
+  /// Reads sequence from a FASTA file, and creates a fastb file from it.
+  /// Optionally creates a fastamb and/or a names file.
+  /// Can also trim reads as they're written.
+  template <class T>
+  static void fastaToFastb( char const* fastaFile, char const* fastbFile, char const* fastambFile = 0, char const* namesFile = 0, T trimmer = T() );
 
 private:
-    bool nextChunk( std::string& comment, basevector& bases, std::vector<RandomizedBase>* pRandomizedBases );
+  bool nextChunk( std::string& comment, basevector& bases, std::vector<RandomizedBase>* pRandomizedBases );
 };
 
 /// Reads quality data from a FASTA file.
 class QualParser : public FastaParser
 {
 public:
-    QualParser( char const* fileName ) : FastaParser(fileName) {}
+  QualParser( char const* fileName ) : FastaParser(fileName) {}
 
-    QualParser( std::istream& is ) : FastaParser(is) {}
+  QualParser( std::istream& is ) : FastaParser(is) {}
 
-    /// Ref args are set to the data from the next comma-delimited chunk of the file.
-    /// The returned comment has the inital '>' trimmed.
-    /// Returns false at eof.
-    bool nextChunk( std::string& comment, qualvector& quals );
+  /// Ref args are set to the data from the next comma-delimited chunk of the file.
+  /// The returned comment has the inital '>' trimmed.
+  /// Returns false at eof.
+  bool nextChunk( std::string& comment, qualvector& quals );
 
-    static void qualaToQualb( char const* qualaFile, char const* qualbFile );
+  static void qualaToQualb( char const* qualaFile, char const* qualbFile );
 };
 
 /// Reads boolean data from a FASTA file.
 class BitsParser : public FastaParser
 {
 public:
-    BitsParser( char const* fileName ) : FastaParser(fileName) {}
+  BitsParser( char const* fileName ) : FastaParser(fileName) {}
 
-    BitsParser( std::istream& is ) : FastaParser(is) {}
+  BitsParser( std::istream& is ) : FastaParser(is) {}
 
-    /// Ref args are set to the data from the next comma-delimited chunk of the file.
-    /// The returned comment has the inital '>' trimmed.
-    /// Returns false at eof.
-    bool nextChunk( std::string& comment, bitvector& bits );
+  /// Ref args are set to the data from the next comma-delimited chunk of the file.
+  /// The returned comment has the inital '>' trimmed.
+  /// Returns false at eof.
+  bool nextChunk( std::string& comment, bitvector& bits );
 
-    static void filterToVecbitvec( char const* filterFile, char const* vecbitvecFile );
+  static void filterToVecbitvec( char const* filterFile, char const* vecbitvecFile );
 };
 
 template <class T>
 void SeqParser::fastaToFastb( char const* fastaFile, char const* fastbFile, char const* fastambFile, char const* namesFile, T trimmer )
 {
-    SeqParser reader(fastaFile);
-    IncrementalWriter<basevector> seqWriter(fastbFile);
+  SeqParser reader(fastaFile);
+  IncrementalWriter<basevector> seqWriter(fastbFile);
 
-    IncrementalWriter<bitvector>* pMBWriter = 0;
-    std::vector<RandomizedBase>* pRBVec = 0;
-    if ( fastambFile )
-    {
-        pMBWriter = new IncrementalWriter<bitvector>(fastambFile);
-        pRBVec = new vector<RandomizedBase>();
-    }
+  IncrementalWriter<bitvector>* pMBWriter = 0;
+  std::vector<RandomizedBase>* pRBVec = 0;
+  if ( fastambFile )
+  {
+    pMBWriter = new IncrementalWriter<bitvector>(fastambFile);
+    pRBVec = new vector<RandomizedBase>();
+  }
 
-    IncrementalWriter<String>* pNamesWriter = 0;
-    if ( namesFile )
-        pNamesWriter = new IncrementalWriter<String>(namesFile);
+  IncrementalWriter<String>* pNamesWriter = 0;
+  if ( namesFile )
+    pNamesWriter = new IncrementalWriter<String>(namesFile);
 
-    std::string comment;
-    basevector bases(0,10000000);
-    while ( reader.nextChunk(comment,bases,pRBVec) )
-    {
-        trimmer(bases);
+  std::string comment;
+  basevector bases(0,10000000);
+  while ( reader.nextChunk(comment,bases,pRBVec) )
+  {
+    trimmer(bases);
 
-        seqWriter.add(bases);
-
-        if ( pNamesWriter )
-            pNamesWriter->add(comment);
-
-        if ( pMBWriter )
-        {
-            bitvector bits(bases.size());
-            std::vector<RandomizedBase>::const_iterator end(pRBVec->end());
-            for ( std::vector<RandomizedBase>::const_iterator itr(pRBVec->begin()); itr != end; ++itr )
-                bits.Set(itr->mOffset,true);
-            pMBWriter->add(bits);
-        }
-    }
+    seqWriter.add(bases);
 
     if ( pNamesWriter )
-    {
-        pNamesWriter->close();
-        delete pNamesWriter;
-    }
+      pNamesWriter->add(comment);
+
     if ( pMBWriter )
     {
-        pMBWriter->close();
-        delete pMBWriter;
-        delete pRBVec;
+      bitvector bits(bases.size());
+      std::vector<RandomizedBase>::const_iterator end(pRBVec->end());
+      for ( std::vector<RandomizedBase>::const_iterator itr(pRBVec->begin()); itr != end; ++itr )
+        bits.Set(itr->mOffset,true);
+      pMBWriter->add(bits);
     }
-    seqWriter.close();
+  }
+
+  if ( pNamesWriter )
+  {
+    pNamesWriter->close();
+    delete pNamesWriter;
+  }
+  if ( pMBWriter )
+  {
+    pMBWriter->close();
+    delete pMBWriter;
+    delete pRBVec;
+  }
+  seqWriter.close();
 }
 
 #endif /* UTIL_FASTAPARSER_H_ */

@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
           total_bases += q.size();
           ++total_seqs;
         }
-        if (pass == 2) 
+        if (pass == 2)
           quals_out.push_back(q);
         q.clear();
         break;
@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
             total_bases += q.size();
             ++total_seqs;
           }
-          if (pass == 2) 
+          if (pass == 2)
             quals_out.push_back(q);
         }
         first = False;
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
           total_bases += q.size();
           ++total_seqs;
         }
-        if (pass == 2) 
+        if (pass == 2)
           quals_out.push_back(q);
         q.clear();
         break;
@@ -91,29 +91,29 @@ int main(int argc, char *argv[])
   }
 
 
-  if ((SKIP_RIGHT_BASES != 0) || 
+  if ((SKIP_RIGHT_BASES != 0) ||
       (SKIP_LEFT_BASES != 0) ||
       (END_BASE != 0))
   {
     for (size_t i = 0; i < quals_out.size(); i++) {
 
-        int start = SKIP_LEFT_BASES;
-        int len   = quals_out[i].size() - SKIP_RIGHT_BASES - SKIP_LEFT_BASES;
-        if (END_BASE) {
-          len = END_BASE + 1 - start;
-          if (len + start > (signed)quals_out[i].size())
-            len = quals_out[i].size() - start;
-        }
-            
-        quals_out[i].SetToSubOf(quals_out[i], start, len);
-
-        if (REVERSE_READS) 
-          quals_out[i].ReverseMe();
-
+      int start = SKIP_LEFT_BASES;
+      int len   = quals_out[i].size() - SKIP_RIGHT_BASES - SKIP_LEFT_BASES;
+      if (END_BASE) {
+        len = END_BASE + 1 - start;
+        if (len + start > (signed)quals_out[i].size())
+          len = quals_out[i].size() - start;
       }
+
+      quals_out[i].SetToSubOf(quals_out[i], start, len);
+
+      if (REVERSE_READS)
+        quals_out[i].ReverseMe();
+
+    }
   }
 
 
-          
+
   quals_out.WriteAll(OUT);
 }

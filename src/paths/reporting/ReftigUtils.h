@@ -25,10 +25,10 @@
  * BW_ADD: extra optional arg for QueryLookupTable
  */
 void GetAlignsFast( const int K, const String& fastb_file,
-		    const String& lookup_file, const String& aligns_file,
-		    vec<look_align>& aligns, const Bool USE_CACHE,
-		    const String& tmp_dir,
-		    const uint BW_ADD = 10 );
+                    const String& lookup_file, const String& aligns_file,
+                    vec<look_align>& aligns, const Bool USE_CACHE,
+                    const String& tmp_dir,
+                    const uint BW_ADD = 10 );
 
 /**
  * HyperToReftigsCore
@@ -39,9 +39,9 @@ void GetAlignsFast( const int K, const String& fastb_file,
  */
 template<class HYPER_T>
 void HyperToReftigsCore( const int K, const HYPER_T& h,
-			 const vec<look_align>& aligns,
-			 vec< pair<int,ho_interval> >& reftigs,
-			 digraph *alignsG = 0 );
+                         const vec<look_align>& aligns,
+                         vec< pair<int,ho_interval> >& reftigs,
+                         digraph *alignsG = 0 );
 
 /**
  * GenerateDot
@@ -56,11 +56,11 @@ void HyperToReftigsCore( const int K, const HYPER_T& h,
  */
 template<class HYPER_T>
 void GenerateDot( const int ORIGIN, const String &dot_base,
-		  const HYPER_T &hyper, const digraph &agraph,
-		  const vec<look_align> &aligns,
-		  const vec< pair<int,ho_interval> >& reftigs,
-		  int VERBOSITY = 0 );
-  
+                  const HYPER_T &hyper, const digraph &agraph,
+                  const vec<look_align> &aligns,
+                  const vec< pair<int,ho_interval> >& reftigs,
+                  int VERBOSITY = 0 );
+
 /**
  * PrintReftigs
  *
@@ -73,10 +73,10 @@ void GenerateDot( const int ORIGIN, const String &dot_base,
  * min_len: report only intervals >= min_len kmers
  */
 void PrintReftigs ( ostream &out,
-		    const int K,
-		    const int ORIGIN,
-		    const vec< pair<int,ho_interval> > &reftigs,
-		    const vecbitvector *amb = 0,
-		    const int min_len = 0 );
+                    const int K,
+                    const int ORIGIN,
+                    const vec< pair<int,ho_interval> > &reftigs,
+                    const vecbitvector *amb = 0,
+                    const int min_len = 0 );
 
 #endif

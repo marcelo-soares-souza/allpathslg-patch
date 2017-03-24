@@ -14,16 +14,16 @@
 
 void Assert::reportVals( char const* loc, char const* func, char const* vals )
 {
-    std::cout << loc << " failed in function\n" << func << "\n";
+  std::cout << loc << " failed in function\n" << func << "\n";
 
-    if ( vals )
-        std::cout << "with values " << vals;
+  if ( vals )
+    std::cout << "with values " << vals;
 
-    std::cout << std::endl;
+  std::cout << std::endl;
 }
 
 void Assert::reportValsAndDie( char const* loc, char const* func, char const* vals )
 {
-    reportVals(loc,func,vals);
-    CRD::exit(1);
+  reportVals(loc,func,vals);
+  CRD::exit(1);
 }

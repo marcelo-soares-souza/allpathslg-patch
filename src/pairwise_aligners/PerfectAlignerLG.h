@@ -42,24 +42,28 @@
 
 class PerfectAlignerLG {
 public:
-  
+
   enum Behavior {
     findProperOnly,
     findSemiproper,
     findImproper
   };
-  
-  PerfectAlignerLG( int K, 
-		    Behavior behavior,
-		    ostream* pLog = 0 )
+
+  PerfectAlignerLG( int K,
+                    Behavior behavior,
+                    ostream* pLog = 0 )
     : m_K( K ), m_behavior( behavior ), m_pLog( pLog ) {}
   ~PerfectAlignerLG() {}
-  
-  void SetK( const int K ) { m_K = K; }
-  void SetBehavior( const Behavior behavior ) { m_behavior = behavior; }
-  
+
+  void SetK( const int K ) {
+    m_K = K;
+  }
+  void SetBehavior( const Behavior behavior ) {
+    m_behavior = behavior;
+  }
+
   /* Calculate all the perfect alignments in <sequences>.  Output goes to <aligns>.
-   * 
+   *
    * n_processes:
    *      Parallelization level.  Used in ParcelKmers.
    * partition:
@@ -70,16 +74,16 @@ public:
    *      Ignore K-mer matches that appear more than <max_kmer_freq> times.
    *
    *******************************************************************************/
-  void Align( const vecbasevector& sequences, 
+  void Align( const vecbasevector& sequences,
               vec<alignment_plus>& aligns,
-	      const size_t n_processes = 1,
+              const size_t n_processes = 1,
               const int partition = -1,
-	      const size_t max_kmer_freq = 0 );
-  
+              const size_t max_kmer_freq = 0 );
+
 private:
   int m_K;
   Behavior m_behavior;
   ostream* m_pLog;
-  
+
 };
 

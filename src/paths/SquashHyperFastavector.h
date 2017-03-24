@@ -24,9 +24,9 @@
  * plog: optional log
  */
 void SquashHyperFastavector( const String &work_dir,
-			     const int num_threads,
-			     const float max_error_rate,
-			     HyperFastavector &hfv,
-			     ostream *plog = 0 );
+                             const int num_threads,
+                             const float max_error_rate,
+                             HyperFastavector &hfv,
+                             ostream *plog = 0 );
 
 #endif

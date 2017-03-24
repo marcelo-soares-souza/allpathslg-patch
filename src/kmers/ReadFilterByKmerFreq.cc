@@ -17,12 +17,14 @@
 #include "Qualvector.h"
 #include "feudal/IncrementalWriter.h"
 
-static inline 
-String Tag(String S = "RFBKF") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "RFBKF") {
+  return Date() + " (" + S + "): ";
+}
 
 
-#include "kmers/naif_kmer/NaifKmerizer.h" 
-#include "kmers/naif_kmer/KernelReadKmerFreqFinder.h" 
+#include "kmers/naif_kmer/NaifKmerizer.h"
+#include "kmers/naif_kmer/KernelReadKmerFreqFinder.h"
 
 
 
@@ -68,7 +70,7 @@ int main(int argc, char *argv[])
   naif_kmerize(&finder, NUM_THREADS, verbose);
 
   // ---- Generate output
-  
+
   IncrementalWriter<BaseVec> bases_out((head_out + ".fastb").c_str());
   IncrementalWriter<QualVec> quals_out((head_out + ".qualb").c_str());
   PairsManager pairs_out;
@@ -90,8 +92,8 @@ int main(int argc, char *argv[])
       quals_out.add(quals_in[i1]);
       quals_out.add(quals_in[i2]);
       pairs_out.addPair(n_bv_out, n_bv_out + 1,
-			pairs.sep(p), pairs.sd(p),
-			pairs.libraryName(p), True);
+                        pairs.sep(p), pairs.sd(p),
+                        pairs.libraryName(p), True);
       n_bv_out += 2;
       pairs_kept[p] = true;
     }
@@ -109,15 +111,15 @@ int main(int argc, char *argv[])
     PairsManager pairs_out2;
     for (size_t p = 0; p < pairs.nPairs(); p++) {
       if (!pairs_kept[p]) {
-	size_t i1 = pairs.ID1(p), i2 = pairs.ID2(p);
-	bases_out2.add(bases_in[i1]);
-	bases_out2.add(bases_in[i2]);
-	quals_out2.add(quals_in[i1]);
-	quals_out2.add(quals_in[i2]);
-	pairs_out2.addPair(n_bv_out2, n_bv_out2 + 1,
-			  pairs.sep(p), pairs.sd(p),
-			  pairs.libraryName(p), True);
-	n_bv_out2 += 2;
+        size_t i1 = pairs.ID1(p), i2 = pairs.ID2(p);
+        bases_out2.add(bases_in[i1]);
+        bases_out2.add(bases_in[i2]);
+        quals_out2.add(quals_in[i1]);
+        quals_out2.add(quals_in[i2]);
+        pairs_out2.addPair(n_bv_out2, n_bv_out2 + 1,
+                           pairs.sep(p), pairs.sd(p),
+                           pairs.libraryName(p), True);
+        n_bv_out2 += 2;
       }
     }
     pairs_out2.Write(HEAD_OUT2 + ".pairs");

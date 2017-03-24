@@ -21,7 +21,7 @@ const char *DOC =
 typedef VirtualMasterVec<BaseVec> VBaseVecVec;
 
 
-void quick_stats(const String & fastb_fn) 
+void quick_stats(const String & fastb_fn)
 {
   size_t n_bv = MastervecFileObjectCount(fastb_fn);
   size_t objects =  MastervecFileRawCount(fastb_fn);
@@ -64,16 +64,16 @@ class FastbStats
   size_t _min_len;
   size_t _max_len;
   vec<size_t> _lens;
-  
+
   size_t _n_gc_bases;
   vec<size_t> _gc_spec;
 
 public:
- 
+
   FastbStats( VBaseVecVec & vbvv,
-	     const size_t min_read_len,
-	     const size_t max_read_len)
-    : _sampled(true), 
+              const size_t min_read_len,
+              const size_t max_read_len)
+    : _sampled(true),
       _vbvv(vbvv),
       _n_bv(_vbvv.size()),
       _len0(0),
@@ -92,12 +92,12 @@ public:
       cout << " total objects count: 0" << endl << endl;
   }
 
-  
+
 
   void scale_stats()
   {
     const size_t n_bv_tot = _n_bv_empty + _n_bv_short + _n_bv_long + _n_bv_good;
-    
+
     _n_bases    = 0.5 + (double(_n_bases)    / double(n_bv_tot)) * _n_bv;
     _n_gc_bases = 0.5 + (double(_n_gc_bases) / double(n_bv_tot)) * _n_bv;
     _n_bv_empty = 0.5 + (double(_n_bv_empty) / double(n_bv_tot)) * _n_bv;
@@ -112,7 +112,7 @@ public:
   void print_lengths_stats()
   {
     cout << " total objects count: " << _n_bv << endl;
-    if (_sampled) 
+    if (_sampled)
       cout << " ---- estimated from sample ----" << endl;
 
     cout << " total length: " << _n_bases << endl;
@@ -122,35 +122,35 @@ public:
       cout << " N50 length: " << N50(_lens) << endl;
     }
 
-    cout << " avg length: " << fixed << setprecision(1) 
-	 << double(_n_bases)/double(_n_bv_good) << endl;
+    cout << " avg length: " << fixed << setprecision(1)
+         << double(_n_bases)/double(_n_bv_good) << endl;
     cout << " range: [" << _min_len << ", " << _max_len << "]" << endl;
 
-    if (_min_read_len > 0) 
-      cout << " reads shorter than " << _min_read_len << ": " << _n_bv_short 
-	   << " (" << 100.0 * double(_n_bv_short)/double(_n_bv) << " %)" << endl;
+    if (_min_read_len > 0)
+      cout << " reads shorter than " << _min_read_len << ": " << _n_bv_short
+           << " (" << 100.0 * double(_n_bv_short)/double(_n_bv) << " %)" << endl;
 
-    if (_max_read_len < INT_MAX) 
-      cout << " reads longer than " << _max_read_len << ": " << _n_bv_long 
-	   << " (" << 100.0 * double(_n_bv_long)/double(_n_bv) << " %)" << endl;
+    if (_max_read_len < INT_MAX)
+      cout << " reads longer than " << _max_read_len << ": " << _n_bv_long
+           << " (" << 100.0 * double(_n_bv_long)/double(_n_bv) << " %)" << endl;
 
-    if (_n_bv_empty > 0) 
+    if (_n_bv_empty > 0)
       cout << " Warning! " << _n_bv_empty << " objects had zero length." << endl << endl;
-  }  
-  
+  }
+
 
 
   void print_gc_stats(const bool do_gc,
-		      const bool do_gc_spec,
-		      const String & gc_spec_head)
+                      const bool do_gc_spec,
+                      const String & gc_spec_head)
   {
     if (do_gc)
-      cout << " GC content: " << fixed << setprecision(1) 
-           << 100.0 * double(_n_gc_bases)/double(_n_bases) << " %" << endl; 
- 
+      cout << " GC content: " << fixed << setprecision(1)
+           << 100.0 * double(_n_gc_bases)/double(_n_bases) << " %" << endl;
+
     if (gc_spec_head != "") {
       if (!do_gc_spec) {
-        cout << " Warning! Can't compute GC spectrum because reads have different lengths." 
+        cout << " Warning! Can't compute GC spectrum because reads have different lengths."
              << endl << endl;
       }
       else {
@@ -160,17 +160,17 @@ public:
 
         os << "# 1:gc 2:freq 3:freq_cum 4:frac 5:frac_cum" << endl;
         os << fixed;
-        
+
         size_t freq_cum = 0;
         double frac;
         double frac_cum = 0.0;
-        
+
         for (unsigned i = 0; i != _gc_spec.size(); i++) {
           size_t freq = _gc_spec[i];
           freq_cum += freq;
           frac = double(freq) / double(_n_bv_good);
           frac_cum = double(freq_cum) / double(_n_bv_good);
-          os << " " << setw(5) << i  
+          os << " " << setw(5) << i
              << " " << setw(5) << freq
              << " " << setw(5) << freq_cum
              << " " << setw(5) << frac
@@ -180,18 +180,18 @@ public:
         os.close();
         cout << "Wrote gc spectrum to " << gc_fn << endl;
       }
-    }    
+    }
   }
 
 
 
-  void add_base_vec(const BaseVec & bv, 
-		    const bool size_only,
-		    const bool do_gc,
-		    bool & do_gc_spec) 
+  void add_base_vec(const BaseVec & bv,
+                    const bool size_only,
+                    const bool do_gc,
+                    bool & do_gc_spec)
   {
     const size_t len = bv.size();
-    
+
     if      (len == 0)            _n_bv_empty++;
     else if (len < _min_read_len) _n_bv_short++;
     else if (len > _max_read_len) _n_bv_long++;
@@ -201,56 +201,56 @@ public:
 
       if (len < _min_len) _min_len = len;
       if (len > _max_len) _max_len = len;
-     
-      if (!size_only) { 
-	_lens.push_back(len);
-	
-	if (do_gc) {        
-	  size_t n_gc = 0;
-	  for (size_t i = 0; i != len; i++) {
-	    const unsigned base = bv[i];
-	    if (base == 1 || base == 2) n_gc++;
-	  }
-	  _n_gc_bases += n_gc;
-	  if (do_gc_spec) {
-	    if (_len0 == 0) {
-	      _len0 = len;
-	      _gc_spec.resize(_len0 + 1, 0);
-	    }
-	    if (len == _len0) _gc_spec[n_gc]++;
-	    else              do_gc_spec = false; // different read lens => no GC spec
-	  }
-	}
+
+      if (!size_only) {
+        _lens.push_back(len);
+
+        if (do_gc) {
+          size_t n_gc = 0;
+          for (size_t i = 0; i != len; i++) {
+            const unsigned base = bv[i];
+            if (base == 1 || base == 2) n_gc++;
+          }
+          _n_gc_bases += n_gc;
+          if (do_gc_spec) {
+            if (_len0 == 0) {
+              _len0 = len;
+              _gc_spec.resize(_len0 + 1, 0);
+            }
+            if (len == _len0) _gc_spec[n_gc]++;
+            else              do_gc_spec = false; // different read lens => no GC spec
+          }
+        }
       }
     }
   }
-  
+
 
   void complete_stats(const bool size_only,
-		      const bool do_gc,
-		      const String & gc_spec_head)
+                      const bool do_gc,
+                      const String & gc_spec_head)
   {
     _sampled = false;
 
     if (_n_bv > 0) {
-      
+
       // ---- parse
       cout << "Streaming data:" << endl;
 
       _lens.reserve(_n_bv);
       bool do_gc_spec = (gc_spec_head != "");
       size_t i_bv = 0;
-      for (VBaseVecVec::const_iterator it = _vbvv.begin(); 
-	   it != _vbvv.end(); i_bv++, it++) {
+      for (VBaseVecVec::const_iterator it = _vbvv.begin();
+           it != _vbvv.end(); i_bv++, it++) {
 
-	add_base_vec(*it, size_only, do_gc, do_gc_spec);
-	dots_pct(i_bv, _n_bv);
+        add_base_vec(*it, size_only, do_gc, do_gc_spec);
+        dots_pct(i_bv, _n_bv);
       }
       cout << endl << endl;
- 
+
 
       // ---- print
-     
+
       print_lengths_stats();
       print_gc_stats(do_gc, do_gc_spec, gc_spec_head);
       cout << endl;
@@ -261,8 +261,8 @@ public:
 
 
   void sample_indices(const size_t n_blocks,
-		      const size_t n_bv_per_block,
-		      vec<size_t> & indices)
+                      const size_t n_bv_per_block,
+                      vec<size_t> & indices)
   {
     const size_t n_indices = n_blocks * n_bv_per_block;
     indices.reserve(n_indices);
@@ -271,16 +271,16 @@ public:
     const size_t d_ind = (block_size - n_bv_per_block)/2;
 
     for (size_t i = 0; i != n_blocks; i++)
-      for (size_t j = 0; j != n_bv_per_block; j++) 
-	indices.push_back(i * block_size + d_ind + j);
+      for (size_t j = 0; j != n_bv_per_block; j++)
+        indices.push_back(i * block_size + d_ind + j);
   }
 
 
 
 
   void sample_stats(const bool size_only,
-		    const bool do_gc,
-		    const String & gc_spec_head)
+                    const bool do_gc,
+                    const String & gc_spec_head)
   {
     _sampled = true;
 
@@ -290,33 +290,33 @@ public:
       const size_t n_indices = n_blocks * n_reads_per_block;
 
       if (n_indices > 0.8 * _n_bv) {
-	complete_stats(size_only, do_gc, gc_spec_head);
+        complete_stats(size_only, do_gc, gc_spec_head);
       }
       else {
 
-	vec<size_t> indices;
-	sample_indices(n_blocks, n_reads_per_block, indices);
+        vec<size_t> indices;
+        sample_indices(n_blocks, n_reads_per_block, indices);
 
 
-	// ---- parse
-	cout << "Streaming data:" << endl;
+        // ---- parse
+        cout << "Streaming data:" << endl;
 
-	_lens.reserve(n_indices);
-	bool do_gc_spec = (gc_spec_head != "");
+        _lens.reserve(n_indices);
+        bool do_gc_spec = (gc_spec_head != "");
 
-	for (size_t i_ind = 0; i_ind != n_indices; i_ind++) {
-	  add_base_vec(_vbvv[indices[i_ind]], size_only, do_gc, do_gc_spec);
-	  dots_pct(i_ind, n_indices);
-	}
-	cout << endl << endl;
+        for (size_t i_ind = 0; i_ind != n_indices; i_ind++) {
+          add_base_vec(_vbvv[indices[i_ind]], size_only, do_gc, do_gc_spec);
+          dots_pct(i_ind, n_indices);
+        }
+        cout << endl << endl;
 
-	scale_stats();
+        scale_stats();
 
-	// ---- print
+        // ---- print
 
-	print_lengths_stats();
-	print_gc_stats(do_gc, do_gc_spec, gc_spec_head);
-	cout << endl;
+        print_lengths_stats();
+        print_gc_stats(do_gc, do_gc_spec, gc_spec_head);
+        cout << endl;
       }
     }
   }
@@ -333,25 +333,25 @@ int main( int argc, char *argv[] )
   BeginCommandArguments;
   CommandDoc(DOC);
   CommandArgument_String_Doc
-    (FASTB, "File for analysis");
+  (FASTB, "File for analysis");
   CommandArgument_Bool_OrDefault_Doc
-    (QUICK, False, "Quick estimate of size without loading file");
+  (QUICK, False, "Quick estimate of size without loading file");
   CommandArgument_Bool_OrDefault_Doc
-    (SAMPLE, False, "Estimate stats by sample a subset of the data");
+  (SAMPLE, False, "Estimate stats by sample a subset of the data");
   CommandArgument_Bool_OrDefault_Doc
-    (SIZE_ONLY, False, "Don't compute MIN, MAX or N50");
+  (SIZE_ONLY, False, "Don't compute MIN, MAX or N50");
   CommandArgument_Bool_OrDefault_Doc
-    (SIZES_ONLY, False, "Output only the read sizes (can be long)");
+  (SIZES_ONLY, False, "Output only the read sizes (can be long)");
   CommandArgument_Bool_OrDefault_Doc
-    (SIZE_COUNTS, False, "Output only the read size histogram (can be long)");
+  (SIZE_COUNTS, False, "Output only the read size histogram (can be long)");
   CommandArgument_Int_OrDefault_Doc
-    (MIN_READ_LEN, 0, "Only consider reads of length >= than MIN_READ_LEN");
+  (MIN_READ_LEN, 0, "Only consider reads of length >= than MIN_READ_LEN");
   CommandArgument_Int_OrDefault_Doc
-    (MAX_READ_LEN, INT_MAX, "Only consider reads of length <= than MAX_READ_LEN");
+  (MAX_READ_LEN, INT_MAX, "Only consider reads of length <= than MAX_READ_LEN");
   CommandArgument_Bool_OrDefault_Doc
-    (GC, False, "if True, GC content is computed.");
+  (GC, False, "if True, GC content is computed.");
   CommandArgument_String_OrDefault_Doc
-    (GC_SPEC, "", "if specified, GC spectrum goes to <GC_SPEC>.gc_spec.");
+  (GC_SPEC, "", "if specified, GC spectrum goes to <GC_SPEC>.gc_spec.");
   EndCommandArguments;
 
   // Figure out the correct filename if the fastb extension isn't given
@@ -372,18 +372,18 @@ int main( int argc, char *argv[] )
   else if (SIZE_COUNTS) {
     map<size_t, size_t> szs;
     VBaseVecVec vbvv(FASTB.c_str());
-    for (VBaseVecVec::const_iterator it = vbvv.begin(); 
-         it != vbvv.end(); it++) 
+    for (VBaseVecVec::const_iterator it = vbvv.begin();
+         it != vbvv.end(); it++)
       szs[it->size()]++;
-    for (map<size_t, size_t>::const_iterator it = szs.begin(); 
-         it != szs.end(); it++) 
+    for (map<size_t, size_t>::const_iterator it = szs.begin();
+         it != szs.end(); it++)
       cout << setw(10) << it->first << " " << setw(10) << it->second << endl;
   }
   else if (SIZES_ONLY) {
     VBaseVecVec vbvv(FASTB.c_str());
     size_t i = 0;
-    for (VBaseVecVec::const_iterator it = vbvv.begin(); 
-         it != vbvv.end(); it++) 
+    for (VBaseVecVec::const_iterator it = vbvv.begin();
+         it != vbvv.end(); it++)
       cout << setw(10) << i++ << " " << setw(10) << it->size() << endl;
   }
   else {

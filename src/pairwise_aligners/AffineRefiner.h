@@ -15,7 +15,7 @@
 
 class AffineRefiner
 {
- public:
+public:
   // A length in the alignment must be at least this many bases long
   // to be considered an anchor.  Only gappy regions *between* anchors
   // will be patched.
@@ -26,23 +26,23 @@ class AffineRefiner
   // Refine the given alignment between the given sequences.
   void
   RefineAlign( allpathslg::align  &theAlign,
-               const basevector &bases1, 
+               const basevector &bases1,
                const basevector &bases2 );
-  
- private:
+
+private:
   // Check whether the given block of the alignment begins or ends a gappy region.
-  void CheckBlock( const int currentBlock, 
+  void CheckBlock( const int currentBlock,
                    const allpathslg::align  &theAlign,
                    const basevector &bases1, const basevector &bases2 );
 
   bool BlockIsAnchor( const int currentBlock,
                       const allpathslg::align  &theAlign,
                       const basevector &bases1, const basevector &bases2 );
-  
+
   // Patch the given region with a SW affine alignment.
-  void PatchAlignment( const allpathslg::align  &theAlign, 
-                       const int startAnchor, 
-                       const int stopAnchor, 
+  void PatchAlignment( const allpathslg::align  &theAlign,
+                       const int startAnchor,
+                       const int stopAnchor,
                        const basevector &bases1, const basevector &bases2 );
 
   int m_minAnchorLength;

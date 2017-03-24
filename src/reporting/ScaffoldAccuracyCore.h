@@ -13,8 +13,8 @@
 #include "Bitvector.h"
 #include "CoreTools.h"
 
-void SelectTestSequences( int& SAMPLE, const int D, const vecbasevector& assembly, 
-     const vecbitvector& assembly_amb, vecbasevector& query,
-     vec<int>& t1s, vec<int>& t2s, vec<int>& start1s, vec<int>& start2s );
+void SelectTestSequences( int& SAMPLE, const int D, const vecbasevector& assembly,
+                          const vecbitvector& assembly_amb, vecbasevector& query,
+                          vec<int>& t1s, vec<int>& t2s, vec<int>& start1s, vec<int>& start2s );
 
 #endif

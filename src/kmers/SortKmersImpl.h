@@ -48,14 +48,14 @@
    'pass' may be thought of as a collection of two independent digits, each of
    which restrains the chosen kmers to a particular choice at a particular
    location.  For example:
-   
+
    -- All pass numbers with the ones digit 2 (2, 12, 22, 32, etc.) force a kmer to
    match the form G..A or T..C.
    -- All pass numbers with the tens digit 4 (40, 41, etc.) force a kmer to match
    the form *A..C* or *G..T*, where * can be any base.
    -- Hence, pass number 42 will accept only kmers with one of the following forms:
    GA...CA, GG...TA, TA...CC, TG...CT.
-   
+
    Memory utilization has been reduced for the case Passes=100, for huge
    "reads"; the same improvement has not been implemented for the other cases.
 
@@ -85,30 +85,32 @@
 template< class KSHAPE, class RECORD >
 void SortKmers( dummy<1>,
                 vec<bvec const*> const& reads,
-		const vec<int>& read_ids,
-		int,
-		vec<RECORD>& R,
-		unsigned int& S,
-		Bool use_stable_sort,
-		Bool palind_both_dirs )
+                const vec<int>& read_ids,
+                int,
+                vec<RECORD>& R,
+                unsigned int& S,
+                Bool use_stable_sort,
+                Bool palind_both_dirs )
 {
   const int K = KSHAPE::KSIZE;
   const unsigned int KSPAN = (unsigned int)KSHAPE::KSPAN;
   basevector b(K);
   S = 0;
   for ( size_t l = 0; l < reads.size( ); l++ )
-    {    if ( reads[l]->size( ) < KSPAN ) continue;
+  { if ( reads[l]->size( ) < KSPAN ) continue;
     unsigned int N = reads[l]->size( ) - KSPAN + 1;
     if ( S + 2*N >= R.size( ) ) {
       unsigned nn = Max( (long unsigned) ( 1.2 * R.size( ) ), (R.size( ) + 2*N) );
       if ( nn < R.size( ) ) FatalErr( "SortKmers<1>: Unsigned-int overflow (R=" << R.size( ) << ")" );
       R.resize(nn);
     }
-    
+
     Bool use_b, use_c;
     for ( unsigned int q = 0; q < N; q++ )
-      {    SORT_CORE    }
+    {
+      SORT_CORE
     }
+  }
   if (use_stable_sort)
     stable_sort( R.begin( ), R.begin( ) + S );
   else
@@ -154,11 +156,11 @@ template<class KSHAPE, class RECORD>
 void SortKmers( dummy<10>,
                 vec<bvec const*> const& reads,
                 const vec<int>& read_ids,
-		int pass,
-		vec<RECORD>& R,
-		unsigned int& S,
-		Bool use_stable_sort,
-		Bool palind_both_dirs )
+                int pass,
+                vec<RECORD>& R,
+                unsigned int& S,
+                Bool use_stable_sort,
+                Bool palind_both_dirs )
 {
   const int K = KSHAPE::KSIZE;
   const unsigned int KSPAN = (unsigned int)KSHAPE::KSPAN;
@@ -202,109 +204,109 @@ void SortKmers( dummy<10>,
 
 template<class KSHAPE, class RECORD>
 void one_pass_of_sort( vec<bvec const*> const& reads,
-		       const vec< read_id_t >& read_ids,
-		       int pass1, int pass2, Bool palind_both_dirs,
-		       Bool use_stable_sort,
-		       vec<RECORD>& R, unsigned int& S )
+                       const vec< read_id_t >& read_ids,
+                       int pass1, int pass2, Bool palind_both_dirs,
+                       Bool use_stable_sort,
+                       vec<RECORD>& R, unsigned int& S )
 {
-    const nbases_t K = KSHAPE::KSIZE;
-    const nbases_t KSPAN = KSHAPE::KSPAN;
+  const nbases_t K = KSHAPE::KSIZE;
+  const nbases_t KSPAN = KSHAPE::KSPAN;
 
-    basevector b(K);
+  basevector b(K);
 
-    S = 0;
+  S = 0;
 
-    // Bases for this pass: All test kmers must match these bases or their rc
-    const base_t bA = pass1 % 4;
-    const base_t bB = pass2 % 4;
-    const base_t bY = (pass2 >> 2) % 4;
-    const base_t bZ = (pass1 >> 2) % 4;
+  // Bases for this pass: All test kmers must match these bases or their rc
+  const base_t bA = pass1 % 4;
+  const base_t bB = pass2 % 4;
+  const base_t bY = (pass2 >> 2) % 4;
+  const base_t bZ = (pass1 >> 2) % 4;
 
-    // Reverse complements of each base
-    // Note that the RC first base is the complement of the last base, etc.
-    const base_t bA_rc = GetComplementaryBase( bZ );
-    const base_t bB_rc = GetComplementaryBase( bY );
-    const base_t bY_rc = GetComplementaryBase( bB );
-    const base_t bZ_rc = GetComplementaryBase( bA );
+  // Reverse complements of each base
+  // Note that the RC first base is the complement of the last base, etc.
+  const base_t bA_rc = GetComplementaryBase( bZ );
+  const base_t bB_rc = GetComplementaryBase( bY );
+  const base_t bY_rc = GetComplementaryBase( bB );
+  const base_t bZ_rc = GetComplementaryBase( bA );
 
-    for ( size_t l = 0; l < reads.size( ); l++ ) {
-      const basevector& r = *reads[l];
-      if ( r.isize( ) < KSPAN ) continue;
+  for ( size_t l = 0; l < reads.size( ); l++ ) {
+    const basevector& r = *reads[l];
+    if ( r.isize( ) < KSPAN ) continue;
 
-      read_id_t thisReadId = read_ids.empty() ? l : read_ids[l];
-      
-      const read_pos_t N = r.size( ) - KSPAN + 1;
+    read_id_t thisReadId = read_ids.empty() ? l : read_ids[l];
 
-      typedef typename basevector::const_iterator cit_t;
+    const read_pos_t N = r.size( ) - KSPAN + 1;
 
-      read_pos_t q = 0;     /* start of kmer in the read */
+    typedef typename basevector::const_iterator cit_t;
 
-      // kA = first base in kmer, kB = second base, ..., kZ = last base
-      base_t kA, kB, kY, kZ;
-      cit_t iter_beg = r.Begin();
-      cit_t iter_end = r.Begin( KSPAN - 2 );
-      kA = *( iter_beg++ );
-      kB = *iter_beg;
-      kY = *( iter_end++ );
-      kZ = *iter_end;
+    read_pos_t q = 0;     /* start of kmer in the read */
 
-      int top = 0;
-      while( top < N )
-      {
-	  AssertEq( r[ q ], kA );
-	  AssertEq( r[ q+1 ], kB );
-	  AssertEq( r[ q+K-2 ], kY );
-	  AssertEq( r[ q+K-1 ], kZ );
+    // kA = first base in kmer, kB = second base, ..., kZ = last base
+    base_t kA, kB, kY, kZ;
+    cit_t iter_beg = r.Begin();
+    cit_t iter_end = r.Begin( KSPAN - 2 );
+    kA = *( iter_beg++ );
+    kB = *iter_beg;
+    kY = *( iter_end++ );
+    kZ = *iter_end;
 
-	  top += Min( N - top, 10000 );
-	  if ( S + 2*(top - q) >= R.size( ) ) {
-	    unsigned nn = Max( (unsigned) ( 1.2 * R.size( ) ), (S + 2*(top - q)) );
-	    if ( nn < R.size( ) ) FatalErr( "SortKmers<100>: Unsigned-int overflow (R=" << R.size( ) << ")" );
-	    R.resize(nn);
-	  }
+    int top = 0;
+    while( top < N )
+    {
+      AssertEq( r[ q ], kA );
+      AssertEq( r[ q+1 ], kB );
+      AssertEq( r[ q+K-2 ], kY );
+      AssertEq( r[ q+K-1 ], kZ );
 
-	  while( True ) {
-	    if ( q == top ) break;
+      top += Min( N - top, 10000 );
+      if ( S + 2*(top - q) >= R.size( ) ) {
+        unsigned nn = Max( (unsigned) ( 1.2 * R.size( ) ), (S + 2*(top - q)) );
+        if ( nn < R.size( ) ) FatalErr( "SortKmers<100>: Unsigned-int overflow (R=" << R.size( ) << ")" );
+        R.resize(nn);
+      }
 
-	    AssertEq( r[ q ]    , kA );
-	    AssertEq( r[ q+1 ]  , kB );
-	    AssertEq( r[ q+K-2 ], kY );
-	    AssertEq( r[ q+K-1 ], kZ );
+      while( True ) {
+        if ( q == top ) break;
 
-	    // Determine if this read belongs in this pass
-	    if ( ( kA == bA     && kZ == bZ  ||
-		   kA == bA_rc  && kZ == bZ_rc ) &&
-		 ( kB == bB    && kY == bY  ||
-		   kB == bB_rc && kY == bY_rc ) )
-	      {
-		KSHAPE::extractKmer(b, r, q);
+        AssertEq( r[ q ], kA );
+        AssertEq( r[ q+1 ], kB );
+        AssertEq( r[ q+K-2 ], kY );
+        AssertEq( r[ q+K-1 ], kZ );
 
-		CanonicalForm canon_form = b.Canonicalize();
-		if ( canon_form == CanonicalForm::REV ||
-		     canon_form == CanonicalForm::PALINDROME && palind_both_dirs ) R[S++].Set( b, thisReadId, -(q+1) );
-		if ( canon_form == CanonicalForm::FWD ||
-		     canon_form == CanonicalForm::PALINDROME ) R[S++].Set( b, thisReadId, q+1 );
-	      }
+        // Determine if this read belongs in this pass
+        if ( ( kA == bA     && kZ == bZ  ||
+               kA == bA_rc  && kZ == bZ_rc ) &&
+             ( kB == bB    && kY == bY  ||
+               kB == bB_rc && kY == bY_rc ) )
+        {
+          KSHAPE::extractKmer(b, r, q);
 
-	    ++q;
+          CanonicalForm canon_form = b.Canonicalize();
+          if ( canon_form == CanonicalForm::REV ||
+               canon_form == CanonicalForm::PALINDROME && palind_both_dirs ) R[S++].Set( b, thisReadId, -(q+1) );
+          if ( canon_form == CanonicalForm::FWD ||
+               canon_form == CanonicalForm::PALINDROME ) R[S++].Set( b, thisReadId, q+1 );
+        }
 
-	    // Advance the kmer by incrementing its bases
-	    kA = kB;
-	    kB = *( ++iter_beg );
-	    kY = kZ;
-	    if ( q < N )
-	      kZ = *( ++iter_end );
+        ++q;
 
-	    if ( q == top ) break;
-          }
+        // Advance the kmer by incrementing its bases
+        kA = kB;
+        kB = *( ++iter_beg );
+        kY = kZ;
+        if ( q < N )
+          kZ = *( ++iter_end );
+
+        if ( q == top ) break;
       }
     }
+  }
 
-    // Sort the kmers in R
-    if (use_stable_sort)
-      stable_sort( R.begin( ), R.begin( ) + S );
-    else
-      sort( R.begin( ), R.begin( ) + S );
+  // Sort the kmers in R
+  if (use_stable_sort)
+    stable_sort( R.begin( ), R.begin( ) + S );
+  else
+    sort( R.begin( ), R.begin( ) + S );
 }
 
 
@@ -339,8 +341,8 @@ void one_pass_of_sort( vec<bvec const*> const& reads,
 */
 template<class KSHAPE, class RECORD>
 void SortKmers( dummy<100>, vec<bvec const*> const& reads, const vec<int>& read_ids,
-		int pass, vec<RECORD>& R, unsigned int& S, Bool use_stable_sort,
-		Bool palind_both_dirs )
+                int pass, vec<RECORD>& R, unsigned int& S, Bool use_stable_sort,
+                Bool palind_both_dirs )
 {
   // We separate the pass number into its constituent digits and put each one
   // in the range of [0-6],8,9,12.  These numbers encode (in base 4) the ten
@@ -352,7 +354,7 @@ void SortKmers( dummy<100>, vec<bvec const*> const& reads, const vec<int>& read_
 
   // Fill R with a sorted list of all kmers in moreReads that match pass1 and pass2
   one_pass_of_sort<KSHAPE,RECORD>( reads, read_ids, pass1, pass2, palind_both_dirs, use_stable_sort, R, S );
-  
+
 }  // SortKmers()
 
 

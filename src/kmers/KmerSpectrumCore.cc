@@ -14,14 +14,16 @@
 
 
 
-static inline 
-String Tag(String S = "KSC") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "KSC") {
+  return Date() + " (" + S + "): ";
+}
 
 
 
 #include "kmers/KmerSpectra.h"
-#include "kmers/naif_kmer/NaifKmerizer.h" 
-#include "kmers/naif_kmer/KernelKmerSpectralizer.h" 
+#include "kmers/naif_kmer/NaifKmerizer.h"
+#include "kmers/naif_kmer/KernelKmerSpectralizer.h"
 
 
 
@@ -30,7 +32,7 @@ String Tag(String S = "KSC") { return Date() + " (" + S + "): "; }
 
 void kmer_spectrum_compute(const BaseVecVec & bvv,
                            KmerSpectrum     * p_kspec,
-                           const unsigned     VERBOSITY, 
+                           const unsigned     VERBOSITY,
                            const unsigned     NUM_THREADS,
                            const size_t       mem_mean_ceil)
 {
@@ -60,10 +62,10 @@ void kmer_spectrum_compute(const BaseVecVec & bvv,
     cout << Tag() << "K= " << K << " not implemented." << endl;
     exit(1);
   }
-   
-        
+
+
 }
-    
+
 
 
 
@@ -144,7 +146,7 @@ void kmer_bi_spectrum_compute(const BaseVecVec   & bvv,
     cout << Tag() << "K= " << K << " not implemented." << endl;
     exit(1);
   }
-        
+
 }
 
 
@@ -153,10 +155,10 @@ void kmer_bi_spectrum_compute(const BaseVecVec   & bvv,
 
 
 void kmer_spectra_by_quals_compute(const BaseVecVec   & bvv,
-				   const QualVecVec   & qvv,
-				   KmerQualitySpectra * p_kqspec,
-				   const unsigned       VERBOSITY,
-				   const unsigned       NUM_THREADS,
+                                   const QualVecVec   & qvv,
+                                   KmerQualitySpectra * p_kqspec,
+                                   const unsigned       VERBOSITY,
+                                   const unsigned       NUM_THREADS,
                                    const size_t         mem_mean_ceil)
 {
   const unsigned K = p_kqspec->K();
@@ -200,7 +202,7 @@ void genome_analysis_report(const KmerSpectrum & kspec,
                             const unsigned       KF_LOW,
                             const unsigned       VERBOSITY)
 {
-  cout << Tag() << "Estimating genome size." << endl; 
+  cout << Tag() << "Estimating genome size." << endl;
   kspec.analyze(PLOIDY, read_len, KF_LOW, VERBOSITY);
 
   const size_t G = kspec.genome_size();
@@ -211,27 +213,27 @@ void genome_analysis_report(const KmerSpectrum & kspec,
   const float coverage = (failed) ? 0 : kspec.coverage();
 
   cout << Tag() << "------------------- Kmer Spectrum Analysis -------------------" << endl;
-  cout << Tag() << "Genome size estimate        = " 
+  cout << Tag() << "Genome size estimate        = "
        << setw(14) << ToStringAddCommas(G) << " bases" << endl;
-  cout << Tag() << "Genome size estimate CN = 1 = " 
-       << setw(14) << ToStringAddCommas(G1) << " bases ( " 
-       << fixed << setw(5) << setprecision(1) 
+  cout << Tag() << "Genome size estimate CN = 1 = "
+       << setw(14) << ToStringAddCommas(G1) << " bases ( "
+       << fixed << setw(5) << setprecision(1)
        << (failed ? 0 : 100 * float(G1)/float(G)) << " % )" << endl;
-  cout << Tag() << "Genome size estimate CN > 1 = " 
+  cout << Tag() << "Genome size estimate CN > 1 = "
        << setw(14) << ToStringAddCommas(GR) << " bases ( "
-       << fixed << setw(5) << setprecision(1) 
+       << fixed << setw(5) << setprecision(1)
        << (failed ? 0 : 100 * float(GR)/float(G)) << " % )" << endl;
-        
+
   // ---- computing coverage
-        
-  cout << Tag() << "Coverage estimate           = " 
+
+  cout << Tag() << "Coverage estimate           = "
        << setw(14) << setprecision(0) << coverage << " x" << endl;
 
 
   // ---- bias standard deviation (coverage independent)
 
   const float sd_bias = failed ? 0 : kspec.bias_stddev();
-  cout << Tag() << "Bias stddev at scale > K    = " 
+  cout << Tag() << "Bias stddev at scale > K    = "
        << setw(14) << setprecision(2) << sd_bias << endl;
 
 
@@ -241,30 +243,30 @@ void genome_analysis_report(const KmerSpectrum & kspec,
   const float pe = 1.0 - pow(1.0 - f, 1.0 / kspec.K());
   const float Q = -10.0 * log(pe) / log(10);
 
-  cout << Tag() << "Base error rate estimate    = " 
-       << setw(14) << setprecision(4) << pe 
+  cout << Tag() << "Base error rate estimate    = "
+       << setw(14) << setprecision(4) << pe
        << " (Q = " << setprecision(1) << Q << ")" << endl;
-    
 
-        
+
+
   // ---- ploidy report
 
   if (PLOIDY == 2) {
     cout << Tag() << "SNP rate: always verify with kmer spectrum plot." << endl;
 
-    cout << Tag() << "Ploidy                      = " << setw(14) << PLOIDY << endl; 
+    cout << Tag() << "Ploidy                      = " << setw(14) << PLOIDY << endl;
     const size_t d_SNPs = failed ? 0 : kspec.d_SNP();
-    cout << Tag() << "SNP rate                   ~= " 
-	 << setw(14) << ("1/" + ToString(d_SNPs)) << endl;
+    cout << Tag() << "SNP rate                   ~= "
+         << setw(14) << ("1/" + ToString(d_SNPs)) << endl;
 
     const float p = failed ? 0.0 : 1.0 / d_SNPs;
     const float p_close = 1.0 - pow(1.0 - p, static_cast<int>(kspec.K()));
-    cout << Tag() << "SNPs closer than K         ~= " 
+    cout << Tag() << "SNPs closer than K         ~= "
          << setw(14) << setprecision(0) << 100 * p_close * (2 - p_close) << " %" << endl;
   }
   else {
     cout << Tag() << "SNP rate not computed (PLOIDY = " << PLOIDY << ")." << endl;
-  } 
+  }
   cout << Tag() << "--------------------------------------------------------------" << endl;
 
 }
@@ -282,7 +284,7 @@ void genome_size_perf_stats(const KmerSpectrum & kspec,
                             const unsigned       VERBOSITY)
 {
   kspec.analyze(PLOIDY, read_len, KF_LOW, VERBOSITY);
-  
+
   const size_t G = kspec.genome_size();
   const bool failed = (G == 0);
 
@@ -291,20 +293,20 @@ void genome_size_perf_stats(const KmerSpectrum & kspec,
   const float sd_bias  = failed ? 0 : kspec.bias_stddev();
 
   PerfStat::log() << std::fixed << std::setprecision(0)
-                  << PerfStat( "genome_size_est", 
-                               "estimated genome size in bases", 
+                  << PerfStat( "genome_size_est",
+                               "estimated genome size in bases",
                                G);
   PerfStat::log() << std::fixed << std::setprecision(1)
-                  << PerfStat( "genome_repetitiveness_est", 
-                               "% genome estimated to be repetitive (at K=" + ToString(kspec.K()) + " scale)", 
+                  << PerfStat( "genome_repetitiveness_est",
+                               "% genome estimated to be repetitive (at K=" + ToString(kspec.K()) + " scale)",
                                (failed ? 0 : 100 * GR / G));
   PerfStat::log() << std::fixed << std::setprecision(0)
-                  << PerfStat( "genome_cov_est", 
-                               "estimated genome coverage by fragment reads", 
+                  << PerfStat( "genome_cov_est",
+                               "estimated genome coverage by fragment reads",
                                coverage);
   PerfStat::log() << std::fixed << std::setprecision(2)
-                  << PerfStat( "bias_stddev_est", 
-                               "estimated standard deviation of sequencing bias (at K=" + ToString(kspec.K()) + " scale)", 
+                  << PerfStat( "bias_stddev_est",
+                               "estimated standard deviation of sequencing bias (at K=" + ToString(kspec.K()) + " scale)",
                                sd_bias);
 
 }

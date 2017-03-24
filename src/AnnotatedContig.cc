@@ -17,14 +17,14 @@ const vec< basevector >*          annotated_supercontig::standards_  = NULL;
 const map< int, arachne_contig >* annotated_contig::arachne_contigs_ = NULL;
 
 bool semiannotation_loccomp::operator() ( const semiannotation &ca1,
-					  const semiannotation &ca2 ) const {
+    const semiannotation &ca2 ) const {
 
   if      ( ca1.RC() != ca2.RC() )
     return ( ca2.RC() );
   else if ( ( ca1.StartOnStandard() - ca1.StartOnThis() ) !=
-	    ( ca2.StartOnStandard() - ca2.StartOnThis() ) )
+            ( ca2.StartOnStandard() - ca2.StartOnThis() ) )
     return ( ( ca1.StartOnStandard() - ca1.StartOnThis() ) <
-	     ( ca2.StartOnStandard() - ca2.StartOnThis() ) );
+             ( ca2.StartOnStandard() - ca2.StartOnThis() ) );
   else if ( ca1.StartOnThis() != ca2.StartOnThis() )
     return ( ca1.StartOnThis() < ca2.StartOnThis() );
   else
@@ -74,8 +74,8 @@ void annotated_contig::ComputeSemiannotations() {
   // Print( cout );
   // cout << endl;
   for ( ;
-	curracp != end_acp;
-	++curracp ) {
+        curracp != end_acp;
+        ++curracp ) {
     if ( curracp->IsGap() )
       continue;
 
@@ -89,108 +89,108 @@ void annotated_contig::ComputeSemiannotations() {
     ctg_actloc_itr end_actloc = arach_ctg.EndActloc();
 
     for ( ;
-	  curractloc != end_actloc;
-	  ++curractloc ) {
+          curractloc != end_actloc;
+          ++curractloc ) {
 
       // cout << "\t\t\t Actloc: ";
       // curractloc->Print( cout );
       // cout << endl;
 
       int implied_left_on_std = ( curractloc->RC() ?
-				  curractloc->Start() - Length() + curracp->Start() + arach_ctg.Length() :
-				  curractloc->Start() - curracp->Start() );
+                                  curractloc->Start() - Length() + curracp->Start() + arach_ctg.Length() :
+                                  curractloc->Start() - curracp->Start() );
 
       int second_implied_left_on_std = ( curractloc->RC() ?
-					 curractloc->Start() - Length() + curracp->Stop() :
-					 curractloc->Start() + arach_ctg.Length() - curracp->Stop() );
+                                         curractloc->Start() - Length() + curracp->Stop() :
+                                         curractloc->Start() + arach_ctg.Length() - curracp->Stop() );
 
       for ( int i_choose = 0;
-	    i_choose < 2;
-	    ++i_choose ) {
+            i_choose < 2;
+            ++i_choose ) {
 
-	if ( i_choose )
-	  if ( abs( implied_left_on_std - second_implied_left_on_std ) < max_fudge / 2 )
-	    continue;
+        if ( i_choose )
+          if ( abs( implied_left_on_std - second_implied_left_on_std ) < max_fudge / 2 )
+            continue;
 
-	int chosen_implied_left_on_std = ( i_choose
-					   ? second_implied_left_on_std
-					   : implied_left_on_std );
+        int chosen_implied_left_on_std = ( i_choose
+                                           ? second_implied_left_on_std
+                                           : implied_left_on_std );
 
-	int chosen_left_on_std = ( i_choose
-				   ? curractloc->Start() + second_implied_left_on_std - implied_left_on_std
-				   : curractloc->Start() );
+        int chosen_left_on_std = ( i_choose
+                                   ? curractloc->Start() + second_implied_left_on_std - implied_left_on_std
+                                   : curractloc->Start() );
 
 
-	semiannotation this_semi( curractloc->StdID  (),
-				  (unsigned char)curractloc->RC(),
-				  curracp->Start     (),
-				  chosen_left_on_std,
-				  chosen_implied_left_on_std,
-				  arach_ctg.Length   (),
-				  curractloc->Weight () );
+        semiannotation this_semi( curractloc->StdID  (),
+                                  (unsigned char)curractloc->RC(),
+                                  curracp->Start     (),
+                                  chosen_left_on_std,
+                                  chosen_implied_left_on_std,
+                                  arach_ctg.Length   (),
+                                  curractloc->Weight () );
 
         /*
-	cout << "\t\t\t Semi: ";
-	this_semi.Print( cout );
-	cout << endl
-	     << "\t\t\t\t Implied boundaries on standard: ( " << chosen_implied_left_on_std
-	     << " -> " << chosen_implied_left_on_std + Length()
-	     << " )" << " two options: " << implied_left_on_std << "," << second_implied_left_on_std
-	     << endl;
+        cout << "\t\t\t Semi: ";
+        this_semi.Print( cout );
+        cout << endl
+        << "\t\t\t\t Implied boundaries on standard: ( " << chosen_implied_left_on_std
+        << " -> " << chosen_implied_left_on_std + Length()
+        << " )" << " two options: " << implied_left_on_std << "," << second_implied_left_on_std
+        << endl;
         */
 
-	map_set_loccomp_itr curr_stdID_set_loccomp_itr = stdIDs_and_locs.find( curractloc->StdID() );
+        map_set_loccomp_itr curr_stdID_set_loccomp_itr = stdIDs_and_locs.find( curractloc->StdID() );
 
-	if ( curr_stdID_set_loccomp_itr != stdIDs_and_locs.end() ) {
+        if ( curr_stdID_set_loccomp_itr != stdIDs_and_locs.end() ) {
 
-	  Assert( curr_stdID_set_loccomp_itr->first == curractloc->StdID() );
+          Assert( curr_stdID_set_loccomp_itr->first == curractloc->StdID() );
 
-	  set_loccomp_itr find_this_semi = curr_stdID_set_loccomp_itr->second.find( this_semi );
+          set_loccomp_itr find_this_semi = curr_stdID_set_loccomp_itr->second.find( this_semi );
 
-	  if ( find_this_semi != curr_stdID_set_loccomp_itr->second.end() ) {
-	    this_semi.AddToWeight( find_this_semi->Weight() );
-	    // cout << "\t\t\t\t ";
-	    // this_semi.Print( cout );
-	    // cout << " == ";
-	    // find_this_semi->Print( cout );
-	    // cout << endl;
+          if ( find_this_semi != curr_stdID_set_loccomp_itr->second.end() ) {
+            this_semi.AddToWeight( find_this_semi->Weight() );
+            // cout << "\t\t\t\t ";
+            // this_semi.Print( cout );
+            // cout << " == ";
+            // find_this_semi->Print( cout );
+            // cout << endl;
 
-	    curr_stdID_set_loccomp_itr->second.erase( find_this_semi );
-	    curr_stdID_set_loccomp_itr->second.insert( this_semi );
+            curr_stdID_set_loccomp_itr->second.erase( find_this_semi );
+            curr_stdID_set_loccomp_itr->second.insert( this_semi );
 
-	    // cout << "\t\t\t\t Added to the weight of this semi: ";
-	    // this_semi.Print( cout );
-	    // cout << endl;
+            // cout << "\t\t\t\t Added to the weight of this semi: ";
+            // this_semi.Print( cout );
+            // cout << endl;
 
-	    set_loccomp_itr currsemi_print = curr_stdID_set_loccomp_itr->second.begin();
-	    set_loccomp_itr end_semi_print = curr_stdID_set_loccomp_itr->second.end();
+            set_loccomp_itr currsemi_print = curr_stdID_set_loccomp_itr->second.begin();
+            set_loccomp_itr end_semi_print = curr_stdID_set_loccomp_itr->second.end();
 
-	    for ( ;
-		  currsemi_print != end_semi_print;
-		  ++currsemi_print ) {
-	      // cout << "\t\t\t\t\t";
-	      // currsemi_print->Print( cout );
-	      // cout << endl;
-	    }
-	  }
-	  else {
-	    curr_stdID_set_loccomp_itr->second.insert( this_semi );
-	    // cout << "\t\t\t\t Inserted this semi" << endl;
-	  }
-	}
-	else {
-	  stdIDs_and_locs.insert( pair< int, set_loccomp > ( curractloc->StdID(),
-							     set_loccomp() ) );
-	  curr_stdID_set_loccomp_itr = stdIDs_and_locs.find( curractloc->StdID() );
+            for ( ;
+                  currsemi_print != end_semi_print;
+                  ++currsemi_print ) {
+              // cout << "\t\t\t\t\t";
+              // currsemi_print->Print( cout );
+              // cout << endl;
+            }
+          }
+          else {
+            curr_stdID_set_loccomp_itr->second.insert( this_semi );
+            // cout << "\t\t\t\t Inserted this semi" << endl;
+          }
+        }
+        else {
+          stdIDs_and_locs.insert( pair< int, set_loccomp > ( curractloc->StdID(),
+                                  set_loccomp() ) );
+          curr_stdID_set_loccomp_itr = stdIDs_and_locs.find( curractloc->StdID() );
 
-	  Assert( curr_stdID_set_loccomp_itr        != stdIDs_and_locs.end() );
-	  Assert( curr_stdID_set_loccomp_itr->first == curractloc->StdID()   );
+          Assert( curr_stdID_set_loccomp_itr        != stdIDs_and_locs.end() );
+          Assert( curr_stdID_set_loccomp_itr->first == curractloc->StdID()   );
 
-	  curr_stdID_set_loccomp_itr->second.insert( this_semi );
-	  // cout << "\t\t\t\t Inserted this semi, after inserting STANDARD" << endl;
-	}
+          curr_stdID_set_loccomp_itr->second.insert( this_semi );
+          // cout << "\t\t\t\t Inserted this semi, after inserting STANDARD" << endl;
+        }
 
-	// cout << "\t\t\t\t\t Semi count: " << curr_stdID_set_loccomp_itr->second.size() << endl;
+        // cout << "\t\t\t\t\t Semi count: " << curr_stdID_set_loccomp_itr->second.size() << endl;
       }
     }
   }
@@ -199,33 +199,33 @@ void annotated_contig::ComputeSemiannotations() {
   map_set_loccomp_itr end_set_of_locs_itr = stdIDs_and_locs.end();
 
   for ( ;
-	currset_of_locs_itr != end_set_of_locs_itr;
-	++currset_of_locs_itr ) {
+        currset_of_locs_itr != end_set_of_locs_itr;
+        ++currset_of_locs_itr ) {
 
     int          curr_std_id     = currset_of_locs_itr->first;
     set_loccomp &currset_of_locs = currset_of_locs_itr->second;
 
     int fudge = MIN( max_fudge,
-		     ( (int)bases_.size() / fudge_per_nucleotides ) + constant_fudge );
+                     ( (int)bases_.size() / fudge_per_nucleotides ) + constant_fudge );
 
     set_loccomp_itr currsemi_itr = currset_of_locs.begin();
     set_loccomp_itr end_semi_itr = currset_of_locs.end();
 
     for ( ;
-	  currsemi_itr != end_semi_itr;
-	  /* ++currsemi_itr */ ) {
+          currsemi_itr != end_semi_itr;
+          /* ++currsemi_itr */ ) {
       /*
       cout << "\t curr semi: ";
       currsemi_itr->Print( cout );
       cout << endl
            << "\t\t\t\t Implied boundaries on standard: ( " << currsemi_itr->ShiftFromStandard()
-	   << " -> " << currsemi_itr->ShiftFromStandard() + Length()
-	   << " )" << endl;
+      << " -> " << currsemi_itr->ShiftFromStandard() + Length()
+      << " )" << endl;
       */
       if ( fudge + currsemi_itr->StartOnStandard() < 0 ) {
-	// cout << "\t\t\t\t BAD SEMI!" << endl;
-	++currsemi_itr;
-	continue;
+        // cout << "\t\t\t\t BAD SEMI!" << endl;
+        ++currsemi_itr;
+        continue;
       }
 
       set_loccomp_itr prevsemi_itr = currsemi_itr;
@@ -236,39 +236,39 @@ void annotated_contig::ComputeSemiannotations() {
 
       /*
       cout << "\t\t\t\t tot_actloc: " << total_actlocs
-	   << "; tot_shift: " << total_shift
-	   << ", " << total_shift/ total_actlocs + minstart
-	   << "; minstart,maxstop: " << minstart << ", " << maxstop << endl;
+      << "; tot_shift: " << total_shift
+      << ", " << total_shift/ total_actlocs + minstart
+      << "; minstart,maxstop: " << minstart << ", " << maxstop << endl;
       */
       for ( ++currsemi_itr;
-	    currsemi_itr != end_semi_itr &&
-	      currsemi_itr->RC() == prevsemi_itr->RC() &&
-	      ( currsemi_itr->ShiftFromStandard() - prevsemi_itr->ShiftFromStandard() < fudge);
-	    ++currsemi_itr ) {
+            currsemi_itr != end_semi_itr &&
+            currsemi_itr->RC() == prevsemi_itr->RC() &&
+            ( currsemi_itr->ShiftFromStandard() - prevsemi_itr->ShiftFromStandard() < fudge);
+            ++currsemi_itr ) {
 
         /*
-  	cout << "\t Curr semi: ";
-	currsemi_itr->Print( cout );
-	cout << endl
-	     << "\t\t\t\t Implied boundaries on standard: ( " << currsemi_itr->ShiftFromStandard()
-	     << " -> " << currsemi_itr->ShiftFromStandard() + Length()
-	     << " )" << endl;
+        cout << "\t Curr semi: ";
+        currsemi_itr->Print( cout );
+        cout << endl
+        << "\t\t\t\t Implied boundaries on standard: ( " << currsemi_itr->ShiftFromStandard()
+        << " -> " << currsemi_itr->ShiftFromStandard() + Length()
+        << " )" << endl;
         */
 
-	++prevsemi_itr;
+        ++prevsemi_itr;
 
-	Assert( prevsemi_itr == currsemi_itr );
+        Assert( prevsemi_itr == currsemi_itr );
 
-	total_actlocs += prevsemi_itr->Weight();
-	total_shift   += (longlong)prevsemi_itr->Weight() * (longlong)prevsemi_itr->ShiftFromStandard();
-	minstart       = MIN( prevsemi_itr->StartOnThis(), minstart );
-	maxstop        = MAX( prevsemi_itr->StartOnThis() + prevsemi_itr->Length() - 1, maxstop );
+        total_actlocs += prevsemi_itr->Weight();
+        total_shift   += (longlong)prevsemi_itr->Weight() * (longlong)prevsemi_itr->ShiftFromStandard();
+        minstart       = MIN( prevsemi_itr->StartOnThis(), minstart );
+        maxstop        = MAX( prevsemi_itr->StartOnThis() + prevsemi_itr->Length() - 1, maxstop );
 
         /*
-	cout << "\t\t\t\t tot_actloc: " << total_actlocs
-	     << "; tot_shift: " << total_shift
-	     << ", " << total_shift/ total_actlocs + minstart
-	     << "; minstart,maxstop: " << minstart << ", " << maxstop << endl;
+        cout << "\t\t\t\t tot_actloc: " << total_actlocs
+        << "; tot_shift: " << total_shift
+        << ", " << total_shift/ total_actlocs + minstart
+        << "; minstart,maxstop: " << minstart << ", " << maxstop << endl;
         */
       }
 
@@ -279,16 +279,16 @@ void annotated_contig::ComputeSemiannotations() {
       else cout << " too little fudge " << endl;
 
       cout << "\t\t\t\t tot_actloc: " << total_actlocs
-	   << "; tot_shift: " << total_shift
-	   << ", " << total_shift/ total_actlocs + minstart
-	   << "; minstart,maxstop: " << minstart << ", " << maxstop << endl;
+      << "; tot_shift: " << total_shift
+      << ", " << total_shift/ total_actlocs + minstart
+      << "; minstart,maxstop: " << minstart << ", " << maxstop << endl;
       */
 
 
       longlong implied_length      = min( (longlong)Length(), maxstop - minstart + 1 );
       longlong implied_minstart    = ( prevsemi_itr->RC() ?
-					    max( (longlong)0, Length() - maxstop ):
-					    minstart );
+                                       max( (longlong)0, Length() - maxstop ):
+                                       minstart );
 
       longlong start_on_std        = total_shift / total_actlocs + implied_minstart;
       longlong implied_left_on_std = start_on_std - implied_minstart;
@@ -296,30 +296,30 @@ void annotated_contig::ComputeSemiannotations() {
 
       /*
       cout << "\t\t\t\t Implied left_on_std, length, minstart, maxstop: " << implied_left_on_std << ", " << implied_length << ", ( "
-	   << implied_minstart << " , " << implied_minstart + implied_length - 1 << " )" << endl;
+      << implied_minstart << " , " << implied_minstart + implied_length - 1 << " )" << endl;
       */
 
       semiannotation new_semi( curr_std_id,
-			       prevsemi_itr->RC(),
-			       implied_minstart,
-			       start_on_std,
-			       implied_left_on_std,
-			       implied_length,
-			       total_actlocs );
+                               prevsemi_itr->RC(),
+                               implied_minstart,
+                               start_on_std,
+                               implied_left_on_std,
+                               implied_length,
+                               total_actlocs );
 
       // cout << "\t  NEW semi: ";
       // new_semi.Print( cout );
       // cout << endl;
       semiannotations_.push_back( new_semi );
       if ( currsemi_itr == end_semi_itr )
-	break;
+        break;
     }
   }
   SetSemiannotated( True );
 }
 
 bool annot_sc_lengthcomp ( const annotated_supercontig &a,
-			   const annotated_supercontig &b ) {
+                           const annotated_supercontig &b ) {
   return a.Length() > b.Length();
 }
 
@@ -327,8 +327,8 @@ int annotated_supercontig::Length() const {
   int length = 0;
 
   for ( int i = 0;
-	i < (int)contigs_.size();
-	++i )
+        i < (int)contigs_.size();
+        ++i )
     length += contigs_[ i ].Length();
 
   return length;
@@ -339,8 +339,8 @@ void annotated_supercontig::ComputeSemiannotations() {
   annotated_contig_itr end_ctg_itr = contigs_.end();
 
   for ( ;
-	currctg_itr != end_ctg_itr;
-	++currctg_itr )
+        currctg_itr != end_ctg_itr;
+        ++currctg_itr )
     currctg_itr->ComputeSemiannotations();
 }
 
@@ -349,8 +349,8 @@ void annotated_final_answer::ComputeSemiannotations() {
   annotated_supercontig_itr end_sc_itr = supers_.end();
 
   for ( ;
-	currsc_itr != end_sc_itr;
-	++currsc_itr )
+        currsc_itr != end_sc_itr;
+        ++currsc_itr )
     currsc_itr->ComputeSemiannotations();
 }
 
@@ -443,7 +443,7 @@ ostream& operator<<( ostream &o, const annotated_contig &a ) {
 
 ostream& operator<<( ostream &o, const annotated_supercontig &a ) {
   Assert( a.contigs_.size() == a.gaps_.size() + 1 &&
-	  a.gaps_.size()    == a.gap_sds_.size() );
+          a.gaps_.size()    == a.gap_sds_.size() );
 
 
   o << a.contigs_.size() << endl;

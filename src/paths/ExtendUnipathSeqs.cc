@@ -16,9 +16,9 @@
 void ExtendUnipathSeqs( const vecKmerPath& unipaths,
                         const vecUnipathSeq& unipathSeqs,
                         vecUnipathSeq& extendedUnipathSeqs,
-                        vec<Mux>& muxes ) 
+                        vec<Mux>& muxes )
 {
-  ExtendUnipathSeqs( unipaths, unipathSeqs, 
+  ExtendUnipathSeqs( unipaths, unipathSeqs,
                      unipathSeqs, extendedUnipathSeqs, muxes );
 }
 
@@ -27,32 +27,32 @@ void ExtendUnipathSeqs( const vecKmerPath& unipaths,
                         const vecUnipathSeq& unipathSeqs,
                         const vecUnipathSeq& unipathSeqsToExtend,
                         vecUnipathSeq& extendedUnipathSeqs,
-                        vec<Mux>& muxes ) 
+                        vec<Mux>& muxes )
 {
   // cout << "Extending unipath seqs... " << endl;
 
   UnipathSeqDatabase unipathSeqDb( unipathSeqs );
-  
+
   int numSeqs = unipathSeqsToExtend.size();
-  
+
   int seqsPerDot = 1;
   while ( numSeqs / seqsPerDot > 100 )
     seqsPerDot *= 10;
-  
+
   int numDots = numSeqs / seqsPerDot + 1;
 
   vecUnipathSeq newUnipathSeqs;
   muxes.clear();
 
   // cout << "Processing seqs in " << numDots << " passes." << endl;
-  
+
   for ( vecUnipathSeq::size_type i = 0; i < unipathSeqsToExtend.size(); ++i ) {
     // if ( i % seqsPerDot == 0 ) Dot( cout, i / seqsPerDot );
-    
+
     // The left extension will be constructed in reverse order.
     vec<int> leftExtension;
     vec<int> rightExtension;
-    
+
     for ( int pass = 0; pass < 2; ++pass ) {
       if ( unipathSeqsToExtend[i].empty() ) continue;
 
@@ -60,18 +60,18 @@ void ExtendUnipathSeqs( const vecKmerPath& unipaths,
 
       vec<int>& extension = ( pass == 0 ? leftExtension : rightExtension );
       int offset = ( pass == 0 ? -1 : 1 );
-      
+
       int unipath = ( pass == 0 ? unipathSeqsToExtend[i].front() : unipathSeqsToExtend[i].back() );
-      
+
       const int k_noUnipath = -1;
       const int k_multipleUnipaths = -2;
-      
+
       while ( unipath >= 0 ) {
         int newUnipath = k_noUnipath;
-        
+
         vec<UnipathSeqDatabase::Record> records;
         unipathSeqDb.Find( unipath, records );
-            
+
         for ( unsigned int j = 0; j < records.size(); ++j ) {
           int seqId = records[j].seqId;
           int index = records[j].index+offset;
@@ -85,7 +85,7 @@ void ExtendUnipathSeqs( const vecKmerPath& unipaths,
               break;
             }
           }
-          
+
           if ( newUnipath == k_multipleUnipaths )
             break;
         }
@@ -104,7 +104,7 @@ void ExtendUnipathSeqs( const vecKmerPath& unipaths,
           // with are a proper subset of the sequences used to derive
           // the unipaths.
           pair<set<int>::iterator,bool> insertResult = unipathsInExtension.insert( newUnipath );
-          if ( insertResult.second ) 
+          if ( insertResult.second )
             extension.push_back( newUnipath );
           else
             break;
@@ -124,7 +124,7 @@ void ExtendUnipathSeqs( const vecKmerPath& unipaths,
       UnipathSeq newUnipathSeq;
       int newSize = leftExtension.size() + unipathSeqsToExtend[i].size() + rightExtension.size();
       newUnipathSeq.reserve( newSize );
-      
+
       // Note rbegin and rend here, since leftExtension was constructed backwards.
       copy( leftExtension.rbegin(), leftExtension.rend(),
             back_inserter( newUnipathSeq ) );
@@ -132,9 +132,9 @@ void ExtendUnipathSeqs( const vecKmerPath& unipaths,
             back_inserter( newUnipathSeq ) );
       copy( rightExtension.begin(), rightExtension.end(),
             back_inserter( newUnipathSeq ) );
-      
+
       newUnipathSeqs.push_back_reserve( newUnipathSeq, 0, 2.0 );
-      
+
       Mux theMux;
       theMux.SetSegment( leftExtension.size() );
       int numKmers = 0;

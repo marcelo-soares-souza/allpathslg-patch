@@ -11,24 +11,27 @@
 #include "CoreTools.h"
 
 vec<double> Logs( int n )
-{    vec<double> L(n);
-     for ( int i = 1; i < n; i++ )
-          L[i] = log( double(i) );
-     return L;    }
+{ vec<double> L(n);
+  for ( int i = 1; i < n; i++ )
+    L[i] = log( double(i) );
+  return L;
+}
 
 vec<double> ilog( Logs(200) );
 
 double DinukeEntropy( const basevector& b )
-{    vec<int> DEcount(16,0);
-     for ( int i = 0; i < b.isize( ) - 1; i++ )
-          ++DEcount[ ( 4 * b[i] ) + b[i+1] ];
-     double sum = 0.0;
-     for ( int i = 0; i < 16; i++ )
-     {    if ( DEcount[i] == 0 ) continue;
-          double p = double( DEcount[i] ) / double( b.size( ) - 1 );
-          double logp;
-          if ( DEcount[i] < ilog.isize( ) && b.isize( ) - 1 < ilog.isize( ) )
-               logp = ilog[ DEcount[i] ] - ilog[ b.isize( ) - 1 ];
-          else logp = log(p);
-          sum -= p * logp;    }
-     return sum;    }
+{ vec<int> DEcount(16,0);
+  for ( int i = 0; i < b.isize( ) - 1; i++ )
+    ++DEcount[ ( 4 * b[i] ) + b[i+1] ];
+  double sum = 0.0;
+  for ( int i = 0; i < 16; i++ )
+  { if ( DEcount[i] == 0 ) continue;
+    double p = double( DEcount[i] ) / double( b.size( ) - 1 );
+    double logp;
+    if ( DEcount[i] < ilog.isize( ) && b.isize( ) - 1 < ilog.isize( ) )
+      logp = ilog[ DEcount[i] ] - ilog[ b.isize( ) - 1 ];
+    else logp = log(p);
+    sum -= p * logp;
+  }
+  return sum;
+}

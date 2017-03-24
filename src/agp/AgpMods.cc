@@ -1,5 +1,5 @@
 // Copyright (c) 2000-2003 Whitehead Institute for Biomedical Research
-// 
+//
 
 #include <strstream>
 
@@ -7,20 +7,20 @@
 
 #include "system/System.h"
 
-bool 
+bool
 agp_mods::SuperShouldBeRemoved( int super_id ) const
 {
   return ( binary_search( supers_to_remove_.begin(),
-			  supers_to_remove_.end(),
-			  super_id ) );
+                          supers_to_remove_.end(),
+                          super_id ) );
 }
 
-bool 
+bool
 agp_mods::ContigShouldBeUnplaced( int contig_id ) const
 {
   return ( binary_search( contigs_to_unplace_.begin(),
-			  contigs_to_unplace_.end(),
-			  contig_id ) );
+                          contigs_to_unplace_.end(),
+                          contig_id ) );
 }
 
 
@@ -31,7 +31,7 @@ agp_mods::Read( const String& filename )
   Ifstream( mods_stream, filename );
 
   String line_type;
-  
+
   while ( mods_stream )
   {
     mods_stream >> line_type;
@@ -63,9 +63,10 @@ agp_mods::Read( const String& filename )
       iline >> deletion_type;
       ForceAssertEq( deletion_type, "SUPERS" );
       while(1)
-      {    iline >> super_to_delete;
-           supers_to_remove_.push_back( super_to_delete );
-           if ( !iline ) break;    }
+      { iline >> super_to_delete;
+        supers_to_remove_.push_back( super_to_delete );
+        if ( !iline ) break;
+      }
     }
 
     else if ( line_type == "UNPLACE" )
@@ -75,7 +76,7 @@ agp_mods::Read( const String& filename )
       mods_stream >> unplacement_type >> contig_to_unplace;
 
       AssertEq( unplacement_type, "CONTIG" );
-      
+
       contigs_to_unplace_.push_back( contig_to_unplace );
     }
 
@@ -85,8 +86,8 @@ agp_mods::Read( const String& filename )
       mods_stream >> the_trim;
 
       trims_.push_back( the_trim );
-    }      
-    
+    }
+
     else
     {
       InputErr( "Unknown command " << line_type << " in " << filename << "." );
@@ -96,8 +97,8 @@ agp_mods::Read( const String& filename )
   sort( supers_to_remove_.begin(), supers_to_remove_.end() );
   sort( contigs_to_unplace_.begin(), contigs_to_unplace_.end() );
 }
- 
-void 
+
+void
 agp_mods::Write( const String& filename ) const
 {
   Ofstream( mods_stream, filename );
@@ -115,7 +116,7 @@ agp_mods::Write( const String& filename ) const
     mods_stream << "TRIM " << trims_[i] << "\n";
 }
 
-ostream& 
+ostream&
 operator<< ( ostream& out, const contig_range& range )
 {
   out << range.begin_pos_ << "-" << range.end_pos_;
@@ -123,7 +124,7 @@ operator<< ( ostream& out, const contig_range& range )
   return out;
 }
 
-istream& 
+istream&
 operator>> ( istream& in, insertion_anchor& anchor )
 {
   String line, word;
@@ -142,7 +143,7 @@ operator>> ( istream& in, insertion_anchor& anchor )
 
   Assert( word.IsInt() );
   range.SetBeginPos( word.Int() );
-  
+
   Assert( line.Contains( " contig " ) );
   word = line.Before ( " contig " );
   line = line.After( " contig " );
@@ -165,7 +166,7 @@ operator>> ( istream& in, insertion_anchor& anchor )
 
   Assert( word.IsInt() );
   range.SetBeginPos( word.Int() );
-  
+
   word = line;
 
   Assert( word.IsInt() );
@@ -175,8 +176,8 @@ operator>> ( istream& in, insertion_anchor& anchor )
 
   return in;
 }
-	  
-ostream& 
+
+ostream&
 operator<< ( ostream& out, const insertion_anchor& anchor )
 {
   out << anchor.replacement_range_
@@ -185,14 +186,14 @@ operator<< ( ostream& out, const insertion_anchor& anchor )
   return out;
 }
 
-istream& 
+istream&
 operator>> ( istream& in, insertion& the_insertion )
 {
   in >> the_insertion.id_;
 
   in >> the_insertion.first_anchor_;
   in >> the_insertion.last_anchor_;
-  
+
   return in;
 }
 
@@ -203,18 +204,18 @@ operator<< ( ostream& out, const insertion& the_insertion )
 
   out << the_insertion.first_anchor_;
   out << the_insertion.last_anchor_;
-  
+
   return out;
 }
 
-istream& 
+istream&
 operator>> ( istream& in, contig_trim& the_trim )
 {
   String word_from;
   String end;
-  
+
   in >> the_trim.amount_ >> word_from >> end;
-  
+
   AssertEq( word_from, "FROM" );
   if ( end == "FRONT" )
   {
@@ -226,12 +227,12 @@ operator>> ( istream& in, contig_trim& the_trim )
   }
   else
     InputErr( "Malformed trim command." );
-  
+
   String word_of;
   String word_contig;
-  
+
   in >> word_of >> word_contig >> the_trim.id_;
-  
+
   AssertEq( word_of, "OF" );
   AssertEq( word_contig, "CONTIG" );
 

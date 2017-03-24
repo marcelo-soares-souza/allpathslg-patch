@@ -20,10 +20,10 @@ size_t MemUse::gMinReportSize = 256ul*1024*1024;
 
 void MemUse::report()
 {
-    std::cout << "MemUse by " << mType << ": "
-              << ToStringAddCommas(mTotalAllocated)
-              << " bytes in " << ToStringAddCommas(mNAllocs)
-              << " allocs, inuse=" << ToStringAddCommas(mInUse)
-              << ", max use=" << ToStringAddCommas(mMaxUsed)
-              << std::endl;
+  std::cout << "MemUse by " << mType << ": "
+            << ToStringAddCommas(mTotalAllocated)
+            << " bytes in " << ToStringAddCommas(mNAllocs)
+            << " allocs, inuse=" << ToStringAddCommas(mInUse)
+            << ", max use=" << ToStringAddCommas(mMaxUsed)
+            << std::endl;
 }

@@ -20,25 +20,36 @@
 template <class T>
 class AlignmentCalculator
 {
-    class T0
-    { char mC; T mT; };
-    class T1 : T
+  class T0
+  {
+    char mC;
+    T mT;
+  };
+  class T1 : T
+  {
+  public:
+    size_t offset() const
     {
-      public:
-        size_t offset() const
-        { return &mC - reinterpret_cast<char const*>(this); }
-      private:
-        char mC;
-    };
+      return &mC - reinterpret_cast<char const*>(this);
+    }
+  private:
+    char mC;
+  };
 
 public:
-    static size_t getAlignment()
-    { return sizeof(T0) - sizeof(T); }
-    static size_t getTailPadding()
-    { return sizeof(T)-reinterpret_cast<T1*>(0)->offset(); }
+  static size_t getAlignment()
+  {
+    return sizeof(T0) - sizeof(T);
+  }
+  static size_t getTailPadding()
+  {
+    return sizeof(T)-reinterpret_cast<T1*>(0)->offset();
+  }
 };
 
 template <> inline size_t AlignmentCalculator<size_t>::getTailPadding()
-{ return 0; }
+{
+  return 0;
+}
 
 #endif /* ALIGNMENTCALCULATOR_H_ */

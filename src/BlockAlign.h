@@ -18,7 +18,7 @@
 /*
  * Class block_align
  *
- * It makes easier to deal with the aligning portions of a given align 
+ * It makes easier to deal with the aligning portions of a given align
  * (blocks). Each align  is broken into its gapless units (block), with the
  * option of saving also mutation rates (on a per block basis).
  *
@@ -27,35 +27,39 @@
  * have the same size as the alignment.
  */
 class block_align {
-  
+
 public:
 
   block_align( ) { }
-  
+
   block_align( const allpathslg::align  *al, const vec<int> *mut = 0 );
-  
+
   block_align( const look_align_plus *hit );
-  
+
   void SetFromAlign( const allpathslg::align  *al, const vec<int> *mut = 0 );
-  
+
   void SetFromLookAlign( const look_align_plus *hit );
-  
-  size_t size( ) const { return blocks_.size( ); }
-  
-  const block &operator[] ( int ii ) const { return blocks_[ii]; }
-  
-  
+
+  size_t size( ) const {
+    return blocks_.size( );
+  }
+
+  const block &operator[] ( int ii ) const {
+    return blocks_[ii];
+  }
+
+
 private:
-  
+
   void Setup( const allpathslg::align  *al, const vec<int> *mut = 0 );
-  
-  
+
+
 private:
-  
+
   vec<block> blocks_;
-  
+
 };
-  
+
 
 
 #endif

@@ -10,7 +10,7 @@
  *
  * A quick-and-dirty class to manage tracking of read numbering
  * between modules which filter or combine reads.
- * 
+ *
  * Basic use by a program which geneates new reads file:
  *
  * ReadTracker rt;
@@ -18,11 +18,11 @@
  * unsigned int source1 = rt.AddSource(source_filename1);
  * unsigned int source2 = rt.AddSource(source_filename2);
  * ...
- * 
+ *
  * for (<reads in new order>) {
  *   rt.AddRead(sourceX, sourceX_read_id);
  * }
- * 
+ *
  * rt.Dump(new_read_file_head);
  *
  * Programs which want to reference a previously generated ReadTracker file:

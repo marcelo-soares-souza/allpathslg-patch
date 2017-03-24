@@ -34,14 +34,14 @@ int main( int argc, char *argv[] )
   CommandArgument_String(PRE);
   CommandArgument_String(DATA);
   CommandArgument_Int(K);
-  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0, 
-    "Number of threads to use (use all available processors if set to 0)");
+  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0,
+      "Number of threads to use (use all available processors if set to 0)");
   CommandArgument_Bool_OrDefault_Doc(CANONICALIZE, False,
-				     "canonicalize the genome paths" );
+                                     "canonicalize the genome paths" );
   EndCommandArguments;
-  
+
   // Thread control
-   
+
   NUM_THREADS = configNumThreads(NUM_THREADS);
 
   String datadir = PRE + "/" + DATA;
@@ -54,47 +54,47 @@ int main( int argc, char *argv[] )
 
 // MakeDepend: dependency GenomeToPaths
   Make( FilesIn( datadir, "genome.paths" + dotK ),
-	FilesIn( datadir, "genome.fastb" ),
-	"GenomeToPaths HEAD="+datadir+"/genome K=" + ToString(K)
-	+ " CANONICALIZE=" + ( CANONICALIZE ? "True" : "False" ) 
-	+ " NUM_THREADS= " + ToString(NUM_THREADS) );
+        FilesIn( datadir, "genome.fastb" ),
+        "GenomeToPaths HEAD="+datadir+"/genome K=" + ToString(K)
+        + " CANONICALIZE=" + ( CANONICALIZE ? "True" : "False" )
+        + " NUM_THREADS= " + ToString(NUM_THREADS) );
 
 // MakeDepend: dependency MakeRcDb
   Make( FilesIn( datadir, "genome.paths_rc" + dotK, "genome.pathsdb_big" + dotK ),
-	FilesIn( datadir, "genome.paths" + dotK ),
-	"MakeRcDb" + kpdr + "READS=genome FORCE_BIG=True" );
+        FilesIn( datadir, "genome.paths" + dotK ),
+        "MakeRcDb" + kpdr + "READS=genome FORCE_BIG=True" );
 
 // MakeDepend: dependency UnipatherBig
   Make( FilesIn( datadir, "genome.unipaths" + dotK, "genome.unipathsdb_big" + dotK ),
-	FilesIn( datadir, "genome.paths" + dotK, "genome.paths_rc" + dotK,
-		 "genome.pathsdb_big" + dotK ),
-	"UnipatherBig" + kpdr + "READS=genome" );
+        FilesIn( datadir, "genome.paths" + dotK, "genome.paths_rc" + dotK,
+                 "genome.pathsdb_big" + dotK ),
+        "UnipatherBig" + kpdr + "READS=genome" );
 
 // MakeDepend: dependency TrueUnipathCoverage
   Make( FilesIn( datadir, "genome.unipaths.true_count" + dotK ),
-	FilesIn( datadir, "genome.unipaths" + dotK ),
-	"TrueUnipathCoverage" + kpdr + "READS=genome" );
+        FilesIn( datadir, "genome.unipaths" + dotK ),
+        "TrueUnipathCoverage" + kpdr + "READS=genome" );
 
 // MakeDepend: dependency PathsToLocs
   Make( FilesIn( datadir, "genome.unipaths.placements" + dotK ),
-	FilesIn( datadir, "genome.unipaths" + dotK ),
-	"PathsToLocs" + kpdr 
-	+ "PATHS=" + datadir + "/genome.unipaths" + dotK
-	+ " PATHS_ABSOLUTE=True "
-	+ " SAVE_PLACEMENTS_TO=" + datadir 
-	+ "/genome.unipaths.placements" + dotK
-	+ " SHOW_PLACEMENTS=True PRINT_ADJACENCY_GRAPH=False" );
+        FilesIn( datadir, "genome.unipaths" + dotK ),
+        "PathsToLocs" + kpdr
+        + "PATHS=" + datadir + "/genome.unipaths" + dotK
+        + " PATHS_ABSOLUTE=True "
+        + " SAVE_PLACEMENTS_TO=" + datadir
+        + "/genome.unipaths.placements" + dotK
+        + " SHOW_PLACEMENTS=True PRINT_ADJACENCY_GRAPH=False" );
 
   // Create genome unibases
   if ( NeedToMake( FilesIn( datadir, "genome.unibases" + dotK ),
-		   FilesIn( datadir, "genome.unipaths" + dotK,
-			    "genome.unipathsdb_big" + dotK ) ) ) {
+                   FilesIn( datadir, "genome.unipaths" + dotK,
+                            "genome.unipathsdb_big" + dotK ) ) ) {
     cout << Date( ) << ": Making genome unibases" << endl;
     BREAD2( datadir + "/genome.pathsdb_big" + dotK,
-	    vec<big_tagged_rpint>, genome_pathsdb );
+            vec<big_tagged_rpint>, genome_pathsdb );
     vecKmerPath genome_unipaths( datadir + "/genome.unipaths" + dotK );
     KmerBaseBrokerBig kbb( datadir, K, "genome" );
-    
+
     // Reserve memory
     vecbasevector genome_unibases;
     size_t n_paths = genome_unipaths.size( );
@@ -102,7 +102,7 @@ int main( int argc, char *argv[] )
     for ( size_t i = 0; i < n_paths; i++ )
       n_bases += genome_unipaths[i].KmerCount( ) + K - 1;
     genome_unibases.Reserve( n_bases / 16 + n_paths, n_paths );
-    
+
     for ( size_t i = 0; i < n_paths; i++ )
       genome_unibases.push_back( kbb.Seq( genome_unipaths[ i ] ) );
     genome_unibases.WriteAll( datadir + "/genome.unibases" + dotK );
@@ -110,13 +110,13 @@ int main( int argc, char *argv[] )
   }
 
   CpIfNewer( datadir + "/genome.unibases" + dotK, datadir + "/genome.unibases" + dotK + ".fastb" );
-  
+
 // MakeDepend: dependency MakeLookupTable
   Make( FilesIn( datadir, "genome.unibases" + dotK + ".lookup" ),
-	FilesIn( datadir, "genome.unibases" + dotK + ".fastb" ),
-	"MakeLookupTable SOURCE=" + datadir + "/genome.unibases" + dotK + ".fastb" + 
-	" OUT_HEAD=" + datadir + "/genome.unibases" + dotK + " LOOKUP_ONLY=True" );
-  
+        FilesIn( datadir, "genome.unibases" + dotK + ".fastb" ),
+        "MakeLookupTable SOURCE=" + datadir + "/genome.unibases" + dotK + ".fastb" +
+        " OUT_HEAD=" + datadir + "/genome.unibases" + dotK + " LOOKUP_ONLY=True" );
+
 }
 
 

@@ -7,14 +7,14 @@
 
 
 // Things for gap-skipping:
-  
+
 
 
 // Just a wrapper for starting the potential recursion of GapOnGap
 // and handling the flipping of locations and answers if necessary.
 // Coming in, loc1 and loc2 point to the last matched kmers before a gap.
-void GapSkipRight(KmerPathLoc loc1, KmerPathLoc loc2, 
-		  vec<FarEnd>& far_ends, const NegativeGapValidator* ngv ) {
+void GapSkipRight(KmerPathLoc loc1, KmerPathLoc loc2,
+                  vec<FarEnd>& far_ends, const NegativeGapValidator* ngv ) {
 
   // We need the gap to be on path1.
   Bool needs_flipping = ( ! loc1.GapToRight() );
@@ -36,13 +36,13 @@ void GapSkipRight(KmerPathLoc loc1, KmerPathLoc loc2,
   GapOnGapRight( loc1, loc2, 0, 0, far_ends, will_be_discarded, ngv );
 
   if( needs_flipping ) // un-flip the answers:
-    for( vec<FarEnd>::iterator far = far_ends.begin(); 
-	 far != far_ends.end(); far++ )
+    for( vec<FarEnd>::iterator far = far_ends.begin();
+         far != far_ends.end(); far++ )
       far->flip();
 }
 
-void GapSkipLeft(KmerPathLoc loc1, KmerPathLoc loc2, 
-		 vec<FarEnd>& far_ends, const NegativeGapValidator* ngv ) {
+void GapSkipLeft(KmerPathLoc loc1, KmerPathLoc loc2,
+                 vec<FarEnd>& far_ends, const NegativeGapValidator* ngv ) {
 
   // We need the gap to be on path1.
   Bool needs_flipping = ( ! loc1.GapToLeft() );
@@ -64,8 +64,8 @@ void GapSkipLeft(KmerPathLoc loc1, KmerPathLoc loc2,
   GapOnGapLeft( loc1, loc2, 0, 0, far_ends, will_be_discarded, ngv );
 
   if( needs_flipping ) // un-flip the answers:
-    for( vec<FarEnd>::iterator far = far_ends.begin(); 
-	 far != far_ends.end(); far++ )
+    for( vec<FarEnd>::iterator far = far_ends.begin();
+         far != far_ends.end(); far++ )
       far->flip();
 }
 
@@ -90,11 +90,11 @@ void GapSkipLeft(KmerPathLoc loc1, KmerPathLoc loc2,
 // to the gap interval (only its index, not its loc, matters).
 
 void GapOnGapRight( KmerPathLoc loc1orig,
-		    KmerPathLoc loc2orig,
-		    int min_gap_used, int max_gap_used,
-		    vec<FarEnd>& far_ends,
-		    vec< pair<int,int> >& real_gap_used,
-		    const NegativeGapValidator* ngv ) {
+                    KmerPathLoc loc2orig,
+                    int min_gap_used, int max_gap_used,
+                    vec<FarEnd>& far_ends,
+                    vec< pair<int,int> >& real_gap_used,
+                    const NegativeGapValidator* ngv ) {
 
   ForceAssert( loc1orig.isGap() );
 
@@ -108,7 +108,7 @@ void GapOnGapRight( KmerPathLoc loc1orig,
     const longlong kmer1 = path1.Stop(loc1orig.GetIndex()-1);
     const longlong kmer2 = loc2orig.GetKmer();
     min_gap_used = ngv->MinGap( kmer1, kmer2, min_gap_used );
-    
+
     if( min_gap_used > max_gap_used ) return;  // no alignments possible!
 
     if( max_gap_used < ngv->GetK()-1 )
@@ -127,7 +127,7 @@ void GapOnGapRight( KmerPathLoc loc1orig,
 
   KmerPathLoc loc2end = path2.End();
   int ngv_buffer = ((ngv == NULL) ? 0 : ngv->MinGap( loc2end.GetKmer(),
-						     loc1.GetKmer(), 0 ));
+                    loc1.GetKmer(), 0 ));
 
   if( DistMin(loc2orig, loc2end)+1 <= max_gap_avail - ngv_buffer ) {
     far_ends.push_back( FarEnd() );
@@ -135,13 +135,13 @@ void GapOnGapRight( KmerPathLoc loc1orig,
     end_in_gap.DONE = True;  // don't recurse on this
 
     // Tail of path2, with gaps adjusted:
-    path2.CopySubpathAdjustGaps( loc2orig, loc2end, 
-				 0, max_gap_avail - ngv_buffer,
-				 end_in_gap.merged );
+    path2.CopySubpathAdjustGaps( loc2orig, loc2end,
+                                 0, max_gap_avail - ngv_buffer,
+                                 end_in_gap.merged );
     // Remainder of the path1 gap:
     end_in_gap.merged.AddGap( max(ngv_buffer,
-				  min_gap_avail-DistMax(loc2orig,loc2end)-1),
-			      max_gap_avail - DistMin(loc2orig,loc2end)-1 );
+                                  min_gap_avail-DistMax(loc2orig,loc2end)-1),
+                              max_gap_avail - DistMin(loc2orig,loc2end)-1 );
     // Remainder of path1 after the gap:
     path1.CopyTail( loc1, end_in_gap.merged );
     // Set stop values:
@@ -150,10 +150,10 @@ void GapOnGapRight( KmerPathLoc loc1orig,
 
     // push real gap_used interval
     real_gap_used.push_back(make_pair( min_gap_used,
-				       min(max_gap_used, 
-					   (int)loc1orig.Maximum() -
-					   ngv_buffer -
-					   DistMin(loc2orig, loc2end) - 1 )));
+                                       min(max_gap_used,
+                                           (int)loc1orig.Maximum() -
+                                           ngv_buffer -
+                                           DistMin(loc2orig, loc2end) - 1 )));
   }
 
   // If path2 *must* end inside the gap, we're done -- return now.
@@ -181,8 +181,8 @@ void GapOnGapRight( KmerPathLoc loc1orig,
       if( index==loc2near.GetIndex() && kmer1 < loc2near.GetKmer() ) continue;
       if( index==loc2far.GetIndex() && kmer1 > loc2far.GetKmer() ) continue;
       // Don't match to the kmer just after a gap -- will be caught in Case 3
-      if( kmer1 == loc2.Start() && loc2.isGap(-1) 
-	  && index != loc2near.GetIndex() ) continue;
+      if( kmer1 == loc2.Start() && loc2.isGap(-1)
+          && index != loc2near.GetIndex() ) continue;
 
       // Copy the part of path2 covered by the path1 gap.
       loc2.SetKmer( kmer1 );
@@ -190,15 +190,15 @@ void GapOnGapRight( KmerPathLoc loc1orig,
       far_ends.push_back( FarEnd(loc1, loc2) );
 
       path2.CopySubpathAdjustGaps( loc2orig, loc2,
-				   min_gap_avail+1, max_gap_avail+1,
-				   far_ends.back().merged );
+                                   min_gap_avail+1, max_gap_avail+1,
+                                   far_ends.back().merged );
       // Those +1's since we're copying the kmer past the end of the gap too
 
       // Give feedback on how much of the gap we needed:
       int min_OK_used = loc1orig.Minimum() - DistMax(loc2orig,loc2);
       int max_OK_used = loc1orig.Maximum() - DistMin(loc2orig,loc2);
       real_gap_used.push_back( make_pair( max( min_gap_used, min_OK_used ),
-					  min( max_gap_used, max_OK_used )));
+                                          min( max_gap_used, max_OK_used )));
     } // done with loc2.isSeq()
 
 
@@ -215,53 +215,53 @@ void GapOnGapRight( KmerPathLoc loc1orig,
       // How far into this gap can we cover?  WARNING: not necessarily
       // all of it, even if we can reach past its end!
       if( index != loc2far.GetIndex() ) {
-	loc2.SetLoc(0);
-	int max_gap_cover = max_gap_avail - DistMin(loc2orig, loc2);
-	if( max_gap_cover < sub_max )
-	  sub_max = max_gap_cover;
-      }      
+        loc2.SetLoc(0);
+        int max_gap_cover = max_gap_avail - DistMin(loc2orig, loc2);
+        if( max_gap_cover < sub_max )
+          sub_max = max_gap_cover;
+      }
 
       // Recurse, with reads 1 and 2 flipped:
       GapOnGapRight( loc2, loc1, sub_min, sub_max,
-		     sub_far_ends, sub_used, ngv );
+                     sub_far_ends, sub_used, ngv );
 
       // Step through and process recursion results:
       for( unsigned int i=0; i<sub_far_ends.size(); i++ ) {
 
-	far_ends.push_back( FarEnd() );
-	FarEnd& far = far_ends.back();  // so I can build it in-place
-	FarEnd& sub_far = sub_far_ends[i];
-	// Copy most values, re-flipping reads 1 and 2 as needed:
-	far.loc1 = sub_far.loc2;
-	far.loc2 = sub_far.loc1;
-	far.DONE = sub_far.DONE;
-	far.stop1 = sub_far.stop2;
-	far.stop2 = sub_far.stop1;
+        far_ends.push_back( FarEnd() );
+        FarEnd& far = far_ends.back();  // so I can build it in-place
+        FarEnd& sub_far = sub_far_ends[i];
+        // Copy most values, re-flipping reads 1 and 2 as needed:
+        far.loc1 = sub_far.loc2;
+        far.loc2 = sub_far.loc1;
+        far.DONE = sub_far.DONE;
+        far.stop1 = sub_far.stop2;
+        far.stop2 = sub_far.stop1;
 
-	// Construct the new merged:
-	//  Segment of path2, with gaps adjusted (using recursion data!),
-	//  up to but not including the gap on loc2 where the loc1 gap ends:
-	KmerPathLoc loc2seq_end = loc2;
-	loc2seq_end.DecrementInterval();  // points to end of seq before gap2
-	path2.CopySubpathAdjustGaps( loc2orig, loc2seq_end,
-				     max(0,min_gap_avail - sub_used[i].second),
-				     max_gap_avail - sub_used[i].first,
-				     far.merged );
-	// The merged gap, where gap1 and gap2 end up overlapping:
-	far.merged.AddGap(sub_used[i].first, sub_used[i].second);
-	// The sub merged (no pun intended):
-	far.merged.Append( sub_far.merged );
+        // Construct the new merged:
+        //  Segment of path2, with gaps adjusted (using recursion data!),
+        //  up to but not including the gap on loc2 where the loc1 gap ends:
+        KmerPathLoc loc2seq_end = loc2;
+        loc2seq_end.DecrementInterval();  // points to end of seq before gap2
+        path2.CopySubpathAdjustGaps( loc2orig, loc2seq_end,
+                                     max(0,min_gap_avail - sub_used[i].second),
+                                     max_gap_avail - sub_used[i].first,
+                                     far.merged );
+        // The merged gap, where gap1 and gap2 end up overlapping:
+        far.merged.AddGap(sub_used[i].first, sub_used[i].second);
+        // The sub merged (no pun intended):
+        far.merged.Append( sub_far.merged );
 
-	// Give feedback on how much of the gap we needed:
-	int min_OK_used = loc1orig.Minimum() 
-	                  - DistMax(loc2orig,loc2seq_end)-1
-	                  - sub_used[i].second;
-	int max_OK_used = loc1orig.Maximum() 
-	                  - DistMin(loc2orig,loc2seq_end)-1
-	                  - sub_used[i].first;
+        // Give feedback on how much of the gap we needed:
+        int min_OK_used = loc1orig.Minimum()
+                          - DistMax(loc2orig,loc2seq_end)-1
+                          - sub_used[i].second;
+        int max_OK_used = loc1orig.Maximum()
+                          - DistMin(loc2orig,loc2seq_end)-1
+                          - sub_used[i].first;
 
-	real_gap_used.push_back( make_pair( max( min_gap_used, min_OK_used ),
-					    min( max_gap_used, max_OK_used )));
+        real_gap_used.push_back( make_pair( max( min_gap_used, min_OK_used ),
+                                            min( max_gap_used, max_OK_used )));
       }
     } // done with loc2.isGap()
   } // done stepping through indices from loc2near to loc2far.
@@ -270,11 +270,11 @@ void GapOnGapRight( KmerPathLoc loc1orig,
 
 
 void GapOnGapLeft( KmerPathLoc loc1orig,
-		   KmerPathLoc loc2orig,
-		   int min_gap_used, int max_gap_used,
-		   vec<FarEnd>& far_ends,
-		   vec< pair<int,int> >& real_gap_used,
-		   const NegativeGapValidator* ngv ) {
+                   KmerPathLoc loc2orig,
+                   int min_gap_used, int max_gap_used,
+                   vec<FarEnd>& far_ends,
+                   vec< pair<int,int> >& real_gap_used,
+                   const NegativeGapValidator* ngv ) {
 
   ForceAssert( loc1orig.isGap() );
 
@@ -288,7 +288,7 @@ void GapOnGapLeft( KmerPathLoc loc1orig,
     const longlong kmer1 = path1.Start(loc1orig.GetIndex()+1);
     const longlong kmer2 = loc2orig.GetKmer();
     min_gap_used = ngv->MinGap( kmer2, kmer1, min_gap_used );
-    
+
     if( min_gap_used > max_gap_used ) return;  // no alignments possible!
 
     if( max_gap_used < ngv->GetK()-1 )
@@ -307,7 +307,7 @@ void GapOnGapLeft( KmerPathLoc loc1orig,
 
   KmerPathLoc loc2end = path2.Begin();
   int ngv_buffer = ((ngv == NULL) ? 0 : ngv->MinGap( loc1.GetKmer(),
-						     loc2end.GetKmer(), 0 ));
+                    loc2end.GetKmer(), 0 ));
 
   if( DistMin(loc2end, loc2orig)+1 <= max_gap_avail - ngv_buffer ) {
     far_ends.push_back( FarEnd() );
@@ -318,22 +318,22 @@ void GapOnGapLeft( KmerPathLoc loc1orig,
     path1.CopyHead( loc1, end_in_gap.merged );
     // Remainder of the path1 gap:
     end_in_gap.merged.AddGap( max(ngv_buffer,
-				  min_gap_avail-DistMax(loc2end,loc2orig)-1),
-			      max_gap_avail - DistMin(loc2end,loc2orig)-1 );
+                                  min_gap_avail-DistMax(loc2end,loc2orig)-1),
+                              max_gap_avail - DistMin(loc2end,loc2orig)-1 );
     // Tail of path2, with gaps adjusted:
-    path2.CopySubpathAdjustGaps( loc2end, loc2orig, 
-				 0, max_gap_avail - ngv_buffer ,
-				 end_in_gap.merged );
+    path2.CopySubpathAdjustGaps( loc2end, loc2orig,
+                                 0, max_gap_avail - ngv_buffer,
+                                 end_in_gap.merged );
     // Set stop values:
     end_in_gap.stop1 = 0;
     end_in_gap.stop2 = loc1orig.GetIndex() + 1;
-    
+
     // push real gap_used interval
     real_gap_used.push_back(make_pair( min_gap_used,
-				       min(max_gap_used, 
-					   (int)loc1orig.Maximum() -
-					   ngv_buffer -
-					   DistMin(loc2end, loc2orig) - 1 )));
+                                       min(max_gap_used,
+                                           (int)loc1orig.Maximum() -
+                                           ngv_buffer -
+                                           DistMin(loc2end, loc2orig) - 1 )));
   }
 
   // If path2 *must* end inside the gap, we're done -- return now.
@@ -362,8 +362,8 @@ void GapOnGapLeft( KmerPathLoc loc1orig,
       if( index==loc2near.GetIndex() && kmer1 > loc2near.GetKmer() ) continue;
       if( index==loc2far.GetIndex() && kmer1 < loc2far.GetKmer() ) continue;
       // Don't match to the kmer just before a gap -- will be caught in Case 3
-      if( kmer1 == loc2.Stop() && loc2.isGap(+1) 
-	  && index != loc2near.GetIndex() ) continue;
+      if( kmer1 == loc2.Stop() && loc2.isGap(+1)
+          && index != loc2near.GetIndex() ) continue;
 
       // Copy the part of path2 covered by the path1 gap.
       loc2.SetKmer( kmer1 );
@@ -371,15 +371,15 @@ void GapOnGapLeft( KmerPathLoc loc1orig,
       far_ends.push_back( FarEnd(loc1, loc2) );
 
       path2.CopySubpathAdjustGaps( loc2, loc2orig,
-				   min_gap_avail+1, max_gap_avail+1,
-				   far_ends.back().merged );
+                                   min_gap_avail+1, max_gap_avail+1,
+                                   far_ends.back().merged );
       // Those +1's since we're copying the kmer past the end of the gap too
 
       // Give feedback on how much of the gap we needed:
       int min_OK_used = loc1orig.Minimum() - DistMax(loc2,loc2orig);
       int max_OK_used = loc1orig.Maximum() - DistMin(loc2,loc2orig);
       real_gap_used.push_back( make_pair( max( min_gap_used, min_OK_used ),
-					  min( max_gap_used, max_OK_used )));
+                                          min( max_gap_used, max_OK_used )));
     } // done with loc2.isSeq()
 
 
@@ -397,53 +397,53 @@ void GapOnGapLeft( KmerPathLoc loc1orig,
       // How far into this gap can we cover?  WARNING: not necessarily
       // all of it, even if we can reach past its end!
       if( index != loc2far.GetIndex() ) {
-	loc2.SetLoc(-1); // rightmost location in this gap
-	int max_gap_cover = max_gap_avail - DistMin(loc2, loc2orig);
-	if( max_gap_cover < sub_max )
-	  sub_max = max_gap_cover;
-      }      
+        loc2.SetLoc(-1); // rightmost location in this gap
+        int max_gap_cover = max_gap_avail - DistMin(loc2, loc2orig);
+        if( max_gap_cover < sub_max )
+          sub_max = max_gap_cover;
+      }
 
       // Recurse, with reads 1 and 2 flipped:
       GapOnGapLeft( loc2, loc1, sub_min, sub_max,
-		     sub_far_ends, sub_used, ngv );
+                    sub_far_ends, sub_used, ngv );
 
       // Step through and process recursion results:
       for( unsigned int i=0; i<sub_far_ends.size(); i++ ) {
 
-	far_ends.push_back( FarEnd() );
-	FarEnd& far = far_ends.back();  // so I can build it in-place
-	FarEnd& sub_far = sub_far_ends[i];
-	// Copy most values, re-flipping reads 1 and 2 as needed:
-	far.loc1 = sub_far.loc2;
-	far.loc2 = sub_far.loc1;
-	far.DONE = sub_far.DONE;
-	far.stop1 = sub_far.stop2;
-	far.stop2 = sub_far.stop1;
+        far_ends.push_back( FarEnd() );
+        FarEnd& far = far_ends.back();  // so I can build it in-place
+        FarEnd& sub_far = sub_far_ends[i];
+        // Copy most values, re-flipping reads 1 and 2 as needed:
+        far.loc1 = sub_far.loc2;
+        far.loc2 = sub_far.loc1;
+        far.DONE = sub_far.DONE;
+        far.stop1 = sub_far.stop2;
+        far.stop2 = sub_far.stop1;
 
-	// Construct the new merged:
-	// The sub merged (no pun intended):
-	far.merged.Append( sub_far.merged );
-	// The merged gap, where gap1 and gap2 end up overlapping:
-	far.merged.AddGap(sub_used[i].first, sub_used[i].second);
-	//  Segment of path2, with gaps adjusted (using recursion data!),
-	//  up to but not including the gap on loc2 where the loc1 gap ends:
-	KmerPathLoc loc2seq_end = loc2;
-	loc2seq_end.IncrementInterval();  // points to end of seq before gap2
-	path2.CopySubpathAdjustGaps( loc2seq_end, loc2orig,
-				     max(0,min_gap_avail - sub_used[i].second),
-				     max_gap_avail - sub_used[i].first,
-				     far.merged );
+        // Construct the new merged:
+        // The sub merged (no pun intended):
+        far.merged.Append( sub_far.merged );
+        // The merged gap, where gap1 and gap2 end up overlapping:
+        far.merged.AddGap(sub_used[i].first, sub_used[i].second);
+        //  Segment of path2, with gaps adjusted (using recursion data!),
+        //  up to but not including the gap on loc2 where the loc1 gap ends:
+        KmerPathLoc loc2seq_end = loc2;
+        loc2seq_end.IncrementInterval();  // points to end of seq before gap2
+        path2.CopySubpathAdjustGaps( loc2seq_end, loc2orig,
+                                     max(0,min_gap_avail - sub_used[i].second),
+                                     max_gap_avail - sub_used[i].first,
+                                     far.merged );
 
-	// Give feedback on how much of the gap we needed:
-	int min_OK_used = loc1orig.Minimum() 
-	                  - DistMax(loc2seq_end,loc2orig)-1
-	                  - sub_used[i].second;
-	int max_OK_used = loc1orig.Maximum() 
-	                  - DistMin(loc2seq_end,loc2orig)-1
-	                  - sub_used[i].first;
+        // Give feedback on how much of the gap we needed:
+        int min_OK_used = loc1orig.Minimum()
+                          - DistMax(loc2seq_end,loc2orig)-1
+                          - sub_used[i].second;
+        int max_OK_used = loc1orig.Maximum()
+                          - DistMin(loc2seq_end,loc2orig)-1
+                          - sub_used[i].first;
 
-	real_gap_used.push_back( make_pair( max( min_gap_used, min_OK_used ),
-					    min( max_gap_used, max_OK_used )));
+        real_gap_used.push_back( make_pair( max( min_gap_used, min_OK_used ),
+                                            min( max_gap_used, max_OK_used )));
       }
     } // done with loc2.isGap()
   } // done stepping through indices from loc2near to loc2far.

@@ -42,7 +42,7 @@ typedef vec< unipath_id_t > line_unipaths_t;
 typedef vec< gapcloser > line_closers_t;
 
 // FuncDecl: GetLines
-// 
+//
 // Get <lines> in the graph implied by <closers>.  Aborts if it finds a cycle.
 //
 // Input parameters:
@@ -54,14 +54,14 @@ typedef vec< gapcloser > line_closers_t;
 //
 //     lines - the lines
 //     gaps - the gap closers for each line in 'lines'
-void GetLines( const int nuni, const vec<gapcloser>& closers, 
-	       vec< line_unipaths_t >& lines, vec< line_closers_t >& gaps );
+void GetLines( const int nuni, const vec<gapcloser>& closers,
+               vec< line_unipaths_t >& lines, vec< line_closers_t >& gaps );
 
 
 // FuncDecl: ComputeLineSize
 // Compute the size of a <line>
 nbases_t ComputeLineSize( const vecKmerPath& unipaths, const line_unipaths_t& line,
-			  const line_closers_t& closers );
+                          const line_closers_t& closers );
 
 
 /**
@@ -80,7 +80,7 @@ nbases_t ComputeLineSize( const vecKmerPath& unipaths, const line_unipaths_t& li
 */
 class Link {
 
-     public:
+public:
 
   // Fields: Fields of Link
   //    tig1, tig2 - <unipath ids> of the two unipaths linked by this paired read
@@ -89,32 +89,33 @@ class Link {
   //       distance between the two reads in a paired read only approximately)
   //    start1, stop1 - where on the first unipath does the first read of the pair align ?
   //    start2, stop2 - where on the second unipath does the second read of the pair align ?
-  
-     basevec_id_t tig1;
-     basevec_pos_t start1, stop1;
-     nbases_dbl_t sep, dev;
-     basevec_id_t tig2;
-     basevec_pos_t start2, stop2;
 
-     Link( ) { }
+  basevec_id_t tig1;
+  basevec_pos_t start1, stop1;
+  nbases_dbl_t sep, dev;
+  basevec_id_t tig2;
+  basevec_pos_t start2, stop2;
 
-     Link( const basevec_id_t tig1, const basevec_pos_t start1, const basevec_pos_t stop1, const nbases_dbl_t sep,
-          const nbases_dbl_t dev, const basevec_id_t tig2, const basevec_pos_t start2, const basevec_pos_t stop2 )
-          : tig1(tig1), start1(start1), stop1(stop1), sep(sep), dev(dev),
-          tig2(tig2), start2(start2), stop2(stop2) { }
+  Link( ) { }
+
+  Link( const basevec_id_t tig1, const basevec_pos_t start1, const basevec_pos_t stop1, const nbases_dbl_t sep,
+        const nbases_dbl_t dev, const basevec_id_t tig2, const basevec_pos_t start2, const basevec_pos_t stop2 )
+    : tig1(tig1), start1(start1), stop1(stop1), sep(sep), dev(dev),
+      tig2(tig2), start2(start2), stop2(stop2) { }
 
   // Function: operator-less-than
   // Orders the links by the ids of the unipaths they're linking.
   // When an array of <Links> is sorted, multiple links between a given
   // unipath pair will be adjacent in the array, so we can
   // conveniently find them all and merge them into an <ink>.
-     friend Bool operator<( const Link& l1, const Link& l2 )
-     {    if ( l1.tig1 < l2.tig1 ) return True;
-          if ( l1.tig1 > l2.tig1 ) return False;
-          if ( l1.tig2 < l2.tig2 ) return True;
-          if ( l1.tig2 > l2.tig2 ) return False;
-          if ( l1.dev < l2.dev ) return True;
-          return False;    }
+  friend Bool operator<( const Link& l1, const Link& l2 )
+  { if ( l1.tig1 < l2.tig1 ) return True;
+    if ( l1.tig1 > l2.tig1 ) return False;
+    if ( l1.tig2 < l2.tig2 ) return True;
+    if ( l1.tig2 > l2.tig2 ) return False;
+    if ( l1.dev < l2.dev ) return True;
+    return False;
+  }
 
 };  // class Link
 
@@ -124,9 +125,9 @@ SemanticTypeStd( int, Link_id_t );
 typedef VecIntVec vecLinkIDVec;
 
 void AddLinkBetweenBasevecs( nbases_t n1, nbases_t n2,
-			     const look_align& la1, const look_align& la2,
-			     nbases_dbl_t sep_mean, nbases_dbl_t sep_dev,
-			     vec< Link >& Links );
+                             const look_align& la1, const look_align& la2,
+                             nbases_dbl_t sep_mean, nbases_dbl_t sep_dev,
+                             vec< Link >& Links );
 
 /**
    FuncDecl: FindLinksBetweenBasevecs
@@ -146,32 +147,32 @@ void AddLinkBetweenBasevecs( nbases_t n1, nbases_t n2,
       aligns_ind_fw, aligns_ind_rc - for the fw and bw read of each
          read pair, indices of aligns of that read to the basevecs
          in aligns_fw / aligns_rc.
-       
+
 */
 void FindLinksBetweenBasevecs( // Info about the basevecs:
-			       const vec<nbases_t>& basevecSizes,
+  const vec<nbases_t>& basevecSizes,
 
-			       // Info about the pairs:
-			       const vec< nbases_dbl_t >& sep_means,
-			       const vec< nbases_dbl_t >& sep_devs,
+  // Info about the pairs:
+  const vec< nbases_dbl_t >& sep_means,
+  const vec< nbases_dbl_t >& sep_devs,
 
-			       // Info about alignment of pairs
-			       // to the basevecs:
-			       const vec<look_align>& aligns_fw,
-			       const vec<look_align>& aligns_rc,
-			       const vec< vec<align_id_t> >& aligns_ind_fw,
-			       const vec< vec<align_id_t> >& aligns_ind_rc,
-			       
-			       // Output
-			       vec< Link >& Links,
+  // Info about alignment of pairs
+  // to the basevecs:
+  const vec<look_align>& aligns_fw,
+  const vec<look_align>& aligns_rc,
+  const vec< vec<align_id_t> >& aligns_ind_fw,
+  const vec< vec<align_id_t> >& aligns_ind_rc,
 
-			       // For each basevec, the ids in 'links'
-			       // of the links between it and some other
-			       // basevec.
-			       vecLinkIDVec& Links_index1,
-			       vecLinkIDVec& Links_index2
-			      
-			       );
+  // Output
+  vec< Link >& Links,
+
+  // For each basevec, the ids in 'links'
+  // of the links between it and some other
+  // basevec.
+  vecLinkIDVec& Links_index1,
+  vecLinkIDVec& Links_index2
+
+);
 
 
 // FuncDecl: CombineStats
@@ -179,8 +180,8 @@ void FindLinksBetweenBasevecs( // Info about the basevecs:
 // Given a vector of means and stddevs, combine them into one value.
 // Must <SortSync>(dev,sep) before calling.
 void CombineStats( const vec<nbases_dbl_t>& sep, const vec<nbases_dbl_t>& dev,
-		   nbases_dbl_t& Sep, nbases_dbl_t& Dev );
-     
+                   nbases_dbl_t& Sep, nbases_dbl_t& Dev );
+
 /**
    FuncDecl: GetLinkStats
 

@@ -18,25 +18,25 @@
 #include "Vec.h"
 
 // Fill the seeds vector.
-void FindUnipathGapSeeds(const vecbasevector & bases, 
+void FindUnipathGapSeeds(const vecbasevector & bases,
                          const vecbasevector & unibases,
-                         const size_t K, 
-                         const size_t n_threads, 
-                         const String & work_dir, 
+                         const size_t K,
+                         const size_t n_threads,
+                         const String & work_dir,
                          VecULongVec * seeds);
 
 
-void CloseUnipathGapsCore( const vecbasevector & bases, 
-                            const vecqualvector & quals,
-                            const vecbasevector & unibases, 
-                            const vec< vec<int> > & nexts, 
-                            const vec<int> & to_rc, 
-                            const size_t K, 
-                            const size_t UNIBASES_K,
-                            const VecULongVec & seeds,
-                            const VecULongVec & seeds_rc,
-                            vec< triple<int,int,longlong> > & extenders, 
-                            const int VERBOSITY, 
-                            ostream & log);
+void CloseUnipathGapsCore( const vecbasevector & bases,
+                           const vecqualvector & quals,
+                           const vecbasevector & unibases,
+                           const vec< vec<int> > & nexts,
+                           const vec<int> & to_rc,
+                           const size_t K,
+                           const size_t UNIBASES_K,
+                           const VecULongVec & seeds,
+                           const VecULongVec & seeds_rc,
+                           vec< triple<int,int,longlong> > & extenders,
+                           const int VERBOSITY,
+                           ostream & log);
 
 #endif

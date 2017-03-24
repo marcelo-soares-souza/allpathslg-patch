@@ -19,26 +19,26 @@
 
 class simple_loop {
 
-     public:
-     
-     simple_loop( ) { }
-     simple_loop( int u, int v, int w, int uv, int vv, int vw )
-          : u(u), v(v), w(w), uv(uv), vv(vv), vw(vw) { }
-          
-     int u, v, w;     // vertices
-     int uv, vv, vw;  // edges
-     
+public:
+
+  simple_loop( ) { }
+  simple_loop( int u, int v, int w, int uv, int vv, int vw )
+    : u(u), v(v), w(w), uv(uv), vv(vv), vw(vw) { }
+
+  int u, v, w;     // vertices
+  int uv, vv, vw;  // edges
+
 };
 
 void GetSimpleLoops( const HyperKmerPath& h, vec<simple_loop>& loops );
 
 void DisambiguateSimpleLoops( HyperKmerPath& h, const vec<simple_loop>& loops,
-     const vec< vec< pair<int,int> > >& sep_dev );
+                              const vec< vec< pair<int,int> > >& sep_dev );
 
 void DisambiguateSimpleLoops2( HyperKmerPath& h, HyperBasevector& hb,
-     const vecbasevector& reads, const PairsManager& pairs,
-     const vec<alignment_plus>& Aligns,
-     const Bool verbose = False );
+                               const vecbasevector& reads, const PairsManager& pairs,
+                               const vec<alignment_plus>& Aligns,
+                               const Bool verbose = False );
 
 
 #endif

@@ -28,8 +28,8 @@
 // "This" is reversed relative to "Standard", and not the other way around.
 
 class semiannotation {
-  
- public:
+
+public:
 
   //
   // Constructors
@@ -40,17 +40,17 @@ class semiannotation {
     start_on_this_ ( -1    ),
     start_on_std_  ( -1    ),
     implied_leftmost_on_std_( -1 ),
-    length_        ( -1    ), 
+    length_        ( -1    ),
     weight_        ( -1    ) {}
-  
 
-  semiannotation( int std_id, 
-		  Bool rc, 
-		  int start_on_this, 
-		  int start_on_std, 
-		  int implied_leftmost_on_std,
-		  int length,
-		  int weight ) :
+
+  semiannotation( int std_id,
+                  Bool rc,
+                  int start_on_this,
+                  int start_on_std,
+                  int implied_leftmost_on_std,
+                  int length,
+                  int weight ) :
 
     std_id_        ( std_id        ),
     rc_            ( rc            ),
@@ -62,41 +62,61 @@ class semiannotation {
   //-----------------------------------------------------
 
 
-  
+
   //
   // Const accessors
   //
-  int StdID()             const { return std_id_;                  } // ID of the known genome it goes to (usually 0).
-  Bool RC()               const { return rc_;                      } // Orientation of overlap to known genome
-  
-  int StartOnThis()       const { return start_on_this_;           } // Start of aligning segment, on this contig
-  int StartOnStandard()   const { return start_on_std_;            } // Start of aligning segment, on the genome
-  int Length()            const { return length_;                  } // Length of aligning segment
-  int Weight()            const { return weight_;                  } // Number of reads "supporting" or "voting for" this aligning segment
+  int StdID()             const {
+    return std_id_;                   // ID of the known genome it goes to (usually 0).
+  }
+  Bool RC()               const {
+    return rc_;                       // Orientation of overlap to known genome
+  }
 
-  int ShiftFromStandard() const { return implied_leftmost_on_std_; } // Shift from standard (redundant, since we have start_on_std_).
+  int StartOnThis()       const {
+    return start_on_this_;            // Start of aligning segment, on this contig
+  }
+  int StartOnStandard()   const {
+    return start_on_std_;             // Start of aligning segment, on the genome
+  }
+  int Length()            const {
+    return length_;                   // Length of aligning segment
+  }
+  int Weight()            const {
+    return weight_;                   // Number of reads "supporting" or "voting for" this aligning segment
+  }
+
+  int ShiftFromStandard() const {
+    return implied_leftmost_on_std_;  // Shift from standard (redundant, since we have start_on_std_).
+  }
 
   void Print( ostream &o ) const;                                    // Prints the semiannotation information
 
-  const basevector& Standard( int i ) const { return (*standards_)[i]; } // The ith segment of the genome (if initialized).
+  const basevector& Standard( int i ) const {
+    return (*standards_)[i];  // The ith segment of the genome (if initialized).
+  }
 
 
   //--------------------------------------------------------------------
 
-  int AddToWeight( int k ) { return weight_ += k; } // Increments the weight of this semiannotation. I.e. the number of reads supporting it.
+  int AddToWeight( int k ) {
+    return weight_ += k;  // Increments the weight of this semiannotation. I.e. the number of reads supporting it.
+  }
 
-  static void SetStandards( const vec< basevector > &standards ) { standards_ = &standards; } // Sets the known genome segments.
-  
+  static void SetStandards( const vec< basevector > &standards ) {
+    standards_ = &standards;  // Sets the known genome segments.
+  }
+
 
   //
   // Input/Output. If a semiannotation is printed with <<, then it is loadable with >>.
-  // 
+  //
   friend ostream& operator<<( ostream &o, const semiannotation &a );
   friend istream& operator>>( istream &i,       semiannotation &a );
   //----------------------------------------------------------------
 
- private:
-  
+private:
+
   int std_id_;                        // ID of known genome segment. Usually 0.
   Bool rc_;                           // Orientation of alignment to known genome
   int start_on_this_, start_on_std_;  // Start of alignment on this contig, and on the known genome.
@@ -115,9 +135,9 @@ class semiannotation {
 typedef vec< semiannotation >::iterator semiannot_itr;
 
 struct semiannotation_loccomp {
-  bool operator() ( const semiannotation &ca1, 
-		    const semiannotation &ca2 ) 
-       const ;
+  bool operator() ( const semiannotation &ca1,
+                    const semiannotation &ca2 )
+  const ;
 };
 
 
@@ -128,7 +148,7 @@ struct semiannotation_loccomp {
 
 class annotation {
 
- public:
+public:
 
   annotation() :
     std_id_    ( -1 ),
@@ -140,25 +160,35 @@ class annotation {
 
 
   annotation( int std_id,
-	      Bool rc,
-	      vec< basevector > &standards ) :
+              Bool rc,
+              vec< basevector > &standards ) :
     std_id_    ( std_id ),
     rc_        ( rc ) {}
 
 
-  int StdID() const { return std_id_; }
-  Bool Rc()   const { return rc_; }
-  
-  alignment&  Align()          { return align_; }
-  const basevector& Standard( int i ) { return (*standards_)[i]; }
+  int StdID() const {
+    return std_id_;
+  }
+  Bool Rc()   const {
+    return rc_;
+  }
 
-  static void SetStandards( const vec< basevector > &standards ) { standards_ = &standards; }
-  
+  alignment&  Align()          {
+    return align_;
+  }
+  const basevector& Standard( int i ) {
+    return (*standards_)[i];
+  }
+
+  static void SetStandards( const vec< basevector > &standards ) {
+    standards_ = &standards;
+  }
+
   friend ostream& operator<<( ostream &o, const annotation &a );
   friend istream& operator>>( istream &i, annotation &a );
- 
- private:
-  
+
+private:
+
   int std_id_;
   Bool rc_;
   alignment align_;
@@ -176,7 +206,7 @@ typedef vec< annotation >::iterator annot_itr;
 // ( A, 0, 5000 ), and ( B, 4000, 9000 ).
 //
 class arachne_contig_placement {
- public:
+public:
 
   //
   // Constructors
@@ -185,8 +215,8 @@ class arachne_contig_placement {
     arachne_id_ ( "" ) {}
 
   arachne_contig_placement( String arachne_id,
-			    int start,
-			    int stop ) :
+                            int start,
+                            int stop ) :
     arachne_id_ ( arachne_id ),
     start_      ( start      ),
     stop_       ( stop       ) {}
@@ -197,21 +227,31 @@ class arachne_contig_placement {
   // Const accessors
   //
   int ID    () const;                                        // Returns the Arachne layout ID
-  int Start () const { return start_;                      } // Start of Arachne layout contig in final contig
-  int Stop  () const { return stop_;                       } // Stop of Arachne layout contig in final contig
-  int IsGap () const { return arachne_id_.Contains( "." ); } // Is this Arachne layout contig a gap contig?
-  int Length() const { return stop_ - start_;              } // Length of Arachne layout contig
-  
-  String FullId () const { return arachne_id_; }
+  int Start () const {
+    return start_;                       // Start of Arachne layout contig in final contig
+  }
+  int Stop  () const {
+    return stop_;                        // Stop of Arachne layout contig in final contig
+  }
+  int IsGap () const {
+    return arachne_id_.Contains( "." );  // Is this Arachne layout contig a gap contig?
+  }
+  int Length() const {
+    return stop_ - start_;               // Length of Arachne layout contig
+  }
+
+  String FullId () const {
+    return arachne_id_;
+  }
   //--------------------------------------------------------
 
 
   void Print( ostream &o ) const;
-  
+
   friend ostream& operator<<( ostream &o, const arachne_contig_placement &a );
   friend istream& operator>>( istream &i, arachne_contig_placement &a );
 
- private:
+private:
   String arachne_id_;
   int start_;
   int stop_;
@@ -230,22 +270,22 @@ const int max_fudge             = 100; // Was infinity, until January 9, 2001.
 
 class annotated_contig {
 
- public:
+public:
   //
   // Constructors
-  // 
-  annotated_contig() : 
+  //
+  annotated_contig() :
     semiannotated_  ( False ),
     annotated_      ( False ) {}
 
   annotated_contig( int id,
-		    const basevector                      &bases,
-		    const qualvector                      &quals,
-		    Bool                                  semiannotated,
-		    Bool                                  annotated,
-		    const vec< semiannotation >           &semiannotations,
-		    const vec< annotation >               &annotations,
-		    const vec< arachne_contig_placement > &arachne_ctgs ) :
+                    const basevector                      &bases,
+                    const qualvector                      &quals,
+                    Bool                                  semiannotated,
+                    Bool                                  annotated,
+                    const vec< semiannotation >           &semiannotations,
+                    const vec< annotation >               &annotations,
+                    const vec< arachne_contig_placement > &arachne_ctgs ) :
     id_                     ( id              ),
     bases_                  ( bases           ),
     quals_                  ( quals           ),
@@ -260,46 +300,86 @@ class annotated_contig {
   //
   // Const accessors
   //
-  Bool Semiannotated() const { return semiannotated_;                    } // Is this contig semiannotated (fragments of it matching the known genome)
-  Bool Annotated()     const { return annotated_;                        } // Is it annotated (located in one or more potential places on the genome)
+  Bool Semiannotated() const {
+    return semiannotated_;                     // Is this contig semiannotated (fragments of it matching the known genome)
+  }
+  Bool Annotated()     const {
+    return annotated_;                         // Is it annotated (located in one or more potential places on the genome)
+  }
 
-  int NumSemiannots()  const { return semiannotations_.size();           } // Number of different semiannotations
-  int NumAnnots()      const { return annotations_.size();               } // Number of different annotations
-  int NumACPs()        const { return arachne_ctg_placements_.size();    } // Number of different Arachne contigs comprising this final contig
-  int Length()         const { return quals_.size();                     } // Number of bases in this final contig
-  int ID()             const { return id_;                               } // ID of this final contig
-  const basevector& Bases() const { return bases_; } // Basevector of this contig
-  const qualvector& Quals() const { return quals_; } // Quality scores of this contig
+  int NumSemiannots()  const {
+    return semiannotations_.size();            // Number of different semiannotations
+  }
+  int NumAnnots()      const {
+    return annotations_.size();                // Number of different annotations
+  }
+  int NumACPs()        const {
+    return arachne_ctg_placements_.size();     // Number of different Arachne contigs comprising this final contig
+  }
+  int Length()         const {
+    return quals_.size();                      // Number of bases in this final contig
+  }
+  int ID()             const {
+    return id_;                                // ID of this final contig
+  }
+  const basevector& Bases() const {
+    return bases_;  // Basevector of this contig
+  }
+  const qualvector& Quals() const {
+    return quals_;  // Quality scores of this contig
+  }
 
-void Print( ostream &out ) const;
+  void Print( ostream &out ) const;
 
   //---------------------------------------------------------------------
 
-  // 
+  //
   // Accessors that are not const (yet)
   //
-  const arachne_contig& ArachneContig( int i ) { return arachne_contigs_->find( i )->second; } // The ith Arachne layout contig in this final contig
-  
-  unsigned char  Base( int i )                 { return bases_[ i ];                         } // The ith base
-  unsigned char& Qual( int i )                 { return quals_[ i ];                         } // The ith quality score
-  const basevector& Standard( int i ) { return (*standards_)[i]; }
+  const arachne_contig& ArachneContig( int i ) {
+    return arachne_contigs_->find( i )->second;  // The ith Arachne layout contig in this final contig
+  }
+
+  unsigned char  Base( int i )                 {
+    return bases_[ i ];                          // The ith base
+  }
+  unsigned char& Qual( int i )                 {
+    return quals_[ i ];                          // The ith quality score
+  }
+  const basevector& Standard( int i ) {
+    return (*standards_)[i];
+  }
   //---------------------------------------------------------------------
 
   //
   // Setting values
   //
-  Bool SetSemiannotated( Bool s ) { return ( semiannotated_ = s ); }
-  Bool SetAnnotated    ( Bool a ) { return ( annotated_     = a ); }
-  void SetBases( const basevector& b ) { bases_ = b; }
-  void SetQuals( const qualvector& q ) { quals_ = q; }
+  Bool SetSemiannotated( Bool s ) {
+    return ( semiannotated_ = s );
+  }
+  Bool SetAnnotated    ( Bool a ) {
+    return ( annotated_     = a );
+  }
+  void SetBases( const basevector& b ) {
+    bases_ = b;
+  }
+  void SetQuals( const qualvector& q ) {
+    quals_ = q;
+  }
 
-  void SetID( int id ) { id_ = id; }
-  
-  static void SetStandards     ( const vec< basevector >          &standards       ) { standards_       = &standards;       }
-  static void SetArachneContigs( const map< int, arachne_contig > &arachne_contigs ) { arachne_contigs_ = &arachne_contigs; }
+  void SetID( int id ) {
+    id_ = id;
+  }
+
+  static void SetStandards     ( const vec< basevector >          &standards       ) {
+    standards_       = &standards;
+  }
+  static void SetArachneContigs( const map< int, arachne_contig > &arachne_contigs ) {
+    arachne_contigs_ = &arachne_contigs;
+  }
   //---------------------------------------------------------------
 
-  
+
   //
   // This function does all the work.
   // Starting from the arachne contig placements (i.e. the composition of this
@@ -323,22 +403,34 @@ void Print( ostream &out ) const;
   //
   // Iterators through the semiannotations, anotations, and arachne_contig_placements.
   //
-  semiannot_itr FirstSemiannot() { return semiannotations_.begin();           }
-  semiannot_itr EndSemiannot()   { return semiannotations_.end();             }
-  
-  annot_itr     FirstAnnot()     { return annotations_.begin();               }
-  annot_itr     EndAnnot()       { return annotations_.end();                 }
+  semiannot_itr FirstSemiannot() {
+    return semiannotations_.begin();
+  }
+  semiannot_itr EndSemiannot()   {
+    return semiannotations_.end();
+  }
 
-  acp_itr       FirstACP()       { return arachne_ctg_placements_.begin();    }
-  acp_itr       EndACP()         { return arachne_ctg_placements_.end();      }
+  annot_itr     FirstAnnot()     {
+    return annotations_.begin();
+  }
+  annot_itr     EndAnnot()       {
+    return annotations_.end();
+  }
+
+  acp_itr       FirstACP()       {
+    return arachne_ctg_placements_.begin();
+  }
+  acp_itr       EndACP()         {
+    return arachne_ctg_placements_.end();
+  }
   //---------------------------------------------------------------------------
 
 
   static vec< basevector >          const *standards_;
   static map< int, arachne_contig > const *arachne_contigs_;
 
- private:
-  int                             id_;                      // Final contig id                     
+private:
+  int                             id_;                      // Final contig id
   basevector                      bases_;                   // Bases of final contig
   qualvector                      quals_;                   // Qualitie scores of final contig
   Bool                            semiannotated_;           // Are the semiannotations computed?
@@ -359,22 +451,22 @@ typedef map< int, arachne_contig >::iterator const_arachne_ctg_map_itr;
 //
 class annotated_supercontig {
 
- public:
+public:
   //
   // Constructors
   //
   annotated_supercontig() {}
 
   annotated_supercontig( const vec< annotated_contig > &contigs,
-			 const vec< int >               gaps,
-			 const vec< int >               gap_sds 
-			 ) :
+                         const vec< int >               gaps,
+                         const vec< int >               gap_sds
+                       ) :
     contigs_   ( contigs ),
     gaps_      ( gaps    ),
     gap_sds_   ( gap_sds ) {
-    
+
     Assert( contigs_.size() == gaps_.size() + 1 &&
-	    gap_sds_.size() == gaps_.size() );
+            gap_sds_.size() == gaps_.size() );
   }
   //--------------------------------------------------------------
 
@@ -382,7 +474,9 @@ class annotated_supercontig {
   //
   // Const accessors
   //
-  int NumContigs() const { return contigs_.size(); }    // Returns the number of final contigs in the supercontig
+  int NumContigs() const {
+    return contigs_.size();  // Returns the number of final contigs in the supercontig
+  }
   int Length()     const;                               // Returns the sum of all contig lengths -- may need to modify this
 
   void Print( ostream &out ) const;
@@ -391,10 +485,16 @@ class annotated_supercontig {
   //
   // Non-const accessors
   //
-  annotated_contig& Contig( int i )   { return contigs_[i]; } // Returns the ith annotated contig
+  annotated_contig& Contig( int i )   {
+    return contigs_[i];  // Returns the ith annotated contig
+  }
 
-  int& Gap           ( int i )        { return gaps_[i];    } // Returns the ith gap length
-  int& GapStandardDev( int i )        { return gap_sds_[i]; } // Returns the ith gap length standard dev
+  int& Gap           ( int i )        {
+    return gaps_[i];     // Returns the ith gap length
+  }
+  int& GapStandardDev( int i )        {
+    return gap_sds_[i];  // Returns the ith gap length standard dev
+  }
   //---------------------------------------------------------
 
 
@@ -403,28 +503,38 @@ class annotated_supercontig {
   // It computes the semiannotations. See also the similarly-named
   //   function in annotated_contig.
   //
-  void ComputeSemiannotations();  
+  void ComputeSemiannotations();
   //----------------------------
 
 
-  void SetGap ( int i, 
-		int g ) 
-    { gaps_[i] = g; } // Sets the ith gap to have length g
+  void SetGap ( int i,
+                int g )
+  {
+    gaps_[i] = g;  // Sets the ith gap to have length g
+  }
 
 
-  static void SetStandards( const vec< basevector > &standards ) { standards_ = &standards; }
+  static void SetStandards( const vec< basevector > &standards ) {
+    standards_ = &standards;
+  }
 
-  const basevector& Standard( int i ) { return (*standards_)[i]; }
+  const basevector& Standard( int i ) {
+    return (*standards_)[i];
+  }
 
   //
   // Iteration through the annotated_contigs
   //
-  annotated_contig_itr FirstContig() { return contigs_.begin(); }
-  annotated_contig_itr EndContig()   { return contigs_.end();   }
+  annotated_contig_itr FirstContig() {
+    return contigs_.begin();
+  }
+  annotated_contig_itr EndContig()   {
+    return contigs_.end();
+  }
   //-------------------------------------------------------------
 
 
-  // 
+  //
   // Input/Output operators that have the property that
   //   if the object is printed with <<, it can be retrieved with >>.
   //
@@ -433,9 +543,9 @@ class annotated_supercontig {
   //-----------------------------------------------------------------------
 
 
- private:
-  
-  vec< annotated_contig > contigs_; // The list of annotated_contig objects 
+private:
+
+  vec< annotated_contig > contigs_; // The list of annotated_contig objects
   vec< int >              gaps_;    // The list of interleaving gap lengths
   vec< int >              gap_sds_; // The list of std deviations on interleaving gap lengths
 
@@ -448,7 +558,7 @@ class annotated_supercontig {
 // The smallest one is the longest.
 //
 bool annot_sc_lengthcomp ( const annotated_supercontig &a,
-			   const annotated_supercontig &b );
+                           const annotated_supercontig &b );
 
 
 typedef vec< annotated_supercontig >::iterator annotated_supercontig_itr;
@@ -462,33 +572,51 @@ typedef vec< annotated_supercontig >::iterator annotated_supercontig_itr;
 //
 class annotated_final_answer {
 
- public:
+public:
   annotated_final_answer() {}
 
-  annotated_supercontig& SuperContig( int i ) { return supers_[i];    }
-  basevector&            Standard   ( int i ) { return standards_[i]; }
+  annotated_supercontig& SuperContig( int i ) {
+    return supers_[i];
+  }
+  basevector&            Standard   ( int i ) {
+    return standards_[i];
+  }
 
-  void PushSupercontig   ( const annotated_supercontig &s ) { supers_.push_back       ( s ); }
-  void PushStandardContig( const basevector            &b ) { standards_.push_back    ( b ); }
-  void PushArachneContig ( const arachne_contig        &a ) { 
+  void PushSupercontig   ( const annotated_supercontig &s ) {
+    supers_.push_back       ( s );
+  }
+  void PushStandardContig( const basevector            &b ) {
+    standards_.push_back    ( b );
+  }
+  void PushArachneContig ( const arachne_contig        &a ) {
     arachne_contigs_.insert ( pair< int, arachne_contig >( a.ID(), a ) );
   }
   arachne_contig& ArachneContig( int i );
 
-  void ComputeSemiannotations();  
-  
-  vec< annotated_supercontig >&       RevealSupercontigs()    { return supers_;          }
-  const vec< basevector >&            RevealStandardContigs() { return standards_;       }
-  const map< int, arachne_contig >&   RevealArachneContigs()  { return arachne_contigs_; }
+  void ComputeSemiannotations();
 
-  annotated_supercontig_itr FirstSc() { return supers_.begin(); }
-  annotated_supercontig_itr EndSc()   { return supers_.end();   }
-  
+  vec< annotated_supercontig >&       RevealSupercontigs()    {
+    return supers_;
+  }
+  const vec< basevector >&            RevealStandardContigs() {
+    return standards_;
+  }
+  const map< int, arachne_contig >&   RevealArachneContigs()  {
+    return arachne_contigs_;
+  }
+
+  annotated_supercontig_itr FirstSc() {
+    return supers_.begin();
+  }
+  annotated_supercontig_itr EndSc()   {
+    return supers_.end();
+  }
+
   friend ostream& operator<<( ostream &o, const annotated_final_answer &a );
   friend istream& operator>>( istream &i, annotated_final_answer &a );
 
- private:
-  
+private:
+
   map< int, arachne_contig >   arachne_contigs_;
   vec< annotated_supercontig > supers_;
   vec< basevector >            standards_;

@@ -24,17 +24,17 @@
 template<typename sequenceT>
 class FastaConverter {
 
- public:
+public:
   FastaConverter( FastaNameParser* name_parser )
     : name_parser_(name_parser) { }
 
   virtual ~FastaConverter() {};
 
   void setNameParser( FastaNameParser* name_parser )
-    { 
-      name_parser_ = name_parser;
-      cout << name_parser_ << endl;
-    }
+  {
+    name_parser_ = name_parser;
+    cout << name_parser_ << endl;
+  }
 
   void extractNameFromBuffer(char* buffer, String &name );
 
@@ -42,7 +42,7 @@ class FastaConverter {
 
   void extractAllFromBuffer(char* buffer, String &name, sequenceT &sequence );
 
- protected:
+protected:
   FastaNameParser* name_parser_;
 };
 

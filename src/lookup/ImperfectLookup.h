@@ -55,11 +55,11 @@ class TaskTimer;
 
 
 void ImperfectLookup( lookup_table &look, const vecbasevector& reads,
-		      AlignCollectorBase & aligns,
-		      AlignDir direction,
-		      vec<TaskTimer *> * timers = 0,
-		      const vecqualvector * quals = 0,
-		      bool useReverse=false, const unsigned int max_freq=0);
+                      AlignCollectorBase & aligns,
+                      AlignDir direction,
+                      vec<TaskTimer *> * timers = 0,
+                      const vecqualvector * quals = 0,
+                      bool useReverse=false, const unsigned int max_freq=0);
 
 
 
@@ -67,16 +67,16 @@ void ImperfectLookup( lookup_table &look, const vecbasevector& reads,
 /// passes execution to ImperfectLookup(lookup_table &, vecbasevector &, AlignCollector &,...)
 /// (see docs for that method).
 void ImperfectLookup(
-     // inputs:
-     const String & lookup_file, vecbasevector& reads,
-     // inputs-outputs (the logic of accepting/rejecting aligns is passed in with the collector):
-     AlignCollectorBase & aligns,
-     // parameters:
-     AlignDir direction,
-     // other:
-     vec<TaskTimer *> * timers = 0,
-     const vecqualvector * quals = 0,
-     bool useReverse = false, const unsigned int max_freq=0);
+  // inputs:
+  const String & lookup_file, vecbasevector& reads,
+  // inputs-outputs (the logic of accepting/rejecting aligns is passed in with the collector):
+  AlignCollectorBase & aligns,
+  // parameters:
+  AlignDir direction,
+  // other:
+  vec<TaskTimer *> * timers = 0,
+  const vecqualvector * quals = 0,
+  bool useReverse = false, const unsigned int max_freq=0);
 
 
 /// Overload that reads in the lookup file from disk and passes execution
@@ -85,17 +85,17 @@ void ImperfectLookup(
 /// with more rigid logic,
 /// see more flexible overload templatized by AlignCollector.
 void ImperfectLookup(
-     // inputs:
-     unsigned int K, const vecbasevector& query, const String& lookup_file,
-     // outputs:
-     vec<look_align>& aligns, vec<int>& min_errors,
-     // parameters:
-     AlignDir direction, int best_prox, int max_errors = -1,
-     // other:
-     vec<Bool>* unique_aligned = 0,
-     vec<TaskTimer *> * timers = 0,
-     const vecqualvector * quals = 0,
-     bool useReverse = false, const unsigned int max_freq = 0);
+  // inputs:
+  unsigned int K, const vecbasevector& query, const String& lookup_file,
+  // outputs:
+  vec<look_align>& aligns, vec<int>& min_errors,
+  // parameters:
+  AlignDir direction, int best_prox, int max_errors = -1,
+  // other:
+  vec<Bool>* unique_aligned = 0,
+  vec<TaskTimer *> * timers = 0,
+  const vecqualvector * quals = 0,
+  bool useReverse = false, const unsigned int max_freq = 0);
 
 /// Searches for gapless alignment with mismatches between each of the query
 /// sequences (reads) and the reference passed as a lookup table object. This is a legacy
@@ -115,17 +115,17 @@ void ImperfectLookup(
 /// See ImperfectLookup(lookup_table &, vecbasevector &, AlignCollector &,...) for
 /// more flexible implementation templatized by the "align  acceptance" policy.
 void ImperfectLookup(
-     // inputs:
-     lookup_table &look, const vecbasevector& reads,
-     // outputs:
-     vec<look_align>& aligns, vec<int>& best_errors,
-     // parameters:
-     AlignDir direction, int best_prox, int max_errors = -1,
-     // other:
-     vec<Bool>* unique_aligned = 0,
-     vec<TaskTimer *> * timers = 0,
-     const vecqualvector * quals = 0,
-     bool useReverse = false, const unsigned int max_freq = 0 );
+  // inputs:
+  lookup_table &look, const vecbasevector& reads,
+  // outputs:
+  vec<look_align>& aligns, vec<int>& best_errors,
+  // parameters:
+  AlignDir direction, int best_prox, int max_errors = -1,
+  // other:
+  vec<Bool>* unique_aligned = 0,
+  vec<TaskTimer *> * timers = 0,
+  const vecqualvector * quals = 0,
+  bool useReverse = false, const unsigned int max_freq = 0 );
 
 
 /// A "modern" overload of ImperfectLookup that takes align  collector as an argument.
@@ -358,7 +358,7 @@ void ImperfectLookup( lookup_table &look, const vecbasevector& reads,
 
 
 class ImperfectLookupAligner {
- public:
+public:
 
 
   enum {
@@ -375,21 +375,31 @@ class ImperfectLookupAligner {
     m_reference_seq_fname(""),
     m_target_seq(0) {}
 
-  ~ImperfectLookupAligner() { if ( m_owns_lookup ) delete m_plookup; }
+  ~ImperfectLookupAligner() {
+    if ( m_owns_lookup ) delete m_plookup;
+  }
 
   /// Set direction(s), in which alignments for every query sequence
   /// will be condsidered: currently FW (forward only) or FW_OR_RC (both fw and rc)
-  void SetDirection(AlignDir d) { m_direction = d; }
+  void SetDirection(AlignDir d) {
+    m_direction = d;
+  }
 
   /// Getter method: shows what direction(s) this aligner is going to
   /// try when aligning every query seq.
-  AlignDir GetDirection(AlignDir d) { return m_direction; }
+  AlignDir GetDirection(AlignDir d) {
+    return m_direction;
+  }
 
   /// Tells aligner to set instrument flag(s)
-  void InstrumentOn(unsigned int flag) { m_instr_level |= flag; }
+  void InstrumentOn(unsigned int flag) {
+    m_instr_level |= flag;
+  }
 
   /// Tells aligner to clear instrument flag(s)
-  void InstrumentOff(unsigned int flag) { m_instr_level &= ( ~flag ); }
+  void InstrumentOff(unsigned int flag) {
+    m_instr_level &= ( ~flag );
+  }
 
   /// Sets lookup table (index) to use when searching for alignments;
   /// this method loads lookup table from the file on disk (specified by file name);
@@ -435,46 +445,51 @@ class ImperfectLookupAligner {
   /// for the "other strand" alignments ('reverse' mode has any effect
   /// at all only if direction is FW_OR_RC, i.e. alignments are sought
   /// on both strands). This is a trick and a workaround for SOLiD alignments.
-  void SetReverse(Bool rev) { m_use_reverse = rev; }
+  void SetReverse(Bool rev) {
+    m_use_reverse = rev;
+  }
 
   /// Returnst the 'reverse' status (<True> if a query is going
   /// to be reversed rather than reverse complemented when looking
   /// for the "other strand" match).
-  Bool GetReverse() { return m_use_reverse; }
+  Bool GetReverse() {
+    return m_use_reverse;
+  }
 
   template <typename AlignCollector>
   void ComputeAlignments(const vecbasevector & queries, AlignCollector & aligns) {
-      RunAlignmentMain(queries, 0, aligns, STANDARD_ALIGN);
+    RunAlignmentMain(queries, 0, aligns, STANDARD_ALIGN);
   }
 
   template <typename AlignCollector>
   void ComputeColorspaceAlignments(const vecbasevector & queries, AlignCollector & aligns) {
-      if ( ! m_reference_seq_fname.empty() ) {
-	//	  m_target_seq.ReadAll(m_reference_seq_fname);
-      } else {
-	  cout << "ImperfectLookupAligner setup is incomplete: target basespace reference must be specified for " << endl
-	       << "full colorspace read (SOLiD) alignment strategy" << endl;
-	  exit(1);
-      }
+    if ( ! m_reference_seq_fname.empty() ) {
+      //	  m_target_seq.ReadAll(m_reference_seq_fname);
+    } else {
+      cout << "ImperfectLookupAligner setup is incomplete: target basespace reference must be specified for " << endl
+           << "full colorspace read (SOLiD) alignment strategy" << endl;
+      exit(1);
+    }
 
-      SetReverse(True);
-      RunAlignmentMain(queries, 0, aligns, SOLID_FULL_ALIGN);
+    SetReverse(True);
+    RunAlignmentMain(queries, 0, aligns, SOLID_FULL_ALIGN);
   }
 
   static double computeAverageQuality( vecbvec const& reads, vecqvec const& quals );
 
- protected:
+protected:
 
   enum AlignmentStrategy {
     STANDARD_ALIGN = 0,
-    SOLID_FULL_ALIGN = 1 } ;
+    SOLID_FULL_ALIGN = 1
+  } ;
 
   /// Actual alignment logic is implemented here (this method is called by public interfaces)
   template <typename AlignCollector>
   void RunAlignmentMain(const vecbasevector & query_seqs,
-			const vecqualvector * query_quals,
-			AlignCollector & aligns,
-			AlignmentStrategy strategy=STANDARD_ALIGN) {
+                        const vecqualvector * query_quals,
+                        AlignCollector & aligns,
+                        AlignmentStrategy strategy=STANDARD_ALIGN) {
     PRINT3( aligns.GetCollectorName(), int( m_direction ), m_use_reverse );
 
     if (m_plookup == 0) {  // lookup table must exist
@@ -485,7 +500,7 @@ class ImperfectLookupAligner {
 
     if ( strategy == SOLID_FULL_ALIGN && m_reference_seq_fname.empty() ) {
       cout << "ImperfectLookupAligner setup is incomplete: target basespace reference must be specified for " << endl
-	   << "full colorspace read (SOLiD) alignment strategy" << endl;
+           << "full colorspace read (SOLiD) alignment strategy" << endl;
       exit(1);
     }
 
@@ -494,11 +509,11 @@ class ImperfectLookupAligner {
     // and calculate the mean quality
     double meanQual = 0.;
     if (query_quals) {
-       if ( strategy != STANDARD_ALIGN ) {
-	   cout << "Quality scores are not supported in the requested alignment strategy" << endl;
-	   exit(1);
-       }
-       meanQual = computeAverageQuality(query_seqs,*query_quals);
+      if ( strategy != STANDARD_ALIGN ) {
+        cout << "Quality scores are not supported in the requested alignment strategy" << endl;
+        exit(1);
+      }
+      meanQual = computeAverageQuality(query_seqs,*query_quals);
     }
 
     // For each query (or its rc), find the indices of each of its kmers.
@@ -513,15 +528,15 @@ class ImperfectLookupAligner {
     const unsigned int nqueries = (unsigned int)query_seqs.size( );
 
     basevector first_bases; // used for full colorspace alignment only;
-                            // will keep the first base after the primer
-                            // as suggested by the primer base + 1st color
+    // will keep the first base after the primer
+    // as suggested by the primer base + 1st color
     unsigned int start_pos = 0;
     /*
     if ( strategy == SOLID_FULL_ALIGN ) {
       start_pos = 2; // colorspace reads with primer!
       first_bases.resize(nqueries);
       for ( unsigned int i = 0 ; i < nqueries ; i++ ) {
-	first_bases.Set(i, SOLiD_toBase(query_seqs[i][0],query_seqs[i][1]) );
+    first_bases.Set(i, SOLiD_toBase(query_seqs[i][0],query_seqs[i][1]) );
       }
     }
     */
@@ -556,201 +571,201 @@ class ImperfectLookupAligner {
 
     if ( m_plookup->NChunks() > 1 ) cout << "lookup chunks:" ;
     for ( unsigned int i = 0; i < m_plookup->NChunks( ); i++ ) {
-        if ( m_instr_level & IO_TIMER != 0 ) t1->Start();
-	m_plookup->ReadChunk(i);
-	if ( m_plookup->NChunks() > 1 ) {
-	  cout << "." ;
-	  flush(cout);
-	}
+      if ( m_instr_level & IO_TIMER != 0 ) t1->Start();
+      m_plookup->ReadChunk(i);
+      if ( m_plookup->NChunks() > 1 ) {
+        cout << "." ;
+        flush(cout);
+      }
 
-	unsigned int first_contig_in_chunk = m_plookup->FirstContigInChunk();
-	unsigned int contigs_in_chunk = m_plookup->ContigsInChunk();
-	if ( strategy == SOLID_FULL_ALIGN ) {
-	  m_target_seq.clear();
-	  m_target_seq.ReadRange(m_reference_seq_fname,
-				 first_contig_in_chunk,
-				 first_contig_in_chunk+contigs_in_chunk);
-	}
+      unsigned int first_contig_in_chunk = m_plookup->FirstContigInChunk();
+      unsigned int contigs_in_chunk = m_plookup->ContigsInChunk();
+      if ( strategy == SOLID_FULL_ALIGN ) {
+        m_target_seq.clear();
+        m_target_seq.ReadRange(m_reference_seq_fname,
+                               first_contig_in_chunk,
+                               first_contig_in_chunk+contigs_in_chunk);
+      }
 
-        if ( m_instr_level & IO_TIMER != 0 ) t1->Stop();
+      if ( m_instr_level & IO_TIMER != 0 ) t1->Stop();
 
-	if ( m_instr_level & CPU_TIMER != 0 ) t2->Start();
+      if ( m_instr_level & CPU_TIMER != 0 ) t2->Start();
 
-	unsigned int ChunkSize = m_plookup->NBasesInChunk(i);
-	unsigned int FirstBaseInChunk = m_plookup->BasesStart();
+      unsigned int ChunkSize = m_plookup->NBasesInChunk(i);
+      unsigned int FirstBaseInChunk = m_plookup->BasesStart();
 
-	// Go through the query sequences trying to align  them in the current chunk.
+      // Go through the query sequences trying to align  them in the current chunk.
 
-	for ( la.query_id = 0; (unsigned int)la.query_id < nqueries ; ++la.query_id ) {
-	    if ( ! aligns.AlignsWanted(la.query_id) ) continue;
-	    la.query_length = query_seqs[la.query_id].size() - start_pos; // preset length of this query seq. into look_align
-	    if ( (unsigned int) la.query_length < m_K ) continue;
+      for ( la.query_id = 0; (unsigned int)la.query_id < nqueries ; ++la.query_id ) {
+        if ( ! aligns.AlignsWanted(la.query_id) ) continue;
+        la.query_length = query_seqs[la.query_id].size() - start_pos; // preset length of this query seq. into look_align
+        if ( (unsigned int) la.query_length < m_K ) continue;
 
-	    // Go through the orientations:
-	    for ( int pass = 0; pass < npasses && aligns.AlignsWanted(la.query_id) ; pass++ ) {
+        // Go through the orientations:
+        for ( int pass = 0; pass < npasses && aligns.AlignsWanted(la.query_id) ; pass++ ) {
 
-	        static basevector src;
-	        if ( pass == 1 ) {
-		    if ( m_use_reverse ) src.Reverse(query_seqs[la.query_id]);
-		    else src.ReverseComplement(query_seqs[la.query_id]);
-		}
+          static basevector src;
+          if ( pass == 1 ) {
+            if ( m_use_reverse ) src.Reverse(query_seqs[la.query_id]);
+            else src.ReverseComplement(query_seqs[la.query_id]);
+          }
 
-		// this is what we are going to align  for this query and this pass:
-		const basevector& S = ( pass == 0 ? query_seqs[la.query_id] : src );
+          // this is what we are going to align  for this query and this pass:
+          const basevector& S = ( pass == 0 ? query_seqs[la.query_id] : src );
 
-		static qualvector rq;
-		const qualvector * q = 0;
-		if (query_quals) {
-		    if (0 == pass) q = &((*query_quals)[la.query_id]);
-		    else {
-		        rq = (*query_quals)[la.query_id];
-			rq.ReverseMe();
-			q = &rq;
-		    }
-		}
+          static qualvector rq;
+          const qualvector * q = 0;
+          if (query_quals) {
+            if (0 == pass) q = &((*query_quals)[la.query_id]);
+            else {
+              rq = (*query_quals)[la.query_id];
+              rq.ReverseMe();
+              q = &rq;
+            }
+          }
 
-		// this vector is going to hold the offsets of all potential
-		// alignments of the current query sequence/orientation based on
-		// each individual Kmer. For instance if the 5th Kmer
-		// (zero-based numbering) in this query is found at position X in the
-		// reference, this results in a potential alignment (offset) of the
-		// whole query sequence at position X-5 in the reference.
-		static vec<unsigned int> offsets;
+          // this vector is going to hold the offsets of all potential
+          // alignments of the current query sequence/orientation based on
+          // each individual Kmer. For instance if the 5th Kmer
+          // (zero-based numbering) in this query is found at position X in the
+          // reference, this results in a potential alignment (offset) of the
+          // whole query sequence at position X-5 in the reference.
+          static vec<unsigned int> offsets;
 
-		offsets.clear( );
+          offsets.clear( );
 
-		// lookup queries (kmers) in the index table and record all offsets:
-		QueriesToSeqOffsets(*m_plookup,
-				    (all_queries[pass])[la.query_id].begin(),
-			            (all_queries[pass])[la.query_id].end(),
-				    offsets);
-		UniqueSort(offsets);
+          // lookup queries (kmers) in the index table and record all offsets:
+          QueriesToSeqOffsets(*m_plookup,
+                              (all_queries[pass])[la.query_id].begin(),
+                              (all_queries[pass])[la.query_id].end(),
+                              offsets);
+          UniqueSort(offsets);
 
-		for ( int u = 0; u < offsets.isize( ) && aligns.AlignsWanted( la.query_id ) ; u++ ) {
+          for ( int u = 0; u < offsets.isize( ) && aligns.AlignsWanted( la.query_id ) ; u++ ) {
 
-		    unsigned int offset = offsets[u];
-		    // catch wrap-arounds:
-		    if ( offset >= (unsigned int) ( m_K - la.query_length ) ) continue;
+            unsigned int offset = offsets[u];
+            // catch wrap-arounds:
+            if ( offset >= (unsigned int) ( m_K - la.query_length ) ) continue;
 
-		    unsigned int pos_on_tig;
-		    // convert the absolute alignment position into contig:position_on_contig:
-		    m_plookup->GetContigPos( offset, la.target_id, pos_on_tig );
+            unsigned int pos_on_tig;
+            // convert the absolute alignment position into contig:position_on_contig:
+            m_plookup->GetContigPos( offset, la.target_id, pos_on_tig );
 
-		    // The valid alignment region is bounded by this contig or
-		    // the chunk, whichever ends first.
-		    unsigned int first = max( m_plookup->ContigStart(la.target_id), FirstBaseInChunk );
-		    unsigned int last = min( m_plookup->ContigStop(la.target_id), m_plookup->BasesStop());
+            // The valid alignment region is bounded by this contig or
+            // the chunk, whichever ends first.
+            unsigned int first = max( m_plookup->ContigStart(la.target_id), FirstBaseInChunk );
+            unsigned int last = min( m_plookup->ContigStop(la.target_id), m_plookup->BasesStop());
 
-		    // We want subsumed alignments only.
-		    if ( offset < first || offset + la.query_length > last )
-		      continue;
+            // We want subsumed alignments only.
+            if ( offset < first || offset + la.query_length > last )
+              continue;
 
-		    // Validate alignment.
+            // Validate alignment.
 
-		    // will iterate along the target sequence
-		    basevector::const_iterator target_iter=m_plookup->Bases().begin( offset - FirstBaseInChunk );
-		    if ( m_reference_seq_fname.empty() || strategy == SOLID_FULL_ALIGN ) {
-		      // if we use target sequence directly as stored in the lookup (we always use that for
-		      // colorspace reads!):
-		      //ALREADY DONE:		      target_iter = m_plookup->Bases().Begin( offset - FirstBaseInChunk );
-		    } else {
-		      // if the target reference sequence was explicitly supplied:
-		      target_iter = m_target_seq[la.target_id-first_contig_in_chunk].Begin(pos_on_tig);
-		    }
+            // will iterate along the target sequence
+            basevector::const_iterator target_iter=m_plookup->Bases().begin( offset - FirstBaseInChunk );
+            if ( m_reference_seq_fname.empty() || strategy == SOLID_FULL_ALIGN ) {
+              // if we use target sequence directly as stored in the lookup (we always use that for
+              // colorspace reads!):
+              //ALREADY DONE:		      target_iter = m_plookup->Bases().Begin( offset - FirstBaseInChunk );
+            } else {
+              // if the target reference sequence was explicitly supplied:
+              target_iter = m_target_seq[la.target_id-first_contig_in_chunk].Begin(pos_on_tig);
+            }
 
-		    // stop counting mismatches as soon as we find at least the
-		    // same number of mismatches as in the second-best alignment
-		    // already observed before:
-		    int max_mismatches = aligns.ErrorThreshold(la.query_id);
+            // stop counting mismatches as soon as we find at least the
+            // same number of mismatches as in the second-best alignment
+            // already observed before:
+            int max_mismatches = aligns.ErrorThreshold(la.query_id);
 
-		    // count mismatches:
-		    int mismatches;
-		    if ( q == 0 ) {
-		      if ( pass == 0 ) {
-			mismatches = MismatchCount(ExactBaseMatch(),
-						   S.Begin(start_pos),
-						   S.End(),
-						   target_iter,
-						   max_mismatches);
-		      } else {
-			basevector::const_iterator end = S.End();
-			end -= start_pos;
-			mismatches = MismatchCount(ExactBaseMatch(),
-						 S.Begin(),
-						 end,
-						 target_iter,
-						 max_mismatches);
-		      }
+            // count mismatches:
+            int mismatches;
+            if ( q == 0 ) {
+              if ( pass == 0 ) {
+                mismatches = MismatchCount(ExactBaseMatch(),
+                                           S.Begin(start_pos),
+                                           S.End(),
+                                           target_iter,
+                                           max_mismatches);
+              } else {
+                basevector::const_iterator end = S.End();
+                end -= start_pos;
+                mismatches = MismatchCount(ExactBaseMatch(),
+                                           S.Begin(),
+                                           end,
+                                           target_iter,
+                                           max_mismatches);
+              }
 
-		    } else {
-		      mismatches = MismatchScore(ExactBaseMatch(),
-						 S.Begin(),
-						 S.End(),
-						 target_iter,
-						 q->begin(),
-						 max_mismatches*meanQual,
-						 meanQual);
-		    }
-    /* ######################################
-	#	    if ( (unsigned int)la.query_id == TEST_ID) PRINT2(mismatches,max_mismatches);
-	#
- 	########## */
-		    if ( strategy == SOLID_FULL_ALIGN ) {
-		      basevector & ref_contig = m_target_seq[la.target_id-first_contig_in_chunk];
-		      base_t ref_base = ( ( pass==0 ) ?
-					  ref_contig[pos_on_tig] :
-					  3-ref_contig[pos_on_tig+la.query_length] );
-		      if ( first_bases[la.query_id] != ref_base ) {
+            } else {
+              mismatches = MismatchScore(ExactBaseMatch(),
+                                         S.Begin(),
+                                         S.End(),
+                                         target_iter,
+                                         q->begin(),
+                                         max_mismatches*meanQual,
+                                         meanQual);
+            }
+            /* ######################################
+            #	    if ( (unsigned int)la.query_id == TEST_ID) PRINT2(mismatches,max_mismatches);
+            #
+            ########## */
+            if ( strategy == SOLID_FULL_ALIGN ) {
+              basevector & ref_contig = m_target_seq[la.target_id-first_contig_in_chunk];
+              base_t ref_base = ( ( pass==0 ) ?
+                                  ref_contig[pos_on_tig] :
+                                  3-ref_contig[pos_on_tig+la.query_length] );
+              if ( first_bases[la.query_id] != ref_base ) {
 
-			//#		cout << "FIRST BASE WRONG!" << endl;
-			mismatches++; // first base mismatch!
-		      }
-		    }
+                //#		cout << "FIRST BASE WRONG!" << endl;
+                mismatches++; // first base mismatch!
+              }
+            }
 
-		    //	  cerr << i << ":" << la.query_id << ":" << mismatches << endl;
+            //	  cerr << i << ":" << la.query_id << ":" << mismatches << endl;
 
-		    if ( mismatches > max_mismatches ) continue;
+            if ( mismatches > max_mismatches ) continue;
 
-		    // Create alignment.
-		    la.a.Setpos2(pos_on_tig);
-		    la.target_length = m_plookup->ContigSize(la.target_id);
-		    la.rc1 = ( pass == 1 );
-		    la.a.SetLength( 0, la.query_length );
-		    la.mutations = (0 == query_quals)
-		      ? mismatches
-		      : MismatchCount(ExactBaseMatch(),
-				      S.Begin(),
-				      S.End(),
-				      target_iter);
+            // Create alignment.
+            la.a.Setpos2(pos_on_tig);
+            la.target_length = m_plookup->ContigSize(la.target_id);
+            la.rc1 = ( pass == 1 );
+            la.a.SetLength( 0, la.query_length );
+            la.mutations = (0 == query_quals)
+                           ? mismatches
+                           : MismatchCount(ExactBaseMatch(),
+                                           S.Begin(),
+                                           S.End(),
+                                           target_iter);
 
-		    // Try to insert. Collector will figure out the details -
-		    // whether the current alignment is better than the best,
-		    // or only better then the second best, or not good at all etc
-	  /*###################################
-	    #          if ( (unsigned int)la.query_id == TEST_ID ) {
-	    #	          basevector btmp;
-	    #             la.PrintReadableBrief(cout);
-	    #             la.target_id-=first_contig_in_chunk;
-	    #             btmp.SetToSubOf(query_seqs[la.query_id],2,query_seqs[la.query_id].size()-2);
-	    #             PrintVisualColorAlign(cout, btmp,
-	    #                    m_target_seq, la,
-	    #			 SOLiD_toBase(query_seqs[la.query_id][0],
-	    #							query_seqs[la.query_id][1]));
-	    #	          cout << endl;
-	    #             la.target_id+=first_contig_in_chunk;
-	    #	       }
-            ###################################	*/
+            // Try to insert. Collector will figure out the details -
+            // whether the current alignment is better than the best,
+            // or only better then the second best, or not good at all etc
+            /*###################################
+              #          if ( (unsigned int)la.query_id == TEST_ID ) {
+              #	          basevector btmp;
+              #             la.PrintReadableBrief(cout);
+              #             la.target_id-=first_contig_in_chunk;
+              #             btmp.SetToSubOf(query_seqs[la.query_id],2,query_seqs[la.query_id].size()-2);
+              #             PrintVisualColorAlign(cout, btmp,
+              #                    m_target_seq, la,
+              #			 SOLiD_toBase(query_seqs[la.query_id][0],
+              #							query_seqs[la.query_id][1]));
+              #	          cout << endl;
+              #             la.target_id+=first_contig_in_chunk;
+              #	       }
+                    ###################################	*/
 
-		    aligns.Insert(la);
-		}
-		// End of for ( i=unique_offset_cnt-1 ) loop over all
-		// putative alignments (offests) for given id/orientation
-		// on the current chunk
-	    } // end of for (pass ) - loop over forward/reverse alignment passes
+            aligns.Insert(la);
+          }
+          // End of for ( i=unique_offset_cnt-1 ) loop over all
+          // putative alignments (offests) for given id/orientation
+          // on the current chunk
+        } // end of for (pass ) - loop over forward/reverse alignment passes
 
-	}   // End of for ( id=...) loop over all query sequences;
-	if ( m_instr_level & CPU_TIMER != 0 ) t2->Stop();
-	aligns.Consolidate();
+      }   // End of for ( id=...) loop over all query sequences;
+      if ( m_instr_level & CPU_TIMER != 0 ) t2->Stop();
+      aligns.Consolidate();
     } // End of for ( int i... ) loop over all chunks
     if ( m_plookup->NChunks() > 1 ) {
       cout << endl ;
@@ -764,11 +779,11 @@ class ImperfectLookupAligner {
   /*
   template <typename AlignCollector>
   void OffsetsToAligns(unsigned int query_id,
-		       const basevector & S,
-		       vec<unsigned int> & offsets,
-		       AlignCollector & aligns,
-		       vecqualvector *q = 0,
-		       meanQual = 0 ) {
+  	       const basevector & S,
+  	       vec<unsigned int> & offsets,
+  	       AlignCollector & aligns,
+  	       vecqualvector *q = 0,
+  	       meanQual = 0 ) {
 
        look_align la;
        la.nhits = la.indels = 0;
@@ -784,82 +799,82 @@ class ImperfectLookupAligner {
 
        for ( int u = 0; u < offsets.isize( ) && aligns.AlignsWanted( la.query_id ) ; u++ ) {
 
-	   unsigned int offset = offsets[u];
-	   // catch wrap-arounds:
-	   if ( offset >= (unsigned int) ( m_K - la.query_length ) ) continue;
+     unsigned int offset = offsets[u];
+     // catch wrap-arounds:
+     if ( offset >= (unsigned int) ( m_K - la.query_length ) ) continue;
 
-	   unsigned int pos_on_tig;
-	   // convert the absolute alignment position into contig:position_on_contig:
-	   m_plookup->GetContigPos( offset, la.target_id, pos_on_tig );
+     unsigned int pos_on_tig;
+     // convert the absolute alignment position into contig:position_on_contig:
+     m_plookup->GetContigPos( offset, la.target_id, pos_on_tig );
 
-	   // The valid alignment region is bounded by this contig or
-	   // the chunk, whichever ends first.
-	   unsigned int first = max( m_plookup->ContigStart(la.target_id), first_base_in_chunk );
-	   unsigned int last = min( m_plookup->ContigStop(la.target_id), m_plookup->BasesStop());
+     // The valid alignment region is bounded by this contig or
+     // the chunk, whichever ends first.
+     unsigned int first = max( m_plookup->ContigStart(la.target_id), first_base_in_chunk );
+     unsigned int last = min( m_plookup->ContigStop(la.target_id), m_plookup->BasesStop());
 
-	   // We want subsumed alignments only.
-	   if ( offset < first || offset + la.query_length > last )
-	       continue;
+     // We want subsumed alignments only.
+     if ( offset < first || offset + la.query_length > last )
+         continue;
 
-	   // Validate alignment.
+     // Validate alignment.
 
-		    // will iterate along the target sequence
-	   basevector::iterator target_iter;
-	   if ( m_reference_seq.Empty() ) {
-	       // if we use target sequence directly as stored in the lookup:
-	       target_iter = m_plookup->Bases().Begin( offset - first_base_in_chunk );
-	   } else {
-	       // if the target reference sequence was explicitly supplied:
-	       target_iter = m_reference_seq[la.target_id-first_contig_in_chunk].Begin(pos_on_tig);
-	   }
+  	    // will iterate along the target sequence
+     basevector::iterator target_iter;
+     if ( m_reference_seq.Empty() ) {
+         // if we use target sequence directly as stored in the lookup:
+         target_iter = m_plookup->Bases().Begin( offset - first_base_in_chunk );
+     } else {
+         // if the target reference sequence was explicitly supplied:
+         target_iter = m_reference_seq[la.target_id-first_contig_in_chunk].Begin(pos_on_tig);
+     }
 
-	   // stop counting mismatches as soon as we find at least the
-	   // same number of mismatches as in the second-best alignment
-	   // already observed before:
-	   int max_mismatches = aligns.ErrorThreshold(la.query_id);
+     // stop counting mismatches as soon as we find at least the
+     // same number of mismatches as in the second-best alignment
+     // already observed before:
+     int max_mismatches = aligns.ErrorThreshold(la.query_id);
 
-	   // count mismatches:
-	   int mismatches;
-	   if ( q == 0 ) {
+     // count mismatches:
+     int mismatches;
+     if ( q == 0 ) {
   	       mismatches = MismatchCount(ExactBaseMatch(),
-					  S.Begin(),
-					  S.End(),
-					  target_iter,
-					  max_mismatches);
-	   } else {
-	       mismatches = MismatchScore(ExactBaseMatch(),
-					  S.Begin(),
-					  S.End(),
-					  target_iter,
-					  q->begin(),
-					  max_mismatches*meanQual,
-					  meanQual);
-	   }
+  				  S.Begin(),
+  				  S.End(),
+  				  target_iter,
+  				  max_mismatches);
+     } else {
+         mismatches = MismatchScore(ExactBaseMatch(),
+  				  S.Begin(),
+  				  S.End(),
+  				  target_iter,
+  				  q->begin(),
+  				  max_mismatches*meanQual,
+  				  meanQual);
+     }
 
-	   //	  cerr << i << ":" << la.query_id << ":" << mismatches << endl;
+     //	  cerr << i << ":" << la.query_id << ":" << mismatches << endl;
 
-	   if ( mismatches > max_mismatches ) continue;
+     if ( mismatches > max_mismatches ) continue;
 
-	   // Create alignment.
-	   la.a.Setpos2(pos_on_tig);
-	   la.target_length = m_plookup->ContigSize(la.target_id);
-	   la.rc1 = ( pass == 1 );
-	   la.mutations = (0 == quals)
-	     ? mismatches
-	     : MismatchCount(ExactBaseMatch(),
-			     S.Begin(),
-			     S.End(),
-			     target_iter);
+     // Create alignment.
+     la.a.Setpos2(pos_on_tig);
+     la.target_length = m_plookup->ContigSize(la.target_id);
+     la.rc1 = ( pass == 1 );
+     la.mutations = (0 == quals)
+       ? mismatches
+       : MismatchCount(ExactBaseMatch(),
+  		     S.Begin(),
+  		     S.End(),
+  		     target_iter);
 
-	   // Try to insert. Collector will figure out the details -
-	   // whether the current alignment is better than the best,
-	   // or only better then the second best, or not good at all etc
+     // Try to insert. Collector will figure out the details -
+     // whether the current alignment is better than the best,
+     // or only better then the second best, or not good at all etc
 
-	   aligns.Insert(la);
+     aligns.Insert(la);
        }
   }
   */
- private:
+private:
 
   AlignDir m_direction; ///< perform alignments in only one or in both directions
   int m_instr_level;  ///< stores instrumentation attributes
@@ -885,13 +900,13 @@ class ImperfectLookupAligner {
 ///                    2 - recompute all (all batch chunks will be resubmitted too)
 
 void AlignInChunksOnFarm_ILT(const String & readfile,
-			 const String & reffile,
-			 const String & out_head,
-			 const String & out_suffix,
-			 const String & LSF_QUEUE,
-			 const String & align_params_imp,
-			 int batch_size=300000,
-			     int force_write_level=0 );
+                             const String & reffile,
+                             const String & out_head,
+                             const String & out_suffix,
+                             const String & LSF_QUEUE,
+                             const String & align_params_imp,
+                             int batch_size=300000,
+                             int force_write_level=0 );
 
 
 #endif

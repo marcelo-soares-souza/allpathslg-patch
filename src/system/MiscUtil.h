@@ -11,7 +11,7 @@
 
    Miscellaneous useful utilities -- put into this file to avoid creating
    unnecessary dependencies.
-   
+
    @file
 */
 
@@ -42,7 +42,7 @@ SemanticType( String, shellcmd_t );
     are missing.
 */
 Bool NeedToMake( const vec< filename_t >& targetFiles,
-		 const vec< filename_t >& sourceFiles );
+                 const vec< filename_t >& sourceFiles );
 
 
 /**
@@ -53,9 +53,9 @@ Bool NeedToMake( const vec< filename_t >& targetFiles,
    unless runOnlyIfNeeded==False.
 */
 void Make( const vec< filename_t >& targetFiles,
-	   const vec< filename_t >& sourceFiles,
-	   shellcmd_t command,
-	   Bool runOnlyIfNeeded = True );
+           const vec< filename_t >& sourceFiles,
+           shellcmd_t command,
+           Bool runOnlyIfNeeded = True );
 
 /**
    FuncDecl: Make
@@ -65,9 +65,9 @@ void Make( const vec< filename_t >& targetFiles,
    unless runOnlyIfNeeded==False.
 */
 void Make( const vec< filename_t >& targetFiles,
-	   const vec< filename_t >& sourceFiles,
-	   const vec< shellcmd_t >& commands,
-	   Bool runOnlyIfNeeded = True );
+           const vec< filename_t >& sourceFiles,
+           const vec< shellcmd_t >& commands,
+           Bool runOnlyIfNeeded = True );
 
 void SetMakeOnlyIfNeeded( Bool );
 
@@ -95,24 +95,24 @@ void AbsToRelPaths(const String& abs_source, const String& abs_dest, String& rel
 vec< filename_t > FilesIn( const dirname_t& dir, const filename_t& fn1 );
 vec< filename_t > FilesIn( const dirname_t& dir, const filename_t& fn1, const filename_t& fn2 );
 vec< filename_t > FilesIn( const dirname_t& dir, const filename_t& fn1, const filename_t& fn2,
-			   const filename_t& fn3);
+                           const filename_t& fn3);
 vec< filename_t > FilesIn( const dirname_t& dir, const filename_t& fn1, const filename_t& fn2,
-			   const filename_t& fn3, const filename_t& fn4 );
+                           const filename_t& fn3, const filename_t& fn4 );
 vec< filename_t > FilesIn( const dirname_t& dir, const filename_t& fn1, const filename_t& fn2,
-			   const filename_t& fn3, const filename_t& fn4, const filename_t& fn5 );
+                           const filename_t& fn3, const filename_t& fn4, const filename_t& fn5 );
 vec< filename_t > FilesIn( const dirname_t& dir, const filename_t& fn1, const filename_t& fn2,
-			   const filename_t& fn3, const filename_t& fn4, const filename_t& fn5,
-			   const filename_t& fn6 );
+                           const filename_t& fn3, const filename_t& fn4, const filename_t& fn5,
+                           const filename_t& fn6 );
 vec< filename_t > FilesIn( const dirname_t& dir, const filename_t& fn1, const filename_t& fn2,
-			   const filename_t& fn3, const filename_t& fn4, const filename_t& fn5,
-			   const filename_t& fn6, const filename_t& fn7 );
+                           const filename_t& fn3, const filename_t& fn4, const filename_t& fn5,
+                           const filename_t& fn6, const filename_t& fn7 );
 vec< filename_t > FilesIn( const dirname_t& dir, const filename_t& fn1, const filename_t& fn2,
-			   const filename_t& fn3, const filename_t& fn4, const filename_t& fn5,
-			   const filename_t& fn6, const filename_t& fn7, const filename_t& fn8 );
+                           const filename_t& fn3, const filename_t& fn4, const filename_t& fn5,
+                           const filename_t& fn6, const filename_t& fn7, const filename_t& fn8 );
 vec< filename_t > FilesIn( const dirname_t& dir, const filename_t& fn1, const filename_t& fn2,
-			   const filename_t& fn3, const filename_t& fn4, const filename_t& fn5,
-			   const filename_t& fn6, const filename_t& fn7, const filename_t& fn8,
-			   const filename_t& fn9 );
+                           const filename_t& fn3, const filename_t& fn4, const filename_t& fn5,
+                           const filename_t& fn6, const filename_t& fn7, const filename_t& fn8,
+                           const filename_t& fn9 );
 
 void CpIfNewer( dirname_t dir1, dirname_t dir2, filename_t fn1 );
 void CpIfNewer( dirname_t dir1, dirname_t dir2, filename_t fn1, filename_t fn2 );
@@ -121,11 +121,11 @@ void CpIfNewer( dirname_t dir1, dirname_t dir2, filename_t fn1, filename_t fn2, 
 void CpIfNewer( dirname_t dir1, dirname_t dir2, filename_t fn1, filename_t fn2, filename_t fn3, filename_t fn4, filename_t fn5 );
 void CpIfNewer( dirname_t dir1, dirname_t dir2, filename_t fn1, filename_t fn2, filename_t fn3, filename_t fn4, filename_t fn5, filename_t fn6 );
 void CpIfNewer( dirname_t dir1, dirname_t dir2, filename_t fn1, filename_t fn2, filename_t fn3, filename_t fn4, filename_t fn5, filename_t fn6,
-		filename_t fn7 );
+                filename_t fn7 );
 void CpIfNewer( dirname_t dir1, dirname_t dir2, filename_t fn1, filename_t fn2, filename_t fn3, filename_t fn4, filename_t fn5, filename_t fn6,
-		filename_t fn7, filename_t fn8 );
+                filename_t fn7, filename_t fn8 );
 void CpIfNewer( dirname_t dir1, dirname_t dir2, filename_t fn1, filename_t fn2, filename_t fn3, filename_t fn4, filename_t fn5, filename_t fn6,
-		filename_t fn7, filename_t fn8, filename_t fn9 );
+                filename_t fn7, filename_t fn8, filename_t fn9 );
 
 
 /**
@@ -140,43 +140,63 @@ void CpIfNewer( dirname_t dir1, dirname_t dir2, filename_t fn1, filename_t fn2, 
     to add rules.
  */
 class MakeRule {
- public:
+public:
   MakeRule() { }
   MakeRule( const vec< filename_t >& targetFiles_, const vec< filename_t >& sourceFiles_,
-	    shellcmd_t command_, filename_t saveOutputTo_, String comment_,
-	    String shortRuleName_, String mediumRuleName_ );
+            shellcmd_t command_, filename_t saveOutputTo_, String comment_,
+            String shortRuleName_, String mediumRuleName_ );
 
-  const vec< filename_t >& Targets() const { return targetFiles; }
-  const vec< filename_t >& Sources() const { return sourceFiles; }
+  const vec< filename_t >& Targets() const {
+    return targetFiles;
+  }
+  const vec< filename_t >& Sources() const {
+    return sourceFiles;
+  }
 
   /// Method: Command
   /// Returns the shell command that needs to be run to make the targets from the sources.
-  const shellcmd_t& Command() const { return command; }
+  const shellcmd_t& Command() const {
+    return command;
+  }
 
   /// Method: SaveOutputTo
   /// Returns the name of the (optional) file to which the output of this rule's command
   /// is to be logged.
-  filename_t SaveOutputTo() const { return saveOutputTo; }
+  filename_t SaveOutputTo() const {
+    return saveOutputTo;
+  }
 
-  shellcmd_t CommandName() const { return WhiteSpaceFree( Command().SafeBefore( " " ) ); }
+  shellcmd_t CommandName() const {
+    return WhiteSpaceFree( Command().SafeBefore( " " ) );
+  }
 
-  String Comment() const { return comment; }
-  String CommentOrCommand() const { return comment.nonempty() ? comment : command; }
-  String ShortRuleName() const { return shortRuleName; }
-  String MediumRuleName() const { return mediumRuleName; }
+  String Comment() const {
+    return comment;
+  }
+  String CommentOrCommand() const {
+    return comment.nonempty() ? comment : command;
+  }
+  String ShortRuleName() const {
+    return shortRuleName;
+  }
+  String MediumRuleName() const {
+    return mediumRuleName;
+  }
 
   /// Method: PrimaryTarget
   /// Returns the primary target of the command; we arbitrarily choose one of the command's targets
   /// -- here the first target -- as the primary target.  See the documentation of the
   /// targetFiles field for explanation.
-  filename_t PrimaryTarget() const { return targetFiles.front(); }
-  
- private:
+  filename_t PrimaryTarget() const {
+    return targetFiles.front();
+  }
+
+private:
   /// Field: targetFiles
   /// The files written by this command.
   /// After the command is run, we check that it has in fact created
   /// all these files.
-  /// 
+  ///
   /// One target of the rule is chosen as the _primary target_.  It is returned
   /// by the PrimaryTarget() method.  Dependencies on any targets of this rule
   /// are changed in the written-out makefile into dependencies on the primary target.
@@ -189,11 +209,11 @@ class MakeRule {
   /// and changing all dependencies on targets of this command into dependencies
   /// on the primary target, solves this problem.
   vec< filename_t > targetFiles;
-  
+
   /// Field: sourceFiles
   /// The files read by this command.
   vec< filename_t > sourceFiles;
-  
+
   /// Field: command
   /// The shell command to invoke, to create the targets from the sources.
   /// Usually the command is either an Arachne/ALLPATHS program or the cp command.
@@ -357,7 +377,7 @@ class MakeRule {
       program params have changed.
 */
 class MakeMgr {
- public:
+public:
 
   /// MakeMgr constructor
   /// The makefile will be created and run in /tmp.  To save a copy of this
@@ -408,7 +428,7 @@ class MakeMgr {
   /// string.
   /// Sample usage:
   /// >  make.AddSubst( ".kN", ".k" + ToString( K ) );
-  /// where K is the kmer size used. 
+  /// where K is the kmer size used.
   /// This allows more compact programmatic construction of filenames --
   /// you just write "myfile.kN.ext" rather than "mfile.k" + ToString( K ) + ".ext".
   void AddSubst( String from, String to ) {
@@ -584,53 +604,53 @@ class MakeMgr {
 
   /**
      MethodDecl: MakeRule
-  
+
      Define a rule for how to make a set of target files
      from a set of source files by running a given command.
   */
   void AddRule( vec< filename_t > targetFiles,
-		vec< filename_t > sourceFiles,
-		shellcmd_t command,
-		String comment = "",
-		filename_t saveOutputTo = ""
-		);
+                vec< filename_t > sourceFiles,
+                shellcmd_t command,
+                String comment = "",
+                filename_t saveOutputTo = ""
+              );
 
   void AddRule( vec< filename_t > targetFiles,
-		vec< filename_t > sourceFiles,
-		shellcmd_t command,
-		String comment,
-		vec< filename_t > saveOutputTo ) {
+                vec< filename_t > sourceFiles,
+                shellcmd_t command,
+                String comment,
+                vec< filename_t > saveOutputTo ) {
     ForceAssert( saveOutputTo.solo() );
     AddRule( targetFiles, sourceFiles, command, comment, ApplySubsts( saveOutputTo.front() ) );
   }
 
   void AddOutputRule( vec< filename_t > targetFiles,
-		      vec< filename_t > sourceFiles,
-		      shellcmd_t command,
-		      String comment = "" ) {
+                      vec< filename_t > sourceFiles,
+                      shellcmd_t command,
+                      String comment = "" ) {
     AddRule( targetFiles, sourceFiles, command, comment,
-	     ApplySubsts( targetFiles.front() ) );
+             ApplySubsts( targetFiles.front() ) );
   }
-  
+
 
   void AddCpRule( filename_t target, filename_t source );
   void AddCpRule( dirname_t targetDir, dirname_t sourceDir, const vec< filename_t >& fnames );
-  void AddCpRule( dirname_t targetDir, filename_t targetStart, 
-		  dirname_t sourceDir, filename_t sourceStart,
-		  const filename_t  commonEnd );
+  void AddCpRule( dirname_t targetDir, filename_t targetStart,
+                  dirname_t sourceDir, filename_t sourceStart,
+                  const filename_t  commonEnd );
   void AddCpRule( dirname_t targetDir, dirname_t sourceDir, filename_t fn1 );
 
   void SetTargets( vec< filename_t > defaultTargets,
-		   vec< filename_t > excludeTargets );
+                   vec< filename_t > excludeTargets );
 
   // MethodDecl: RunMake
   // Run the make process. Returns modified make exit code:
   // 0 = make sucessful; 1 = targets up to date; 2 = error occured
   int RunMake( int MAX_PARALLEL = 4 );
-  
+
 
   int TestRules( String base_name, String ref_name, String mode, bool erase);
-  
+
   void WriteDependencyGraph( filename_t dotFileName ) const {
     WriteDependencyGraph( dotFileName, True, NULL, NULL, NULL, NULL, "Deps" );
   }
@@ -639,21 +659,21 @@ class MakeMgr {
 
   /**
      MethodDecl: WritePipelineDescrAsHTML
-     
+
      Create a webpage that describes the entire pipeline.
   */
   void WritePipelineDescrAsHTML( dirname_t dir ) const;
-  
-  
+
+
   filename_t ApplySubsts( filename_t fn ) const;
   vec< filename_t > ApplySubsts( const vec< filename_t >& fnames ) const;
 
-  
+
   vec< filename_t > ExpandFileNames( const vec< filename_t >& fnames ) const;
 
   //////////////////////////////////////////////////////////////////////
-  
- private:
+
+private:
 
   /// Field: rules
   /// The rules; see MakeRule.  Each rule specifies how to make a set of target files
@@ -717,7 +737,7 @@ class MakeMgr {
   /// For constructing unambiguous short rule names, unique within this MakeMgr: the short rule
   /// names already used.
   set< String > shortRuleNames;
-  
+
   /// Field: mediumRuleNames
   /// For constructing unambiguous medium rule names, unique within this MakeMgr: the medium rule
   /// names already used.
@@ -726,10 +746,10 @@ class MakeMgr {
   /// Field: specialTargets
   /// Each special makefile target is just a shorthand for a user-specified set of target files to make.
   map< String, vec< filename_t > > specialTargets;
-  
+
   vec< filename_t > targetsToMake;
 
-  /// Make command to use to run pipeline 
+  /// Make command to use to run pipeline
   String makeCommand;
 
   Bool dryRun;
@@ -777,31 +797,31 @@ class MakeMgr {
      then quit.
    */
   set< shellcmd_t > restoreTargetsOf;
-  
+
   // private methods
 
   filename_t AbbrevFile( filename_t fn ) const;
   shellcmd_t AbbrevCommand( shellcmd_t command, String ignoreDef = "" ) const;
   filename_t CanonicalTarget( filename_t fn ) const;
-  void MakePipelineDirectory(const String& directory) const; 
+  void MakePipelineDirectory(const String& directory) const;
 
   void HandleTargetCaching( vec< filename_t > targetsToMake );
-  
+
   static String EscapeForMake( String s );
   static String EscapeForShellEcho( String s );
   shellcmd_t CanonicalizeCommand( shellcmd_t cmd, Bool abbrevCmd = True ) const;
 
 
   void WriteDependencyGraph( filename_t dotFileName,
-			     Bool hideTransitiveEdges ,
-			     const vec< filename_t > *limitToTheseFiles,
-			     const vec< rule_id_t > *limitToTheseRules,
-			     const map< filename_t, url_t > *file2url,
-			     const map< rule_id_t, url_t > *rule2url,
-			     String graphName ) const;
-  
+                             Bool hideTransitiveEdges,
+                             const vec< filename_t > *limitToTheseFiles,
+                             const vec< rule_id_t > *limitToTheseRules,
+                             const map< filename_t, url_t > *file2url,
+                             const map< rule_id_t, url_t > *rule2url,
+                             String graphName ) const;
 
-  
+
+
   /**
      MethodDecl: RemovePartialOutputs
 
@@ -820,11 +840,11 @@ class MakeMgr {
      so here we return somepath/makeinfo/F
   */
   static filename_t MakeInfo( filename_t target );
-  
+
   void ForceTargets( vec< filename_t > forceTargets ) const;
   void RemoveForcedTargets() const;
   Bool IsRuleRelevant( vec< MakeRule >::const_iterator r ) const;
-   
+
 };  // class MakeMgr
 
 

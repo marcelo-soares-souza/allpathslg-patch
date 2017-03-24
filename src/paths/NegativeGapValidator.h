@@ -19,7 +19,7 @@ class NegativeGapValidator {
 public:
   // constructor-destructor:
   NegativeGapValidator( const KmerBaseBroker* kbb ) :
-    mp_kbb       ( kbb ), 
+    mp_kbb       ( kbb ),
     I_own_my_kbb ( false ),
     K            ( kbb->GetK() ),
     verbosity      ( 0 )   { }
@@ -34,9 +34,13 @@ public:
     if( I_own_my_kbb ) delete mp_kbb;
   }
 
-  int GetK() const { return K; }
+  int GetK() const {
+    return K;
+  }
 
-  void SetVerbosity( int v ) { verbosity = v; }
+  void SetVerbosity( int v ) {
+    verbosity = v;
+  }
 
 
   // Just say yes or no
@@ -50,14 +54,14 @@ public:
   // Apply the KBB's KmersBetween to each constant negative gap
   // Gaps may disappear, so KmerPathLocs may become invalid.
   bool FillConstantNegativeGaps(const KmerPath& path, KmerPath& ans,
-				MergedKmerPath* mkp = NULL,
-				int seg_min=1, int seg_max=-2 ) const;
+                                MergedKmerPath* mkp = NULL,
+                                int seg_min=1, int seg_max=-2 ) const;
 
   // Run MakeValid and then FillConstantNegativeGaps
   // KmerPathLocs may become invalid.
-  bool MakeValidAndFillCNGs(KmerPath& path, 
-			    MergedKmerPath* mkp = NULL,
-			    int seg_min=1, int seg_max=-2 ) const {
+  bool MakeValidAndFillCNGs(KmerPath& path,
+                            MergedKmerPath* mkp = NULL,
+                            int seg_min=1, int seg_max=-2 ) const {
     if( MakeValid( path, seg_min, seg_max ) ) {
       KmerPath ans;
       FillConstantNegativeGaps( path, ans, mkp, seg_min, seg_max );
@@ -71,19 +75,31 @@ public:
   // Questions we just pass along to the KBB.
   // Syntactic sugar: versions for gaps, not offsets
   bool PossibleOffset( longlong k1, longlong k2, int d ) const
-  { return mp_kbb->PossibleOffset(k1, k2, d); }
+  {
+    return mp_kbb->PossibleOffset(k1, k2, d);
+  }
   bool PossibleGap( longlong k1, longlong k2, int gap ) const
-  { return mp_kbb->PossibleOffset(k1, k2, gap+1); }
+  {
+    return mp_kbb->PossibleOffset(k1, k2, gap+1);
+  }
 
   int MinOffset( longlong k1, longlong k2, int d_min ) const
-  { return mp_kbb->MinOffset(k1, k2, d_min); }
+  {
+    return mp_kbb->MinOffset(k1, k2, d_min);
+  }
   int MinGap( longlong k1, longlong k2, int gap_min ) const
-  { return( mp_kbb->MinOffset(k1, k2, gap_min+1)-1 ); }
+  {
+    return( mp_kbb->MinOffset(k1, k2, gap_min+1)-1 );
+  }
 
   int MaxOffset( longlong k1, longlong k2, int d_max ) const
-  { return mp_kbb->MaxOffset(k1, k2, d_max); }
+  {
+    return mp_kbb->MaxOffset(k1, k2, d_max);
+  }
   int MaxGap( longlong k1, longlong k2, int gap_max ) const
-  { return( mp_kbb->MaxOffset(k1, k2, gap_max+1)-1 ); }
+  {
+    return( mp_kbb->MaxOffset(k1, k2, gap_max+1)-1 );
+  }
 
   // Question: would it be legal to concatenate these two paths?
   // The paths may begin or end with a gap interval.

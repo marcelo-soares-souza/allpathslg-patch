@@ -23,7 +23,7 @@ int RunCommand( const String &the_command )
   if ( ( WIFEXITED( exit_code ) && WEXITSTATUS( exit_code ) != 0 ) ||
        WIFSIGNALED( exit_code ) )
     FatalErr( the_command << " failed." );
-  
+
   return exit_code;
 }
 
@@ -31,8 +31,8 @@ int RunCommand( const String &the_command )
  * RunCommandWithLog
  */
 int RunCommandWithLog( const String &the_command,
-		       const String &log,
-		       const bool append )
+                       const String &log,
+                       const bool append )
 {
   if ( IsRegularFile( log ) && ! append ) Remove( log );
   String command = the_command + " 2>> " + log + " 1>> " + log;
@@ -85,33 +85,34 @@ void AssemblyHeader( const String &name, int argc, char **argv, ostream &out )
   String origcommand;
   for (int ii=0; ii<argc; ii++)
     origcommand += String( " " ) + argv[ii];
-  
+
   // user name
 
   String start_date = Date( );
-    char* username_char = getenv( "LOGNAME" );
+  char* username_char = getenv( "LOGNAME" );
   String username( "unknown" );
   if ( username_char != 0 ) username = username_char;
 
   // Compute datasize limit.
-  
+
   String datasize_limit_string;
-  {    ostringstream dls;
-  struct rlimit rl;
-  if ( getrlimit( RLIMIT_DATA, &rl ) != 0 ) FatalErr( "getrlimit failed" );
-  double data_limit = rl.rlim_cur;
-  double million = 1000000.0, billion = 1000.0 * million;
-  if ( data_limit < million )
-    dls << setprecision(3) << data_limit/million << " Mb";
-  else dls << setprecision(3) << data_limit/billion << " Gb";
-  datasize_limit_string = dls.str( );    }
-  
+  { ostringstream dls;
+    struct rlimit rl;
+    if ( getrlimit( RLIMIT_DATA, &rl ) != 0 ) FatalErr( "getrlimit failed" );
+    double data_limit = rl.rlim_cur;
+    double million = 1000000.0, billion = 1000.0 * million;
+    if ( data_limit < million )
+      dls << setprecision(3) << data_limit/million << " Mb";
+    else dls << setprecision(3) << data_limit/billion << " Gb";
+    datasize_limit_string = dls.str( );
+  }
+
   // Generate starting message for assembler "name"
 
   String beginline = "Begin " + name + " at "
-    + start_date + " by " + username + " in\n" + LineOfOutput( "pwd" ) 
-    + " on " + getHostName() + ",\nwith datasize limit = "
-    + datasize_limit_string + ".\n";
+                     + start_date + " by " + username + " in\n" + LineOfOutput( "pwd" )
+                     + " on " + getHostName() + ",\nwith datasize limit = "
+                     + datasize_limit_string + ".\n";
   String foldcommand = origcommand;
   SlashFold( "Invoked by " + origcommand, foldcommand );
 
@@ -148,7 +149,7 @@ void ShortCommands( const vec<String>& commands, vec<String> &shorts )
     int module_id = distance( modules.begin( ), it );
     counts[module_id] += 1;
     shorts[ii] = modules[module_id] + "." + ToString( counts[module_id] );
-  }  
+  }
 }
 
 /**
@@ -180,7 +181,7 @@ bool CheckFilesExist( const vec<String> &files, ostream *log )
   vec<String> missing;
   for (int ii=0; ii<(int)files.size( ); ii++)
     if ( ! IsRegularFile( files[ii] ) ) missing.push_back( files[ii] );
-  
+
   if ( missing.size( ) > 0 ) {
     out << "Fatal error, some essential file(s) are missing:\n\n";
     for (int ii=0; ii<missing.isize( ); ii++)

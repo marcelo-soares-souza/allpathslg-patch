@@ -25,59 +25,81 @@
 class CompressedSequence : public FieldVec<4, MempoolAllocator<unsigned char> >
 {
 public:
-    typedef allocator_type Alloc;
-    typedef FieldVec<4, MempoolAllocator<unsigned char> > BaseT;
+  typedef allocator_type Alloc;
+  typedef FieldVec<4, MempoolAllocator<unsigned char> > BaseT;
 
-    CompressedSequence() {}
-    CompressedSequence( Alloc const& alloc ) : BaseT(alloc) {}
+  CompressedSequence() {}
+  CompressedSequence( Alloc const& alloc ) : BaseT(alloc) {}
 
-    // Copy constructor
-    CompressedSequence( CompressedSequence const& cs ) : BaseT(cs) {}
+  // Copy constructor
+  CompressedSequence( CompressedSequence const& cs ) : BaseT(cs) {}
 
-    CompressedSequence( char const* str ) { assignChars(str,str+strlen(str)); }
+  CompressedSequence( char const* str ) {
+    assignChars(str,str+strlen(str));
+  }
 
-    CompressedSequence( char const* start, char const* end )
-    { assignChars(start,end); }
+  CompressedSequence( char const* start, char const* end )
+  {
+    assignChars(start,end);
+  }
 
-    CompressedSequence( const vec<char>& cv )
-    { char const* buf = &*cv.begin();
-      char const* end = buf+cv.size();
-      assignChars(buf,end); }
+  CompressedSequence( const vec<char>& cv )
+  { char const* buf = &*cv.begin();
+    char const* end = buf+cv.size();
+    assignChars(buf,end);
+  }
 
-    CompressedSequence( const basevector& bv )
+  CompressedSequence( const basevector& bv )
     : BaseT(bv.begin(),bv.end(),Base::val2Bits) {}
 
-    // compiler-supplied copy-assignment and destructor are OK
+  // compiler-supplied copy-assignment and destructor are OK
 
-    void ReverseComplement();
+  void ReverseComplement();
 
-    vec<char> asVecChar() const
-    { vec<char> result; asVecChar(result); return result; }
+  vec<char> asVecChar() const
+  {
+    vec<char> result;
+    asVecChar(result);
+    return result;
+  }
 
-    vec<char> SubAsVecChar( int begin, int end ) const
-    { vec<char> result; SubAsVecChar(result,begin,end); return result; }
+  vec<char> SubAsVecChar( int begin, int end ) const
+  {
+    vec<char> result;
+    SubAsVecChar(result,begin,end);
+    return result;
+  }
 
-    basevector asBasevector() const
-    { bvec result; asBasevector(result); return result; }
+  basevector asBasevector() const
+  {
+    bvec result;
+    asBasevector(result);
+    return result;
+  }
 
-    String asString() const
-    { String result(size(),'X');
-      std::transform(begin(),end(),result.begin(),GeneralizedBase::bits2Char);
-      return result; }
+  String asString() const
+  { String result(size(),'X');
+    std::transform(begin(),end(),result.begin(),GeneralizedBase::bits2Char);
+    return result;
+  }
 
-    // pass-by-reference versions of "as" methods
-    void asVecChar( vec<char> &cv ) const
-    { cv.clear(); cv.resize(size());
-      std::transform(begin(),end(),cv.begin(),GeneralizedBase::bits2Char); }
+  // pass-by-reference versions of "as" methods
+  void asVecChar( vec<char> &cv ) const
+  { cv.clear();
+    cv.resize(size());
+    std::transform(begin(),end(),cv.begin(),GeneralizedBase::bits2Char);
+  }
 
-    void SubAsVecChar( vec<char> &cv, int start, int stop ) const
-    { cv.clear(); cv.resize(stop-start);
-      std::transform(begin(start),begin(stop),cv.begin(),GeneralizedBase::bits2Char); }
+  void SubAsVecChar( vec<char> &cv, int start, int stop ) const
+  { cv.clear();
+    cv.resize(stop-start);
+    std::transform(begin(start),begin(stop),cv.begin(),GeneralizedBase::bits2Char);
+  }
 
-    void asBasevector( basevector &bv, bool allow_x = false ) const;
-    void getAmbBases( bitvector &bitv ) const;
+  void asBasevector( basevector &bv, bool allow_x = false ) const;
+  void getAmbBases( bitvector &bitv ) const;
 
-    void assignChars( char const* begin, char const* end );
+  void assignChars( char const* begin, char const* end );
 };
 
 SELF_SERIALIZABLE(CompressedSequence);

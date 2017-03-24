@@ -15,17 +15,17 @@
 
 /// Tokenize a string (separators: " ", and "\t").
 int Tokenize( const String &a_string,
-	      vec<String> &tokens );
+              vec<String> &tokens );
 
 /// Tokenize a string (use one separator).
 int Tokenize( const String &a_string,
               const char sep,
-	          vec<String> &tokens );
+              vec<String> &tokens );
 
 /// Tokenize a string (use given separators).
 int Tokenize( const String &a_string,
-	      const vec<char> &separators,
-	      vec<String> &tokens);
+              const vec<char> &separators,
+              vec<String> &tokens);
 
 ///Split a string into a vector of strings at a delimiter.
 ///Any container supporting clear() and push_back(String) will work.
@@ -44,8 +44,8 @@ void Tokenize(String in, VEC & result, const String & delim=" ") {
 /// Tokenize a string (use given separators and don't merge them).
 /// E.g. "this,is,comma,,separated" -> "this" "is" "comma" "" "separated"
 int TokenizeStrictly( const String &a_string,
-		      const vec<char> &separators,
-		      vec<String> &tokens);
+                      const vec<char> &separators,
+                      vec<String> &tokens);
 
 /// Implement some regex matching by forking off to perl.
 void RegexMatch(String regex, String &str, vec<String> &matches);

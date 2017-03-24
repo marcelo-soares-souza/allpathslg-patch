@@ -31,34 +31,35 @@ bool IsGoodFeudalFile( const String& filename, bool verbose=false );
 
 template<class SwappableVec>
 void PermuteSwappableVec(SwappableVec & v,
-const vec<int> & permutation)
+                         const vec<int> & permutation)
 {
-    AssertEq((longlong) v.size(), (longlong) permutation.size());
-    vec<int> o = permutation;
-    for (int i = 0; i != (longlong) v.size(); ++i)
+  AssertEq((longlong) v.size(), (longlong) permutation.size());
+  vec<int> o = permutation;
+  for (int i = 0; i != (longlong) v.size(); ++i)
+  {
+    while (o[i] != i && o[i] != -1)
     {
-        while (o[i] != i && o[i] != -1)
-        {
-            v.SwapElements(i, o[i]);
-            using std::swap; swap(o[i], o[o[i]]);
-        }
+      v.SwapElements(i, o[i]);
+      using std::swap;
+      swap(o[i], o[o[i]]);
     }
+  }
 }
 
 template<class Mastervec1, class Mastervec2>
 bool SameSizes(const Mastervec1 & v1, const Mastervec2 & v2)
 {
-    bool result = v1.size() == v2.size();
-    if ( result )
-    {
-        typedef typename Mastervec1::const_iterator Itr1;
-        typedef typename Mastervec2::const_iterator Itr2;
-        Itr1 end(v1.end());
-        Itr2 itr2(v2.begin());
-        for ( Itr1 itr(v1.begin()); result && itr != end; ++itr, ++itr2 )
-            result = itr->size() == itr2->size();
-    }
-    return result;
+  bool result = v1.size() == v2.size();
+  if ( result )
+  {
+    typedef typename Mastervec1::const_iterator Itr1;
+    typedef typename Mastervec2::const_iterator Itr2;
+    Itr1 end(v1.end());
+    Itr2 itr2(v2.begin());
+    for ( Itr1 itr(v1.begin()); result && itr != end; ++itr, ++itr2 )
+      result = itr->size() == itr2->size();
+  }
+  return result;
 }
 
 

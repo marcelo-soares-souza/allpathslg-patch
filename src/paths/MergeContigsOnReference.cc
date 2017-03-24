@@ -25,7 +25,7 @@
  * Align contigs to a reference, and merge consecutive contigs, if
  * they overlap by >= MIN_OVERLAP bases (perfect matches only). If a
  * repetitive contig is involved in multiple overlaps, all are taken
- * into account. For example, if unique sequences A and B both align 
+ * into account. For example, if unique sequences A and B both align
  * repetitive sequence R, then we merge both A + R -> A', and B + R ->
  * B'.
  *
@@ -68,12 +68,12 @@ int main( int argc, char *argv[] )
   // WARNING! The code is temporary broken if UNIBASES_K is not defined.
   if ( UNIBASES_K == "" ) {
     cout << "FATAL ERROR - At this time the argument UNIBASES_K must be\n"
-	 << "given: CRerfManager does not currently support rc aligns.\n"
-	 << "Notice that contigs could own both fw and rc aligns, which means\n"
-	 << "that we cannot just flip contigs if they align  rc.\n"
-	 << "\n"
-	 << "LEAVING NOW.\n"
-	 << endl;
+         << "given: CRerfManager does not currently support rc aligns.\n"
+         << "Notice that contigs could own both fw and rc aligns, which means\n"
+         << "that we cannot just flip contigs if they align  rc.\n"
+         << "\n"
+         << "LEAVING NOW.\n"
+         << endl;
     return 1;
   }
 
@@ -87,16 +87,16 @@ int main( int argc, char *argv[] )
   String alignsFile = tmp_dir + "/aligns.qlt";
   String lookupFile = REF_HEAD + ".lookup";
   String targetFile = REF_HEAD + ".fastb";
-  
+
   // Needed.
   vec<String> needed;
   needed.push_back( CONTIGS );
   needed.push_back( lookupFile );
   needed.push_back( targetFile );
   if ( ! CheckFilesExist( needed, &cout ) ) return 1;
-  
+
   Mkpath( tmp_dir );
-  
+
   // Load.
   vec<look_align> aligns;
   GetAlignsFast( K, CONTIGS, lookupFile, alignsFile, aligns, !FORCE, tmp_dir );
@@ -106,7 +106,7 @@ int main( int argc, char *argv[] )
 
   cout << Date( ) << ": loading reference" << endl;
   vecbvec targets( targetFile );
-  
+
   // Deal with rc copies (only if input consists of unibases).
   if ( UNIBASES_K != "" ) {
     cout << Date( ) << ": unibases in input, removing rc copies" << endl;
@@ -126,9 +126,9 @@ int main( int argc, char *argv[] )
     for (size_t ii=0; ii<aligns.size( ); ii++) {
       int cid = aligns[ii].query_id;
       if ( ( ! keepers[cid] ) && ( keepers[ to_rc[cid] ] ) )
-	deleters[cid] = true;
+        deleters[cid] = true;
     }
-    
+
     // If neither the unibase nor its rc are aligned, remove one of them.
     for (int ii=0; ii<to_rc.isize( ); ii++) {
       if ( ii >= to_rc[ii] || aligned[ii] || aligned[ to_rc[ii] ] ) continue;
@@ -138,8 +138,8 @@ int main( int argc, char *argv[] )
     // Clear deleters contigs.
     for (size_t ii=0; ii<contigs.size( ); ii++)
       if ( deleters[ii] )
-	contigs[ii].resize( 0 );
-    
+        contigs[ii].resize( 0 );
+
     // Remove rc aligns, and aligns of deleted contigs.
     vec<look_align> select;
     select.reserve( aligns.size( ) );
@@ -151,7 +151,7 @@ int main( int argc, char *argv[] )
     }
     swap( select, aligns );
   }
-  
+
   // In any case have to remove rc and improper aligns.
   else {
     cout << Date( ) << ": filtering aligns" << endl;
@@ -167,11 +167,11 @@ int main( int argc, char *argv[] )
 
   // Merge contigs.
   CRefMerger merger( MIN_OVERLAP, SWBAND_RATIO, MAX_GAP, MIN_GAP, MIN_GAP_DEV,
-		     targets, contigs, aligns );
+                     targets, contigs, aligns );
   merger.Merge( &cout );
   merger.Save( ASSEMBLY_OUT, MIN_CLEN, &cout );
-  
+
   // Done.
   cout << Date( ) << ": MergeContigsOnReference done" << endl;
-  
+
 }

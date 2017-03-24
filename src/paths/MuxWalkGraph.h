@@ -57,7 +57,7 @@ class MuxWalkGraph_to_HyperKmerPath2;
 
 
 class MuxWalkGraph {
-  
+
 public:
 
   /// Each Node (basically pair<okpi,dist_to_end>) in the graph has a Label.
@@ -80,34 +80,36 @@ private:
   struct Node {
     OrientedKmerPathId okpi;
     int dist_to_end;
-    Bool is_good;   
+    Bool is_good;
     // We might want to keep "bad" reads in the graph but not use them later.
 
-    Node(OrientedKmerPathId OKPI, int dist, Bool good=True) 
+    Node(OrientedKmerPathId OKPI, int dist, Bool good=True)
       : okpi(OKPI), dist_to_end(dist), is_good(good) { }
 
     friend bool operator<(const Node& lhs, const Node& rhs ) {
-      return( lhs.okpi < rhs.okpi || 
-	      (lhs.okpi == rhs.okpi && 
-	       (lhs.dist_to_end < rhs.dist_to_end ||
-		(lhs.dist_to_end == rhs.dist_to_end &&
-		 (lhs.is_good < rhs.is_good)))) );
+      return( lhs.okpi < rhs.okpi ||
+              (lhs.okpi == rhs.okpi &&
+               (lhs.dist_to_end < rhs.dist_to_end ||
+                (lhs.dist_to_end == rhs.dist_to_end &&
+                 (lhs.is_good < rhs.is_good)))) );
     }
 
     friend bool operator==(const Node& lhs, const Node& rhs ) {
-      return( lhs.okpi == rhs.okpi && 
-	      lhs.dist_to_end == rhs.dist_to_end &&
-	      lhs.is_good == rhs.is_good );
+      return( lhs.okpi == rhs.okpi &&
+              lhs.dist_to_end == rhs.dist_to_end &&
+              lhs.is_good == rhs.is_good );
     }
 
     size_t hash_val() const {
-      return( okpi.GetIdRc() ^ 
-	      ( size_t(2*dist_to_end+is_good) << 4*sizeof(size_t) ) );
+      return( okpi.GetIdRc() ^
+              ( size_t(2*dist_to_end+is_good) << 4*sizeof(size_t) ) );
     }
   };
 
   struct node_hash {
-    size_t operator() ( const Node& node ) const { return node.hash_val(); }
+    size_t operator() ( const Node& node ) const {
+      return node.hash_val();
+    }
   };
 
 
@@ -116,25 +118,29 @@ private:
     set<Label> successors;
 
     Indices() : self(-1) { }
-    bool Uninitialized() { return( self == -1 ); }
+    bool Uninitialized() {
+      return( self == -1 );
+    }
   };
 
   //  typedef map<Node,Indices> node_map_t;
   typedef hash_map<Node,Indices,node_hash> node_map_t;
   typedef node_map_t::iterator map_iter;
   typedef node_map_t::const_iterator map_const_iter;
-  
+
   typedef hash_map< OrientedKmerPathId,vec<Label> > okpi_map_t;
 
 public:
 
-  longlong size() const { return m_label_lookup.size(); }  // constant time
+  longlong size() const {
+    return m_label_lookup.size();  // constant time
+  }
 
   /// To get KmerPaths out of a MuxWalkGraph.
-  bool AllPaths( const vecKmerPath* pathsFw, 
-		 const vecKmerPath* pathsRc,
-		 vecKmerPath& ans,
-		 unsigned int max_ans = 0 ) const;
+  bool AllPaths( const vecKmerPath* pathsFw,
+                 const vecKmerPath* pathsRc,
+                 vecKmerPath& ans,
+                 unsigned int max_ans = 0 ) const;
 
   friend class MuxWalkGraph_to_vecKmerPath;
   // As implemented, that class does not need to be a friend;
@@ -146,7 +152,7 @@ public:
 
 
 public:
- 
+
 
   /// Make a HyperKmerPath represenation of the graph structure in the
   /// MuxWalkGraph.  Conceptually there are two separate changes:
@@ -155,16 +161,16 @@ public:
   /// 2. Taking the dual of the graph, sort of.  In the MuxWalkGraph,
   ///    each vertex holds a read, while in a HyperKmerPath, sequence
   ///    lives on the edges.
-  /// We do this by building a HKP with a vertex corresponding to the 
+  /// We do this by building a HKP with a vertex corresponding to the
   /// left endpoint of each read, and an edge from there to each
   /// read that can appear to the right of it in a path-space closure.
   /// (So directed edges in the HKP go the opposite direction from those
   /// in the MWG; this takes care of the walking-direction convention.)
 
-  void MakeHyperKmerPath( const vecKmerPath* pathsFw, 
-			  const vecKmerPath* pathsRc,
-			  const SubsumptionList* subList,
-			  HyperKmerPath& ans ) const;
+  void MakeHyperKmerPath( const vecKmerPath* pathsFw,
+                          const vecKmerPath* pathsRc,
+                          const SubsumptionList* subList,
+                          HyperKmerPath& ans ) const;
   friend class MuxWalkGraph_to_HyperKmerPath;
   friend class MuxWalkGraph_to_HyperKmerPath2;
   // As implemented, that class does not need to be a friend;
@@ -189,8 +195,8 @@ public:
 //  The result is a map with zero objects but possibly many buckets,
 //  which trashes future performance.  MuxWalkGraphs are single-use.
 
-//   void clear() { 
-//     m_successor_map.clear(); 
+//   void clear() {
+//     m_successor_map.clear();
 //     m_label_lookup.clear();
 //     m_openers.clear();
 //     m_okpi_lookup.clear();
@@ -199,7 +205,7 @@ public:
   OrientedKmerPathId OKPI( const Label& label ) const {
     return( m_label_lookup[label]->first.okpi );
   }
-  
+
   int DistToEnd( const Label& label ) const {
     return( label == LabelDone ? 0 : m_label_lookup[label]->first.dist_to_end );
   }
@@ -211,7 +217,7 @@ public:
   const set<Label>& Successors( const Label& label ) const {
     return( m_label_lookup[label]->second.successors );
   }
-  
+
   // Find all nodes with this OKPI
   void FindNodes( const OrientedKmerPathId& okpi, vec<Label>& ans ) const;
 
@@ -220,39 +226,39 @@ public:
   // Return the label of the (maybe new) node acted upon.
   Label AddSuccessor( const Node& node, const Label& successor_label );
   Label AddSuccessor( const OrientedKmerPathId& okpi,
-		      const int& dist_to_end,
-		      const Label& successor_label,
-		      Bool is_good = True ) {
+                      const int& dist_to_end,
+                      const Label& successor_label,
+                      Bool is_good = True ) {
     return AddSuccessor( Node(okpi,dist_to_end,is_good), successor_label );
   }
 
-  // Add in an entire closure.  
+  // Add in an entire closure.
   // An offset of 0 corresponds to the end of the original untrimmed read.
   // Positive offsets arise when a fill has been trimmed.
   // Negative offsets can arise when a closing read is subsumed by
   //   another read which extends past the end of the insert, but which
   //   we need to record here anyway because the closer itself doesn't appear
   //   in the path.
-  void AddClosure( const vec<Mux>& closure, int offset, 
-		   const vec<Bool>* is_good = NULL ) {
-    MergeClosure( closure, 
-		  AddClosingRead( closure.back().GetPathId(), offset,
-				  (is_good == NULL || is_good->back()) ),
-		  is_good );
+  void AddClosure( const vec<Mux>& closure, int offset,
+                   const vec<Bool>* is_good = NULL ) {
+    MergeClosure( closure,
+                  AddClosingRead( closure.back().GetPathId(), offset,
+                                  (is_good == NULL || is_good->back()) ),
+                  is_good );
   }
 
   // This path doesn't reach an end read, it merges into an existing closure.
   // closure.back() must have the same OKPI as the node indicated by the Label.
-  void MergeClosure( const vec<Mux>& closure, Label successor_label, 
-		     const vec<Bool>* is_good = NULL );
+  void MergeClosure( const vec<Mux>& closure, Label successor_label,
+                     const vec<Bool>* is_good = NULL );
 
   // Add a closer, a read with successor LabelDone.
   // dist_to_end 0 corresponds to the end of the untrimmed read;
   // if the closer has been trimmed, we must be told its relative offset.
   // This means the graph can correctly store paths ending at different
   // fillings (with potentially different trims) of a single read.
-  Label AddClosingRead( const OrientedKmerPathId& okpi, 
-			int offset=0, Bool is_good = True ) {
+  Label AddClosingRead( const OrientedKmerPathId& okpi,
+                        int offset=0, Bool is_good = True ) {
     return AddSuccessor( okpi, offset, LabelDone, is_good );
   }
 
@@ -263,17 +269,19 @@ public:
     m_openers.insert( opener );
   }
 
-  const set<Label>& GetOpeners() const { return m_openers; }
+  const set<Label>& GetOpeners() const {
+    return m_openers;
+  }
 
 
   // For debugging purposes, a little info about this MuxWalkGraph:
   void Summary(ostream& out) {
     out << "MuxWalkGraph: " << size() << " nodes in "
-	<< m_successor_map.bucket_count() << " buckets, "
-	<< m_okpi_lookup.size() << " OKPIs in "
-	<< m_okpi_lookup.bucket_count() << " buckets, " 
-	<< m_openers.size() << " openers"
-	<< endl;
+        << m_successor_map.bucket_count() << " buckets, "
+        << m_okpi_lookup.size() << " OKPIs in "
+        << m_okpi_lookup.bucket_count() << " buckets, "
+        << m_openers.size() << " openers"
+        << endl;
   }
 
 
@@ -301,8 +309,8 @@ class MuxWalkGraph_to_vecKmerPath {
 public:
 
   MuxWalkGraph_to_vecKmerPath( const MuxWalkGraph& mwg,
-			       const vecKmerPath* pathsFw,
-			       const vecKmerPath* pathsRc ) 
+                               const vecKmerPath* pathsFw,
+                               const vecKmerPath* pathsRc )
     : mwg(mwg), pathsFw(pathsFw), pathsRc(pathsRc) { }
 
   const MuxWalkGraph& mwg;
@@ -313,7 +321,7 @@ public:
   static const Label LabelDone;
 
   bool AllPaths( vecKmerPath& ans,
-		 unsigned int max_ans = 0 ) const;
+                 unsigned int max_ans = 0 ) const;
 
   // Things used by AllPaths:
   static const int DTE_UNKNOWN, DTE_IMPOSSIBLE;
@@ -323,16 +331,16 @@ public:
 
   void CalcInDegrees( ) const;
   mutable vec<int> in_degree;
-  
+
   mutable vec< StdSet<ulonglong> > exited_in_state;
 
   void AllPathsHelper( KmerPath path_so_far,
-		       int dte_so_far,
-		       Label label,
-		       bool label_was_added,
-		       const MuxToPath& pathifier,
-		       vecKmerPath& ans,
-		       unsigned int max_ans ) const;
+                       int dte_so_far,
+                       Label label,
+                       bool label_was_added,
+                       const MuxToPath& pathifier,
+                       vecKmerPath& ans,
+                       unsigned int max_ans ) const;
 
 };
 
@@ -344,8 +352,8 @@ class MuxWalkGraph_to_HyperKmerPath {
 public:
 
   MuxWalkGraph_to_HyperKmerPath( const MuxWalkGraph& mwg,
-				 const vecKmerPath* pathsFw,
-				 const vecKmerPath* pathsRc ) 
+                                 const vecKmerPath* pathsFw,
+                                 const vecKmerPath* pathsRc )
     : mwg(mwg), pathsFw(pathsFw), pathsRc(pathsRc) { }
 
   const MuxWalkGraph& mwg;
@@ -373,17 +381,17 @@ public:
 
   void AddEdgesFrom( Label label, HyperKmerPath& ans );
 
-  compat_iter CheckCompatibility( Label from_label, 
-				  Label to_label, 
-				  const KmerPath& the_path,
-				  int max_dte,
-				  compat_map& compat,
-				  const HyperKmerPath& ans ) const;
+  compat_iter CheckCompatibility( Label from_label,
+                                  Label to_label,
+                                  const KmerPath& the_path,
+                                  int max_dte,
+                                  compat_map& compat,
+                                  const HyperKmerPath& ans ) const;
 
-  void AddEdgeFromTo( Label from_vx, 
-		      Label to_vx, 
-		      const KmerPath& the_path, 
-		      HyperKmerPath& ans ) const;
+  void AddEdgeFromTo( Label from_vx,
+                      Label to_vx,
+                      const KmerPath& the_path,
+                      HyperKmerPath& ans ) const;
 
   void RemoveUnreachable( HyperKmerPath& ans ) const;
 
@@ -396,12 +404,14 @@ class MuxWalkGraph_to_HyperKmerPath2 {
 public:
 
   MuxWalkGraph_to_HyperKmerPath2( const MuxWalkGraph& mwg,
-				  const vecKmerPath* pathsFw,
-				  const vecKmerPath* pathsRc,
-				  const SubsumptionList* subList ) 
-    : mwg(mwg), pathsFw(pathsFw), pathsRc(pathsRc), subList(subList) 
-  { Setup(); }
-  
+                                  const vecKmerPath* pathsFw,
+                                  const vecKmerPath* pathsRc,
+                                  const SubsumptionList* subList )
+    : mwg(mwg), pathsFw(pathsFw), pathsRc(pathsRc), subList(subList)
+  {
+    Setup();
+  }
+
   const MuxWalkGraph& mwg;
   const vecKmerPath* pathsFw;
   const vecKmerPath* pathsRc;
@@ -411,14 +421,28 @@ public:
   static const Label LabelDone;
 
   // helpful utilities:
-  OrientedKmerPathId OKPI(Label label) const { return okpids[label]; }
-  const KmerPath& Read(Label label) const 
-  { return *(OKPI(label).GetPathPtr(*pathsFw,*pathsRc)); }
-  int ReadLength(Label label) const { return Read(label).MinLength(); }
-  int LeftEndDTE(Label label) const { return left_end_dte[label]; }
-  int RightEndDTE(Label label) const { return right_end_dte[label]; }
-  int NumLabels() const { return okpids.size(); }
-  bool isCloser(Label label) const { return is_closer[label]; }
+  OrientedKmerPathId OKPI(Label label) const {
+    return okpids[label];
+  }
+  const KmerPath& Read(Label label) const
+  {
+    return *(OKPI(label).GetPathPtr(*pathsFw,*pathsRc));
+  }
+  int ReadLength(Label label) const {
+    return Read(label).MinLength();
+  }
+  int LeftEndDTE(Label label) const {
+    return left_end_dte[label];
+  }
+  int RightEndDTE(Label label) const {
+    return right_end_dte[label];
+  }
+  int NumLabels() const {
+    return okpids.size();
+  }
+  bool isCloser(Label label) const {
+    return is_closer[label];
+  }
 
   vec<int> left_end_dte;
   vec<int> right_end_dte;
@@ -470,7 +494,7 @@ public:
 
 
 
-  // For each Label, figure out which other Labels' reads are 
+  // For each Label, figure out which other Labels' reads are
   // MWG-descendants which overlap and match perfectly.
   vec< vec<Label> > matching_descendants;
   void FindMatchingDescendants();
@@ -482,7 +506,7 @@ public:
   // label_to_vx[i] contains j if and only if:
   // * The read with Label i appears in the HKP, ending with
   //   an edge into vertex j; AND
-  // * there is a globally consistent path of reads from a 
+  // * there is a globally consistent path of reads from a
   //   closer up to and including read i which doesn't extend
   //   past the right end of read i.  As a corollary, any read
   //   j such that left(i) <= left(j) <= right(i) <= right(j)
@@ -499,18 +523,18 @@ public:
 
   // Add a path to ans.
   void AttachRead( Label label, KmerPathLoc loc, int attach_vx,
-		   const int right_end_vx, HyperKmerPath& ans,
-		   set<int>* vxs_seen=NULL );
+                   const int right_end_vx, HyperKmerPath& ans,
+                   set<int>* vxs_seen=NULL );
 
   void AddSubsumedOpenerVertices( int from_vx, int to_vx,
-				  int edge_obj_id,
-				  const Label label,
-				  HyperKmerPath& ans );
+                                  int edge_obj_id,
+                                  const Label label,
+                                  HyperKmerPath& ans );
 
   int AssociateOpeners( HyperKmerPath& ans );
 
   void RemoveUnreachable( int right_vx, HyperKmerPath& ans ) const;
-  
+
 };
 
 

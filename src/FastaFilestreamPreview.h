@@ -25,8 +25,8 @@ public:
 
   FastaFilestreamPreview(istream& fasta_istream);
 
-  const streampos getMaxSequenceSize();  
-  const streampos getStartOffset();  
+  const streampos getMaxSequenceSize();
+  const streampos getStartOffset();
 
   vec<streampos>& getSequenceSizes();
 

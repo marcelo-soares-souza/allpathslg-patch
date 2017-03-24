@@ -10,8 +10,10 @@
 #include "paths/PolymorphismRemoveCore.h"
 #include "system/WorklistN.h"
 
-static inline 
-String Tag(String S = "PRC") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "PRC") {
+  return Date() + " (" + S + "): ";
+}
 
 
 
@@ -30,10 +32,10 @@ String Tag(String S = "PRC") { return Date() + " (" + S + "): "; }
 // ---- kmap not a const because follow_kmers() needs to tag the visited kmers
 
 void follow_kmers(KmerMap<KmerRec_t> & kmap,
-		  const Kmer_t & kmer0,
-		  const unsigned isuf,
-		  BaseVec * bv_p,
-		  float * mean_freq_p)
+                  const Kmer_t & kmer0,
+                  const unsigned isuf,
+                  BaseVec * bv_p,
+                  float * mean_freq_p)
 {
   bool verbose = false;
   const unsigned K = kmer0.K();
@@ -48,8 +50,8 @@ void follow_kmers(KmerMap<KmerRec_t> & kmap,
   *mean_freq_p = 0;
   size_t nk = 0;
 
-  for (unsigned i = 1; i < K; i++) 
-    bv_p->push_back(kmer0[i]); 
+  for (unsigned i = 1; i < K; i++)
+    bv_p->push_back(kmer0[i]);
 
 
   // ---- get 0th krec
@@ -57,20 +59,20 @@ void follow_kmers(KmerMap<KmerRec_t> & kmap,
 
   String patch = (isuf == 0) ? "a  " : "b  ";
   if (verbose) {
-    cout << patch << hieroglyphs(kmerFW) 
+    cout << patch << hieroglyphs(kmerFW)
          << " exists= " << (krec0.is_valid_kmer() ? 1 : 0)
          << (fw ? " fw" : " rc")
-         << " pre= " << krec0.str_prefixes() 
+         << " pre= " << krec0.str_prefixes()
          << " suf= " << krec0.str_suffixes() << endl;
   }
 
-  // ---- pick a suffix 
+  // ---- pick a suffix
   unsigned baseFW = krec0.suffix(isuf, fw);
   unsigned baseRC = 3u ^ baseFW;
 
   bool done = false;
   do {
-    
+
     // ---- build next kmer
     kmerFW.push_right(baseFW);
     kmerRC.push_left (baseRC);
@@ -81,14 +83,14 @@ void follow_kmers(KmerMap<KmerRec_t> & kmap,
     ForceAssert(krec.is_valid_kmer());
 
     if (!krec.tag() &&     // kmer not visited yet
-        krec.n_prefixes() == 1 && 
+        krec.n_prefixes() == 1 &&
         krec.n_suffixes() == 1) {
 
       // ---- add base to bv
-      bv_p->push_back(baseFW); 
+      bv_p->push_back(baseFW);
       *mean_freq_p += krec.freq();
       nk++;
-      
+
       krec.tag_set(); // mark this 1-1 kmer as visited
 
       baseFW = krec.suffix(0, fw);
@@ -97,8 +99,8 @@ void follow_kmers(KmerMap<KmerRec_t> & kmap,
       if (verbose) {
         patch += " ";
         cout << patch << hieroglyphs(kmerFW)
-	     << (fw ? " fw" : " rc")
-             << " pre= " << krec.str_prefixes() 
+             << (fw ? " fw" : " rc")
+             << " pre= " << krec.str_prefixes()
              << " suf= " << krec.str_suffixes() << endl;
       }
     }
@@ -106,8 +108,8 @@ void follow_kmers(KmerMap<KmerRec_t> & kmap,
       done = true;
     }
   } while (!done);
-           
-  if (nk > 0) 
+
+  if (nk > 0)
     *mean_freq_p /= float(nk);
 
   if (verbose)
@@ -122,19 +124,19 @@ void follow_kmers(KmerMap<KmerRec_t> & kmap,
 
 
 void print_alt_debug(const unsigned K,
-                     const String & type, 
+                     const String & type,
                      const unsigned n_alts_total,
-                     const BaseVec & bv_a, 
+                     const BaseVec & bv_a,
                      const BaseVec & bv_b)
 {
-  
+
   cout << "---------------------- " << type << " " << n_alts_total << endl;
-  
+
   for (unsigned i = 0; i < K; i++) cout << hieroglyph(bv_a[i]);
   cout << "   ";
   for (unsigned i = 0; i < K; i++) cout << hieroglyph(bv_a[bv_a.size() - K - 1 + i]);
   cout << endl;
-  
+
   for (unsigned i = 0; i < K; i++) cout << hieroglyph(bv_b[i]);
   cout << "   ";
   for (unsigned i = 0; i < K; i++) cout << hieroglyph(bv_b[bv_b.size() - K - 1 + i]);
@@ -170,31 +172,31 @@ void Polymorphisms::_add_single(const BaseVec           & bv,
                                 vec<float>              * kfv_p,
                                 vec<KmerIPoly<Kmer_t> > * i_poly_vec_p)
 {
-  const size_t i_poly = bvv_p->size(); 
-  bvv_p->push_back(bv); 
+  const size_t i_poly = bvv_p->size();
+  bvv_p->push_back(bv);
   kfv_p->push_back(kf);
-  
+
   SubKmers<BaseVec, Kmer_t> kmers_bv(_K, bv);
   const size_t nk = kmers_bv.n_kmers();
   for (unsigned ik = 0; ik != nk; ik++, kmers_bv.next())
-    i_poly_vec_p->push_back(KmerIPoly<Kmer_t>(kmers_bv.canonical(), 
-                                              i_poly, 
-                                              kmers_bv.is_canonical_fw(), 
-                                              ik, nk));
+    i_poly_vec_p->push_back(KmerIPoly<Kmer_t>(kmers_bv.canonical(),
+                            i_poly,
+                            kmers_bv.is_canonical_fw(),
+                            ik, nk));
 }
 
 bool Polymorphisms::_add_poly(const BaseVec           & bv_a,
                               const BaseVec           & bv_b,
                               const float               kf_a,
                               const float               kf_b,
-			      const BubbleValidator   & validator,
+                              const BubbleValidator   & validator,
                               vec<KmerIPoly<Kmer_t> > * poly_a_vec_p,
                               vec<KmerIPoly<Kmer_t> > * poly_b_vec_p)
 {
   bool a_is_strong = true;
   if (validator(bv_a, bv_b, kf_a, kf_b, & a_is_strong)) {
 
-    _a_is_strong.push_back(a_is_strong); 
+    _a_is_strong.push_back(a_is_strong);
 
     if (a_is_strong) {
       _add_single(bv_a, kf_a, & _bvv_a, & _kfv_a, poly_a_vec_p);
@@ -218,51 +220,51 @@ bool Polymorphisms::_add_poly(const BaseVec           & bv_a,
 // ---- kmap not a const because follow_kmers() needs to tag the visited.
 
 void Polymorphisms::build(KmerMap<KmerRec_t> & kmap,
-			  const BubbleValidator & validator)
+                          const BubbleValidator & validator)
 {
   bool verbose = false;
-    
+
   vec<KmerIPoly<Kmer_t> > poly_a_vec;
   vec<KmerIPoly<Kmer_t> > poly_b_vec;
-    
+
   BaseVec bv_a;
   BaseVec bv_b;
   float kf_a;
   float kf_b;
-    
+
   cout << Tag() << "Looking for polymorphisms." << endl;
   const size_t nh = kmap.size_hash();
   for (size_t ih = 0; ih != nh; dots_pct(ih++, nh)) {
-    
+
     const KmerRec_t & krec0 = kmap[ih];
-    if (krec0.is_valid_kmer() && 
+    if (krec0.is_valid_kmer() &&
         (krec0.n_suffixes() == 2 ||
          krec0.n_prefixes() == 2)) {
-        
+
       // ---- follow kmers forward
 
       if (krec0.n_suffixes() == 2) {
-          
+
         Kmer_t kmer0 = krec0;
         follow_kmers(kmap, kmer0, 0, &bv_a, &kf_a);
         follow_kmers(kmap, kmer0, 1, &bv_b, &kf_b);
-          
+
         _add_poly(bv_a, bv_b, kf_a, kf_b, validator, & poly_a_vec, & poly_b_vec);
       }
 
       // ---- follow kmers backward
-        
-      if (krec0.n_prefixes() == 2) { 
-          
+
+      if (krec0.n_prefixes() == 2) {
+
         Kmer_t kmer0 = reverse_complement(krec0);
         follow_kmers(kmap, kmer0, 0, &bv_a, &kf_a);
         follow_kmers(kmap, kmer0, 1, &bv_b, &kf_b);
-          
+
         _add_poly(bv_a, bv_b, kf_a, kf_b, validator, & poly_a_vec, & poly_b_vec);
       }
     }
   }
-    
+
   // ---- Building maps from vectors
 
   cout << Tag() << "Building A allele kmer map." << endl;
@@ -291,7 +293,7 @@ void Polymorphisms::build(KmerMap<KmerRec_t> & kmap,
 
 
 void polymorphisms_find_parallel(const unsigned      K,
-                                 const BaseVecVec  & bvv, 
+                                 const BaseVecVec  & bvv,
                                  Polymorphisms     * polys_p,
                                  KmerSpectrum      * kspec_p,
                                  const unsigned      VERBOSITY,
@@ -306,7 +308,7 @@ void polymorphisms_find_parallel(const unsigned      K,
 
 
 void polymorphisms_find_parallel(const unsigned      K,
-                                 const BaseVecVec  & bvv, 
+                                 const BaseVecVec  & bvv,
                                  Polymorphisms     * polys_p,
                                  KmerSpectrum      * kspec_p,
                                  const double        CN_max,
@@ -315,14 +317,14 @@ void polymorphisms_find_parallel(const unsigned      K,
                                  const size_t        mean_mem_ceil)
 {
   ForceAssertEq(K, kspec_p->K());
-  
+
   if (!(K & 1u)) {
     cout << Tag() << "K = " << K << " is not odd. Changing K to " << (K + 1) << "." << endl;
     exit(1);
   }
   const size_t nbv = bvv.size();
   size_t len_read = 0;
-  for (size_t ibv = 0; ibv < nbv; ibv++) 
+  for (size_t ibv = 0; ibv < nbv; ibv++)
     len_read += bvv[ibv].size();
   len_read /= nbv;
 
@@ -334,14 +336,14 @@ void polymorphisms_find_parallel(const unsigned      K,
     Validator validator_kf(1, 0);
     const double hash_table_ratio = 1.5;
     KmerMap<KmerRec_t> kmap;
-    
-    kmer_freq_affixes_map_build_parallel(K, bvv, validator_kf, hash_table_ratio, 
+
+    kmer_freq_affixes_map_build_parallel(K, bvv, validator_kf, hash_table_ratio,
                                          & kmap,
                                          VERBOSITY, NUM_THREADS, mean_mem_ceil);
 
 
     // ---- get kmer spectrum and determine upper limit on CN=1 kmer frequencies
-    
+
     kmer_spectrum_from_kmer_freq_map(kmap, kspec_p);
 
 
@@ -349,17 +351,17 @@ void polymorphisms_find_parallel(const unsigned      K,
     kspec_p->analyze(ploidy, len_read);
     ForceAssertGt(kspec_p->genome_size(), 0u);
     const size_t kf_min = 0;
-    const size_t kf_max = (CN_max + 0.5) * kspec_p->kf_max2(); 
+    const size_t kf_max = (CN_max + 0.5) * kspec_p->kf_max2();
     cout << Tag() << setw(12) << kspec_p->kf_max2() << "  kmer frequency of mode." << endl;
     cout << Tag() << setw(12) << kf_max << "  kmer frequency upper cutoff for CN=1." << endl;
-  
+
     PolyBubbleValidator validator_bubble(K, kf_min, kf_max);
 
     // ---- find ambiguities
-    
+
     cout << Tag() << "Finding polymorphisms." << endl;
     polys_p->build(kmap, validator_bubble);
-    
+
 
   }
 }
@@ -386,9 +388,9 @@ void polymorphisms_find_parallel(const unsigned      K,
 // ---- returns the approximate kmer index in the alternative path
 
 size_t i_kmer_alt(const BaseVec& bv_alt,
-		  const unsigned K, 
-		  const unsigned ik,
-		  const unsigned nk) 
+                  const unsigned K,
+                  const unsigned ik,
+                  const unsigned nk)
 {
   return (bv_alt.size() - K) * ik / (nk - 1);
 }
@@ -424,13 +426,13 @@ void base_vec_insert_alternative(const unsigned            K,
     cout << "before:     " << hieroglyphs(*bv_p) << endl;
   }
 
-  // ---- if the last kmer to delete is the last kmer in the read 
+  // ---- if the last kmer to delete is the last kmer in the read
   //      we will need to add the last K-1 bases of the alternative
-  const bool not_end = (i1k_bv0 < nb_bv0 - K); 
+  const bool not_end = (i1k_bv0 < nb_bv0 - K);
 
   // ---- the ambiguity is FW-FW or RC-RC
 
-  if (is_fw_kbv0 == k0_del.is_fw()) {  
+  if (is_fw_kbv0 == k0_del.is_fw()) {
     const unsigned i0k_del = k0_del.i_kmer();
     const unsigned i1k_del = i0k_del + nk_bv_del - 1;
 
@@ -443,8 +445,8 @@ void base_vec_insert_alternative(const unsigned            K,
     if (i1k_del >= nk_del) cout << "oopsie! fw" << endl;
     else {
       const unsigned i0b_ins = i_kmer_alt(bv_ins, K, i0k_del, nk_del);
-      const unsigned i1b_ins = i_kmer_alt(bv_ins, K, i1k_del, nk_del) + 
-        ((not_end) ? 0 : K - 1);        
+      const unsigned i1b_ins = i_kmer_alt(bv_ins, K, i1k_del, nk_del) +
+                               ((not_end) ? 0 : K - 1);
       const unsigned nb_ins = i1b_ins + 1 - i0b_ins;
 
       if (verbose) {
@@ -456,17 +458,17 @@ void base_vec_insert_alternative(const unsigned            K,
       for (unsigned i = 0; i < nb_ins; i++) {
         bv_p->push_back(bv_ins[i0b_ins + i]);
       }
-      
+
     }
-  } 
-  
+  }
+
   // ---- the ambiguity is FW-RC or RC-FW
-  
+
   else {
 
     const unsigned i1k_del = k0_del.i_kmer();
     const unsigned i0k_del = i1k_del - nk_bv_del + 1;
-    
+
     if (verbose) {
       cout << " fw-rc" << endl;
       cout << " i0k_del= " << i0k_del << endl;
@@ -475,11 +477,11 @@ void base_vec_insert_alternative(const unsigned            K,
     }
     if (i0k_del >= nk_del) cout << "oopsie! rc" << endl;
     else {
-      const unsigned i0b_ins = i_kmer_alt(bv_ins, K, i0k_del, nk_del)  + 
-        ((not_end) ? K - 1 : 0);
+      const unsigned i0b_ins = i_kmer_alt(bv_ins, K, i0k_del, nk_del)  +
+                               ((not_end) ? K - 1 : 0);
       const unsigned i1b_ins = i_kmer_alt(bv_ins, K, i1k_del, nk_del) + K - 1;
       const unsigned nb_ins = i1b_ins + 1 - i0b_ins;
-      
+
       if (verbose) {
         cout << " i0b_ins= " << i0b_ins << endl;
         cout << " i1b_ins= " << i1b_ins << endl;
@@ -510,7 +512,7 @@ void base_vec_insert_alternative(const unsigned            K,
 
 
 
-  
+
 // ---- Takes a table of ambiguity conversions and fixes a read
 
 bool base_vec_fix(const Polymorphisms & polys,
@@ -525,26 +527,26 @@ bool base_vec_fix(const Polymorphisms & polys,
   if (nb_bv0 >= K) {
     BaseVec       bv_new;
     QualNibbleVec qv_new;
-    
-    // ---- compute mean read quality 
-    //      qual vecs get updated too, and using the mean is the easiest way, 
+
+    // ---- compute mean read quality
+    //      qual vecs get updated too, and using the mean is the easiest way,
     //      albeit quite meaningless
-    
+
     unsigned q_mean = 0;
     if (qv_p) {
       for (unsigned i = 0; i < nb_bv0; i++) q_mean += (*qv_p)[i];
       q_mean /= nb_bv0;
     }
-    
+
     // ---- cycle through all the kmers in the read
-   
+
     const unsigned nk_bv0 = nb_bv0 - K + 1;
     bool is_good = true;
     bool to_correct = false;
     bool fill_end = true;
-    
+
     // ---- cycle through all bv0 kmers
-    
+
     unsigned ik_bv0 = 0;
     SubKmers<BaseVec, Kmer_t> kmer_bv0(K, *bv_p);
     while (kmer_bv0.not_done()) {
@@ -557,7 +559,7 @@ bool base_vec_fix(const Polymorphisms & polys,
 
         const unsigned i0k_bv0 = ik_bv0; // index of the first kmer to delete
         const bool is_fw_kbv0 = kmer_bv0.is_canonical_fw(); // fw info on first kmer
-        
+
         KmerIPoly<Kmer_t> k_del = k0_del;
         const unsigned  i_poly0 = k0_del.i_poly();
         unsigned        i_poly  = i_poly0;
@@ -573,17 +575,17 @@ bool base_vec_fix(const Polymorphisms & polys,
 
             if (k_del.is_valid_kmer())  i_poly = k_del.i_poly();
             else                        done   = true;
-          } 
-          else 
+          }
+          else
             done = true;
         }
         const unsigned i1k_bv0 = ik_bv0 - 1; // index of the last kmer to delete
 
 
-	// ---- if all is well insert alternative into basevector
+        // ---- if all is well insert alternative into basevector
 
-	if (i1k_bv0 >= i0k_bv0 && i_poly == i_poly0) {
-          
+        if (i1k_bv0 >= i0k_bv0 && i_poly == i_poly0) {
+
           base_vec_insert_alternative(K, i0k_bv0, i1k_bv0, nb_bv0, is_fw_kbv0,
                                       k0_del, polys.base_vec_strong(i_poly), & bv_new);
 
@@ -591,8 +593,8 @@ bool base_vec_fix(const Polymorphisms & polys,
           // -- add read mean quality score to fill unknown qualities
           //    as mentioned above this is quite meaningless, but very easy
 
-          const unsigned nb_ins = bv_new.size() - qv_new.size(); 
-          for (unsigned i = 0; i < nb_ins; i++) 
+          const unsigned nb_ins = bv_new.size() - qv_new.size();
+          for (unsigned i = 0; i < nb_ins; i++)
             qv_new.push_back(q_mean);
 
           if (i1k_bv0 == nk_bv0 - 1)
@@ -602,20 +604,20 @@ bool base_vec_fix(const Polymorphisms & polys,
           is_good = false;
         }
       }
-      
+
       if (ik_bv0 < nk_bv0) {
         bv_new.push_back((*bv_p)[ik_bv0]);
         if (qv_p)
           qv_new.push_back((*qv_p)[ik_bv0]);
       }
-     
+
       ik_bv0++;
       kmer_bv0.next();
-    } 
+    }
 
 
     // ---- only update base vector if all went well
-    
+
     if (to_correct && is_good) {
 
       // ---- fill end if necessary
@@ -645,9 +647,9 @@ bool base_vec_fix(const Polymorphisms & polys,
   }
 
   return fixed;
-  
+
 }
-  
+
 
 
 
@@ -664,7 +666,7 @@ class PolyRemoverProc
   size_t              & _jv;
   LockedData          & _lock;
   const size_t          _n_threads;
-  
+
 public:
   PolyRemoverProc(const Polymorphisms & polys,
                   BaseVecVec          * bvv_p,
@@ -678,11 +680,11 @@ public:
       _qvv(*qvv_p),
       _n_fixed(*n_fixed_p),
       _jv(*jv_p),
-      _lock(lock),      
+      _lock(lock),
       _n_threads(n_threads)
   {}
-  
-  void operator()(const size_t i_thread) 
+
+  void operator()(const size_t i_thread)
   {
     const size_t nv = _bvv.size();
     const size_t i0v = ( i_thread      * nv) / _n_threads;
@@ -709,16 +711,16 @@ public:
 
     /*
     Locker lock(_lock);
-    cout << " i_thread= " << i_thread 
-         << " nv= " << nv 
-         << " i0v= " << i0v 
-         << " i1v= " << i1v 
-         << " n_threads= " << _n_threads 
-         << " _n_fixed= " << _n_fixed 
+    cout << " i_thread= " << i_thread
+         << " nv= " << nv
+         << " i0v= " << i0v
+         << " i1v= " << i1v
+         << " n_threads= " << _n_threads
+         << " _n_fixed= " << _n_fixed
          << endl;
     */
   }
-  
+
 
 };
 

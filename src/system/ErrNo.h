@@ -21,25 +21,29 @@
 class ErrNo
 {
 public:
-    /// initialized with current value of errno global
-    ErrNo();
+  /// initialized with current value of errno global
+  ErrNo();
 
-    /// initialized with whatever value you want
-    explicit ErrNo( int err ) : mErrNo(err) {}
+  /// initialized with whatever value you want
+  explicit ErrNo( int err ) : mErrNo(err) {}
 
-    // compiler-supplied copying and destructor are OK
+  // compiler-supplied copying and destructor are OK
 
-    /// the value of the stored errno
-    int val() const { return mErrNo; }
+  /// the value of the stored errno
+  int val() const {
+    return mErrNo;
+  }
 
-    /// thread-safe method to produce the text associated with the errno
-    std::string text() const;
+  /// thread-safe method to produce the text associated with the errno
+  std::string text() const;
 
-    friend std::ostream& operator<<( std::ostream& os, ErrNo const& errNo )
-    { return os << errNo.text(); }
+  friend std::ostream& operator<<( std::ostream& os, ErrNo const& errNo )
+  {
+    return os << errNo.text();
+  }
 
 private:
-    int mErrNo;
+  int mErrNo;
 };
 
 #endif /* SYSTEM_ERRNO_H_ */

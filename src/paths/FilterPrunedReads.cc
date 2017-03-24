@@ -52,7 +52,7 @@
 int main( int argc, char *argv[] )
 {
   RunTime( );
-  
+
   BeginCommandArguments;
   CommandArgument_String( PRE );
   CommandArgument_String( DATA );
@@ -63,8 +63,8 @@ int main( int argc, char *argv[] )
   CommandArgument_Bool_OrDefault_Doc( USE_GRAPH, False, "use information from unipath adjacency graph" );
   CommandArgument_String_OrDefault( READS_OUT, "filled_reads_filt" );
   EndCommandArguments;
-  
-  
+
+
   // Filenames.
   String run_dir = PRE + "/" + DATA + "/" + RUN;
   String  reads_in = run_dir + "/" + READS_IN;
@@ -75,7 +75,7 @@ int main( int argc, char *argv[] )
   String paths_in_file = reads_in + ".paths.k" + ToString(K);
   String unipathsdb_file = run_dir + "/" + UNIPATHS + ".unipathsdb.k" + ToString(K);
   String uadj_graph_file = run_dir + "/" + UNIPATHS + ".unipath_adjgraph.k" + ToString(K);
-  
+
   if ( USE_GRAPH )
     ForceAssert( IsRegularFile( uadj_graph_file ) );
 
@@ -83,12 +83,12 @@ int main( int argc, char *argv[] )
   cout << Date() << ": Loading files..." << endl;
   vecKmerPath paths( paths_in_file );
   size_t n_reads = paths.size();
-  
+
   vec<tagged_rpint> unipathsdb;
   BinaryReader::readFile( unipathsdb_file, &unipathsdb );
-  
+
   digraph AG;
-  if ( USE_GRAPH ){
+  if ( USE_GRAPH ) {
     cout << Date() << ": reading adjacency graph" << endl;
     BinaryReader::readFile( uadj_graph_file, &AG );
   }
@@ -96,35 +96,35 @@ int main( int argc, char *argv[] )
   // Main algorithm!
   // This whole module is a wrapper for MarkReadsWithNovelKmers.
   vec<Bool> novel;
-  if ( ! USE_GRAPH ){
+  if ( ! USE_GRAPH ) {
     cout << Date() << ": Calling MarkReadsWithNovelKmers (main algorithm without adjacency graph)" << endl;
     MarkReadsWithNovelKmers( paths, unipathsdb, novel );
-  }else{
+  } else {
     cout << Date() << ": Calling MarkReadsWithNovelKmers2 (main algorithm using adjacency graph)" << endl;
     MarkReadsWithNovelKmers2( paths, unipathsdb, AG, novel );
   }
   Destroy( unipathsdb );
 
-  
-  
+
+
   // Report results of main algorithm.
   // NOTE: If too many reads have been marked as novel, you've probably
   // mismatched the kmer numbering systems.
   size_t n_novel = Sum( novel );
   double pct_novel = 100.0 * n_novel / double( n_reads );
   cout << Date() << ": Number of reads containing kmers not in the unipaths: " << n_novel << " / " << n_reads << " = " << pct_novel << "%" << endl;
-  
+
   // Remove the reads containing novel kmers from the dataset.
   cout << Date() << ": Removing these reads from the dataset" << endl;
   paths.EraseIf( novel );
   size_t n_reads_new = paths.size();
-  
+
   // Write output paths file.
   cout << Date() << ": Writing output file: paths" << endl;
   paths.WriteAll( reads_out + ".paths.k" + ToString(K) );
   Destroy( paths );
-  
-  
+
+
   // Remove reads from the bases (if the file exists.)
   if ( IsRegularFile( bases_in_file ) ) {
     cout << Date() << ": Writing output file: fastb" << endl;
@@ -135,7 +135,7 @@ int main( int argc, char *argv[] )
     bases.WriteAll( reads_out + ".fastb" );
   }
   else cout << "\tNot writing an output fastb file because the corresponding input does not exist: " << bases_in_file << endl;
-  
+
   // Remove reads from the quals (if the file exists.)
   if ( IsRegularFile( quals_in_file ) ) {
     cout << Date() << ": Writing output file: qualb" << endl;
@@ -146,7 +146,7 @@ int main( int argc, char *argv[] )
     quals.WriteAll( reads_out + ".qualb" );
   }
   else cout << "\tNot writing an output qualb file because the corresponding input does not exist: " << quals_in_file << endl;
-  
+
   // Remove reads from the pairs (if the file exists.)
   if ( IsRegularFile( pairs_in_file ) ) {
     cout << Date() << ": Writing output file: pairs" << endl;
@@ -157,16 +157,16 @@ int main( int argc, char *argv[] )
     pairs.Write( reads_out + ".pairs" );
   }
   else cout << "\tNot writing an output pairs file because the corresponding input does not exist: " << pairs_in_file << endl;
-  
-  
+
+
   // Write a ReadTracker.
   cout << Date() << ": Writing output file: readtrack" << endl;
   ReadTracker rt;
   rt.AddReadSet( reads_in, novel );
   rt.Dump( reads_out ); // creates the file <reads_out>.readtrack
-  
-  
-  
+
+
+
   // Done!
   cout << Date() << ": Done with FilterPrunedReads!" << endl;
   return 0;

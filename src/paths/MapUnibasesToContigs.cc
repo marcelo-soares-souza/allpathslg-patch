@@ -15,15 +15,15 @@
  * MapUnibasesToContigs
  */
 void MapUnibasesToContigs( const int K,
-			   const String &unibases_file,
-			   const String &contigs_file,
-			   const String &OUTBASE,
-			   ostream *log )
+                           const String &unibases_file,
+                           const String &contigs_file,
+                           const String &OUTBASE,
+                           ostream *log )
 {
   // Log stream.
   ofstream devnull ( "/dev/null" );
   ostream &out = log ? *log : devnull;
-  
+
   // File names.
   String kmers_file = OUTBASE + ".kmers.fastb";
   String map_file = OUTBASE + ".u2c";
@@ -36,7 +36,7 @@ void MapUnibasesToContigs( const int K,
     if ( contigs[ii].isize( ) >= K )
       nkmers += contigs[ii].size( ) - K + 1;
   out << ToStringAddCommas( nkmers ) << " found" << endl;
-  
+
   // Generate temp fastb files.
   out << Date( ) << ": generating and saving temp kmers file" << endl;
   vecbvec kmers;
@@ -50,7 +50,7 @@ void MapUnibasesToContigs( const int K,
     }
   }
   kmers.WriteAll( kmers_file );
-  
+
   // Align and sort (remove rc's).
   vec< triple<int64_t,int64_t,int> > aligns;
   out << Date( ) << ": running SearchFastb2... " << flush;
@@ -62,15 +62,15 @@ void MapUnibasesToContigs( const int K,
     fwaligns.reserve( aligns.size( ) / 2 );
     for (size_t ii=0; ii<aligns.size( ); ii++)
       if ( aligns[ii].third > -1 )
-	fwaligns.push_back( aligns[ii] );
+        fwaligns.push_back( aligns[ii] );
     sort( fwaligns.begin( ), fwaligns.end( ) );
     swap( fwaligns, aligns );
   }
-  
+
   // Remove kmers file.
   out << Date( ) << ": removing temp kmers file" << endl;
   Remove( kmers_file );
-  
+
   // Generate maps.
   out << Date( ) << ": generating contigs to unibases map" << endl;
   vec< pair<size_t,size_t> > c2u;
@@ -79,8 +79,8 @@ void MapUnibasesToContigs( const int K,
     size_t unibase_id = aligns[ii].second;
     size_t contig_id = to_contig[kmer_id];
     if ( c2u.size( ) < 1 ||
-	 contig_id != c2u.back( ).first ||
-	 unibase_id != c2u.back( ).second )
+         contig_id != c2u.back( ).first ||
+         unibase_id != c2u.back( ).second )
       c2u.push_back( make_pair( contig_id, unibase_id ) );
   }
   sort( c2u.begin( ), c2u.end( ) );
@@ -91,12 +91,12 @@ void MapUnibasesToContigs( const int K,
   UInt64VecVec u2c( n_unibases );
   for (size_t ii=0; ii<c2u.size( ); ii++)
     u2c[ c2u[ii].second ].push_back( c2u[ii].first );
-  
+
   // Save map.
   out << Date( ) << ": saving unibases to contigs map" << endl;
   u2c.WriteAll( map_file );
-  
+
   // Done.
   out << Date( ) << ": done" << endl;
-  
+
 }

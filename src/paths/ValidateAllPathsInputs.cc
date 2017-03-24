@@ -9,7 +9,7 @@
 const char *DOC =
   "Validates input data for ALLPATHS-LG. Checks that supplied libraries fit "
   "our requirements.";
-  
+
 #include "MainTools.h"
 #include "String.h"
 #include "Vec.h"
@@ -22,9 +22,9 @@ const char *DOC =
 enum LibType {frag,jump,long_jump,long_read};
 
 typedef VirtualMasterVec<basevector> VVecBVec;
-  
+
 void ErrorMessage(const String message) {
-  cout << "[ERROR] " << message << endl; 
+  cout << "[ERROR] " << message << endl;
 }
 
 bool IsFile(const String filename) {
@@ -45,10 +45,10 @@ bool ErrorIfFalse(bool test, const String message) {
 }
 
 
-PM_LibraryStats 
+PM_LibraryStats
 GetUnpairedLibraryStats( const String bases_filename )  {
   PM_LibraryStats stats;
-  
+
   // populate basic library stats
   stats.name = "Unpaired";
 
@@ -67,10 +67,10 @@ GetUnpairedLibraryStats( const String bases_filename )  {
     }
     stats.n_reads++;
   }
- 
+
   // Compute additional library stats
   stats.mean_len = (stats.n_reads == 0 ? 0 : stats.n_bases / stats.n_reads);
-  
+
   return stats;
 }
 
@@ -86,13 +86,13 @@ bool ValidateReference(const String file_head) {
 
   if (ErrorIfTrue(ref.size() == 0, "No contigs found.") )
     return false;
-  
+
   uint32_t ref_bases = 0;
-  for (VVecBVec::const_iterator it = ref.begin(); 
+  for (VVecBVec::const_iterator it = ref.begin();
        it != ref.end(); it++) {
     if (ErrorIfTrue(it->size() == 0, "Zero length contig found.") )
       return false;
-    ref_bases += it->size(); 
+    ref_bases += it->size();
   }
 
   cout << "Contigs     : " << ref.size() << endl;
@@ -111,7 +111,7 @@ bool ValidateLibraries(const LibType lib_type, const String file_head, const int
 
   if (lib_type != long_read) {
     error |= !IsFile(file_head + ".qualb");
-    error |= !IsFile(file_head + ".pairs"); 
+    error |= !IsFile(file_head + ".pairs");
   }
 
   if (error) // Missing files, unable to continue
@@ -123,11 +123,11 @@ bool ValidateLibraries(const LibType lib_type, const String file_head, const int
   if (lib_type != long_read) {   // Paired libraries
     PairsManager pairs;
     pairs.Read(file_head + ".pairs");
-  
+
     npairs = pairs.nPairs();
     nlibs = pairs.nLibraries();
     nreads = pairs.nReads();
-  
+
     if (ErrorIfTrue( nlibs == 0, "No libraries founds.") )  // Empty files, unable to continue
       return false;
 
@@ -163,22 +163,22 @@ bool ValidateLibraries(const LibType lib_type, const String file_head, const int
   for (size_t lib_id=0; lib_id<stats.size( ); lib_id++) {
     const PM_LibraryStats &lib = stats[lib_id];
     log << str_type << ","
-	<< lib.name << ","
-	<< lib.n_bases << ","
-	<< lib.min_len << ","
-	<< lib.max_len << ","
-	<< lib.mean_len << "\n";
+        << lib.name << ","
+        << lib.n_bases << ","
+        << lib.min_len << ","
+        << lib.max_len << ","
+        << lib.mean_len << "\n";
   }
   log << endl;
 
   // Basic consistency tests
-  
+
   if (lib_type != long_read) {
     error |= ErrorIfTrue(MastervecFileObjectCount(file_head + ".fastb") != nreads,
-			 "Inconsistency found between pairs manager and fastb");
+                         "Inconsistency found between pairs manager and fastb");
 
     error |= ErrorIfTrue(MastervecFileObjectCount(file_head + ".qualb") != nreads,
-			 "Inconsistency found between pairs manager and qualb");
+                         "Inconsistency found between pairs manager and qualb");
   }
 
   // General per library tests
@@ -186,14 +186,14 @@ bool ValidateLibraries(const LibType lib_type, const String file_head, const int
     String libname =  stats[i].name;
     if (lib_type == frag) {
       error |= ErrorIfTrue(2*stats[i].max_len + stats[i].sep + 2 * stats[i].sd <= static_cast<unsigned>(K),
-			   "Library " + libname + " contains no reads that overlap to create a super read larger K (" + ToString(K) + ").") ;
+                           "Library " + libname + " contains no reads that overlap to create a super read larger K (" + ToString(K) + ").") ;
     }
   }
-  
+
   // Fragment library tests
   if (lib_type == frag) {
     bool found_good_sep = false;
-    for ( size_t i = 0; i < nlibs; i++ ) 
+    for ( size_t i = 0; i < nlibs; i++ )
       found_good_sep |= (stats[i].sep - 2 * stats[i].sd <= 0 );
     error |= ErrorIfFalse(found_good_sep, "Could not find a fragment library whose reads overlapped.");
   }
@@ -201,7 +201,7 @@ bool ValidateLibraries(const LibType lib_type, const String file_head, const int
   // Jumping library tests
   if (lib_type == jump) {
     bool found_good_sep = false;
-    for ( size_t i = 0; i < nlibs; i++ ) 
+    for ( size_t i = 0; i < nlibs; i++ )
       found_good_sep |= (stats[i].sep > 500 && stats[i].sep < 10000 );
     error |= ErrorIfFalse(found_good_sep, "Could not find a jumping library with a separation > 1000 and < 10000 bases.");
   }
@@ -209,15 +209,15 @@ bool ValidateLibraries(const LibType lib_type, const String file_head, const int
   // Long jumping library tests
   if (lib_type == long_jump) {
     bool found_good_sep = false;
-    for ( size_t i = 0; i < nlibs; i++ ) 
+    for ( size_t i = 0; i < nlibs; i++ )
       found_good_sep |= (stats[i].sep > 5000 );
     error |= ErrorIfFalse(found_good_sep, "Could not find a long jumping library with a separation > 5000.");
   }
 
   // Long read tests
   if (lib_type == long_read) {
-    error |= ErrorIfTrue(stats[0].mean_len < static_cast<uint32_t>(K), 
-			 "Mean read length < " + ToString(K) + " (CLR_KOUT)");
+    error |= ErrorIfTrue(stats[0].mean_len < static_cast<uint32_t>(K),
+                         "Mean read length < " + ToString(K) + " (CLR_KOUT)");
   }
 
   return !error;
@@ -237,15 +237,15 @@ int main( int argc, char *argv[] )
   CommandArgument_Int(K);
   CommandArgument_Int(K_LONG);
   CommandArgument_Bool_OrDefault_Doc( WARN_ONLY, False,
-    "Don't stop executation of pipeline if a problem is found.")
+                                      "Don't stop executation of pipeline if a problem is found.")
   CommandArgument_Bool_OrDefault_Doc( LONG_JUMPS, False,
-    "Validate long jumping read libraries.")
+                                      "Validate long jumping read libraries.")
   CommandArgument_Bool_OrDefault_Doc( LONG_READS, False,
-    "Validate long jumping read libraries.")
+                                      "Validate long jumping read libraries.")
   CommandArgument_Bool_OrDefault_Doc( REFERENCE, False,
-    "Validate optional reference genome.")
+                                      "Validate optional reference genome.")
   CommandArgument_String_OrDefault_Doc( REPORT, "ValidateAllPathsInputs_core_stats.out",
-    "Save to file core stats (used by reporting code).")
+                                        "Save to file core stats (used by reporting code).")
   EndCommandArguments;
 
   String data_dir = PRE + "/" + DATA;
@@ -259,7 +259,7 @@ int main( int argc, char *argv[] )
 
   ofstream log( core_stats_log_file.c_str( ) );
   PrintCommandPretty( log );
-  
+
   bool error = false;
 
   // Validate fragment reads
@@ -267,53 +267,53 @@ int main( int argc, char *argv[] )
   cout << "Validating Fragment Libraries" << endl
        << "=============================" << endl << endl;
 
-  error |= !ValidateLibraries(frag, frag_reads_head, K, log); 
+  error |= !ValidateLibraries(frag, frag_reads_head, K, log);
 
 
   cout << endl
        << "Validating Jumping Libraries" << endl
        << "============================" << endl << endl;
 
-  error |= !ValidateLibraries(jump, jump_reads_head, K, log); 
+  error |= !ValidateLibraries(jump, jump_reads_head, K, log);
 
 
   if (LONG_JUMPS) {
     cout << endl
-	 << "Validating Long Jumping Libraries" << endl
-	 << "=================================" << endl << endl;
-    
-    error |= !ValidateLibraries(long_jump, long_jump_reads_head, K, log); 
+         << "Validating Long Jumping Libraries" << endl
+         << "=================================" << endl << endl;
+
+    error |= !ValidateLibraries(long_jump, long_jump_reads_head, K, log);
   }
 
 
   if (LONG_READS) {
     cout << endl
-	 << "Validating Long Reads" << endl
-	 << "=====================" << endl << endl;
+         << "Validating Long Reads" << endl
+         << "=====================" << endl << endl;
 
-    error |= !ValidateLibraries(long_read, long_reads_head, K_LONG, log); 
+    error |= !ValidateLibraries(long_read, long_reads_head, K_LONG, log);
   }
 
   if (REFERENCE) {
     cout << endl
-	 << "Validating Reference Genome" << endl
-	 << "===========================" << endl << endl;
+         << "Validating Reference Genome" << endl
+         << "===========================" << endl << endl;
 
-    error |= !ValidateReference(reference_head); 
+    error |= !ValidateReference(reference_head);
   }
 
   cout << endl;
   log.close( );
-  
+
   if (!error)
     cout << "Validation succeeded." << endl;
-  if (error && WARN_ONLY) 
+  if (error && WARN_ONLY)
     cout << "Validation failed, but proceeding anyway." << endl;
   else if (error) {
     cout << "Validation failed. Aborting RunAllPathsLG." << endl
-	 << "Please fix problems noted above and try again." << endl
-	 << "For library requirements see the ALLPATHS-LG manual." << endl
-	 << "To continue despite the validation failure, use VAPI_WARN_ONLY=True" << endl;
+         << "Please fix problems noted above and try again." << endl
+         << "For library requirements see the ALLPATHS-LG manual." << endl
+         << "To continue despite the validation failure, use VAPI_WARN_ONLY=True" << endl;
     exit(1);
   }
 }

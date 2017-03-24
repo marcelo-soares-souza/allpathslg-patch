@@ -21,13 +21,13 @@
  * Align reads to contigs. Output is saved in aligns, index.
  */
 void AlignReadsToContigs( const int K,
-			  const String &tmp_dir,
-			  const String &reads_fastb_file,
-			  const vec<fastavector> &contigs,
-			  vec<alignlet> &aligns,
-			  vec<int> &index,
-			  ostream &log,
-			  bool VERBOSE = false );
+                          const String &tmp_dir,
+                          const String &reads_fastb_file,
+                          const vec<fastavector> &contigs,
+                          vec<alignlet> &aligns,
+                          vec<int> &index,
+                          ostream &log,
+                          bool VERBOSE = false );
 
 /**
  * ReportScaffoldsN50
@@ -35,7 +35,7 @@ void AlignReadsToContigs( const int K,
  * Print N-stats for contigs and scaffolds.
  */
 void ReportScaffoldsN50( const vec<superb> &supers,
-			 ostream &out );
+                         ostream &out );
 
 /**
  * ReportScaffoldsBrief
@@ -43,9 +43,9 @@ void ReportScaffoldsN50( const vec<superb> &supers,
  * More compact version (one liner)
  */
 void ReportScaffoldsBrief( const vec<superb> &supers,
-			   const int min_links,
-			   const int step,
-			   ostream &out );
+                           const int min_links,
+                           const int step,
+                           ostream &out );
 
 /**
  * SaveInterimScaffolds
@@ -55,12 +55,12 @@ void ReportScaffoldsBrief( const vec<superb> &supers,
  * genome.lookup file is found in data_dir.
  */
 void SaveInterimScaffolds( const String &data_dir,
-			   const String &out_dir,
-			   const PairsManager &pairs,
-			   const vec<fastavector> &contigs,
-			   const vec<superb> &supers,
-			   const vec<alignlet> *aligns = 0,
-			   const vec<int> *index = 0);
+                           const String &out_dir,
+                           const PairsManager &pairs,
+                           const vec<fastavector> &contigs,
+                           const vec<superb> &supers,
+                           const vec<alignlet> *aligns = 0,
+                           const vec<int> *index = 0);
 
 /**
  * UpdateIndexFile
@@ -81,6 +81,6 @@ size_t UpdateIndexFile( const vec<int> &orig_index, vec<int> &filt_index );
  * exactly one super).
  */
 bool CheckScaffoldsIntegrity( const size_t n_contigs,
-			      const vec<superb> &supers );
+                              const vec<superb> &supers );
 
 #endif

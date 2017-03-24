@@ -19,19 +19,19 @@ int main(int argc, char *argv[])
   BeginCommandArguments;
   CommandDoc(DOC);
   CommandArgument_String_Doc(IN,
-    "Fastb file to convert.");
-  CommandArgument_String_OrDefault_Doc(OUT, "", 
-    "Output fasta filename. Default is to use IN filename, replacing extension "
-    "with 'fasta'. (To output to standard out use '-')");
+                             "Fastb file to convert.");
+  CommandArgument_String_OrDefault_Doc(OUT, "",
+                                       "Output fasta filename. Default is to use IN filename, replacing extension "
+                                       "with 'fasta'. (To output to standard out use '-')");
   CommandArgument_Bool_OrDefault_Doc(ONE_LINE_PER_SEQUENCE, False,
-    "Output fasta sequence with no line breaks and no record headers");
+                                     "Output fasta sequence with no line breaks and no record headers");
   CommandArgument_Int_OrDefault_Doc(BREAKCOL, 80,
-    "Break lines that exceed this length.");
+                                    "Break lines that exceed this length.");
   CommandArgument_UnsignedInt_OrDefault_Doc(READ_COUNT, 0,
-    "Only convert the first READ_COUNT basevectors.");
+      "Only convert the first READ_COUNT basevectors.");
   EndCommandArguments;
 
-  if (OUT.empty()) 
+  if (OUT.empty())
     OUT = IN.SafeBefore(".fastb") + ".fasta";
 
   // Setup virtual master vec to stream in the fastb
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     if (ONE_LINE_PER_SEQUENCE) {
       os << reads_itr->ToString() << endl;
       count++;
-    } 
+    }
     else {
       reads_itr->PrintCol(os, ToString(count++), BREAKCOL);
     }

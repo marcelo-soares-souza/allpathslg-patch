@@ -29,12 +29,12 @@ const double jif_sec = 1.0 / sec_jif;
 
 
 istream &GetLine(istream &is, String &Str, char delimiter = '\n') {
-	string str;
-	getline(is, str);
-	
-	Str = str;
+  string str;
+  getline(is, str);
 
-	return is;
+  Str = str;
+
+  return is;
 }
 
 // gets a token from a line of space separated tokens
@@ -55,7 +55,9 @@ String StatLineToken(const String &S, int i) {
   }
   i -= 2;
   int j0 = s.find(") ") + 2;
-  while (i--) { j0 = s.find(" ", j0) + 1; }
+  while (i--) {
+    j0 = s.find(" ", j0) + 1;
+  }
   int j1 = s.find(" ", j0);
   return s.substr(j0, j1 - j0);
 }
@@ -67,13 +69,15 @@ String StatLineToken(const String &S, int i) {
 
 class Process {
 public:
-  Process(int pid = 0) : _pid(pid), _cmdline(""), 
-                         _etime(0), _etime_prev(0), _detime(0),
-                         _utime(0), _utime_prev(0), _dutime(0),
-                         _vmsize(0), _vmlck(0), _vmrss(0), 
-                         _vmdata(0), _vmstk(0), _vmexe(0), _vmlib(0) {}
+  Process(int pid = 0) : _pid(pid), _cmdline(""),
+    _etime(0), _etime_prev(0), _detime(0),
+    _utime(0), _utime_prev(0), _dutime(0),
+    _vmsize(0), _vmlck(0), _vmrss(0),
+    _vmdata(0), _vmstk(0), _vmexe(0), _vmlib(0) {}
 
-  bool IsRunning() { return IsDirectory("/proc/" + ToString(_pid)); }
+  bool IsRunning() {
+    return IsDirectory("/proc/" + ToString(_pid));
+  }
 
 
   void Load() {
@@ -85,18 +89,32 @@ public:
         String field = line.Before(":");
         int value = WhiteSpaceFree(line.After(":").Before("kB")).Int();
 
-        if      (field == "VmSize") { _vmsize = value; }
-        else if (field == "VmLck" ) { _vmlck  = value; }
-        else if (field == "VmRSS" ) { _vmrss  = value; }
-        else if (field == "VmData") { _vmdata = value; }
-        else if (field == "VmStk" ) { _vmstk  = value; }
-        else if (field == "VmExe" ) { _vmexe  = value; }
-        else if (field == "VmLib" ) { _vmlib  = value; }
+        if      (field == "VmSize") {
+          _vmsize = value;
+        }
+        else if (field == "VmLck" ) {
+          _vmlck  = value;
+        }
+        else if (field == "VmRSS" ) {
+          _vmrss  = value;
+        }
+        else if (field == "VmData") {
+          _vmdata = value;
+        }
+        else if (field == "VmStk" ) {
+          _vmstk  = value;
+        }
+        else if (field == "VmExe" ) {
+          _vmexe  = value;
+        }
+        else if (field == "VmLib" ) {
+          _vmlib  = value;
+        }
       }
     }
     statusstream.close();
 
-    
+
 
     ifstream statstream(("/proc/" + ToString(_pid) + "/stat").c_str());
     GetLine(statstream, line);
@@ -107,7 +125,7 @@ public:
     _utime_prev = _utime;
     _utime = StatLineToken(line, 13).Double() * jif_sec;   // the 13th entry on /proc/<pid>/stat
     _dutime = _utime - _utime_prev;
-    
+
 
     // etime is the elapsed in seconds
 
@@ -118,14 +136,14 @@ public:
     GetLine(uptimestream, line);
     uptimestream.close();
     double t_now_s = LineToken(line, 0).Double();  // the 1st entry on /proc/uptime
-    
+
     _etime_prev = _etime;
     _etime = t_now_s - t_start_s;
-    
+
     // Bug fix: sometimes t_start_s is not properly loaded.
     // In this case, just keep _etime constant, so _detime = 0.
     if ( t_start_s == 0 ) _etime = _etime_prev;
-    
+
     _detime = _etime - _etime_prev;
 
   }
@@ -136,35 +154,41 @@ public:
     Remove(tracefile);
 
     int kill_status = kill(_pid, SIGUSR1);
-    while(!IsRegularFile(tracefile)) { usleep(10000); }
+    while(!IsRegularFile(tracefile)) {
+      usleep(10000);
+    }
 
     String line;
     ifstream tracestream(tracefile.c_str());
-    while(GetLine(tracestream, line)) { traceback += "\n#\t" + line;	}
+    while(GetLine(tracestream, line)) {
+      traceback += "\n#\t" + line;
+    }
     tracestream.close();
 
     Remove(tracefile);
     return traceback;
   }
-  
-  void Abort() { kill(_pid, SIGABRT); }
- 
+
+  void Abort() {
+    kill(_pid, SIGABRT);
+  }
+
   String DataLineHeader() {
     return "time(sec), etime, detime, utime, dutime, vmsize(KB), vmrss, vmdata, vmstk, vmexe, vmlib";
   }
 
   String DataLine() {
-    return ToString(time(NULL)) + 
-      " " + ToString(_etime) + 
-      " " + ToString(_detime) + 
-      " " + ToString(_utime) + 
-      " " + ToString(_dutime) + 
-      " " + ToString(_vmsize) + 
-      " " + ToString(_vmrss) + 
-      " " + ToString(_vmdata) + 
-      " " + ToString(_vmstk) + 
-      " " + ToString(_vmexe) + 
-      " " + ToString(_vmlib);
+    return ToString(time(NULL)) +
+           " " + ToString(_etime) +
+           " " + ToString(_detime) +
+           " " + ToString(_utime) +
+           " " + ToString(_dutime) +
+           " " + ToString(_vmsize) +
+           " " + ToString(_vmrss) +
+           " " + ToString(_vmdata) +
+           " " + ToString(_vmstk) +
+           " " + ToString(_vmexe) +
+           " " + ToString(_vmlib);
   }
 
 
@@ -177,27 +201,49 @@ public:
         _cmdline += (cmdchar == 0) ? ' ' : cmdchar;
       }
       cout << endl;
-      
+
       cmdlinestream.close();
     }
-    
+
     return _cmdline;
   }
 
-  
-  double &ETime()  { return _etime;  }
-  double &DETime()  { return _detime;  }
 
-  double &UTime()  { return _utime;  }
-  double &DUTime()  { return _dutime;  }
+  double &ETime()  {
+    return _etime;
+  }
+  double &DETime()  {
+    return _detime;
+  }
 
-  int &VmSize()  { return _vmsize; }
-  int &VmLck()   { return _vmlck;  }
-  int &VmRss()   { return _vmrss;  }
-  int &VmData()  { return _vmdata; }
-  int &VmStk()   { return _vmstk;  }
-  int &VmExe()   { return _vmexe;  }
-  int &VmLib()   { return _vmlib;  }
+  double &UTime()  {
+    return _utime;
+  }
+  double &DUTime()  {
+    return _dutime;
+  }
+
+  int &VmSize()  {
+    return _vmsize;
+  }
+  int &VmLck()   {
+    return _vmlck;
+  }
+  int &VmRss()   {
+    return _vmrss;
+  }
+  int &VmData()  {
+    return _vmdata;
+  }
+  int &VmStk()   {
+    return _vmstk;
+  }
+  int &VmExe()   {
+    return _vmexe;
+  }
+  int &VmLib()   {
+    return _vmlib;
+  }
 
 private:
   int _pid;
@@ -241,7 +287,7 @@ int main(int argc, char **argv) {
   Process maxps;
   Process ps(PID);
 
-  
+
   if (ps.IsRunning()) {
 
     ofstream fout( IsDirectory(OUT) ? (OUT + "/" + ToString(PID) + ".mm.log").c_str() : OUT.c_str() );
@@ -252,10 +298,10 @@ int main(int argc, char **argv) {
     int iter = 0;
     do {
       ps.Load();
-      
+
       if (iter++ % INTERVAL == 0) {
         fout << "(MM," << PID << ") "  << ps.DataLine() << endl << flush;
-        
+
         if (WITH_TRACEBACK) {
           fout << "# (MM) process traceback: " << ps.GetTraceback() << endl;
         }
@@ -263,25 +309,41 @@ int main(int argc, char **argv) {
 
       if (MEM_LIMIT > 0 && ps.VmSize() > MEM_LIMIT) {
         fout << "# (MM) notice: monitored process exceeded memory threshold of " << MEM_LIMIT << " kB; killing " << PID << endl;
-        
+
         if (TRACEBACK_ON_OVERFLOW && !WITH_TRACEBACK) {
           fout << "# (MM) process final traceback: " << ps.GetTraceback() << endl;
         }
-        
+
         ps.Abort();
       }
-      
+
       maxps.UTime() = ps.UTime();
       maxps.ETime() = ps.ETime();
-      if (ps.DUTime() > maxps.DUTime()) { maxps.DUTime() = ps.DUTime(); }
-      if (ps.DETime() > maxps.DETime()) { maxps.DETime() = ps.DETime(); }
-      if (ps.VmSize() > maxps.VmSize()) { maxps.VmSize() = ps.VmSize(); }
-      if (ps.VmRss()  > maxps.VmRss())  { maxps.VmRss()  = ps.VmRss();  }
-      if (ps.VmData() > maxps.VmData()) { maxps.VmData() = ps.VmData(); }
-      if (ps.VmStk()  > maxps.VmStk())  { maxps.VmStk()  = ps.VmStk();  }
-      if (ps.VmExe()  > maxps.VmExe())  { maxps.VmExe()  = ps.VmExe();  }
-      if (ps.VmLib()  > maxps.VmLib())  { maxps.VmLib()  = ps.VmLib();  }
-        
+      if (ps.DUTime() > maxps.DUTime()) {
+        maxps.DUTime() = ps.DUTime();
+      }
+      if (ps.DETime() > maxps.DETime()) {
+        maxps.DETime() = ps.DETime();
+      }
+      if (ps.VmSize() > maxps.VmSize()) {
+        maxps.VmSize() = ps.VmSize();
+      }
+      if (ps.VmRss()  > maxps.VmRss())  {
+        maxps.VmRss()  = ps.VmRss();
+      }
+      if (ps.VmData() > maxps.VmData()) {
+        maxps.VmData() = ps.VmData();
+      }
+      if (ps.VmStk()  > maxps.VmStk())  {
+        maxps.VmStk()  = ps.VmStk();
+      }
+      if (ps.VmExe()  > maxps.VmExe())  {
+        maxps.VmExe()  = ps.VmExe();
+      }
+      if (ps.VmLib()  > maxps.VmLib())  {
+        maxps.VmLib()  = ps.VmLib();
+      }
+
       sleep(1);
     } while (ps.IsRunning());
 

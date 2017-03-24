@@ -34,25 +34,45 @@ public:
 
   void Set( int interval_id, int seq_id, int begin, int end );
 
-  void SetIntervalId( int interval_id ) { interval_id_ = interval_id; }
+  void SetIntervalId( int interval_id ) {
+    interval_id_ = interval_id;
+  }
 
-  void SetSeqId( int seq_id ) { seq_id_ = seq_id; }
+  void SetSeqId( int seq_id ) {
+    seq_id_ = seq_id;
+  }
 
-  void SetBegin( int begin ) { begin_ = begin; }
+  void SetBegin( int begin ) {
+    begin_ = begin;
+  }
 
-  void SetEnd( int end ) { end_ = end; }
+  void SetEnd( int end ) {
+    end_ = end;
+  }
 
-  void IncrementEnd() { ++end_; }
+  void IncrementEnd() {
+    ++end_;
+  }
 
-  int IntervalId( ) const { return interval_id_; }
+  int IntervalId( ) const {
+    return interval_id_;
+  }
 
-  int SeqId( ) const { return seq_id_; }
+  int SeqId( ) const {
+    return seq_id_;
+  }
 
-  int Begin( ) const { return begin_; }
+  int Begin( ) const {
+    return begin_;
+  }
 
-  int End( ) const { return end_; }
+  int End( ) const {
+    return end_;
+  }
 
-  int Length( ) const { return end_ - begin_; }
+  int Length( ) const {
+    return end_ - begin_;
+  }
 
   // Set the coordinates of this to be the intersection of a and b.
   // If a and b are on different sequences, this is set to be the
@@ -87,12 +107,12 @@ public:
   // Sort first by sequence id, then start on sequence.
   friend bool operator< (const seq_interval &lint, const seq_interval &rint) {
     return ( lint.seq_id_ < rint.seq_id_ ||
-	     ( lint.seq_id_ == rint.seq_id_ &&
-	       ( lint.begin_ < rint.begin_ ||
-		 ( lint.begin_ == rint.begin_ &&
-		   ( lint.end_ < rint.end_ ||
-		     ( lint.end_ == rint.end_ &&
-		       ( lint.interval_id_ < rint.interval_id_ ) ) ) ) ) ) );
+             ( lint.seq_id_ == rint.seq_id_ &&
+               ( lint.begin_ < rint.begin_ ||
+                 ( lint.begin_ == rint.begin_ &&
+                   ( lint.end_ < rint.end_ ||
+                     ( lint.end_ == rint.end_ &&
+                       ( lint.interval_id_ < rint.interval_id_ ) ) ) ) ) ) );
   }
 
   // operator>
@@ -107,12 +127,12 @@ public:
     public binary_function<seq_interval,seq_interval,bool> {
     bool operator()(const seq_interval& lint, const seq_interval& rint) {
       return ( lint.interval_id_ < rint.interval_id_ ||
-	       ( lint.interval_id_ == rint.interval_id_ &&
-		 ( lint.seq_id_ < rint.seq_id_ ||
-		   ( lint.seq_id_ == rint.seq_id_ &&
-		     ( lint.begin_ < rint.begin_ ||
-		       ( lint.begin_ == rint.begin_ &&
-			 ( lint.end_ < rint.end_ ) ) ) ) ) ) );
+               ( lint.interval_id_ == rint.interval_id_ &&
+                 ( lint.seq_id_ < rint.seq_id_ ||
+                   ( lint.seq_id_ == rint.seq_id_ &&
+                     ( lint.begin_ < rint.begin_ ||
+                       ( lint.begin_ == rint.begin_ &&
+                         ( lint.end_ < rint.end_ ) ) ) ) ) ) );
     }
   };
 
@@ -121,12 +141,12 @@ public:
     public binary_function<seq_interval,seq_interval,bool> {
     bool operator()(const seq_interval& lint, const seq_interval& rint) {
       return ( lint.Length() < rint.Length() ||
-	       ( lint.Length() == rint.Length() &&
-		 ( lint.interval_id_ < rint.interval_id_ ||
-		   ( lint.interval_id_ == rint.interval_id_ &&
-		     ( lint.seq_id_ < rint.seq_id_ ||
-		       ( lint.seq_id_ == rint.seq_id_ &&
-			 ( lint.begin_ < rint.begin_ ) ) ) ) ) ) );
+               ( lint.Length() == rint.Length() &&
+                 ( lint.interval_id_ < rint.interval_id_ ||
+                   ( lint.interval_id_ == rint.interval_id_ &&
+                     ( lint.seq_id_ < rint.seq_id_ ||
+                       ( lint.seq_id_ == rint.seq_id_ &&
+                         ( lint.begin_ < rint.begin_ ) ) ) ) ) ) );
     }
   };
 

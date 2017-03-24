@@ -28,12 +28,12 @@
  * INTERNAL_SEP: return win of separation (withouth read lengths)
  */
 void MapAligns( vec<seq_interval> &wins,
-		const shandler &supers,
-		const vec<alignlet> &aligns,
-		const vec<int> &index,
-		const PairsManager &pairs,
-		const double MAX_STRETCH = 3.5,
-		const bool INTERNAL_SEP = true,
-		ostream *log = 0 );
+                const shandler &supers,
+                const vec<alignlet> &aligns,
+                const vec<int> &index,
+                const PairsManager &pairs,
+                const double MAX_STRETCH = 3.5,
+                const bool INTERNAL_SEP = true,
+                ostream *log = 0 );
 
 #endif

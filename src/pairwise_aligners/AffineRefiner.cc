@@ -5,8 +5,8 @@
 #include "pairwise_aligners/SmithWatAffine.h"
 
 void
-AffineRefiner::RefineAlign( allpathslg::align  &theAlign, 
-                            const basevector &bases1, 
+AffineRefiner::RefineAlign( allpathslg::align  &theAlign,
+                            const basevector &bases1,
                             const basevector &bases2 )
 {
   /* FOR DEBUGGING
@@ -40,11 +40,11 @@ AffineRefiner::RefineAlign( allpathslg::align  &theAlign,
   m_lastAnchor = -1;
   m_posOn1 = theAlign.pos1();
   m_posOn2 = theAlign.pos2();
-  
+
   for ( int blockNum = 0; blockNum < theAlign.Nblocks(); ++blockNum )
     this->CheckBlock( blockNum, theAlign,
                       bases1, bases2 );
-  
+
   for ( int copyBlockNum = m_lastAnchor + 1;
         copyBlockNum < theAlign.Nblocks(); ++copyBlockNum )
   {
@@ -57,7 +57,7 @@ AffineRefiner::RefineAlign( allpathslg::align  &theAlign,
   m_newAlign.Setpos1( theAlign.pos1() );
   m_newAlign.Setpos2( theAlign.pos2() );
   m_newAlign.SetNblocks( m_newAlignGaps.size() );
-  
+
   if ( m_newAlign.Nblocks() > 0 )
   {
     int firstGap = m_newAlignGaps.front();
@@ -107,7 +107,7 @@ AffineRefiner::BlockIsAnchor( const int currentBlock,
                               const basevector &bases2 )
 {
   int len = theAlign.Lengths( currentBlock );
-  if ( len < m_minAnchorLength ) 
+  if ( len < m_minAnchorLength )
     return false;
 
   int perfectRunLength = 0;
@@ -120,10 +120,10 @@ AffineRefiner::BlockIsAnchor( const int currentBlock,
   return false;
 }
 
-    
-void 
-AffineRefiner::CheckBlock( const int currentBlock, 
-                           const allpathslg::align  &theAlign, 
+
+void
+AffineRefiner::CheckBlock( const int currentBlock,
+                           const allpathslg::align  &theAlign,
                            const basevector &bases1, const basevector &bases2 )
 {
   int gap = theAlign.Gaps( currentBlock );
@@ -170,16 +170,16 @@ AffineRefiner::CheckBlock( const int currentBlock,
   // If this block isn't an anchor, proceed.
   else
     m_sumLengths += theAlign.Lengths( currentBlock );
-  
+
   m_posOn1 += theAlign.Lengths( currentBlock );
   m_posOn2 += theAlign.Lengths( currentBlock );
 }
 
 
 void
-AffineRefiner::PatchAlignment( const allpathslg::align  &theAlign, 
-                               const int startAnchor, 
-                               const int stopAnchor, 
+AffineRefiner::PatchAlignment( const allpathslg::align  &theAlign,
+                               const int startAnchor,
+                               const int stopAnchor,
                                const basevector &bases1, const basevector &bases2 )
 {
   // Find where the last block added to the new alignment ends, which
@@ -203,7 +203,7 @@ AffineRefiner::PatchAlignment( const allpathslg::align  &theAlign,
   // Find the length of the gappy region we're patching.
   int len1 = 0;
   int len2 = 0;
-  
+
   for ( int blockNum = startAnchor + 1; blockNum <= stopAnchor; ++blockNum )
   {
     int gap = theAlign.Gaps( blockNum );

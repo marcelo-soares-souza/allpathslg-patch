@@ -16,16 +16,16 @@
  * RemoveDuplicateAligns
  */
 void RemoveDuplicateAligns( const PairsManager &pairs,
-			    const vec<alignlet> &aligns,
-			    vec<int> &index,
-			    ostream &log )
+                            const vec<alignlet> &aligns,
+                            vec<int> &index,
+                            ostream &log )
 {
   log << Date( ) << ": removing duplicate molecules" << endl;
 
   vec<String> lib_names = pairs.getLibraryNames( );
   vec<size_t> lib_sizes = pairs.getLibrarySizes( );
   vec<size_t> n_removed( lib_sizes.size( ), 0 );
-    
+
   vec< triple<seq_interval,seq_interval,longlong > > helpers;
   helpers.reserve( pairs.nPairs( ) );
   for (longlong pair_id=0; pair_id<(longlong)pairs.nPairs( ); pair_id++) {
@@ -51,7 +51,7 @@ void RemoveDuplicateAligns( const PairsManager &pairs,
     helpers.push_back( nt );
   }
   sort( helpers.begin( ), helpers.end( ) );
-    
+
   for (size_t ii=1; ii<helpers.size( ); ii++) {
     if ( ! ( helpers[ii].first == helpers[ii-1].first ) ) continue;
     if ( ! ( helpers[ii].second == helpers[ii-1].second ) ) continue;
@@ -72,7 +72,7 @@ void RemoveDuplicateAligns( const PairsManager &pairs,
 
     table.push_back( tline );
   }
-  
+
   for (int ii=0; ii<lib_names.isize( ); ii++) {
     tline.clear( );
     double ratio = -1.0;
@@ -96,7 +96,7 @@ void RemoveDuplicateAligns( const PairsManager &pairs,
   double ratio = -1.0;
   if ( tot_size > 0 )
     ratio = 100.0 * SafeQuotient( tot_removed, tot_size );
-  String str_ratio = ratio > -1.0 ? ToString( ratio, 2 ) : "na";  
+  String str_ratio = ratio > -1.0 ? ToString( ratio, 2 ) : "na";
   tline.push_back( "total" );
   tline.push_back( ToString( tot_size ) );
   tline.push_back( ToString( tot_removed ) );

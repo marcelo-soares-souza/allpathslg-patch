@@ -24,7 +24,7 @@ void BasicNStats( vec<int> &data, vec<int> &idx, vec<int> *sel )
 
   idx.clear( );
   idx.resize( select.size( ), 0 );
-  
+
   // Sort data.
   ReverseSort( data );
 
@@ -33,12 +33,12 @@ void BasicNStats( vec<int> &data, vec<int> &idx, vec<int> *sel )
   for (int ii=1; ii<select.isize( ); ii++)
     ForceAssert( select[ii-1] < select[ii] );
   ForceAssert( select.back( ) < 100 );
-  
+
   // Early exit if data is empty.
   int total_count = data.isize( );
   longlong total_len = BigSum( data );
   if ( total_count < 1 || total_len < 1 ) return;
-    
+
   // Fill idx.
   longlong sum = data.size() > 0 ? data[0] : 0;
   for (int selpos=0; selpos<select.isize( ); selpos++) {
@@ -66,7 +66,7 @@ void PrintBasicNStats( const String &name, vec<int> &data, ostream &out )
 
   for (int ii=idx.isize( )-1; ii>=0; ii--) {
     vec<String> aline;
-    
+
     aline.push_back( name );
     aline.push_back( "N" + ToString( sel[ii] ) + ":" );
     aline.push_back( ToStringAddCommas( data[idx[ii]] ) );
@@ -77,7 +77,7 @@ void PrintBasicNStats( const String &name, vec<int> &data, ostream &out )
 
     table.push_back( aline );
   }
-  
+
   vec<String> aline;
   aline.push_back( name );
   aline.push_back( "total:" );
@@ -86,9 +86,9 @@ void PrintBasicNStats( const String &name, vec<int> &data, ostream &out )
   aline.push_back( ToStringAddCommas( data.size( ) ) );
   aline.push_back( "in total" );
   aline.push_back( ")" );
-  
+
   table.push_back( aline );
-  
+
   vec<Bool> rjust( table[0].size( ), false );
   rjust[1] = true;
   rjust[2] = true;
@@ -98,12 +98,12 @@ void PrintBasicNStats( const String &name, vec<int> &data, ostream &out )
 
   for (int ii=0; ii<table.isize( ); ii++) {
     out << table[ii][0] << "     "
-	<< table[ii][1] << "     "
-	<< table[ii][2] << "     "
-	<< table[ii][3] << " "
-	<< table[ii][4] << " "
-	<< table[ii][5] << " "
-	<< table[ii][6] << "\n";
+        << table[ii][1] << "     "
+        << table[ii][2] << "     "
+        << table[ii][3] << " "
+        << table[ii][4] << " "
+        << table[ii][5] << " "
+        << table[ii][6] << "\n";
   }
 
 }

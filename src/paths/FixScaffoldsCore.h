@@ -10,7 +10,7 @@
 // input, and produce as output scaffolds that have been broken at
 // uncovered spots.
 //
-// Uncovered spots.  
+// Uncovered spots.
 // * First consider long-fragment read pairs that land logically on a
 //   scaffold.  We mark the corresponding part of the scaffold as
 //   covered.  This covered region extends from the leftmost end of
@@ -56,26 +56,26 @@
 #include "paths/Alignlet.h"
 
 void FixScaffoldsCore( const vec<int> &trace_ids,
-		       const PairsManager &pairs,
-		       const int MIN_REACH_AWAY,
-		       vec<fastavector> &contigs,
-		       vec<superb> &scaffolds,
-		       vec<alignlet> &aligns0,
-		       vec<int> &aligns0_index,
-		       vec<int> &aligns0_index_unfilt,
-		       vec<alignlet> &ualigns0,
-		       vec< vec<int> > &ualigns0_index,
-		       ostream &log,
-		       bool VERBOSE = false );
+                       const PairsManager &pairs,
+                       const int MIN_REACH_AWAY,
+                       vec<fastavector> &contigs,
+                       vec<superb> &scaffolds,
+                       vec<alignlet> &aligns0,
+                       vec<int> &aligns0_index,
+                       vec<int> &aligns0_index_unfilt,
+                       vec<alignlet> &ualigns0,
+                       vec< vec<int> > &ualigns0_index,
+                       ostream &log,
+                       bool VERBOSE = false );
 
 void FixScaffoldsCore( const vec<int> &trace_ids,
-		       const PairsManager &pairs,
-		       const int MIN_REACH_AWAY,
-		       vec<fastavector> &contigs,
-		       vec<superb> &scaffolds,
-		       vec<alignlet> &aligns0,
-		       vec<int> &aligns0_index,
-		       vec<int> &aligns0_index_unfilt,
-		       ostream &log,
-		       bool VERBOSE = false );
+                       const PairsManager &pairs,
+                       const int MIN_REACH_AWAY,
+                       vec<fastavector> &contigs,
+                       vec<superb> &scaffolds,
+                       vec<alignlet> &aligns0,
+                       vec<int> &aligns0_index,
+                       vec<int> &aligns0_index_unfilt,
+                       ostream &log,
+                       bool VERBOSE = false );
 #endif

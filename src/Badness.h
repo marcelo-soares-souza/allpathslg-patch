@@ -19,5 +19,6 @@
 // ================================================================================
 
 inline float Badness( int overlap, int errors )
-{    Assert( overlap > 0 );
-     return 1000.0 * float(1+errors)/pow(float(overlap), float(1.5));    }
+{ Assert( overlap > 0 );
+  return 1000.0 * float(1+errors)/pow(float(overlap), float(1.5));
+}

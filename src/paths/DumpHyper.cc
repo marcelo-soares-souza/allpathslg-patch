@@ -23,50 +23,50 @@
 
 int main( int argc, char *argv[] )
 {
-     RunTime( );
+  RunTime( );
 
-     BeginCommandArguments;
-     CommandArgument_String(PRE);
-     CommandArgument_String(DATA);
-     CommandArgument_String(RUN);
-     CommandArgument_String_OrDefault(INSTANCE, "");
-     CommandArgument_String(SUBDIR);
-     CommandArgument_String_OrDefault(WRUN, "run");
-     CommandArgument_String_OrDefault(HYPER, "hyper");
-     CommandArgument_String_OrDefault(FASTA, "");
-     CommandArgument_String_OrDefault(FASTB, "");
-     CommandArgument_String_OrDefault(GRAPHML, "");
-     
-     EndCommandArguments;
+  BeginCommandArguments;
+  CommandArgument_String(PRE);
+  CommandArgument_String(DATA);
+  CommandArgument_String(RUN);
+  CommandArgument_String_OrDefault(INSTANCE, "");
+  CommandArgument_String(SUBDIR);
+  CommandArgument_String_OrDefault(WRUN, "run");
+  CommandArgument_String_OrDefault(HYPER, "hyper");
+  CommandArgument_String_OrDefault(FASTA, "");
+  CommandArgument_String_OrDefault(FASTB, "");
+  CommandArgument_String_OrDefault(GRAPHML, "");
 
-     // Set up directories.
+  EndCommandArguments;
 
-     SUBDIR += INSTANCE;
-     String data_dir = PRE + "/" + DATA;
-     String run_dir = PRE + "/" + DATA + "/" + RUN;
-     String sub_dir = run_dir + "/ASSEMBLIES/" + SUBDIR;
-     String wdata_dir = sub_dir;
-     String wrun_dir = sub_dir + "/" + WRUN;
+  // Set up directories.
 
-     // Load data.
+  SUBDIR += INSTANCE;
+  String data_dir = PRE + "/" + DATA;
+  String run_dir = PRE + "/" + DATA + "/" + RUN;
+  String sub_dir = run_dir + "/ASSEMBLIES/" + SUBDIR;
+  String wdata_dir = sub_dir;
+  String wrun_dir = sub_dir + "/" + WRUN;
 
-     String hkpFname = sub_dir + "/" + HYPER;
-     cout << Date( ) << ": Loading HyperKmerPath..." << endl;
-     HyperKmerPath h( hkpFname );
-     int K = h.K( );
-     cout << Date( ) << ": Loading KmerBaseBroker..." << endl;
-     KmerBaseBroker* kbb = new KmerBaseBroker( wrun_dir, K );
+  // Load data.
 
-     if ( FASTA == "" ) FASTA = hkpFname + ".fasta";
-     if ( FASTB == "" ) FASTB = hkpFname + ".fastb";
-     if ( GRAPHML == "" ) GRAPHML = hkpFname + ".graphml";
+  String hkpFname = sub_dir + "/" + HYPER;
+  cout << Date( ) << ": Loading HyperKmerPath..." << endl;
+  HyperKmerPath h( hkpFname );
+  int K = h.K( );
+  cout << Date( ) << ": Loading KmerBaseBroker..." << endl;
+  KmerBaseBroker* kbb = new KmerBaseBroker( wrun_dir, K );
 
-     cout << Date( ) << ": Dumping edge sequence to " << FASTB << " ..." << endl;
-     h.DumpFastb( FASTB, *kbb );
-     cout << Date( ) << ": Dumping edge sequence to " << FASTA << " ..." << endl;
-     h.DumpFasta( FASTA, *kbb );
-     cout << Date( ) << ": Dumping graph structure to " << GRAPHML << " ..." << endl;
-     h.DumpGraphML( GRAPHML );
-     cout << Date( ) << ": Done." << endl;
+  if ( FASTA == "" ) FASTA = hkpFname + ".fasta";
+  if ( FASTB == "" ) FASTB = hkpFname + ".fastb";
+  if ( GRAPHML == "" ) GRAPHML = hkpFname + ".graphml";
+
+  cout << Date( ) << ": Dumping edge sequence to " << FASTB << " ..." << endl;
+  h.DumpFastb( FASTB, *kbb );
+  cout << Date( ) << ": Dumping edge sequence to " << FASTA << " ..." << endl;
+  h.DumpFasta( FASTA, *kbb );
+  cout << Date( ) << ": Dumping graph structure to " << GRAPHML << " ..." << endl;
+  h.DumpGraphML( GRAPHML );
+  cout << Date( ) << ": Done." << endl;
 }
 

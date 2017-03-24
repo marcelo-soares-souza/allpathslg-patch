@@ -27,33 +27,46 @@
 class IdAndOrientation
 {
 public:
-    IdAndOrientation() : mVal(~0ul) {}
-    explicit IdAndOrientation( size_t id, bool rc = false )
-    : mVal(id<<1) { if ( rc ) mVal |= 1; }
+  IdAndOrientation() : mVal(~0ul) {}
+  explicit IdAndOrientation( size_t id, bool rc = false )
+    : mVal(id<<1) {
+    if ( rc ) mVal |= 1;
+  }
 
-    // compiler-supplied copying and destructor are OK
+  // compiler-supplied copying and destructor are OK
 
-    size_t getId() const { return mVal>>1; }
-    bool isRC() const { return mVal&1; }
+  size_t getId() const {
+    return mVal>>1;
+  }
+  bool isRC() const {
+    return mVal&1;
+  }
 
-    friend bool operator<( IdAndOrientation const& val1,
-                                IdAndOrientation const& val2 )
-    { return val1.mVal < val2.mVal; }
+  friend bool operator<( IdAndOrientation const& val1,
+                         IdAndOrientation const& val2 )
+  {
+    return val1.mVal < val2.mVal;
+  }
 
-    friend bool operator==( IdAndOrientation const& val1,
-                                IdAndOrientation const& val2 )
-    { return val1.mVal == val2.mVal; }
+  friend bool operator==( IdAndOrientation const& val1,
+                          IdAndOrientation const& val2 )
+  {
+    return val1.mVal == val2.mVal;
+  }
 
-    friend bool operator!=( IdAndOrientation const& val1,
-                                IdAndOrientation const& val2 )
-    { return val1.mVal != val2.mVal; }
+  friend bool operator!=( IdAndOrientation const& val1,
+                          IdAndOrientation const& val2 )
+  {
+    return val1.mVal != val2.mVal;
+  }
 
-    friend ostream& operator<<( ostream& os, IdAndOrientation const& iAndO )
-    { if ( iAndO.isRC() ) os << '~';
-      return os << iAndO.getId(); }
+  friend ostream& operator<<( ostream& os, IdAndOrientation const& iAndO )
+  { if ( iAndO.isRC() ) os << '~';
+    return os << iAndO.getId();
+  }
 
 private:
-    size_t mVal;
+  size_t mVal;
 };
 TRIVIALLY_SERIALIZABLE(IdAndOrientation);
 
@@ -65,6 +78,6 @@ extern template class OuterVec<IAndOs>;
 /// Write a feudal file of all the friends of the given reads.
 /// Friends share a perfect 25-mer.
 void FindFriends( vecbvec const& reads, String const& friendsFile,
-                    bool useBrokenVersion );
+                  bool useBrokenVersion );
 
 #endif /* FRIENDS_H_ */

@@ -23,11 +23,11 @@
 class KmerPathMuxSearcher {
 
 public:
-  KmerPathMuxSearcher( const MuxGraph* p_mug, 
-		       const ReadFillDatabase* p_fillDB,
-		       const SubsumptionList* p_subList,
-		       const vec<int>* p_readLengthsInKmers,
-		       int verbosity=0 ) 
+  KmerPathMuxSearcher( const MuxGraph* p_mug,
+                       const ReadFillDatabase* p_fillDB,
+                       const SubsumptionList* p_subList,
+                       const vec<int>* p_readLengthsInKmers,
+                       int verbosity=0 )
     : mp_muxGraph    ( p_mug ),
       mp_readfillDB  ( p_fillDB ),
       mp_subList     ( p_subList ),
@@ -37,13 +37,15 @@ public:
       m_search_limit( 0 ),
       m_answer_size_limit( 0 )
   {
-    m_max_read_length = *max_element( mp_readLengths->begin(), 
-				      mp_readLengths->end() );
+    m_max_read_length = *max_element( mp_readLengths->begin(),
+                                      mp_readLengths->end() );
     if( m_verbosity > 2 ) PRINT(m_max_read_length);
   }
 
   // We own all of our policies.  Delete them in destructor.
-  ~KmerPathMuxSearcher() { ClearPolicies(); }
+  ~KmerPathMuxSearcher() {
+    ClearPolicies();
+  }
 
   // You may not copy a KmerPathMuxSearcher -- who would own the policies?
 private:
@@ -53,13 +55,17 @@ private:
 
 public:
   // All policies are derived from MuxSearchPolicy, and come from here:
-  void AddPolicy( MuxSearchPolicy* MSP ) { m_policies.push_back( MSP ); }
+  void AddPolicy( MuxSearchPolicy* MSP ) {
+    m_policies.push_back( MSP );
+  }
   void AddPolicies( vec<MuxSearchPolicy*> MSPs ) {
     m_policies.insert( m_policies.end(), MSPs.begin(), MSPs.end() );
   }
 
   // Caller is responsible for deleting this policy.
-  void RemovePolicy( MuxSearchPolicy* MSP ) { m_policies.EraseValue( MSP ); }
+  void RemovePolicy( MuxSearchPolicy* MSP ) {
+    m_policies.EraseValue( MSP );
+  }
 
   // We own all of our policies, so delete them when we forget them.
   void ClearPolicies() {
@@ -78,7 +84,7 @@ public:
   /// That is, they are pair separation plus length of left read.
 
   void FindClosures( const int closingReadId,
-                     const int openingReadId, 
+                     const int openingReadId,
                      const int minAcceptableExtLength,
                      const int maxAcceptableExtLength,
                      MuxSearchResult &result ) const;
@@ -88,24 +94,32 @@ private:
   // Templatized, so the source code appears below in this file.
   template<typename MuxSearchAgent>
   void SearchDirector( MuxSearchAgent sa,
-		       const int openingReadId, 
-		       const int closingReadId,
-		       const int minAcceptableExtLength,
-		       const int maxAcceptableExtLength,
-		       MuxSearchResult &result ) const;
+                       const int openingReadId,
+                       const int closingReadId,
+                       const int minAcceptableExtLength,
+                       const int maxAcceptableExtLength,
+                       MuxSearchResult &result ) const;
 
 public:
 
-  void SetVerbosity( int verb ) { m_verbosity = verb; }
+  void SetVerbosity( int verb ) {
+    m_verbosity = verb;
+  }
 
   // A search limit of zero means unlimited
   // As of this writing, one minute gets to about 10 million.
-  void SetSearchLimit( longlong lim ) { m_search_limit = lim; }
+  void SetSearchLimit( longlong lim ) {
+    m_search_limit = lim;
+  }
 
-  void SetAnswerSizeLimit( longlong lim ) { m_answer_size_limit = lim; }
+  void SetAnswerSizeLimit( longlong lim ) {
+    m_answer_size_limit = lim;
+  }
 
 
-  void SetMinPerfectMatch( int mpm ) { m_min_perfect_match = mpm; }
+  void SetMinPerfectMatch( int mpm ) {
+    m_min_perfect_match = mpm;
+  }
 
 private:
 
@@ -113,7 +127,7 @@ private:
     if( ++result.num_states_explored == m_search_limit ) {
       result.hit_search_limit = true;
       if( m_verbosity>0 )
-	cout << "Aborting -- hit search limit of " << m_search_limit << endl;
+        cout << "Aborting -- hit search limit of " << m_search_limit << endl;
       return true;
     }
     else
@@ -124,8 +138,8 @@ private:
     if( m_answer_size_limit>0 && result.WalkGraph().size() >= m_answer_size_limit ) {
       result.hit_search_limit = true;
       if( m_verbosity>0 )
-	cout << "Aborting -- answer grew to " << result.WalkGraph().size() << " nodes"
-	     << endl;
+        cout << "Aborting -- answer grew to " << result.WalkGraph().size() << " nodes"
+             << endl;
       return true;
     }
     else
@@ -164,20 +178,20 @@ private:
 
 template<typename MuxSearchAgent>
 void KmerPathMuxSearcher::SearchDirector( MuxSearchAgent msa,
-					  int openingReadId, 
-					  int closingReadId,
-					  int minAcceptableExtLength,
-					  int maxAcceptableExtLength,
-					  MuxSearchResult& result ) const {
+    int openingReadId,
+    int closingReadId,
+    int minAcceptableExtLength,
+    int maxAcceptableExtLength,
+    MuxSearchResult& result ) const {
 
   msa.Setup( openingReadId, closingReadId,
-	     minAcceptableExtLength, maxAcceptableExtLength,
-	     result );
+             minAcceptableExtLength, maxAcceptableExtLength,
+             result );
 
   while( ! msa.Done() ) {
 
     msa.TopOfLoop(); // ForceAssert loop invariant; report at high verbosity
-    
+
     // If the current final mux has no more extensions to explore,
     // then we are done with it: pop one level on the mux stack.
     if( ! msa.HasNextMux() ) {
@@ -193,24 +207,24 @@ void KmerPathMuxSearcher::SearchDirector( MuxSearchAgent msa,
     if( msa.StateWorthRecording() && ! msa.IsStateNewRecordIfSo() ) {
       // If we know we've been here before:
       if( m_verbosity > 5 )
-	cout << "Found a searched state -- not exploring again" << endl;
+        cout << "Found a searched state -- not exploring again" << endl;
       msa.SaveIfConverged();
       if( HitAnswerSizeLimit(result) )
-	break;
+        break;
     }
     else {
       // If this will be our first visit to this state:
       if( HitSearchLimit( result ) )
-	break;
+        break;
       if( msa.MayIPush() ) {
-	msa.PushMux();
-	if( msa.MayIClose() ) {
-	  msa.SaveIfClosed();
-	  if( HitAnswerSizeLimit(result) )
-	    break;
-	}
-	// Note that we keep exploring deeper even if this was a closure:
-	// we might be in a repeat region where we'll close again later.
+        msa.PushMux();
+        if( msa.MayIClose() ) {
+          msa.SaveIfClosed();
+          if( HitAnswerSizeLimit(result) )
+            break;
+        }
+        // Note that we keep exploring deeper even if this was a closure:
+        // we might be in a repeat region where we'll close again later.
       }
     }
   }

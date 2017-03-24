@@ -95,7 +95,9 @@ inline unsigned int bv_table_convert( unsigned int word4 ) {
 
 template < int Kmod4 >
 struct ZeroOutUnusedBits {
-  static void ZeroUnusedBits( unsigned char &x ) { STATIC_ASSERT_M( 0, UnknownKmod4 ); }
+  static void ZeroUnusedBits( unsigned char &x ) {
+    STATIC_ASSERT_M( 0, UnknownKmod4 );
+  }
 };
 
 template <>
@@ -157,11 +159,21 @@ public:
     memset( bytes, 0, NUM_BYTES );
   }
 
-  unsigned char * begin() { return bytes; }
-  const unsigned char * begin() const { return bytes; }
-  unsigned char * end() { return bytes + size(); }
-  const unsigned char * end() const { return bytes + size(); }
-  unsigned int size() const { return  NUM_INTS * 4; }
+  unsigned char * begin() {
+    return bytes;
+  }
+  const unsigned char * begin() const {
+    return bytes;
+  }
+  unsigned char * end() {
+    return bytes + size();
+  }
+  const unsigned char * end() const {
+    return bytes + size();
+  }
+  unsigned int size() const {
+    return  NUM_INTS * 4;
+  }
 
   ///Compare only the bytes that contain kmer data.
 
@@ -184,19 +196,19 @@ public:
 
 template < int A, int B>
 void SetKmer( byte_pac<A,B>& bpac, const basevector& b, nbases_t K ) {
-    int end = K & ~15;
-    unsigned int* dst = bpac.ints;
-    for ( int idx = 0; idx < end; idx += 16 )
-        *dst++ = b.extractKmer(idx,16);
-    if ( end < K ) *dst = b.extractKmer(end,K-end);
+  int end = K & ~15;
+  unsigned int* dst = bpac.ints;
+  for ( int idx = 0; idx < end; idx += 16 )
+    *dst++ = b.extractKmer(idx,16);
+  if ( end < K ) *dst = b.extractKmer(end,K-end);
 }
 
 template < int A, int B, nbases_t K>
 void SetKmer( byte_pac<A,B>& bpac, const unsigned int *b ) {
   memset( bpac.bytes, 0, A );
-    for ( int j = 0; j < (K+15)/16; j++ )
-      bpac.ints[j] = b[j];
-    ZeroOutUnusedBits< K % 4 >::ZeroUnusedBits( bpac.bytes[ A-1 ] );
+  for ( int j = 0; j < (K+15)/16; j++ )
+    bpac.ints[j] = b[j];
+  ZeroOutUnusedBits< K % 4 >::ZeroUnusedBits( bpac.bytes[ A-1 ] );
 }
 
 // K=4
@@ -335,7 +347,9 @@ public:
   static const int POSITION_WORDS=I;
 
   const unsigned char* Bytes( ) const
-  {    return data_.bytes;    }
+  {
+    return data_.bytes;
+  }
 
 
   const unsigned char * BytesEnd() const {
@@ -347,10 +361,12 @@ public:
   }
 
   unsigned int* Ints( )
-  {    return data_.ints;    }
+  {
+    return data_.ints;
+  }
 
   void GetBasevector( basevector& kmer ) const {
-      kmer.assignBaseBits(K,data_.begin());
+    kmer.assignBaseBits(K,data_.begin());
   }
 
   // TODO: potentially dangerous truncation of readID
@@ -358,36 +374,37 @@ public:
   read_id_t GetId( ) const
   {
     if ( I == 1 )
-      {
+    {
 #ifdef Little_Endian
-	return data_.bytes[(K+3)/4] |
-	  (short(data_.bytes[(K+3)/4 + 1]) << 8) |
-	  (int(data_.bytes[(K+3)/4 + 2]) << 16) |
-	  (int(data_.bytes[(K+3)/4 + 3]) << 24);
+      return data_.bytes[(K+3)/4] |
+             (short(data_.bytes[(K+3)/4 + 1]) << 8) |
+             (int(data_.bytes[(K+3)/4 + 2]) << 16) |
+             (int(data_.bytes[(K+3)/4 + 3]) << 24);
 #endif
 #ifdef Big_Endian
-	return data_.bytes[(K+3)/4 + 3] |
-	  (short(data_.bytes[(K+3)/4 + 2]) << 8) |
-	  (int(data_.bytes[(K+3)/4 + 1]) << 16) |
-	  (int(data_.bytes[(K+3)/4]) << 24);
+      return data_.bytes[(K+3)/4 + 3] |
+             (short(data_.bytes[(K+3)/4 + 2]) << 8) |
+             (int(data_.bytes[(K+3)/4 + 1]) << 16) |
+             (int(data_.bytes[(K+3)/4]) << 24);
 #endif
-      }
+    }
     else if ( I == 2 ) return data_.ints[ (K+15)/16 ];
-    else return 1; /* unreachable statement */    }
+    else return 1; /* unreachable statement */
+  }
 
   read_pos_t GetPos( ) const
   {
     if ( I == 1 )
-      {
+    {
 #ifdef Little_Endian
-	return (int) (short) (data_.bytes[(K+3)/4 + 4]
-			      | (short(data_.bytes[(K+3)/4 + 5]) << 8));
+      return (int) (short) (data_.bytes[(K+3)/4 + 4]
+                            | (short(data_.bytes[(K+3)/4 + 5]) << 8));
 #endif
 #ifdef Big_Endian
-	return (int) (short) (data_.bytes[(K+3)/4 + 5]
-			      | (short(data_.bytes[(K+3)/4 + 4]) << 8));
+      return (int) (short) (data_.bytes[(K+3)/4 + 5]
+                            | (short(data_.bytes[(K+3)/4 + 4]) << 8));
 #endif
-      }
+    }
 
     else if ( I == 2 ) return data_.ints[ (K+15)/16 + 1 ];
     else return 1; /* unreachable statement */
@@ -417,17 +434,17 @@ public:
     if ( I == 1 ) {
 #ifdef Little_Endian
       for ( int j = 0; j < 4; j++ )
-	data_.bytes[ (K+3)/4 + j ] =
-	  ((unsigned char*) (&read_id))[j];
+        data_.bytes[ (K+3)/4 + j ] =
+          ((unsigned char*) (&read_id))[j];
 #endif
 #ifdef Big_Endian
       for ( int j = 0; j < 4; j++ )
-	data_.bytes[ (K+3)/4 + j ] =
-	  ((unsigned char*) (&read_id))[j+1];
+        data_.bytes[ (K+3)/4 + j ] =
+          ((unsigned char*) (&read_id))[j+1];
 #endif
       short rp = (short) read_pos;
       for ( int j = 0; j < 2; j++ ) {
-	data_.bytes[ (K+3)/4 + 4 + j ] = ((unsigned char*) (&rp))[j];
+        data_.bytes[ (K+3)/4 + 4 + j ] = ((unsigned char*) (&rp))[j];
       }
     }
     else if ( I == 2 ) {
@@ -445,17 +462,17 @@ public:
     if ( I == 1 ) {
 #ifdef Little_Endian
       for ( int j = 0; j < 4; j++ )
-	data_.bytes[ (K+3)/4 + j ] =
-	  ((unsigned char*) (&read_id))[j];
+        data_.bytes[ (K+3)/4 + j ] =
+          ((unsigned char*) (&read_id))[j];
 #endif
 #ifdef Big_Endian
       for ( int j = 0; j < 4; j++ )
-	data_.bytes[ (K+3)/4 + j ] =
-	  ((unsigned char*) (&read_id))[j+1];
+        data_.bytes[ (K+3)/4 + j ] =
+          ((unsigned char*) (&read_id))[j+1];
 #endif
       short rp = (short) read_pos;
       for ( int j = 0; j < 2; j++ ) {
-	data_.bytes[ (K+3)/4 + 4 + j ] = ((unsigned char*) (&rp))[j];
+        data_.bytes[ (K+3)/4 + 4 + j ] = ((unsigned char*) (&rp))[j];
       }
     }
     else if ( I == 2 ) {
@@ -477,10 +494,14 @@ public:
   }
 
   ///We mark bad by setting the id to -1
-  void MarkAsBad() { SetId(-1); };
+  void MarkAsBad() {
+    SetId(-1);
+  };
 
   /// Check whether id is -1.
-  bool IsBad() const { return -1 == GetId(); }
+  bool IsBad() const {
+    return -1 == GetId();
+  }
 
   ///Set all data from an unsigned char * buffer (used when reading from file).
   void Set( const unsigned char * rawdata ) {
@@ -490,18 +511,18 @@ public:
   ///True if kmers are equal, even if GetPos() and GetId() are different.
 
   bool EqualKmers( const kmer_record& k2 ) const {
-      return data_.EqualKmers(k2.data_);
+    return data_.EqualKmers(k2.data_);
   }
 
   int CmpKmers( const kmer_record& k2 ) const {
-      return data_.CmpKmers(k2.data_);
+    return data_.CmpKmers(k2.data_);
   }
 
   ///True if kmers are rc, even if GetPos() and GetId() are different.
   bool ReverseKmers( const kmer_record& k2 ) const {
-      kmer_record rck2;
-      rck2.Set(bvec(K,k2.Bytes()).ReverseComplement(), 0, 0);
-      return EqualKmers(rck2);
+    kmer_record rck2;
+    rck2.Set(bvec(K,k2.Bytes()).ReverseComplement(), 0, 0);
+    return EqualKmers(rck2);
   }
 
   bool EqualOrReverseKmers( const kmer_record& k2 ) const {
@@ -515,20 +536,26 @@ public:
     bvec bv(K,Bytes());
     if ( bv.getCanonicalForm() == CanonicalForm::REV )
     {
-        kmer_record rc;
-        // Set the position counting from the back, and add -1 to distinguish
-        // 0 forward from 0 rc
-        rc.Set(bv,GetId(),-(length - (GetPos() + K))  - 1);
-        *this = rc;
+      kmer_record rc;
+      // Set the position counting from the back, and add -1 to distinguish
+      // 0 forward from 0 rc
+      rc.Set(bv,GetId(),-(length - (GetPos() + K))  - 1);
+      *this = rc;
     }
   }
 
   /// Looks at the position to see if it is < 0
-  bool IsReversed() const { return GetPos() < 0; }
+  bool IsReversed() const {
+    return GetPos() < 0;
+  }
 
   /// Looks at the position to see if it is < 0 ( better name )
-  Bool IsRc() const { return GetPos() < 0; }
-  Bool IsFw() const { return !IsRc(); }
+  Bool IsRc() const {
+    return GetPos() < 0;
+  }
+  Bool IsFw() const {
+    return !IsRc();
+  }
 
   /// Return a positive position, even if the kmer_record is reversed.
   /// For reversed kmer, position is from back of basevector!
@@ -555,14 +582,20 @@ public:
   }
 
   friend bool operator<( const kmer_record& k1, const kmer_record& k2 )
-  {    return k1.data_ < k2.data_;    }
+  {
+    return k1.data_ < k2.data_;
+  }
 
   friend bool operator>( const kmer_record& k1, const kmer_record& k2 )
-  {    return k2 < k1;    }
+  {
+    return k2 < k1;
+  }
 
   // this is actually a 'lt' not a 'cmp'
   static Bool id_cmp( const kmer_record& k1, const kmer_record& k2 )
-  {    return k1.GetId( ) < k2.GetId( );    }
+  {
+    return k1.GetId( ) < k2.GetId( );
+  }
 
   // this is actually a 'lt' not a 'cmp'
   static Bool id_cmp_pos( const kmer_record& k1, const kmer_record& k2 )
@@ -589,7 +622,7 @@ public:
     // Use the bv_table to get the proper alphanumeric ordering.
     for ( int k = 0; k < (K+15)/16; k++ )
       if ( k1.data_.ints[k] != k2.data_.ints[k] )
-	return bv_table_convert( k1.data_.ints[k] ) < bv_table_convert( k2.data_.ints[k] );
+        return bv_table_convert( k1.data_.ints[k] ) < bv_table_convert( k2.data_.ints[k] );
     return false;
   }
 
@@ -607,7 +640,7 @@ public:
   }
 
   String ToString() const {
-      return bvec(K,data_.begin()).ToString();
+    return bvec(K,data_.begin()).ToString();
   }
 
   void FromString( istream & in ) {
@@ -634,7 +667,9 @@ public:
 
 template<int K, int I>
 struct Serializability<kmer_record<K,I> >
-{ typedef TriviallySerializable type; };
+{
+  typedef TriviallySerializable type;
+};
 
 //For sorting by id and pos, keeping negative positions negative.
 template<class KmerRecord>
@@ -694,49 +729,58 @@ template<int K> class kmer {
 
   typedef byte_pac< (K+3)/4, 0 > data_t;
 
-     public:
+public:
   /// Size of the bases contained in this kmer_record.
   /// For use when creating a basevector from our data.
   static const int BASES_SIZE=K;
 
-     kmer( ) { }
+  kmer( ) { }
 
-     kmer( const basevector& b )
-     {
-       Set( b );
-     }
+  kmer( const basevector& b )
+  {
+    Set( b );
+  }
 
-     const unsigned char* Bytes( ) const
-     {    return data_.bytes;    }
+  const unsigned char* Bytes( ) const
+  {
+    return data_.bytes;
+  }
 
-     const unsigned int* Ints( ) const
-     {    return data_.ints;    }
+  const unsigned int* Ints( ) const
+  {
+    return data_.ints;
+  }
 
-     void GetBasevector( basevector& kmer ) const {
-         kmer.assignBaseBits(K,data_.begin());
-     }
+  void GetBasevector( basevector& kmer ) const {
+    kmer.assignBaseBits(K,data_.begin());
+  }
 
-     friend bool operator<( const kmer& k1, const kmer& k2 )
-     {    return k1.data_ < k2.data_;    }
+  friend bool operator<( const kmer& k1, const kmer& k2 )
+  {
+    return k1.data_ < k2.data_;
+  }
 
-     friend int compare( kmer const& k1, kmer const& k2 )
-     { if ( k1.data_ < k2.data_ ) return -1;
-       return k2.data_ < k1.data_; }
+  friend int compare( kmer const& k1, kmer const& k2 )
+  { if ( k1.data_ < k2.data_ ) return -1;
+    return k2.data_ < k1.data_;
+  }
 
-     // In the following Set function, read_id and read_pos
-     // arguments are not used.  They must still be declared
-     // so that class kmer is a valid model of the SortKmersOutputRecord
-     // concept.
-     void Set( const basevector& b, int read_id, int read_pos )
-     {
-       SetKmer( data_, b, K );
-     }
+  // In the following Set function, read_id and read_pos
+  // arguments are not used.  They must still be declared
+  // so that class kmer is a valid model of the SortKmersOutputRecord
+  // concept.
+  void Set( const basevector& b, int read_id, int read_pos )
+  {
+    SetKmer( data_, b, K );
+  }
 
   // Extract the K-mer from source that begins at start.
 
   void SetToSubOf( const basevector& source, const size_type start );
 
-  void Set( const basevector& b ) { Set( b, -1, -1 ); }
+  void Set( const basevector& b ) {
+    Set( b, -1, -1 );
+  }
 
   void ReverseComplement( )
   { if ( K & 3 ) // if K is not evenly divisible by 4
@@ -748,9 +792,15 @@ template<int K> class kmer {
       while ( head != tail )
       { unsigned char tmp = Base::rcByte(*--tail);
         if ( head == tail )
-        { *head = tmp; break; }
+        {
+          *head = tmp;
+          break;
+        }
         *tail = Base::rcByte(*head);
-        *head++ = tmp; } } }
+        *head++ = tmp;
+      }
+    }
+  }
 
   friend bool operator==(const kmer & l, const kmer& r) {
     return l.data_ == r.data_;
@@ -763,26 +813,34 @@ template<int K> class kmer {
   // {    return k1.data_ < k2.data_;    }
 
   friend bool operator>( const kmer& k1, const kmer& k2 )
-  {    return k2 < k1;    }
+  {
+    return k2 < k1;
+  }
   friend bool operator>=( const kmer& k1, const kmer& k2 )
-  {    return !( k1 < k2 ); }
+  {
+    return !( k1 < k2 );
+  }
   friend bool operator<=( const kmer& k1, const kmer& k2 )
-  {    return !( k1 > k2 );   }
+  {
+    return !( k1 > k2 );
+  }
 
 
   String ToString() const {
-      return bvec(K,data_.begin()).ToString();
+    return bvec(K,data_.begin()).ToString();
   }
 
-     private:
+private:
 
-     data_t data_;
+  data_t data_;
 
 };  // class kmer
 
 template <int K>
 struct Serializability< kmer<K> >
-{ typedef TriviallySerializable type; };
+{
+  typedef TriviallySerializable type;
+};
 
 template < nbases_t K > inline
 ostream& operator<< ( ostream& s, const kmer< K >& k ) {
@@ -813,66 +871,81 @@ void CanonicalizeKmer( basevector& b ) {
 class kmer_with_count_base
 {
 public:
-    static int const max_count = 65535;
+  static int const max_count = 65535;
 };
 template<int K> class kmer_with_count : public kmer_with_count_base {
-     private:
+private:
   //           (kmer )  (  optional pad   )   (count)
-     typedef byte_pac< (K+3)/4, (K+7)/8*2 - (K+3)/4 +    2   > data_t;
+  typedef byte_pac< (K+3)/4, (K+7)/8*2 - (K+3)/4 +    2   > data_t;
   data_t data_;
 
 
-     public:
+public:
 
-     kmer_with_count( ) { }
+  kmer_with_count( ) { }
 
-     kmer_with_count( const basevector& b, unsigned short count ) {
-       Set(b, count);
-     }
+  kmer_with_count( const basevector& b, unsigned short count ) {
+    Set(b, count);
+  }
 
-     void GetBasevector( basevector& kmer ) const {
-         kmer.assignBaseBits(K,data_.begin());
-     }
+  void GetBasevector( basevector& kmer ) const {
+    kmer.assignBaseBits(K,data_.begin());
+  }
 
-     void Set(const basevector &b, unsigned short count) {
-       SetKmer( data_, b, K );
-       for ( int j = (K+3)/4; j < (K+7)/8*2; j++ )
-	 data_.bytes[j] = 0;
-       data_.shorts[ (K+7)/8 ] = count;
-     }
+  void Set(const basevector &b, unsigned short count) {
+    SetKmer( data_, b, K );
+    for ( int j = (K+3)/4; j < (K+7)/8*2; j++ )
+      data_.bytes[j] = 0;
+    data_.shorts[ (K+7)/8 ] = count;
+  }
 
-     unsigned short Count( ) const { return data_.shorts[ (K+7)/8 ]; }
+  unsigned short Count( ) const {
+    return data_.shorts[ (K+7)/8 ];
+  }
 
-     const unsigned int* Ints( ) const
-     {    return data_.ints;    }
+  const unsigned int* Ints( ) const
+  {
+    return data_.ints;
+  }
 
-     const unsigned short* Shorts( ) const
-     {    return data_.shorts;    }
+  const unsigned short* Shorts( ) const
+  {
+    return data_.shorts;
+  }
 
-     friend Bool operator<( const kmer_with_count& k1, const kmer_with_count& k2 )
-     {    if ( k1.data_ < k2.data_ ) return True;
-          if ( k2.data_ < k1.data_ ) return False;
-          if ( k1.Count( ) < k2.Count( ) ) return True;
-          return False;    }
+  friend Bool operator<( const kmer_with_count& k1, const kmer_with_count& k2 )
+  { if ( k1.data_ < k2.data_ ) return True;
+    if ( k2.data_ < k1.data_ ) return False;
+    if ( k1.Count( ) < k2.Count( ) ) return True;
+    return False;
+  }
 
-     friend Bool operator==( const kmer_with_count& k1, const kmer_with_count& k2 )
-     {    return ( k1.data_ == k2.data_ );    }
+  friend Bool operator==( const kmer_with_count& k1, const kmer_with_count& k2 )
+  {
+    return ( k1.data_ == k2.data_ );
+  }
 
-     friend Bool eq_kmer( const kmer_with_count& k1, const kmer_with_count& k2 )
-     {    return ( 0 == memcmp( k1.data_.bytes, k2.data_.bytes, (K+3)/4 ) );    }
+  friend Bool eq_kmer( const kmer_with_count& k1, const kmer_with_count& k2 )
+  {
+    return ( 0 == memcmp( k1.data_.bytes, k2.data_.bytes, (K+3)/4 ) );
+  }
 
-     friend Bool lt_kmer( const kmer_with_count& k1, const kmer_with_count& k2 )
-     {    return ( k1.data_ < k2.data_ );     }
+  friend Bool lt_kmer( const kmer_with_count& k1, const kmer_with_count& k2 )
+  {
+    return ( k1.data_ < k2.data_ );
+  }
 
   String ToString() const {
-      return bvec(K,data_.begin()).ToString();
+    return bvec(K,data_.begin()).ToString();
   }
 
 };  // class kmer_with_count
 
 template <int K>
 struct Serializability< kmer_with_count<K> >
-{ typedef TriviallySerializable type; };
+{
+  typedef TriviallySerializable type;
+};
 
 template < nbases_t K > inline
 ostream& operator<< ( ostream& s, const kmer_with_count< K >& k ) {

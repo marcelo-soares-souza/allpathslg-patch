@@ -83,17 +83,17 @@ int main( int argc, char *argv[] )
   CommandArgument_UnsignedInt_OrDefault(CHUNK_OVERLAP, 1000 * 1000);
   CommandArgument_String(SOURCE);
   CommandArgument_String_OrDefault_Doc(OUT_HEAD, SOURCE,
-	   "Full qualified prefix for the output reference file(s)");
+                                       "Full qualified prefix for the output reference file(s)");
   CommandArgument_Bool_Abbr_OrDefault_Doc(LOOKUP_ONLY, LO, False,
-		"If True, only reference lookup file will be created, without accompanying .fastb and .fastamb");
+                                          "If True, only reference lookup file will be created, without accompanying .fastb and .fastamb");
   CommandArgument_Bool_OrDefault_Doc(SORT_SOURCE, True,
-	 "If True, multiple source files will be sorted before reading; otherwise they will be read in specified order");
+                                     "If True, multiple source files will be sorted before reading; otherwise they will be read in specified order");
   CommandArgument_Bool_OrDefault(IGNORE_SHORT, False);
   CommandArgument_IntSet_OrDefault_Doc(CONTIGS,"{}",
-	    "Indices of contigs from source files to be added to the reference. Contigs are indexed globally, across all source files, in the order they will be read (see SORT_SOURCE)");
+                                       "Indices of contigs from source files to be added to the reference. Contigs are indexed globally, across all source files, in the order they will be read (see SORT_SOURCE)");
   CommandArgument_Bool_OrDefault(QUIET, False);
   CommandArgument_Bool_OrDefault_Doc(SIMPLE_SOURCE, False,
-       "If True, SOURCE argument is not parsed into a file list.");
+                                     "If True, SOURCE argument is not parsed into a file list.");
   EndCommandArguments;
 
   // Impose requirement on K.
@@ -123,8 +123,8 @@ int main( int argc, char *argv[] )
       FatalErr("Can't read file " << allfiles[i]);
     if ( !LOOKUP_ONLY && AreSameFile( OUT_HEAD + ".fastb", allfiles[i] ) )
       FatalErr("File OUT_HEAD.fastb, to be removed, is actually SOURCE file "
-	       << allfiles[i]
-	       << ".\nRemove the file by hand if that is your intent.");
+               << allfiles[i]
+               << ".\nRemove the file by hand if that is your intent.");
   }
 
   // Generate .fastb and .fastamb files.
@@ -144,36 +144,36 @@ int main( int argc, char *argv[] )
       v.clear( );
       b.clear( );
       if ( allfiles[i].Contains( ".gz", -1 ) ) {
-	System( "gzip -c -d " + allfiles[i] + " > " + tmpfile );
-	FastFetchReads( v, 0, tmpfile );
-	FetchReadsAmb( b, tmpfile );
+        System( "gzip -c -d " + allfiles[i] + " > " + tmpfile );
+        FastFetchReads( v, 0, tmpfile );
+        FetchReadsAmb( b, tmpfile );
       } else if ( allfiles[i].Contains( ".fastb", -1 ) || IsGoodFeudalFile(allfiles[i]) ) {
-	v.ReadAll( allfiles[i] );
-	b.reserve( v.size() );
-	for ( size_t j = 0; j < v.size( ); j++ ) {
-	  static bitvector bi;
-	  bi.clear().resize( v[j].size( ) );
-	  b.push_back(bi);
-	}
+        v.ReadAll( allfiles[i] );
+        b.reserve( v.size() );
+        for ( size_t j = 0; j < v.size( ); j++ ) {
+          static bitvector bi;
+          bi.clear().resize( v[j].size( ) );
+          b.push_back(bi);
+        }
       } else {
-	FastFetchReads( v, 0, allfiles[i] );
-	FetchReadsAmb( b, allfiles[i] );
+        FastFetchReads( v, 0, allfiles[i] );
+        FetchReadsAmb( b, allfiles[i] );
       }
 
       if ( CONTIGS.size() > 0 ) { // if we are selecting only a subset of contigs:
         // TODO: potentially dangerous truncation of index by to_remove
-	vec<int> to_remove;
-	for ( size_t j = 0 ; j < v.size() ; j++ ) { // for all contigs from current file
-	  if ( -1 == BinPosition(CONTIGS,contig) ) {
-	    // contig j from the current file was not requested; mark for discarding
-	    to_remove.push_back(j);
-	  }
-	  contig++; // advance global contig counter
-	}
+        vec<int> to_remove;
+        for ( size_t j = 0 ; j < v.size() ; j++ ) { // for all contigs from current file
+          if ( -1 == BinPosition(CONTIGS,contig) ) {
+            // contig j from the current file was not requested; mark for discarding
+            to_remove.push_back(j);
+          }
+          contig++; // advance global contig counter
+        }
 
-	// remove contigs that were not asked for:
-	v.RemoveByIndex(to_remove);
-	b.RemoveByIndex(to_remove);
+        // remove contigs that were not asked for:
+        v.RemoveByIndex(to_remove);
+        b.RemoveByIndex(to_remove);
       }
 
       bWriter.add(v.begin(),v.end());
@@ -184,8 +184,8 @@ int main( int argc, char *argv[] )
     // sanity check:
     if ( CONTIGS.size() > 0 && Max(CONTIGS) >= contig ) {
       cerr << "Illegal contig index was specified. Requested: " << Max(CONTIGS) <<
-	"; total number of contigs available in source files: " <<
-	contig << endl;
+           "; total number of contigs available in source files: " <<
+           contig << endl;
       exit(1);
     }
 
@@ -209,7 +209,7 @@ int main( int argc, char *argv[] )
       vecbasevector ref(allfiles[i]);
       contig_count += ref.size();
       for ( unsigned int j = 0 ; j < static_cast<unsigned int>(ref.size()) ; j++ ) {
-	base_count+=ref[j].size();
+        base_count+=ref[j].size();
       }
 
       // The old code below fails to count bases correctly, because of the memory alignment
@@ -266,47 +266,47 @@ int main( int argc, char *argv[] )
       // TODO: potentially dangerous truncation of index by records
       vec<int> records; // will keep original index of the contigs (for annotation)
       if ( CONTIGS.size() > 0 ) { // if only a subset of contigs was requested:
-	vec<int> to_remove;
-	for ( size_t j = 0 ; j < m.size(); j++ ) { // for each contig from current file:
-	  if ( -1 == BinPosition(CONTIGS,contig) ) {
-	    // check absolute index of the contig (across all source files).
-	    // if contig j from the file was not requested, mark it for discarding:
-	    to_remove.push_back(j);
-	  } else {
-	    records.push_back(j); // store the contig's index
-	  }
-	  // advance global contig counter; note: if CONTIGS.size()==0, we don't
-	  // need this counter at all, so it's ok to increment it inside if() {}:
-	  contig++;
-	}
-	m.RemoveByIndex(to_remove); // keep only requested contigs
+        vec<int> to_remove;
+        for ( size_t j = 0 ; j < m.size(); j++ ) { // for each contig from current file:
+          if ( -1 == BinPosition(CONTIGS,contig) ) {
+            // check absolute index of the contig (across all source files).
+            // if contig j from the file was not requested, mark it for discarding:
+            to_remove.push_back(j);
+          } else {
+            records.push_back(j); // store the contig's index
+          }
+          // advance global contig counter; note: if CONTIGS.size()==0, we don't
+          // need this counter at all, so it's ok to increment it inside if() {}:
+          contig++;
+        }
+        m.RemoveByIndex(to_remove); // keep only requested contigs
       } else {
-	for ( size_t j = 0 ; j < m.size() ; j++ ) records.push_back(j); // all records
+        for ( size_t j = 0 ; j < m.size() ; j++ ) records.push_back(j); // all records
       }
 
       //      int record = 0;
       for ( size_t j = 0; j < m.size( ); j++ ) {
-	unsigned int n = m[j].size( );
-	// here we use 'records' initialized above: alternative contig name
-	// is <source_filename>:<index_in_source_file>:
-	look.AddContigName(
-			   "contig_" + ToString(j), allfiles[i], records[j] );
-	look.AddContigStart(base_count);
-	//	++record;
-	look.AddContigSize(n);
-	if ( n < K  && !IGNORE_SHORT ) {
-	  if ( !QUIET ) cout << "Warning: Contig \"" << look.LastContigName( )
-	       << "\"\ncannot be aligned to because its length is " << n
-	       << ", which is less than K.\n";
-	} else if ( n > 2000000000u ) {
-	  FatalErr("Size of contig \""
-		   << look.LastContigName( ) << "\" is " << n
-		   << ", which is too large "
-		   << "(max value = 2,000,000,000).\n"); // FATAL ERROR!
-	}
-	// add bases from the current contig to the concatenated seq. vector
-	for ( unsigned int k = 0; k < n; k++ )
-	  bases[ base_count++ ] = as_base( m[j][k] );
+        unsigned int n = m[j].size( );
+        // here we use 'records' initialized above: alternative contig name
+        // is <source_filename>:<index_in_source_file>:
+        look.AddContigName(
+          "contig_" + ToString(j), allfiles[i], records[j] );
+        look.AddContigStart(base_count);
+        //	++record;
+        look.AddContigSize(n);
+        if ( n < K  && !IGNORE_SHORT ) {
+          if ( !QUIET ) cout << "Warning: Contig \"" << look.LastContigName( )
+                               << "\"\ncannot be aligned to because its length is " << n
+                               << ", which is less than K.\n";
+        } else if ( n > 2000000000u ) {
+          FatalErr("Size of contig \""
+                   << look.LastContigName( ) << "\" is " << n
+                   << ", which is too large "
+                   << "(max value = 2,000,000,000).\n"); // FATAL ERROR!
+        }
+        // add bases from the current contig to the concatenated seq. vector
+        for ( unsigned int k = 0; k < n; k++ )
+          bases[ base_count++ ] = as_base( m[j][k] );
       }
       continue; // done with current fastb file, go get next
     }
@@ -350,45 +350,45 @@ int main( int argc, char *argv[] )
 
       if ( line.Contains( ">", 0 ) )  { // new record (contig) is found
 
-	if ( reading )  {
-	  // if we were reading, not skipping, the contig that just ended:
-	  unsigned int cs = base_count - look.LastContigStart( );
+        if ( reading )  {
+          // if we were reading, not skipping, the contig that just ended:
+          unsigned int cs = base_count - look.LastContigStart( );
 
-	  if ( cs < K && !IGNORE_SHORT ) {
-	    if ( !QUIET ) cout << "Warning: Contig \"" << look.LastContigName( )
-		 << "\"\ncannot be aligned to because its length is " << cs
-		 << ", which is less than K.\n";
-	  } else if ( cs > 2000000000u ) {
-	    FatalErr("Size of contig \""
-		     << look.LastContigName( ) << "\" is " << cs
-		     << ", which is too large "
-		     << "(max value = 2,000,000,000).\n"); // FATAL ERROR!
-	  }
-	  look.AddContigSize(cs); // the name of the contig that just ended was set
-	                          // when it started (from its ">" line), now set size
-	}
+          if ( cs < K && !IGNORE_SHORT ) {
+            if ( !QUIET ) cout << "Warning: Contig \"" << look.LastContigName( )
+                                 << "\"\ncannot be aligned to because its length is " << cs
+                                 << ", which is less than K.\n";
+          } else if ( cs > 2000000000u ) {
+            FatalErr("Size of contig \""
+                     << look.LastContigName( ) << "\" is " << cs
+                     << ", which is too large "
+                     << "(max value = 2,000,000,000).\n"); // FATAL ERROR!
+          }
+          look.AddContigSize(cs); // the name of the contig that just ended was set
+          // when it started (from its ">" line), now set size
+        }
         // a new contig is about to start; increment global contig counter and
-	// local record counter:
-	contig++;
-	record++;
-	if ( 0 == CONTIGS.size() || -1 != BinPosition(CONTIGS,contig) ) {
-	  // if we need to read all contigs, or if the contig that has just
-	  // started was explicitly requested, add name/start and mark for reading:
-	  look.AddContigName( line.After( ">" ), allfiles[i], record );
-	  look.AddContigStart(base_count);
-	  reading = True;
-	} else {
-	  reading = False; // the contig we joust found has to be skipped
-	}
+        // local record counter:
+        contig++;
+        record++;
+        if ( 0 == CONTIGS.size() || -1 != BinPosition(CONTIGS,contig) ) {
+          // if we need to read all contigs, or if the contig that has just
+          // started was explicitly requested, add name/start and mark for reading:
+          look.AddContigName( line.After( ">" ), allfiles[i], record );
+          look.AddContigStart(base_count);
+          reading = True;
+        } else {
+          reading = False; // the contig we joust found has to be skipped
+        }
       }
       else {
-	// we are inside the record; if we are not skipping the contig, read bases:
-	if ( reading ) {
-	  for ( int j = 0; j < (int) line.size( ); j++ ) {
-	    if (isprint(line[j])) // ignore nonprinting characters
-	      bases[ base_count++ ] = line[j];
-	  }
-	}
+        // we are inside the record; if we are not skipping the contig, read bases:
+        if ( reading ) {
+          for ( int j = 0; j < (int) line.size( ); j++ ) {
+            if (isprint(line[j])) // ignore nonprinting characters
+              bases[ base_count++ ] = line[j];
+          }
+        }
       }
       if ( in.fail( ) ) break;
     }

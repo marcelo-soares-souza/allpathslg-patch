@@ -1,4 +1,4 @@
- /////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 //                   SOFTWARE COPYRIGHT NOTICE AGREEMENT                   //
 //       This software and its documentation are copyright (2009) by the   //
 //   Broad Institute/Massachusetts Institute of Technology.  All rights    //
@@ -26,7 +26,7 @@
  * best next scaffold.
  *
  * The graph's vertices are, in this order: s0fw, s0rc, s1fw,
- * s1rc,... 
+ * s1rc,...
  *
  * MIN_PAIR_SEPS
  * MAX_PAIR_SEPS
@@ -41,7 +41,7 @@
  *
  * MAX_OVERLAP: exclude links implying a large overlap
  * MIN_SCAFFOLD_LEN: only allow links between long scaffolds
- * 
+ *
  * SUCK_SCAFFOLDS: if true, run code to absorb small scaffolds
  * SHAVE_GRAPH: if true, shave the scaffold graph
  *
@@ -53,26 +53,26 @@
  * MIN_LINKS_TO_PRINT: logging args
  */
 void MakeScaffoldsCloseBest ( vec<superb> &scaffolds,
-			      vec<fastavector> &scaffold_contigs,
-			      vec<alignlet> &aligns0,
-			      vec<int> &aligns0_index,
-			      const PairsManager &pairs,
-			      
-			      const String MIN_PAIR_SEPS = "",
-			      const String MAX_PAIR_SEPS = "",
-			      const String MIN_LINKS = "{20,6,4,2}",
-			      const String MAX_LINKS = "",
+                              vec<fastavector> &scaffold_contigs,
+                              vec<alignlet> &aligns0,
+                              vec<int> &aligns0_index,
+                              const PairsManager &pairs,
 
-			      const int MAX_OVERLAP = std::numeric_limits<int>::max(),
-			      const int MIN_SCAFFOLD_LEN = 0,
-			      
-			      const Bool SUCK_SCAFFOLDS = False,
-			      const Bool SHAVE_GRAPH = False,
-			      
-			      const String SCAFFOLD_GRAPH_OUT = "",
-			      const String SCAFFOLD_GRAPH_DOT = "",
-			      
-			      const int VERBOSITY = 0,
-			      const int MIN_LINKS_TO_PRINT = std::numeric_limits<int>::max( ) );
+                              const String MIN_PAIR_SEPS = "",
+                              const String MAX_PAIR_SEPS = "",
+                              const String MIN_LINKS = "{20,6,4,2}",
+                              const String MAX_LINKS = "",
+
+                              const int MAX_OVERLAP = std::numeric_limits<int>::max(),
+                              const int MIN_SCAFFOLD_LEN = 0,
+
+                              const Bool SUCK_SCAFFOLDS = False,
+                              const Bool SHAVE_GRAPH = False,
+
+                              const String SCAFFOLD_GRAPH_OUT = "",
+                              const String SCAFFOLD_GRAPH_DOT = "",
+
+                              const int VERBOSITY = 0,
+                              const int MIN_LINKS_TO_PRINT = std::numeric_limits<int>::max( ) );
 
 #endif

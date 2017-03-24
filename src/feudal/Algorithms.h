@@ -22,14 +22,14 @@
 template <class Itr>
 inline size_t kmerCount( Itr itr, Itr end, unsigned K )
 {
-    size_t result = 0;
-    while ( itr != end )
-    {
-        if ( itr->size() >= K )
-            result += itr->size() - K + 1;
-        ++itr;
-    }
-    return result;
+  size_t result = 0;
+  while ( itr != end )
+  {
+    if ( itr->size() >= K )
+      result += itr->size() - K + 1;
+    ++itr;
+  }
+  return result;
 }
 
 #endif /* FEUDAL_ALGORITHMS_H_ */

@@ -52,15 +52,15 @@ class TrustedPath; // forward declaration
 // FuncDecl: AlignHyperKmerPath
 //
 // AlignHyperKmerPath takes a HyperKmerPath h, whose KmerPath edges are assumed
-// not to have any gaps, and aligns each of them to a reference genome (using files 
-// GENOME.fastb and GENOME.lookup), then removes some edges alignments which appear 
-// to be wrong.  The result is returned as a vec<look_align>, in which the query 
-// ids are the edge ids in h.  An index is also generated.  A work directory must 
+// not to have any gaps, and aligns each of them to a reference genome (using files
+// GENOME.fastb and GENOME.lookup), then removes some edges alignments which appear
+// to be wrong.  The result is returned as a vec<look_align>, in which the query
+// ids are the edge ids in h.  An index is also generated.  A work directory must
 // be provided for intermediate calculations.
 //
-// We use two programs to do this, QueryLookupTable and FindAllPerfectAlignments.  
-// The first finds alignments, whether perfect or not, but will miss multiple 
-// alignments of the same sequence to overlapping places on the reference.  The 
+// We use two programs to do this, QueryLookupTable and FindAllPerfectAlignments.
+// The first finds alignments, whether perfect or not, but will miss multiple
+// alignments of the same sequence to overlapping places on the reference.  The
 // second is guaranteed to find all perfect alignments.
 //
 // Output parameters:
@@ -71,39 +71,39 @@ class TrustedPath; // forward declaration
 //       (the indices in 'aligns' of the alignments of this edge).
 
 void AlignHyperKmerPath( const HyperKmerPath& h, const KmerBaseBroker* kbb,
-     const String& GENOME, const String& tmp_dir, vec<look_align>& aligns,
-     vec< vec<int> >& aligns_index, bool filter = true );
+                         const String& GENOME, const String& tmp_dir, vec<look_align>& aligns,
+                         vec< vec<int> >& aligns_index, bool filter = true );
 
 // FuncDecl: ReorderToFollowReference
 //
 // Given edge alignments, try to reorder the <components>
-// of a HyperKmerPath so that they follow the reference.  Flip them (both components 
+// of a HyperKmerPath so that they follow the reference.  Flip them (both components
 // and aligns) if necessary.
 void ReorderToFollowReference( HyperKmerPath& h, vec<look_align>& aligns,
-     const vec< vec<int> >& aligns_index );
+                               const vec< vec<int> >& aligns_index );
 
 // FuncDecl: PrintAlignedHyperKmerPath
 //
 // Given edge alignments, print a HyperKmerPath, by
 // components, with the edge alignments displayed.
-void PrintAlignedHyperKmerPath( ostream& out, const HyperKmerPath& h, 
-     const KmerBaseBroker* kbb, const vecbasevector& genome, 
-     const vec<look_align>& aligns, const vec< vec<int> >& aligns_index,
-     Bool print_component_id_line = True, 
-     const vec<TrustedPath>* trusted_pathsp = 0, const Bool brief = False,
-     const Bool diploid = False );
+void PrintAlignedHyperKmerPath( ostream& out, const HyperKmerPath& h,
+                                const KmerBaseBroker* kbb, const vecbasevector& genome,
+                                const vec<look_align>& aligns, const vec< vec<int> >& aligns_index,
+                                Bool print_component_id_line = True,
+                                const vec<TrustedPath>* trusted_pathsp = 0, const Bool brief = False,
+                                const Bool diploid = False );
 
 // FuncDecl: AlignAndPrintHyperKmerPath
 //
 // AlignAndPrintHyperKmerPath: one-stop shopping for aligning and printing of a
 // HyperKmerPath.
-void AlignAndPrintHyperKmerPath( ostream& out, const HyperKmerPath& h, 
-     const KmerBaseBroker* kbb, const String& GENOME, const String& tmp_dir, 
-     Bool print_component_id_line = True, bool filter = true );
+void AlignAndPrintHyperKmerPath( ostream& out, const HyperKmerPath& h,
+                                 const KmerBaseBroker* kbb, const String& GENOME, const String& tmp_dir,
+                                 Bool print_component_id_line = True, bool filter = true );
 
 /**
    Class: TrustedPath
-   
+
    A TrustedPath is a path through a <contig>, that corresponds to a
    segment of the reference.  Alternately, we can say that a TrustedPath
    is a segment of the reference that can be "threaded" through
@@ -126,11 +126,11 @@ void AlignAndPrintHyperKmerPath( ostream& out, const HyperKmerPath& h,
    or on the reverse-complement version of the genome part.   In the former
    case, all look_aligns of edges in the path have rc1=False, in the latter
    they all have rc1=True.
-   
+
    Other names for this are "unwound path" or "captured path".
 */
 class TrustedPath {
- public:
+public:
   TrustedPath() {}
 
   TrustedPath( int contig,
@@ -138,37 +138,73 @@ class TrustedPath {
                const vec<int>& vertexIds,
                const vec<look_align>& aligns );
 
-  int GetContig() const { return m_contig; }
+  int GetContig() const {
+    return m_contig;
+  }
 
-  int GetNumAligns() const { return m_aligns.size(); }
+  int GetNumAligns() const {
+    return m_aligns.size();
+  }
 
-  Float GetFractionEdgeLengthAligned() const { return m_fractionEdgeLengthAligned; }
+  Float GetFractionEdgeLengthAligned() const {
+    return m_fractionEdgeLengthAligned;
+  }
 
-  int GetVertexIdBefore( int i ) const { return m_vertexIds[i]; }
-  int GetVertexIdAfter( int i ) const { return m_vertexIds[i+1]; }
-  int GetEdgeId( int i ) const { return m_aligns[i].query_id; }
+  int GetVertexIdBefore( int i ) const {
+    return m_vertexIds[i];
+  }
+  int GetVertexIdAfter( int i ) const {
+    return m_vertexIds[i+1];
+  }
+  int GetEdgeId( int i ) const {
+    return m_aligns[i].query_id;
+  }
 
-  int GetFirstVertexId() const { return m_vertexIds.front(); }
-  int GetLastVertexId() const { return m_vertexIds.back(); }
-  const vec<int>& GetVertexIds() const { return m_vertexIds; }
+  int GetFirstVertexId() const {
+    return m_vertexIds.front();
+  }
+  int GetLastVertexId() const {
+    return m_vertexIds.back();
+  }
+  const vec<int>& GetVertexIds() const {
+    return m_vertexIds;
+  }
 
-  genome_part_id_t GetFinishedId() const { return m_aligns.front().target_id; }
+  genome_part_id_t GetFinishedId() const {
+    return m_aligns.front().target_id;
+  }
 
   // Where on the forward version of the finished sequence does the trusted path align ?
-  genome_part_pos_t Begin() const { return m_aligns.front().a.pos2(); }
-  genome_part_pos_t End() const { return m_aligns.back().a.Pos2(); }
-  int Length() const { return this->End() - this->Begin(); }
+  genome_part_pos_t Begin() const {
+    return m_aligns.front().a.pos2();
+  }
+  genome_part_pos_t End() const {
+    return m_aligns.back().a.Pos2();
+  }
+  int Length() const {
+    return this->End() - this->Begin();
+  }
 
   // Returns 0 if the trusted path aligns fw on the reference, 1 if rc.
-  int GetRc() const { return m_aligns.front().rc1; }
-  bool IsFw() const { return GetRc() == 0; }
-  bool IsRc() const { return GetRc() == 1; }
+  int GetRc() const {
+    return m_aligns.front().rc1;
+  }
+  bool IsFw() const {
+    return GetRc() == 0;
+  }
+  bool IsRc() const {
+    return GetRc() == 1;
+  }
 
-  const look_align& 
-  GetAlign( int i ) const { return m_aligns[i]; }
+  const look_align&
+  GetAlign( int i ) const {
+    return m_aligns[i];
+  }
 
-  const vec<look_align>& 
-  GetAllAligns() const { return m_aligns; }
+  const vec<look_align>&
+  GetAllAligns() const {
+    return m_aligns;
+  }
 
   bool DominatesAlignsOf( const TrustedPath& other ) const;
 
@@ -177,16 +213,18 @@ class TrustedPath {
   bool DominatesVerticesOf( const TrustedPath& other ) const;
 
   void PrintSummary( ostream& out ) const;
-  
+
   const vec<int>&
-    GetUniquePerfectEdgeIds() const;
+  GetUniquePerfectEdgeIds() const;
 
   void TestValid( ) const;
   void TestValid( const HyperKmerPath& ) const;
 
   void writeBinary( BinaryWriter& writer ) const;
   void readBinary( BinaryReader& reader );
-  static size_t externalSizeof() { return 0; }
+  static size_t externalSizeof() {
+    return 0;
+  }
 
   friend void swap( TrustedPath& tp1, TrustedPath& tp2 )
   { using std::swap;
@@ -194,9 +232,10 @@ class TrustedPath {
     swap(tp1.m_vertexIds,tp2.m_vertexIds);
     swap(tp1.m_aligns,tp2.m_aligns);
     swap(tp1.m_fractionEdgeLengthAligned,tp2.m_fractionEdgeLengthAligned);
-    swap(tp1.m_uniquePerfectEdgeIds,tp2.m_uniquePerfectEdgeIds); }
+    swap(tp1.m_uniquePerfectEdgeIds,tp2.m_uniquePerfectEdgeIds);
+  }
 
- private:
+private:
   // Private field: m_contig
   // The id of the connected component within the HyperKmerPath,
   // through which component this TrustedPath passes.
@@ -214,7 +253,7 @@ class TrustedPath {
   // The alignments are in order along the path.  In each alignment,
   // the query_id field is the edge id of the aligned HyperKmerPath
   // edge, and the target_id is the <genome part id> of the genome part
-  // to which this path aligns.  
+  // to which this path aligns.
   vec<look_align> m_aligns;
   Float m_fractionEdgeLengthAligned;
 
@@ -258,7 +297,7 @@ void TrustedPathsToIndexedAligns( const vec<TrustedPath>& paths,
 // Find edge alignments and filter them by finding
 // the alignments most consistent with the graph structure and the
 // finished sequence.  These alignments are then packaged into <trusted paths>.
-void FilterByReference( const HyperKmerPath& theGraph, 
+void FilterByReference( const HyperKmerPath& theGraph,
                         const int K,
                         const vec<look_align>& aligns,
                         const vec< vec<int> >& aligns_index,
@@ -269,7 +308,7 @@ void FilterByReference( const HyperKmerPath& theGraph,
 
 void FilterPathsByAlignDominance( vec<TrustedPath>& trustedPaths );
 
-// Remove paths that are edge-dominated by some other path from that contig. 
+// Remove paths that are edge-dominated by some other path from that contig.
 
 void FilterPathsByEdgeDominance( vec<TrustedPath>& trustedPaths, int numEdges );
 
@@ -280,19 +319,19 @@ void FilterPathsByVertexDominance( vec<TrustedPath>& trustedPaths );
 // Remove paths that involve less than some percentage of the contig's
 // total edge length.
 
-void FilterPathsByEdgeCoverage( vec<TrustedPath>& trustedPaths, 
+void FilterPathsByEdgeCoverage( vec<TrustedPath>& trustedPaths,
                                 const Float minFractionCovered = 0.01 );
 
 // Remove paths that involve less than some percentage of the contig's
 // total edge length and are shorter than some cutoff.
 
-void FilterPathsByLength( vec<TrustedPath>& trustedPaths, 
+void FilterPathsByLength( vec<TrustedPath>& trustedPaths,
                           const int minLength = 100,
                           const int minPercent = 10 );
 
 // ReportMisassemblies.  Look for putative misassemblies:
 //
-// 1. Report edges that have no end-to-end alignment (or that have no alignment 
+// 1. Report edges that have no end-to-end alignment (or that have no alignment
 // at all).
 //
 // 2. For each component C, consider the parts of the genome that are covered by it.
@@ -302,13 +341,13 @@ void FilterPathsByLength( vec<TrustedPath>& trustedPaths,
 // reported at most once.
 
 void ReportMisassemblies( ostream& out, const HyperKmerPath& h,
-     const vec<look_align>& aligns, const vec< vec<int> >& aligns_index,
-     const int MIN_LEN = 3000, const int MIN_SEP = 2000, 
-     const int MIN_LEN_NO_REPORT = 1000 );
+                          const vec<look_align>& aligns, const vec< vec<int> >& aligns_index,
+                          const int MIN_LEN = 3000, const int MIN_SEP = 2000,
+                          const int MIN_LEN_NO_REPORT = 1000 );
 
 
 
-  
+
 // Term: component
 //
 // One connected component of a HyperKmerPath.

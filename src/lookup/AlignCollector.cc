@@ -82,34 +82,36 @@ void MaxErrDiffAlignCollector::Consolidate() {
 
   longlong capacity=0, size=0;
   for (int i=0; i != aligns_.isize(); ++i) {
-      capacity += aligns_[i].capacity(); size += aligns_[i].size();
+    capacity += aligns_[i].capacity();
+    size += aligns_[i].size();
   }
   //  PRINT3("before", capacity, size);
 
   for (int i=0; i != aligns_.isize(); ++i) {
-      // erase all alignments for query i that have more than best[i]+maxErr errors
-      EraseBad(i);
+    // erase all alignments for query i that have more than best[i]+maxErr errors
+    EraseBad(i);
 
-      // Clear aligns where the best alignment is worse than maxErrs_
-      // Important - this will not remove alignments which have more than maxErrs_
-      // but less than best[i] + maxErrDiff + 1.
-      if (!aligns_[i].empty() && best_[i] > maxErrs_) {
-	vec<look_align>().swap(aligns_[i]); //clear size and capacity.
-      }
+    // Clear aligns where the best alignment is worse than maxErrs_
+    // Important - this will not remove alignments which have more than maxErrs_
+    // but less than best[i] + maxErrDiff + 1.
+    if (!aligns_[i].empty() && best_[i] > maxErrs_) {
+      vec<look_align>().swap(aligns_[i]); //clear size and capacity.
+    }
 
-      // Make sure we have no duplicate alignments
-      sort(aligns_[i].begin(),aligns_[i].end(), order_lookalign_TargetQueryStartEnd());
-      aligns_[i].erase(unique(aligns_[i].begin(),
-			      aligns_[i].end(),
-			      equal_lookalign_TargetQueryStartEnd() ),
-		       aligns_[i].end());
-      // re-sort by error rate:
-      sort(aligns_[i].begin(), aligns_[i].end(), order_lookalign_ErrorRate());
+    // Make sure we have no duplicate alignments
+    sort(aligns_[i].begin(),aligns_[i].end(), order_lookalign_TargetQueryStartEnd());
+    aligns_[i].erase(unique(aligns_[i].begin(),
+                            aligns_[i].end(),
+                            equal_lookalign_TargetQueryStartEnd() ),
+                     aligns_[i].end());
+    // re-sort by error rate:
+    sort(aligns_[i].begin(), aligns_[i].end(), order_lookalign_ErrorRate());
   }
 
   capacity = size=0;
   for (int i=0; i != aligns_.isize(); ++i) {
-      capacity += aligns_[i].capacity(); size += aligns_[i].size();
+    capacity += aligns_[i].capacity();
+    size += aligns_[i].size();
   }
   //  PRINT2(capacity, size);
   //  PRINT(betterBest_);
@@ -196,8 +198,8 @@ void BestNextBestAlignCollector::Insert(const look_align & la) {
     // all current second best alignments should be removed if we are at the point when we store second best aligns at all
     if ( best_[q] <= maxErrs_  || e==best_[q] ) { // do we need to store second best alignment?
       if ( best_[q] < second_best_[q] ) { // if the old second best was strictly worse than best, it should go
-	vec<look_align>::iterator start = aligns_[q].begin();
-	aligns_[q].erase(++start, aligns_[q].end());
+        vec<look_align>::iterator start = aligns_[q].begin();
+        aligns_[q].erase(++start, aligns_[q].end());
       }
       aligns_[q].push_back(la); // add new second best (which can be as good as best!)
     }
@@ -246,18 +248,18 @@ void BestNextBestAlignCollector::Consolidate() {
   for (int i=0; i != aligns_.isize(); ++i) {
     if ( aligns_[i].empty() ) continue;
 
-      // Make sure we have no duplicate alignments
-      vec<look_align>::iterator second_best_start = aligns_[i].begin();
-      if ( second_best_[i] > best_[i] ) ++second_best_start; // now points to the start of the list of second-best aligns
+    // Make sure we have no duplicate alignments
+    vec<look_align>::iterator second_best_start = aligns_[i].begin();
+    if ( second_best_[i] > best_[i] ) ++second_best_start; // now points to the start of the list of second-best aligns
 
-      // sort second best only, don't touch the best (unless second_best is as good as best, in which case we sort all):
-      sort(second_best_start,aligns_[i].end(), order_lookalign_TargetQueryStartEnd());
+    // sort second best only, don't touch the best (unless second_best is as good as best, in which case we sort all):
+    sort(second_best_start,aligns_[i].end(), order_lookalign_TargetQueryStartEnd());
 
-      // make sure all second bests are unique, erase duplicates:
-      aligns_[i].erase(unique(second_best_start,
-			      aligns_[i].end(),
-			      equal_lookalign_TargetQueryStartEnd() ),
-		       aligns_[i].end());
+    // make sure all second bests are unique, erase duplicates:
+    aligns_[i].erase(unique(second_best_start,
+                            aligns_[i].end(),
+                            equal_lookalign_TargetQueryStartEnd() ),
+                     aligns_[i].end());
   }
 }
 
@@ -326,13 +328,13 @@ void BestAlignCollector::Consolidate() {
   for (int i=0; i != aligns_.isize(); ++i) {
     if ( aligns_[i].empty() ) continue;
 
-      // sort best aligns:
-      sort(aligns_[i].begin(),aligns_[i].end(), order_lookalign_TargetQueryStartEnd());
+    // sort best aligns:
+    sort(aligns_[i].begin(),aligns_[i].end(), order_lookalign_TargetQueryStartEnd());
 
-      // make sure all bests are unique, erase duplicates:
-      aligns_[i].erase(unique(aligns_[i].begin(),
-			      aligns_[i].end(),
-			      equal_lookalign_TargetQueryStartEnd() ),
-		       aligns_[i].end());
+    // make sure all bests are unique, erase duplicates:
+    aligns_[i].erase(unique(aligns_[i].begin(),
+                            aligns_[i].end(),
+                            equal_lookalign_TargetQueryStartEnd() ),
+                     aligns_[i].end());
   }
 }

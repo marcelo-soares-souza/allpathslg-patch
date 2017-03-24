@@ -55,7 +55,7 @@ typedef size_t bin_id_t;
 */
 template <class IDX, class VAL>
 class BinsVec: public vec<VAL> {
- public:
+public:
   typedef vec<VAL> PARENT;
   typedef typename PARENT::size_type bin_id_t;
 
@@ -63,11 +63,11 @@ class BinsVec: public vec<VAL> {
 
   /**
      Constructor: BinsVec constructor
-    
+
      Create a BinsVec with the given bin boundaries.
-    
+
      Parameters:
-    
+
         binBoundaries - the bin boundaries.  *Must be sorted in ascending order!*
           See <ParseIntSet()> and <ParseDoubleSet()>.
   */
@@ -80,12 +80,12 @@ class BinsVec: public vec<VAL> {
 
   /**
      Constructor: BinsVec constructor with default value
-    
+
      Create a BinsVec with the given bin boundaries, and fill the data in each bin
-     with the specified value.  
-    
+     with the specified value.
+
      Parameters:
-    
+
         binBoundaries - the bin boundaries.  *Must be sorted in ascending order!*
           See <ParseIntSet()> and <ParseDoubleSet()>.
         defaultVal - the default value to put into each bin.
@@ -99,12 +99,18 @@ class BinsVec: public vec<VAL> {
   /// Operator: function call operator
   /// Given an index value, find the appropriate bin for that value and return a reference
   /// to the data value stored in that bin.
-  typename PARENT::reference operator()( const IDX& i ) { return (*this)[FindBin(i)]; }
-  typename PARENT::const_reference operator()( const IDX& i ) const { return (*this)[FindBin(i)]; }
+  typename PARENT::reference operator()( const IDX& i ) {
+    return (*this)[FindBin(i)];
+  }
+  typename PARENT::const_reference operator()( const IDX& i ) const {
+    return (*this)[FindBin(i)];
+  }
 
   /// Method: GetNumBins
   /// Returns the number of bins.
-  bin_id_t GetNumBins() { return PARENT::size(); }
+  bin_id_t GetNumBins() {
+    return PARENT::size();
+  }
 
   /// Method: GetBinLo
   /// Returns the lower bound of a bin, given the <bin id>.  The lower bound of the lowest bin is
@@ -132,9 +138,9 @@ class BinsVec: public vec<VAL> {
   /// for this to work.
   bin_id_t FindBin( const IDX& idx ) const {
     return Min( (bin_id_t)
-		distance( binBoundaries_.begin(),
-			  lower_bound( binBoundaries_.begin(), binBoundaries_.end(), idx ) ),
-		(bin_id_t) binBoundaries_.size() );
+                distance( binBoundaries_.begin(),
+                          lower_bound( binBoundaries_.begin(), binBoundaries_.end(), idx ) ),
+                (bin_id_t) binBoundaries_.size() );
   }
 
   /// Method: SetOuterBounds
@@ -144,10 +150,12 @@ class BinsVec: public vec<VAL> {
   /// This method must be called before calling <GetBinLo()> or <GetBinHi()>.
   void SetOuterBounds(const IDX& firstBinLo, const IDX& lastBinHi) {
     Assert( firstBinLo < binBoundaries_[0]  &&  lastBinHi > binBoundaries_[binBoundaries_.size()-1] );
-    firstBinLo_ = firstBinLo; lastBinHi_ = lastBinHi;  binBoundariesSet_ = True;
+    firstBinLo_ = firstBinLo;
+    lastBinHi_ = lastBinHi;
+    binBoundariesSet_ = True;
   }
-  
- private:
+
+private:
   /// Private field: binBoundaries
   /// The boundaries of the bins.  For n boundaries there are n+1 bins.
   /// The boundaries denote half-open intervals: a bin includes the value
@@ -173,7 +181,7 @@ class BinsVec: public vec<VAL> {
   /// Whether <SetOuterBounds()> has been called to set the outer boundaries of the bins.
   Bool binBoundariesSet_;
 
- protected:
+protected:
 
   /// Protected method: isValid
   /// Tests whether the representation of this object is valid / internally consistent.
@@ -182,11 +190,11 @@ class BinsVec: public vec<VAL> {
     ForceAssert( binBoundaries_.nonempty() );
     ForceAssertEq( binBoundaries_.size()+1, PARENT::size() );
     ForceAssert( is_sorted( binBoundaries_.begin(), binBoundaries_.end() ) );
-      // there are no duplicate bin boundaries
+    // there are no duplicate bin boundaries
     ForceAssert( adjacent_find( binBoundaries_.begin(), binBoundaries_.end() ) == binBoundaries_.end() );
     return True;
   }
-  
+
 };  // class BinsVec
 
 /**
@@ -221,43 +229,47 @@ class BinsVec: public vec<VAL> {
 */
 template <class IDX1, class IDX2, class VAL>
 class BinsVec2: public BinsVec< IDX1, BinsVec<IDX2, VAL> > {
- public:
+public:
   typedef BinsVec< IDX1, BinsVec<IDX2, VAL> > PARENT;
-  typedef typename PARENT::bin_id_t bin_id_t;  
+  typedef typename PARENT::bin_id_t bin_id_t;
 
   /**
      Constructor: BinsVec2 constructor
-    
+
      Create a BinsVec with the given bin boundaries.
-    
+
      Parameters:
-    
+
         binBoundaries1, binBoundaries2 - the bin boundaries on the two
-	   number lines.  Each *must be sorted in ascending order, with no duplicates!*
-	   See <ParseIntSet()> and <ParseDoubleSet()>.
+     number lines.  Each *must be sorted in ascending order, with no duplicates!*
+     See <ParseIntSet()> and <ParseDoubleSet()>.
   */
   BinsVec2(const vec<IDX1>& binBoundaries1, const vec<IDX2>& binBoundaries2):
     PARENT(binBoundaries1, BinsVec<IDX2, VAL>( binBoundaries2 ) ) {  }
 
   /**
      Constructor: BinsVec2 constructor with default value
-    
+
      Create a BinsVec2 with the given bin boundaries, and fill the data in each bin
-     with the specified value.  
-    
+     with the specified value.
+
      Parameters:
-    
+
         binBoundaries1, binBoundaries2 - the bin boundaries on the two number lines.
-	*Must be sorted in ascending order!*
-	See <ParseIntSet()> and <ParseDoubleSet()>.
-	
+  *Must be sorted in ascending order!*
+  See <ParseIntSet()> and <ParseDoubleSet()>.
+
         defaultVal - the default value to put into each bin.
   */
   BinsVec2(const vec<IDX1>& binBoundaries1, const vec<IDX2>& binBoundaries2, const VAL& defaultVal):
     PARENT(binBoundaries1, BinsVec<IDX2, VAL>( binBoundaries2, defaultVal ) ) { }
 
-  typename BinsVec<IDX2, VAL>::reference operator()( const IDX1& i1, const IDX2& i2 ) { return (*(PARENT *)this)(i1)(i2); }
-  typename BinsVec<IDX2, VAL>::const_reference operator()( const IDX1& i1, const IDX2& i2 ) const { return ((*(PARENT *)this)(i1))(i2); }
+  typename BinsVec<IDX2, VAL>::reference operator()( const IDX1& i1, const IDX2& i2 ) {
+    return (*(PARENT *)this)(i1)(i2);
+  }
+  typename BinsVec<IDX2, VAL>::const_reference operator()( const IDX1& i1, const IDX2& i2 ) const {
+    return ((*(PARENT *)this)(i1))(i2);
+  }
 
   /// Method: SetOuterBounds
   /// Record the lower bound of the lowest bin, and the upper bound of the
@@ -270,23 +282,25 @@ class BinsVec2: public BinsVec< IDX1, BinsVec<IDX2, VAL> > {
     for (typename PARENT::size_type i=0; i<PARENT::size(); i++)
       (*this)[i].SetOuterBounds( firstBinLo2, lastBinHi2 );
   }
-  
+
 
   /// Method: GetNumBins2
   /// Return the number of bins on the second number axis.
-  bin_id_t GetNumBins2() { retun (*this)(0).GetNumBins(); }
+  bin_id_t GetNumBins2() {
+    retun (*this)(0).GetNumBins();
+  }
 
   /// Method: GetBinBounds
   /// Return the bounds of the bin identified by a pair of <bin ids>.
   void GetBinBounds(bin_id_t binId1, bin_id_t binId2,
-			  IDX1& binLo1, IDX1& binHi1, IDX2& binLo2, IDX2& binHi2) const {
+                    IDX1& binLo1, IDX1& binHi1, IDX2& binLo2, IDX2& binHi2) const {
     const BinsVec<IDX2, VAL>& binsVec2 = (*(PARENT *)this)(0);
     binLo1 = PARENT::GetBinLo(binId1);
     binHi1 = PARENT::GetBinHi(binId1);
     binLo2 = binsVec2.GetBinLo(binId2);
     binHi2 = binsVec2.GetBinHi(binId2);
   }
-  
+
 };  // class BinsVec2
 
 

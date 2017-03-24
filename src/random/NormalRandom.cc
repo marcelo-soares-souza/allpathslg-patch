@@ -19,12 +19,12 @@
 double
 NormalRandom::value() const
 {
-  // method for getting the next value of the normal random variable  
+  // method for getting the next value of the normal random variable
 
   const long   two_pwr_30 = 1073741824;
   const double two_pwr_31 = 2147483648.0;
   const double v_denom    = 117732250.0;
-  
+
   bool done = false;
   double answer = 0.0;
   while (!done) {
@@ -52,13 +52,15 @@ NormalRandom::value() const
   return mean_ + stddev_*answer;
 }
 
-double FastNormal() 
-{    static vec<double> normals;
-     if ( normals.empty( ) )
-     {    normals.resize(1000000);
-          NormalRandom r( 0, 1 );
-          for ( int i = 0; i < normals.isize( ); i++ )
-               normals[i] = r.value( );    }
-     static int count(0); 
-     if ( count == normals.isize( ) ) count = 0;
-     return normals[count++];    }
+double FastNormal()
+{ static vec<double> normals;
+  if ( normals.empty( ) )
+  { normals.resize(1000000);
+    NormalRandom r( 0, 1 );
+    for ( int i = 0; i < normals.isize( ); i++ )
+      normals[i] = r.value( );
+  }
+  static int count(0);
+  if ( count == normals.isize( ) ) count = 0;
+  return normals[count++];
+}

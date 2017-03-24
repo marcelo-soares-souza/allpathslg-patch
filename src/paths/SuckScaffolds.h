@@ -29,10 +29,10 @@
  * plog: optional log stream
  */
 int SuckScaffolds( const PairsManager &pairs,
-		   const vec<int> &aligns_index,
-		   vec<alignlet> &aligns,
-		   vec<superb> &scaffolds,
-		   vec<Bool> &rctig,
-		   ostream *plog = 0 );
+                   const vec<int> &aligns_index,
+                   vec<alignlet> &aligns,
+                   vec<superb> &scaffolds,
+                   vec<Bool> &rctig,
+                   ostream *plog = 0 );
 
 #endif

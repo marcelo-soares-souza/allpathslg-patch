@@ -16,11 +16,11 @@
 
    This include file supports parsing of command-line arguments, according to the
    following scheme.  First, your "main program line" should be:
-   
+
    > int main( int argc, char *argv[] )
 
    Second, to parse the arguments, do something like:
-   
+
    > BeginCommandArguments;
    > CommandArgument_UnsignedInt(MAXT);
    > CommandArgument_String_OrDefault(TACO, "cheese");
@@ -29,27 +29,27 @@
    Here's what happens under various scenarios:
 
    (begin example)
-   
+
    command line                   action
-   
+
    a.out MAXT=5 TACO=beef         unsigned int MAXT = 5; String TACO = "beef";
-   
+
    a.out MAXT=34                  unsigned int MAXT = 34; String TACO = "cheese";
-   
+
    a.out TACO=broccoli            error because MAXT missing
-   
+
    a.out MAXT=4 TACO=potato N=4   error because N is a superfluous argument
 
    (end example)
 
-   If a variable name X is undefined on the command line, but an 
-   environment variable 
+   If a variable name X is undefined on the command line, but an
+   environment variable
    ARACHNE_X is defined, its value is used for X.  If X is undefined and ARACHNE_X
-   is undefined in the environment, but FetchArgsFromFile is used, and X is 
+   is undefined in the environment, but FetchArgsFromFile is used, and X is
    defined
    there, then we use that value.  Otherwise, if a default value is given, we use
    that.  Otherwise, an error is flagged.
-   
+
    Special arguments of the form @@f, where f is a filename, cause extra arguments
    to be read from the file f.  Any line starting with # in this treated as a comment.
 
@@ -58,10 +58,10 @@
    GDB (Bool) default: False
      Whether to use GDB for tracebacks.
 
-   NO_HEADER, or NH (Bool) default: False 
+   NO_HEADER, or NH (Bool) default: False
      Whether to suppress the normal command-line header block.
 
-   MEM_MONITOR, or MM (Bool) default: False 
+   MEM_MONITOR, or MM (Bool) default: False
      Whether or not to fork an instance of MemMonitor. All arguments specifiable
      to MemMonitor can be supplied here by prefixing them with '_MM_'.
 
@@ -99,21 +99,21 @@
 
 class parsed_arg_help {
 
- public:
-  parsed_arg_help( const String& name, 
-		   const String& type, 
-		   const String& abbreviation,
-		   const String& default_value,
-		   const String& valid_values,
-		   const String& documentation)
-    : name_(name), 
-      type_(type), 
-      abbreviation_(abbreviation), 
+public:
+  parsed_arg_help( const String& name,
+                   const String& type,
+                   const String& abbreviation,
+                   const String& default_value,
+                   const String& valid_values,
+                   const String& documentation)
+    : name_(name),
+      type_(type),
+      abbreviation_(abbreviation),
       default_(default_value),
       valid_(valid_values),
       doc_(documentation)
   { }
-  
+
   String GetName() const {
     return(name_);
   }
@@ -122,13 +122,13 @@ class parsed_arg_help {
   {
     return name_ < rhs.name_;
   }
-  
+
   friend ostream& operator<< ( ostream& out, const parsed_arg_help& the_arg );
   bool isRequired() const {
     return default_ == "<required>";
   }
 
- private:
+private:
   String name_;
   String type_;
   String abbreviation_;
@@ -138,12 +138,14 @@ class parsed_arg_help {
 };
 
 //namespace parsed_args_string {
-  template<class T> inline String Stringize(T t) { return ToString(t); }
-  template<> String inline Stringize<Bool>(Bool b) {
-    return b ? "True" : "False";
-  }
+template<class T> inline String Stringize(T t) {
+  return ToString(t);
+}
+template<> String inline Stringize<Bool>(Bool b) {
+  return b ? "True" : "False";
+}
 //};
-    
+
 ///Contains all Arachne command-line parameters
 class parsed_args {
 
@@ -156,7 +158,7 @@ class parsed_args {
 
   //using parsed_args_string::Stringize;
 
- public:
+public:
 
   static Bool pretty_help;
   static String usage_format;
@@ -179,22 +181,26 @@ class parsed_args {
 
   /// Put a command-line parameter and its value into this object.
   /// This method handles the case where the value is separated from the
-  /// = sign by whitespace (e.g. "Param= Value"). 
-  /// It is useful to be able to do this so as to 
+  /// = sign by whitespace (e.g. "Param= Value").
+  /// It is useful to be able to do this so as to
   /// use tab completion in the shell.
   bool ParseString( int argc, char **argv, int & i);
 
-  Bool GetHelpOnly( ) { return get_help_; }
+  Bool GetHelpOnly( ) {
+    return get_help_;
+  }
 
-  void SetHelpOnly(bool b) { get_help_ = b; }
+  void SetHelpOnly(bool b) {
+    get_help_ = b;
+  }
 
   /// Displays error message when arg couldn't be converted to required type
   void ConversionFailure(int i);
 
   /// Displays error message when validation fails for default value
-  void ValidationFailureDefault(const String& name, 
-				const String& deflt,
-				const String& valid );
+  void ValidationFailureDefault(const String& name,
+                                const String& deflt,
+                                const String& valid );
 
   /// Displays error message when validation fails for ith arg
   void ValidationFailure(int i, const String& valid);
@@ -204,36 +210,36 @@ class parsed_args {
   String CheckForArgAndAbbreviation( String n, String abbr );
 
 
-  template<class T> 
-    void GetValue (String n, T & value, const String & abbr = "", 
-		   const String & deflt = "<required>",
-		   const String & valid = "");
+  template<class T>
+  void GetValue (String n, T & value, const String & abbr = "",
+                 const String & deflt = "<required>",
+                 const String & valid = "");
 
   template<class T>
-    void ProcessArgs(T & value, const String & name,
-		     const String & type, const String & abbr,
-		     const String & def, const String & valid="",
-		     const String & doc="") {
-      if ( GetHelpOnly() )
-	AddArgHelp( name, type, abbr, def, valid, doc );
-      else
-	GetValue( name, value, abbr, def, valid );
-    }
+  void ProcessArgs(T & value, const String & name,
+                   const String & type, const String & abbr,
+                   const String & def, const String & valid="",
+                   const String & doc="") {
+    if ( GetHelpOnly() )
+      AddArgHelp( name, type, abbr, def, valid, doc );
+    else
+      GetValue( name, value, abbr, def, valid );
+  }
 
   template<class T>
-    void ProcessArgs(T & value, const String & name,
-		     const String & type, const String & abbr,
-		     const char * def, const String & valid="",
-		     const String & doc="") {
+  void ProcessArgs(T & value, const String & name,
+                   const String & type, const String & abbr,
+                   const char * def, const String & valid="",
+                   const String & doc="") {
     ProcessArgs(value, name, type, abbr, String(def), valid, doc);
   }
 
 
   template<class T>
-    void ProcessArgs(T & value, const String & name,
-		     const String & type, const String & abbr,
-		     const double & def, const String & valid="",
-		     const String & doc="") {
+  void ProcessArgs(T & value, const String & name,
+                   const String & type, const String & abbr,
+                   const double & def, const String & valid="",
+                   const String & doc="") {
     stringstream s;
     s << def;
     String temp;
@@ -242,10 +248,10 @@ class parsed_args {
   }
 
   template<class T>
-    void ProcessArgs(T & value, const String & name,
-		     const String & type, const String & abbr,
-		     const float & def, const String & valid="",
-		     const String & doc="") {
+  void ProcessArgs(T & value, const String & name,
+                   const String & type, const String & abbr,
+                   const float & def, const String & valid="",
+                   const String & doc="") {
     stringstream s;
     s << def;
     String temp;
@@ -254,67 +260,75 @@ class parsed_args {
   }
 
   template<class T, class S>
-    void ProcessArgs(T & value, const String & name,
-		     const String & type, const String & abbr,
-		     S def, const String & valid="",
-		     const String & doc="") {
-      if ( GetHelpOnly() )
-	AddArgHelp( name, type, abbr, Stringize(T(def)), valid, doc );
-      else
-	GetValue( name, value, abbr, Stringize(T(def)), valid );
-    }
+  void ProcessArgs(T & value, const String & name,
+                   const String & type, const String & abbr,
+                   S def, const String & valid="",
+                   const String & doc="") {
+    if ( GetHelpOnly() )
+      AddArgHelp( name, type, abbr, Stringize(T(def)), valid, doc );
+    else
+      GetValue( name, value, abbr, Stringize(T(def)), valid );
+  }
 
 
-  String GetStringValue( String n, String abbr = "", 
-			 String deflt = INVALID_STRING,
-			 String valid = "");
+  String GetStringValue( String n, String abbr = "",
+                         String deflt = INVALID_STRING,
+                         String valid = "");
 
   Bool GetBoolValue(String n, String abbr = "", Bool deflt = INVALID_BOOL );
 
-  unsigned int GetUnsignedIntValue( String n, String abbr = "", 
-				    unsigned int deflt = INVALID_UINT,
-				    String valid = "" );
+  unsigned int GetUnsignedIntValue( String n, String abbr = "",
+                                    unsigned int deflt = INVALID_UINT,
+                                    String valid = "" );
 
   int GetIntValue( String n, String abbr = "",
-		   int deflt = INVALID_INT,
-		   String valid = "");
+                   int deflt = INVALID_INT,
+                   String valid = "");
 
   longlong GetLongLongValue( String n, String abbr = "",
-			longlong deflt = INVALID_LONGLONG,
-			String valid = "");
+                             longlong deflt = INVALID_LONGLONG,
+                             String valid = "");
 
   double GetDoubleValue(String n, String abbr = "",
-			double deflt = INVALID_DOUBLE,
-			String valid = "");
- 
+                        double deflt = INVALID_DOUBLE,
+                        String valid = "");
+
   void CheckForExtraArgs( bool abort_if_found );
 
   void PrintVersion( );
 
-  void AddArgHelp( const String& arg, 
-                   const String& type, 
+  void AddArgHelp( const String& arg,
+                   const String& type,
                    const String& abbreviation,
                    const String& default_value,
-		   const String& valid_values="",
-		   const String& documentation="");
-     
+                   const String& valid_values="",
+                   const String& documentation="");
+
   void PrintArgHelp( );
 
   String TheCommand( ) const;
 
-  String GetProgramName( ) const { return command_; }
+  String GetProgramName( ) const {
+    return command_;
+  }
 
   void PrintTheCommandPretty( ostream& out, const String& prefix = "" );
 
   /// Removes command-line parameter from object
   bool RemoveArg(String n, String abbr = "");
 
-  void AddDocString(const char *doc) { doc_ = doc; }
+  void AddDocString(const char *doc) {
+    doc_ = doc;
+  }
 
-  void AddEnvVarPrefix(const String& prefix) { env_var_prefix_ = prefix; }
+  void AddEnvVarPrefix(const String& prefix) {
+    env_var_prefix_ = prefix;
+  }
 
 
-  vec<String> GetArgNames() const { return name_; }
+  vec<String> GetArgNames() const {
+    return name_;
+  }
 
   /// MethodDecl: GetOutputRedirection
   /// The special command-line argument TEE="file1 file2..."
@@ -327,7 +341,7 @@ class parsed_args {
 
   void SetOutputRedirection(const String filenames);
 
- private:
+private:
 
   void CheckEnv( const String& n, const String& abbr );
 
@@ -420,7 +434,7 @@ class parsed_args {
      } \
      else \
        command.CheckForExtraArgs( false );
-     
+
 ///Use this macro if you want your program to run with no arguments.
 ///(instead of printing usage, that is). Mainly intended for unit tests.
 #define BeginCommandArgumentsAcceptEmptyArgList \

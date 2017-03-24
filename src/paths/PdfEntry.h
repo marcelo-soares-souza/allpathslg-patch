@@ -21,10 +21,10 @@
 //
 // The struct pdf_entry is meant to replace pair<copy_num_t,prob_t> as a way
 // of holding the predicted copy number of unipaths (for a given copy
-// number the probability that the unipath has that copy number).  
+// number the probability that the unipath has that copy number).
 // Its natural habitat is the VecPdfEntryVec.
 //
-// pair<copy_num_t,prob_t> itself is bad because alignment forces it to have 
+// pair<copy_num_t,prob_t> itself is bad because alignment forces it to have
 // padding on a 64-bit machine but not on a 32-bit, so a double vector of these
 // stored on disk is not cross-compatible.
 // TODO: consider halving the size of this structure by storing the probability
@@ -42,11 +42,17 @@ public:
   pdf_entry(copy_num_t i, prob_t d) : first(i), second(d) { }
 
   // No one will ever use these,  but just for show:
-  copy_num_t NumCopies() const { return first; }
-  prob_t Prob() const { return second; }
+  copy_num_t NumCopies() const {
+    return first;
+  }
+  prob_t Prob() const {
+    return second;
+  }
 
   friend Bool operator==( const pdf_entry& p1, const pdf_entry& p2 )
-  {    return p1.first == p2.first && p1.second == p2.second;    }
+  {
+    return p1.first == p2.first && p1.second == p2.second;
+  }
 };
 
 TRIVIALLY_SERIALIZABLE(pdf_entry);
@@ -57,12 +63,12 @@ extern template class OuterVec<PdfEntryVec>;
 
 inline std::ostream& operator<<( std::ostream& s, PdfEntryVec const& v )
 {
-    s << "[";
-    PdfEntryVec::const_iterator end(v.end());
-    for ( PdfEntryVec::const_iterator itr(v.begin()); itr != end; ++itr )
-        s << " " << itr->first << ":" << itr->second;
-    s << " ]";
-    return s;
+  s << "[";
+  PdfEntryVec::const_iterator end(v.end());
+  for ( PdfEntryVec::const_iterator itr(v.begin()); itr != end; ++itr )
+    s << " " << itr->first << ":" << itr->second;
+  s << " ]";
+  return s;
 }
 
 // Function to find the most likely value in a set of pdf_entries
@@ -71,7 +77,7 @@ GetMostLikelyValue( int & value, const PdfEntryVec& copy_numbers )
 {
   value = -1;
   double prob = 0;
-  
+
   // Choose the value with the highest probability
   for ( PdfEntryVec::size_type j = 0; j < copy_numbers.size( ); j++ ) {
     if ( copy_numbers[j].second > prob ) {
@@ -96,7 +102,7 @@ LoadCopyNumbers( const String &in_file, vec<int> &CNval )
   CNval.clear( );
 
   VecPdfEntryVec pdfs( in_file.c_str() );
-  
+
   CNval.resize( pdfs.size( ), -1 );
   for (VecPdfEntryVec::size_type ii=0; ii<pdfs.size( ); ii++)
     GetMostLikelyValue( CNval[ii], pdfs[ii] );

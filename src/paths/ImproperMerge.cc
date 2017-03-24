@@ -12,25 +12,25 @@
 // so I'm making them private to this file.
 
 void RecursiveImproperMergeLeft( const KmerPathLoc& loc1orig,
-				 const KmerPathLoc& loc2orig,
-				 vec<ImproperMerger>& ans,
-				 const NegativeGapValidator* ngv );
+                                 const KmerPathLoc& loc2orig,
+                                 vec<ImproperMerger>& ans,
+                                 const NegativeGapValidator* ngv );
 void RecursiveImproperMergeRight( const KmerPathLoc& loc1orig,
-				  const KmerPathLoc& loc2orig,
-				  vec<ImproperMerger>& ans,
-				  const NegativeGapValidator* ngv );
+                                  const KmerPathLoc& loc2orig,
+                                  vec<ImproperMerger>& ans,
+                                  const NegativeGapValidator* ngv );
 
 
 
-void ImproperMergePaths( const KmerPath& p1, const KmerPath& p2, 
-			 int ind1, int ind2, vec<ImproperMerger>& ans,
-			 int min_perfect_match, 
-			 const NegativeGapValidator* ngv ) {
+void ImproperMergePaths( const KmerPath& p1, const KmerPath& p2,
+                         int ind1, int ind2, vec<ImproperMerger>& ans,
+                         int min_perfect_match,
+                         const NegativeGapValidator* ngv ) {
 
   ans.clear();
 
   // The given intervals must be overlapping sequence.
-  if ( !p1.isSeq(ind1) || !p2.isSeq(ind2) 
+  if ( !p1.isSeq(ind1) || !p2.isSeq(ind2)
        || !p1.Segment(ind1).Overlaps(p2.Segment(ind2)) )
     return;
 
@@ -57,7 +57,7 @@ void ImproperMergePaths( const KmerPath& p1, const KmerPath& p2,
   // If we didn't bump into a gap in one direction, this is
   // a bit inefficient, since we could already know now that
   // we'd reached the end.  In AlignAndMerge we do our best to
-  // speed things up, and handle this without the extra function 
+  // speed things up, and handle this without the extra function
   // calls, but here we're lazy.
 
   // Hold on to the perfectly-matched middle:
@@ -91,15 +91,15 @@ void ImproperMergePaths( const KmerPath& p1, const KmerPath& p2,
 
 
 void RecursiveImproperMergeLeft( const KmerPathLoc& loc1orig,
-				 const KmerPathLoc& loc2orig,
-				 vec<ImproperMerger>& ans,
-				 const NegativeGapValidator* ngv ) {
+                                 const KmerPathLoc& loc2orig,
+                                 vec<ImproperMerger>& ans,
+                                 const NegativeGapValidator* ngv ) {
 
   KmerPathLoc loc1=loc1orig, loc2=loc2orig;
 
   // If this scan doesn't reach a gap, we're done!
   if ( ScanLeftPerfectMatch(loc1,loc2) == false  // kmer mismatch
-       || loc1.atBegin() 
+       || loc1.atBegin()
        || loc2.atBegin() ) {
     ans.resize(1);
     ans[0].left_end1 = loc1;
@@ -140,28 +140,28 @@ void RecursiveImproperMergeLeft( const KmerPathLoc& loc1orig,
       sub_answers.clear();
       RecursiveImproperMergeLeft( far->loc1, far->loc2, sub_answers, ngv );
       for( vec<ImproperMerger>::iterator sub_ans = sub_answers.begin();
-	   sub_ans != sub_answers.end(); sub_ans++ ) {
-	// recursive answer + merged gap section + perfect match
-	ans.push_back( *sub_ans );
-	ans.back().merged.AppendNoFirstKmer( far->merged );
-	ans.back().merged.Append( initial_perfect_match );
+           sub_ans != sub_answers.end(); sub_ans++ ) {
+        // recursive answer + merged gap section + perfect match
+        ans.push_back( *sub_ans );
+        ans.back().merged.AppendNoFirstKmer( far->merged );
+        ans.back().merged.Append( initial_perfect_match );
       }
     }
   }
 }
 
 
-  
+
 void RecursiveImproperMergeRight( const KmerPathLoc& loc1orig,
-				  const KmerPathLoc& loc2orig,
-				  vec<ImproperMerger>& ans,
-				  const NegativeGapValidator* ngv ) {
+                                  const KmerPathLoc& loc2orig,
+                                  vec<ImproperMerger>& ans,
+                                  const NegativeGapValidator* ngv ) {
 
   KmerPathLoc loc1=loc1orig, loc2=loc2orig;
 
   // If this scan doesn't reach a gap, we're done!
   if ( ScanRightPerfectMatch(loc1,loc2) == false  // kmer mismatch
-       || loc1.atEnd() 
+       || loc1.atEnd()
        || loc2.atEnd() ) {
     ans.resize(1);
     ans[0].right_end1 = loc1;
@@ -202,36 +202,36 @@ void RecursiveImproperMergeRight( const KmerPathLoc& loc1orig,
       sub_answers.clear();
       RecursiveImproperMergeRight( far->loc1, far->loc2, sub_answers, ngv );
       for( vec<ImproperMerger>::iterator sub_ans = sub_answers.begin();
-	   sub_ans != sub_answers.end(); sub_ans++ ) {
-	ans.resize( ans.size()+1 );
-	// perfect match + merged gap section + recursive answer
-	ans.back().merged = initial_perfect_match;
-	ans.back().merged.Append( far->merged );
-	ans.back().merged.AppendNoFirstKmer( sub_ans->merged );
-	ans.back().right_end1 = sub_ans->right_end1;
-	ans.back().right_end2 = sub_ans->right_end2;
+           sub_ans != sub_answers.end(); sub_ans++ ) {
+        ans.resize( ans.size()+1 );
+        // perfect match + merged gap section + recursive answer
+        ans.back().merged = initial_perfect_match;
+        ans.back().merged.Append( far->merged );
+        ans.back().merged.AppendNoFirstKmer( sub_ans->merged );
+        ans.back().right_end1 = sub_ans->right_end1;
+        ans.back().right_end2 = sub_ans->right_end2;
       }
     }
   }
 }
 
 
-  
+
 KmerPathLoc ImproperMerger::PushLoc1( const KmerPathLoc& loc1 ) const {
 
   // Get the matched sub-path of path 1:
 
   KmerPath sub_path;
   PathEmbedding into_read = SubpathEmbedding( loc1.GetPath(),
-					      this->left_end1,
-					      this->right_end1,
-					      &sub_path );
+                            this->left_end1,
+                            this->right_end1,
+                            &sub_path );
   KmerPathLoc sub_loc = into_read.Preimage( loc1 );
 
   // Find the embedding(s) of the sub-path into the merger:
   vec<PathEmbedding> embeds;
   FindPathEmbeddings( sub_path, this->merged, embeds,
-		      0, this->merged.NSegments()-1 );
+                      0, this->merged.NSegments()-1 );
 
   ForceAssert( embeds.size() > 0 );
 
@@ -252,15 +252,15 @@ KmerPathLoc ImproperMerger::PushLoc2( const KmerPathLoc& loc2 ) const {
 
   KmerPath sub_path;
   PathEmbedding into_read = SubpathEmbedding( loc2.GetPath(),
-					      this->left_end2,
-					      this->right_end2,
-					      &sub_path );
+                            this->left_end2,
+                            this->right_end2,
+                            &sub_path );
   KmerPathLoc sub_loc = into_read.Preimage( loc2 );
 
   // Find the embedding(s) of the sub-path into the merger:
   vec<PathEmbedding> embeds;
   FindPathEmbeddings( sub_path, this->merged, embeds,
-		      0, this->merged.NSegments()-1 );
+                      0, this->merged.NSegments()-1 );
 
   ForceAssert( embeds.size() > 0 );
 

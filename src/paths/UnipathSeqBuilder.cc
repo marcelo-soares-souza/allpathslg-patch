@@ -29,9 +29,9 @@ void UnipathSeqBuilder::Build( const KmerPath& path,
 
   if ( path.IsEmpty() )
     return;
-  
+
   KmerPathLoc pathLoc = path.Begin();
-  
+
   const vecKmerPath& unipaths = *m_pUnipaths;
   const KmerPathDatabase& unipathDB = *m_pUnipathDB;
 
@@ -40,17 +40,17 @@ void UnipathSeqBuilder::Build( const KmerPath& path,
   {
     // Find the unipath that contains the current kmer in the path.
     unipathDB.Contains( pathLoc.GetKmer(), answer );
-    
+
     // Each kmer in the reads should appear in the unipathDB exactly once.
     ForceAssertEq( answer.size(), 1u );
-      
+
     const tagged_rpint& entry = unipathDB[ answer.front() ];
     int unipathId = entry.PathId();
-    
+
     theSeq.push_back( unipathId );
-    
+
     const KmerPath& unipath = unipaths[ unipathId ];
-    
+
     // If we haven't found the left overhang yet, then this must be
     // the first unipath, in which case we should find out how many
     // more kmers there are to the left of the start of the current
@@ -58,36 +58,36 @@ void UnipathSeqBuilder::Build( const KmerPath& path,
     if ( theMux.GetSegment() == -1 ) {
       KmerPathLoc pathStartOnUnipath( unipath, entry.PathPos() );
       pathStartOnUnipath.SetKmer( pathLoc.GetKmer() );
-      
+
       OrientedKmerPathId okpid( 0, false );
       int segment = entry.PathPos();
       int leftOverhang = pathStartOnUnipath - unipath.Begin();
-      
+
       theMux = Mux( okpid, segment, leftOverhang );
     }
 
-    /** 
+    /**
      * The following code has been replaced by what follows, which
      * should have the identical functionality while being a bit
      * faster.
-     
+
      KmerPathLoc unipathLoc( unipath, entry.PathPos() );
      unipathLoc.SetKmer( pathLoc.GetKmer() );
-     
+
      bool isMatch = IsPerfectMatchToRight( pathLoc, unipathLoc );
      ForceAssert( isMatch );
-     
+
      * If unipaths have been constructed correctly, we can assume
      * that the path and unipath match to the end, so we can just
      * move the pathLoc that far without actually checking that
      * they match, as IsPerfectMatchToRight() does.
      */
-    
+
     KmerPathLoc unipathEnd = unipath.End();
-      
+
     // How many segments to the end of the unipath from here?
     int numSegsToMove = unipathEnd.GetIndex() - entry.PathPos();
-    
+
     // If the unipath ends at or before the last segment of the
     // path, jump there; otherwise, the unipath extends past the
     // end of the path and we're done.
@@ -96,7 +96,7 @@ void UnipathSeqBuilder::Build( const KmerPath& path,
         pathLoc.SetIndex( pathLoc.GetIndex() + numSegsToMove );
       else
         break;
-    
+
     // If the unipath's last kmer is inside the current segment of
     // the path, jump there; otherwise, we're in the last segment
     // of the path and the unipath extends past the end of the
@@ -105,11 +105,11 @@ void UnipathSeqBuilder::Build( const KmerPath& path,
       pathLoc.SetKmer( unipathEnd.GetKmer() );
     else
       break;
-    
+
     // If the unipath and the path end at the same kmer, we're done.
     if ( pathLoc == path.End() )
       break;
-    
+
     // Otherwise, jump to the next kmer in the path and start again.
     do {
       pathLoc.Increment();
@@ -137,7 +137,7 @@ void UnipathSeqBuilder::Build( const vecKmerPath& kmerPaths,
   {
     if ( m_pLog && pathId % pathsPerDot == 0 )
       Dot( *m_pLog, pathId / pathsPerDot );
-    
+
     UnipathSeq theSeq;
     Mux theMux;
     this->Build( kmerPaths[pathId], theSeq, theMux );
@@ -148,5 +148,5 @@ void UnipathSeqBuilder::Build( const vecKmerPath& kmerPaths,
 
   if ( m_pLog )
     *m_pLog << endl;
-}  
-  
+}
+

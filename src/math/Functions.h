@@ -22,12 +22,15 @@
 // ==========================================================================
 
 template <class T> inline T const& Min(const T& t1,const T& t2)
-{ return (t1<t2)?t1:t2; }
+{
+  return (t1<t2)?t1:t2;
+}
 
 template <class V> inline typename V::value_type const& Min( V const& v )
 { auto beg=v.begin(), end=v.end();
   ForceAssert(beg!=end);
-  return *std::min_element(beg,end); }
+  return *std::min_element(beg,end);
+}
 
 /// Compute a vector of length last-first which represents the minimum,
 /// as computed by op, in a window of size nbhd on each side, of the
@@ -41,7 +44,7 @@ template <class V> inline typename V::value_type const& Min( V const& v )
 template <class FwdIt, class OutIt, class Op>
 void MinWindow(FwdIt first, FwdIt last, OutIt out, int nbhd, Op op)
 {
-  // We consider a window [first, winLast) "centered" on center.  
+  // We consider a window [first, winLast) "centered" on center.
   FwdIt winLast = first, center=first;
   // w is the distance from first to center.
   typename FwdIt::difference_type w=0;
@@ -66,14 +69,14 @@ void MinWindow(FwdIt first, FwdIt last, OutIt out, int nbhd, Op op)
     // keeping both in bounds.
     if (winLast<last) {
       if (op(*winLast,*smallest)) {
-	smallest = winLast;
+        smallest = winLast;
       }
       ++winLast;
     }
     if (w>nbhd) {
       --w;
       if (smallest==first++) {
-	smallest = min_element(first, winLast, op);
+        smallest = min_element(first, winLast, op);
       }
     }
   }
@@ -88,7 +91,7 @@ template <class FwdIt, class OutIt>
 inline void MinWindow(FwdIt first, FwdIt last, OutIt out, int nbhd)
 {
   MinWindow(first, last, out, nbhd,
-	    std::less<typename std::iterator_traits<FwdIt>::value_type>());
+            std::less<typename std::iterator_traits<FwdIt>::value_type>());
 }
 
 // ==========================================================================
@@ -98,26 +101,33 @@ inline void MinWindow(FwdIt first, FwdIt last, OutIt out, int nbhd)
 // ==========================================================================
 
 template <class T> inline T const& Max(const T& t1,const T& t2)
-{ return (t1<t2)?t2:t1; }
+{
+  return (t1<t2)?t2:t1;
+}
 
 template <class V> inline typename V::value_type const& Max( V const& v )
 { auto beg=v.begin(), end=v.end();
   ForceAssert(beg!=end);
-  return *std::max_element(beg,end); }
+  return *std::max_element(beg,end);
+}
 
 // MaxMax: return maximum entry in a vec<vec>.
 
 template<class T> inline T MaxMax( const vec< vec<T> >& v )
-{    Bool first = True;
-     T answer = 0;
-     for ( int i = 0; i < v.isize( ); i++ )
-     {    for ( int j = 0; j < v[i].isize( ); j++ )
-          {    if (first)
-               {    answer = v[i][j];
-                    first = False;    }
-               else answer = Max( answer, v[i][j] );    }    }
-     if (first) FatalErr( "MaxMax called on empty vec<vec>." );
-     return answer;    }            
+{ Bool first = True;
+  T answer = 0;
+  for ( int i = 0; i < v.isize( ); i++ )
+  { for ( int j = 0; j < v[i].isize( ); j++ )
+    { if (first)
+      { answer = v[i][j];
+        first = False;
+      }
+      else answer = Max( answer, v[i][j] );
+    }
+  }
+  if (first) FatalErr( "MaxMax called on empty vec<vec>." );
+  return answer;
+}
 
 /// Like MinWindow but for maximum.  For instance, MaxWindow
 /// of the 8 integers 01234567 with nbhd 3 is 34567777.
@@ -125,7 +135,7 @@ template<class FwdIt, class OutIt>
 inline void MaxWindow(FwdIt first, FwdIt last, OutIt out, int nbhd)
 {
   MinWindow(first, last, out, nbhd,
-	    std::greater<typename std::iterator_traits<FwdIt>::value_type>());
+            std::greater<typename std::iterator_traits<FwdIt>::value_type>());
 }
 
 // ===========================================================================
@@ -152,86 +162,98 @@ void CumulativeSum (const V & in, V & out ) {
 }
 
 inline int Sum( const vec<int>& v )
-{    int answer = 0;
-     for ( unsigned int i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ int answer = 0;
+  for ( unsigned int i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline longlong BigSum( const vec<int>& v )
-{    longlong answer = 0;
-     for ( unsigned int i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ longlong answer = 0;
+  for ( unsigned int i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline int Sum( const vec<unsigned int>& v )
-{    int answer = 0;
-     for ( unsigned int i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ int answer = 0;
+  for ( unsigned int i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline longlong BigSum( const vec<unsigned int>& v )
-{    longlong answer = 0;
-     for ( unsigned int i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ longlong answer = 0;
+  for ( unsigned int i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline longlong Sum( const vec<longlong>& v )
-{    longlong answer = 0;
-     for ( unsigned int i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ longlong answer = 0;
+  for ( unsigned int i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline longlong BigSum( const vec<longlong>& v )
-{    longlong answer = 0;
-     for ( unsigned int i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ longlong answer = 0;
+  for ( unsigned int i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline uint64_t BigSum( const vec<uint64_t>& v )
-{    uint64_t answer = 0;
-     for ( size_t i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ uint64_t answer = 0;
+  for ( size_t i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline float Sum( const vec<float>& v )
-{    float answer = 0;
-     for ( unsigned int i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ float answer = 0;
+  for ( unsigned int i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline double Sum( const vec<double>& v )
-{    double answer = 0;
-     for ( unsigned int i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ double answer = 0;
+  for ( unsigned int i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline long double Sum( const vec<long double>& v )
-{    long double answer = 0;
-     for ( unsigned int i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ long double answer = 0;
+  for ( unsigned int i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline void CumulativeSum( const vec<double>& in, vec<double> & out )
-{    double value = 0.0;
+{ double value = 0.0;
   out.resize(in.size());
 
   for ( unsigned int i = 0; i < in.size( ); i++ ) {
-          value += in[i];
-	  out[i] = value;   
+    value += in[i];
+    out[i] = value;
   }
 }
 
 inline int Sum( const vec<Bool>& v )
-{    int answer = 0;
-     for ( unsigned int i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ int answer = 0;
+  for ( unsigned int i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 inline uint64_t BigSum( const vec<Bool>& v )
-{    uint64_t answer = 0;
-     for ( size_t i = 0; i < v.size( ); i++ )
-          answer += v[i];
-     return answer;    }
+{ uint64_t answer = 0;
+  for ( size_t i = 0; i < v.size( ); i++ )
+    answer += v[i];
+  return answer;
+}
 
 /// Compute a vector of length last-first which represents the sums in
 /// a window of size nbhd (on each side) of the entries of the sequence
@@ -241,7 +263,7 @@ inline uint64_t BigSum( const vec<Bool>& v )
 template<class FwdIt, class OutIt>
 void SumWindow(FwdIt first, FwdIt last, OutIt out, int nbhd)
 {
-  // We consider a window [first, winLast) "centered" on center.  
+  // We consider a window [first, winLast) "centered" on center.
   FwdIt winLast = first, center=first;
   // w is the distance from first to center.
   typename FwdIt::difference_type w=0;
@@ -283,37 +305,43 @@ class NormalDistribution
 public:
   float mu_;
   float sigma_;
-  
+
   NormalDistribution(const float mu = 0.0, const float sigma = 0.0)
     : mu_(mu), sigma_(sigma) {}
 
-  inline float Zscore(const float x) const 
-  { return (0 == sigma_) ? 0 : (x - mu_) / sigma_;  }
+  inline float Zscore(const float x) const
+  {
+    return (0 == sigma_) ? 0 : (x - mu_) / sigma_;
+  }
 
 
-  inline float ProbabilityDensity(const float x) const 
+  inline float ProbabilityDensity(const float x) const
   { if (0 == sigma_) return 0;
     const float z = Zscore(x);
     return exp(-0.5 * z * z) * sqrt(0.5 / M_PI) / sigma_;
   }
 
-  inline float ProbabilityLT(const float x) const 
-  { return 0.5 * erfc(-Zscore(x) * sqrt(0.5)); }
+  inline float ProbabilityLT(const float x) const
+  {
+    return 0.5 * erfc(-Zscore(x) * sqrt(0.5));
+  }
 
-  inline float ProbabilityGT(const float x) const 
-  { return 1.0 - ProbabilityLT(x); } 
+  inline float ProbabilityGT(const float x) const
+  {
+    return 1.0 - ProbabilityLT(x);
+  }
 
   //    X += Y
   inline NormalDistribution & operator+=(const NormalDistribution & Y)
-  { 
+  {
     mu_ += Y.mu_;
     sigma_ = sqrt(sigma_ * sigma_ + Y.sigma_ * Y.sigma_);
     return *this;
   }
-  
+
   //    X -= Y
   inline NormalDistribution & operator-=(const NormalDistribution & Y)
-  { 
+  {
     mu_ -= Y.mu_;
     sigma_ = sqrt(sigma_ * sigma_ + Y.sigma_ * Y.sigma_);
     return *this;
@@ -325,62 +353,84 @@ public:
 //      X == Y
 inline bool operator==(const NormalDistribution & X,
                        const NormalDistribution & Y)
-{ return X.mu_ == Y.mu_ && X.sigma_ == Y.sigma_; }
+{
+  return X.mu_ == Y.mu_ && X.sigma_ == Y.sigma_;
+}
 
 //      X < Y
 inline bool operator<(const NormalDistribution & X,
                       const NormalDistribution & Y)
-{ return X.mu_ < Y.mu_; }
+{
+  return X.mu_ < Y.mu_;
+}
 
 //      X <= Y
 inline bool operator<=(const NormalDistribution & X,
                        const NormalDistribution & Y)
-{ return X.mu_ <= Y.mu_; }
+{
+  return X.mu_ <= Y.mu_;
+}
 
 //      X > Y
 inline bool operator>(const NormalDistribution & X,
                       const NormalDistribution & Y)
-{ return X.mu_ > Y.mu_; }
+{
+  return X.mu_ > Y.mu_;
+}
 
 //      X >= Y
 inline bool operator>=(const NormalDistribution & X,
                        const NormalDistribution & Y)
-{ return X.mu_ >= Y.mu_; }
+{
+  return X.mu_ >= Y.mu_;
+}
 
 
 //      -X
 inline NormalDistribution operator-(const NormalDistribution & X)
-{ return NormalDistribution(-X.mu_, X.sigma_); }
+{
+  return NormalDistribution(-X.mu_, X.sigma_);
+}
 
 
 //      X + dx
 inline NormalDistribution operator+(const NormalDistribution & X,
-                                     const float dx) 
-{ return NormalDistribution(X.mu_ + dx, X.sigma_); }
+                                    const float dx)
+{
+  return NormalDistribution(X.mu_ + dx, X.sigma_);
+}
 
 
-//      dx + X 
+//      dx + X
 inline NormalDistribution operator+(const float dx,
-                                     const NormalDistribution & X)
-{ return NormalDistribution(dx + X.mu_, X.sigma_); }
+                                    const NormalDistribution & X)
+{
+  return NormalDistribution(dx + X.mu_, X.sigma_);
+}
 
 
 //      X - dx
 inline NormalDistribution operator-(const NormalDistribution & X,
-                                     const float dx) 
-{ return NormalDistribution(X.mu_ - dx, X.sigma_); }
+                                    const float dx)
+{
+  return NormalDistribution(X.mu_ - dx, X.sigma_);
+}
 
 
-//      dx - X 
+//      dx - X
 inline NormalDistribution operator-(const float dx,
-                                     const NormalDistribution & X)
-{ return NormalDistribution(dx - X.mu_, X.sigma_); }
+                                    const NormalDistribution & X)
+{
+  return NormalDistribution(dx - X.mu_, X.sigma_);
+}
 
 
 
-inline ostream & operator<<(ostream & os, const 
+inline ostream & operator<<(ostream & os, const
                             NormalDistribution & X)
-{ return os << X.mu_ << "\t" << X.sigma_ << endl; }
+{
+  return os << X.mu_ << "\t" << X.sigma_ << endl;
+}
 
 inline istream &operator>>( istream &in, NormalDistribution &nd ) {
   in >> nd.mu_ >> nd.sigma_;
@@ -390,23 +440,23 @@ inline istream &operator>>( istream &in, NormalDistribution &nd ) {
 
 /*  CombineNormalDistribution                Filipe Ribeiro 2009-06-22
  *
- *   When you have different measurements (normaly distributed) of the same quantity, 
- *   you can compute the resultant normal distribution.   
- * 
+ *   When you have different measurements (normaly distributed) of the same quantity,
+ *   you can compute the resultant normal distribution.
+ *
  *   The resultant normal distribution (mu, sigma) satisfies:
- * 
+ *
  *      1 / sigma^2  =  sum(     1 / sigma[i]^2 )
- * 
+ *
  *     mu / sigma^2  =  sum( mu[i] / sigma[i]^2 )
  *
  */
 NormalDistribution CombineNormalDistributions(const vec<NormalDistribution> & ds,
-                                               float * score = 0);
+    float * score = 0);
 
 
 
 /* ClusterNormalDistributions             Filipe Ribeiro 2010-04-16
- *  
+ *
  *  Extract clusters based on overlaps of n_sigma x sigma.
  */
 vec< vec<NormalDistribution> >
@@ -430,8 +480,8 @@ NormalDistribution SafeMeanStdev(int count, double sum, double sumsq);
 ///put the cutoff closer to d1.mu_ than if there were equal numbers.
 ///Precondition: d1.mu_ < d2.mu_.
 double OptimalCutoff(const NormalDistribution & d1,
-		     const NormalDistribution & d2,
-		     const double ratio = 1);
+                     const NormalDistribution & d2,
+                     const double ratio = 1);
 
 
 template<class V>
@@ -445,7 +495,7 @@ inline double Mean( const V & v )
 }
 
 template<class V>
-inline double StdDev( const V & v , const double mean )
+inline double StdDev( const V & v, const double mean )
 {
   ForceAssert ( v.size() > 0 );
   double dev, sumdevsq = 0.0;
@@ -458,11 +508,15 @@ inline double StdDev( const V & v , const double mean )
 
 
 
-template <class T> inline T Mean(const T& t1,const T& t2)                         
-{ return (t1+t2)/2;                 }
+template <class T> inline T Mean(const T& t1,const T& t2)
+{
+  return (t1+t2)/2;
+}
 
-template <class T> inline T Mean(const T& t1,const T& t2, const T& t3)            
-{ return (t1+t2+t3)/3;              }
+template <class T> inline T Mean(const T& t1,const T& t2, const T& t3)
+{
+  return (t1+t2+t3)/3;
+}
 
 // ===========================================================================
 //
@@ -471,13 +525,15 @@ template <class T> inline T Mean(const T& t1,const T& t2, const T& t3)
 // ===========================================================================
 template <class V>
 inline Float WeightedMean( V const& v )
-{    Float sum1 = 0, sum2 = 0;
-     for ( Float val : v )
-     {    sum1 += val;
-          sum2 += val*val;    }
-     ForceAssert( sum1 != 0 );
-     return sum2 / sum1;    }
- 
+{ Float sum1 = 0, sum2 = 0;
+  for ( Float val : v )
+  { sum1 += val;
+    sum2 += val*val;
+  }
+  ForceAssert( sum1 != 0 );
+  return sum2 / sum1;
+}
+
 
 /// Compute a vector of length last-first which represents the means in
 /// a window of size nbhd (on each side) of the entries of the sequence
@@ -488,7 +544,7 @@ inline Float WeightedMean( V const& v )
 template<class FwdIt, class OutIt>
 void MeanWindow(FwdIt first, FwdIt last, OutIt out, int nbhd)
 {
-  // We consider a window [first, winLast) "centered" on center.  
+  // We consider a window [first, winLast) "centered" on center.
   FwdIt winLast = first, center=first;
   // w is the distance from first to center.
   typename FwdIt::difference_type w=0;
@@ -541,7 +597,7 @@ long double PoissonCdfLong( long double lambda, unsigned int n );
 ///Minimum number of events with cumulative probability greater than p
 ///for a Poisson dist. characterized by lambda.
 int InversePoissonCdf(double lambda, double p);
-     
+
 // ===========================================================================
 //
 /// N50: given a list v of positive integers, suppose that each entry n is replaced
@@ -568,7 +624,7 @@ template<class T> int N50_size( const vec<vec<T> >& v );
 /// Return a vector containing N10, N20, ... N90 for v, where NX is
 /// the m*X/100'th element of w.
 ///
-/// For example, if 
+/// For example, if
 ///  v = 1, 2, 3, 4
 /// then
 ///  w = 4, 4, 4, 4, 3, 3, 3, 2, 2, 1
@@ -582,7 +638,7 @@ template<class T> int N50_size( const vec<vec<T> >& v );
 ///  N70 = 3
 ///  N80 = 2
 ///  N90 = 2
-///  
+///
 // ===========================================================================
 
 template<class T> vec<T> NStatistics( const vec<T>& v );
@@ -593,7 +649,7 @@ template<class T> vec<T> NStatistics( const vec<T>& v );
 //
 // Calculate the median of vector invec from invec[beg] to invec.size( )
 // (class T needs operator+, operator/, and 2 to be defined).
-// 
+//
 // WARNING - WARNING - WARNING: Median expects (but does not check for)
 // invec to be sorted.
 //
@@ -607,8 +663,9 @@ template <class T> inline T Median(const T& t1,const T& t2, const T& t3) {
 }
 
 template <class T> inline T Median( const vec<T> &v )
-{    Assert( v.nonempty( ) );
-     return v[ v.size( )/2 ];    }
+{ Assert( v.nonempty( ) );
+  return v[ v.size( )/2 ];
+}
 
 template <class T> inline T Median( const vec<T> &invec, unsigned int beg ) {
   unsigned int end = invec.size( );
@@ -632,8 +689,12 @@ template <class T> inline T Median( const vec<T> &invec, unsigned int beg ) {
 //
 // ===========================================================================
 
-template <class T> inline T Abs(const T &a) { return a >= 0 ? a : -a; }
-template <> inline Bool Abs<Bool>(const Bool &a) { return a; }
+template <class T> inline T Abs(const T &a) {
+  return a >= 0 ? a : -a;
+}
+template <> inline Bool Abs<Bool>(const Bool &a) {
+  return a;
+}
 
 ///round() is not declared for alpha
 #if __alpha
@@ -646,8 +707,12 @@ template <> inline Bool Abs<Bool>(const Bool &a) { return a; }
 //
 // ===========================================================================
 
-template <class T> Bool Xor(T a, T b) { return a? (!(Bool)b) : ((Bool)b); }
-template <class T> bool XOR(T a, T b) { return a? (!(bool)b) : ((bool)b); }
+template <class T> Bool Xor(T a, T b) {
+  return a? (!(Bool)b) : ((Bool)b);
+}
+template <class T> bool XOR(T a, T b) {
+  return a? (!(bool)b) : ((bool)b);
+}
 
 /// ===========================================================================
 ///
@@ -657,48 +722,57 @@ template <class T> bool XOR(T a, T b) { return a? (!(bool)b) : ((bool)b); }
 /// ===========================================================================
 
 inline int IntervalOverlap( int a, int b, int c, int d )
-{    return Max( 0, Min(b, d) - Max(a, c) );    }
+{
+  return Max( 0, Min(b, d) - Max(a, c) );
+}
 
-inline unsigned int IntervalOverlap( unsigned int a, unsigned int b, 
-     unsigned int c, unsigned int d )
-{    unsigned int m = Max(a, c), M = Min(b, d);
-     if ( m <= M ) return M - m;
-     return 0;    }
+inline unsigned int IntervalOverlap( unsigned int a, unsigned int b,
+                                     unsigned int c, unsigned int d )
+{ unsigned int m = Max(a, c), M = Min(b, d);
+  if ( m <= M ) return M - m;
+  return 0;
+}
 
 inline longlong IntervalOverlap( longlong a, longlong b, longlong c, longlong d )
-{    longlong m = Max(a, c), M = Min(b, d);
-     if ( m <= M ) return M - m;
-     return 0;    }
+{ longlong m = Max(a, c), M = Min(b, d);
+  if ( m <= M ) return M - m;
+  return 0;
+}
 
 inline double IntervalOverlap( double a, double b, double c, double d )
-{    double m = Max(a, c), M = Min(b, d);
-     if ( m <= M ) return M - m;
-     return 0;    }
+{ double m = Max(a, c), M = Min(b, d);
+  if ( m <= M ) return M - m;
+  return 0;
+}
 
 
 /// Class to store a quadratic function.
 /// operator() returns the function's value at x.
 /// solutions() returns solutions to the equation (*this)(x) = 0;
 
-struct QuadraticFunction { 
-  double a, b, c; 
-  QuadraticFunction(double a=0.0, double b=0.0, double c=0.0): 
+struct QuadraticFunction {
+  double a, b, c;
+  QuadraticFunction(double a=0.0, double b=0.0, double c=0.0):
     a(a), b(b), c(c) {}
   double operator()(double x) const {
     return (((a*x)+b)*x)+c;  // two mults, not three
   }
-  /// Return the solution(s) of the equation, or quiet_NaN() for both if there 
+  /// Return the solution(s) of the equation, or quiet_NaN() for both if there
   /// aren't any.
   pair<double,double> solutions() const;
 };
 
-inline int ifloor( double x ) { return int( floor(x) ); }
-inline int iceil( double x ) { return int( ceil(x) ); }
+inline int ifloor( double x ) {
+  return int( floor(x) );
+}
+inline int iceil( double x ) {
+  return int( ceil(x) );
+}
 
 
 /// Compute the cosine of the angle between two vectors [begin1,end1),
-/// and [begin2,end2),  
-/// making sure to shrink the larger vector if the two are not the 
+/// and [begin2,end2),
+/// making sure to shrink the larger vector if the two are not the
 /// same size.
 /// Note that we have to put the data into a vec<double> because otherwise
 /// the multiplication inside inner_product can easily overrun the limits
@@ -706,7 +780,7 @@ inline int iceil( double x ) { return int( ceil(x) ); }
 
 template<class ForwardIter1, class ForwardIter2>
 float Cosine( ForwardIter1 begin1, ForwardIter1 end1,
-	      ForwardIter2 begin2, ForwardIter2 end2) {
+              ForwardIter2 begin2, ForwardIter2 end2) {
   vec<double> d1(begin1, end1);
   vec<double> d2(begin2, end2);
   int size = static_cast<int>(min(d1.size(), d2.size()));
@@ -714,7 +788,7 @@ float Cosine( ForwardIter1 begin1, ForwardIter1 end1,
   norm1 = sqrt(inner_product(d1.begin(), d1.begin() + size, d1.begin(), 0.0));
   norm2 = sqrt(inner_product(d2.begin(), d2.begin() + size, d2.begin(), 0.0));
   ret = inner_product(d1.begin(), d1.begin() + size, d2.begin(), 0.0)
-    / (norm1*norm2);
+        / (norm1*norm2);
   if (ret > 1.0001) {
     cerr << "cosine too high: " << ret << "\n";
     for (int i=0; i != size; ++i) {
@@ -725,13 +799,14 @@ float Cosine( ForwardIter1 begin1, ForwardIter1 end1,
 }
 
 inline int gcd( int x, int y )
-{    ForceAssert( x >= 1 && y >= 1 );
-     if ( x > y ) swap( x, y );
-     if ( y % x == 0 ) return x; 
-     return gcd( y % x, x );    }
+{ ForceAssert( x >= 1 && y >= 1 );
+  if ( x > y ) swap( x, y );
+  if ( y % x == 0 ) return x;
+  return gcd( y % x, x );
+}
 
 Bool CombineMeasurements( const double g1, const double g2, const double d1,
-     const double d2, const double dmult, double& g, double& d );
+                          const double d2, const double dmult, double& g, double& d );
 
 // Inverse cdf of normal distribution
 
@@ -757,20 +832,23 @@ float QualScoreFloat(int correct, int wrong);
 
 ///Phred quality score, with small number correction, rounded to int.
 
-inline int QualScore(int correct, int wrong){
+inline int QualScore(int correct, int wrong) {
   return int(round(QualScoreFloat(correct, wrong)));
 }
 
 /// Inlined, templatized square function.
 
-template <class T> T Square(const T & t) { return t*t; }
+template <class T> T Square(const T & t) {
+  return t*t;
+}
 
 /// Pow, integer power n^k.
 
 template<class T> T IPow( T n, int k )
-{    T p = 1;
-     for ( int i = 0; i < k; i++ )
-          p *= n;
-     return p;    }
+{ T p = 1;
+  for ( int i = 0; i < k; i++ )
+    p *= n;
+  return p;
+}
 
 #endif

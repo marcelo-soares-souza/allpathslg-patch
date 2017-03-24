@@ -27,58 +27,76 @@
 /// that's hard to arrange.
 class RNGen
 {
-    typedef unsigned long state_t;
+  typedef unsigned long state_t;
 public:
-    RNGen() { *this = gDflt; }
-    RNGen( unsigned seedVal ) { seed(seedVal); }
-    RNGen( RNGen const& that ) { *this = that; }
+  RNGen() {
+    *this = gDflt;
+  }
+  RNGen( unsigned seedVal ) {
+    seed(seedVal);
+  }
+  RNGen( RNGen const& that ) {
+    *this = that;
+  }
 
-    // compiler-supplied destructor is OK
+  // compiler-supplied destructor is OK
 
-    RNGen& operator=( RNGen const& that )
-    { std::copy(that.mState,that.mState+STATE_SIZE,mState);
-      mpFront = mState + (that.mpFront-that.mState);
-      mpRear = mState + (that.mpRear-that.mState);
-      return *this; }
+  RNGen& operator=( RNGen const& that )
+  { std::copy(that.mState,that.mState+STATE_SIZE,mState);
+    mpFront = mState + (that.mpFront-that.mState);
+    mpRear = mState + (that.mpRear-that.mState);
+    return *this;
+  }
 
-    long next()
-    { unsigned result = (*mpFront += *mpRear);
-      if ( ++mpFront >= mState+STATE_SIZE )
-      { mpFront = mState; ++mpRear; }
-      else if ( ++mpRear >= mState+STATE_SIZE )
-        mpRear = mState;
-      return result >> 1; }
-
-    void seed( unsigned seedVal )
-    { state_t last = seedVal;
-      mState[0] = last;
-      state_t* ppp = mState;
-      while ( ++ppp < mState+STATE_SIZE )
-        *ppp = last = (last*1103515245 + 12345);
-      mpFront = mState + 3;
+  long next()
+  { unsigned result = (*mpFront += *mpRear);
+    if ( ++mpFront >= mState+STATE_SIZE )
+    {
+      mpFront = mState;
+      ++mpRear;
+    }
+    else if ( ++mpRear >= mState+STATE_SIZE )
       mpRear = mState;
-      int nnn = 10*31;
-      while ( nnn-- )
-        next(); }
+    return result >> 1;
+  }
 
-    static long random()
-    { SpinLocker locker(gLock); return gSystem.next(); }
+  void seed( unsigned seedVal )
+  { state_t last = seedVal;
+    mState[0] = last;
+    state_t* ppp = mState;
+    while ( ++ppp < mState+STATE_SIZE )
+      *ppp = last = (last*1103515245 + 12345);
+    mpFront = mState + 3;
+    mpRear = mState;
+    int nnn = 10*31;
+    while ( nnn-- )
+      next();
+  }
 
-    static void srandom( unsigned seedVal )
-    { SpinLocker locker(gLock); gSystem.seed(seedVal); }
+  static long random()
+  {
+    SpinLocker locker(gLock);
+    return gSystem.next();
+  }
 
-    static long const RNGEN_RAND_MAX = INT_MAX;
+  static void srandom( unsigned seedVal )
+  {
+    SpinLocker locker(gLock);
+    gSystem.seed(seedVal);
+  }
+
+  static long const RNGEN_RAND_MAX = INT_MAX;
 
 private:
-    static RNGen gDflt;
-    static RNGen gSystem;
-    static SpinLockedData gLock;
+  static RNGen gDflt;
+  static RNGen gSystem;
+  static SpinLockedData gLock;
 
-    static unsigned long const STATE_SIZE = 31;
+  static unsigned long const STATE_SIZE = 31;
 
-    unsigned long mState[STATE_SIZE];
-    unsigned long* mpFront;
-    unsigned long* mpRear;
+  unsigned long mState[STATE_SIZE];
+  unsigned long* mpFront;
+  unsigned long* mpRear;
 };
 
 // Adapted from code that included this notice:

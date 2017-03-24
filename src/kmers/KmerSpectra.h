@@ -19,10 +19,10 @@ class KmerSpectrum : public vec<size_t>
   // ---- Separate kmer spectrum in 5 regions based on the kf (see KmerSpectra.cc):
   //    1       ... kf_min1   : bad kmers with low frequency
   //    kf_min1 ... kf_min2   : good kmers CN = 1/2 (SNPs)
-  //    kf_min2 ... kf_min3   : good kmers CN = 1 
+  //    kf_min2 ... kf_min3   : good kmers CN = 1
   //    kf_min3 ... kf_hi     : good kmers CN > 1 (repetitive)
   //    kf_hi   ... inf       : bad kmers with high frequency
- 
+
 
   mutable size_t _kf_min1;
   mutable size_t _kf_min2;
@@ -32,14 +32,14 @@ class KmerSpectrum : public vec<size_t>
   mutable size_t _kf_hi;
 
   mutable double _kf_ave_uniq;
-    
+
   mutable size_t _nk_total;
   mutable size_t _nk_bad_low_kf;
   mutable size_t _nk_good_uniq;
   mutable size_t _nk_good_snp;
   mutable size_t _nk_good_rep;
   mutable size_t _nk_bad_high_kf;
-  
+
   mutable size_t _ndk_total;
   mutable size_t _ndk_bad_low_kf;
   mutable size_t _ndk_good_snp;
@@ -57,8 +57,10 @@ class KmerSpectrum : public vec<size_t>
 
   mutable size_t _d_SNP;
 
-  
-  String tag(String S = "KS") const { return Date() + " (" + S + "): "; } 
+
+  String tag(String S = "KS") const {
+    return Date() + " (" + S + "): ";
+  }
 
 public:
 
@@ -67,7 +69,7 @@ public:
       _K(K)
   {}
 
-  friend KmerSpectrum operator+(const KmerSpectrum & ksa, 
+  friend KmerSpectrum operator+(const KmerSpectrum & ksa,
                                 const KmerSpectrum & ksb)
   {
     KmerSpectrum ks = ksa;
@@ -77,7 +79,7 @@ public:
     return ks;
   }
 
-  friend KmerSpectrum operator-(const KmerSpectrum & ksa, 
+  friend KmerSpectrum operator-(const KmerSpectrum & ksa,
                                 const KmerSpectrum & ksb)
   {
     KmerSpectrum ks = ksa;
@@ -88,7 +90,7 @@ public:
   }
 
 
-  void analyze(const unsigned ploidy, 
+  void analyze(const unsigned ploidy,
                const unsigned read_len,
                const size_t kf_min1_arg = 10,
                const unsigned verbosity = 0) const;
@@ -97,34 +99,62 @@ public:
   size_t sum_weighted() const;
 
   // accessors
-  size_t K()       const { return _K; }
+  size_t K()       const {
+    return _K;
+  }
 
-  void increment(const size_t kf, const size_t n = 1) 
+  void increment(const size_t kf, const size_t n = 1)
   {
     if (size() <= kf) resize(kf + 1, 0);
     (*this)[kf] += n;
   }
 
 
-  size_t kf_min1() const { return _kf_min1; }
-  size_t kf_min2() const { return _kf_min2; }
-  size_t kf_min3() const { return _kf_min3; }
-  size_t kf_max1() const { return _kf_max1; }
-  size_t kf_max2() const { return _kf_max2; }
-  size_t kf_hi()   const { return _kf_hi; }
+  size_t kf_min1() const {
+    return _kf_min1;
+  }
+  size_t kf_min2() const {
+    return _kf_min2;
+  }
+  size_t kf_min3() const {
+    return _kf_min3;
+  }
+  size_t kf_max1() const {
+    return _kf_max1;
+  }
+  size_t kf_max2() const {
+    return _kf_max2;
+  }
+  size_t kf_hi()   const {
+    return _kf_hi;
+  }
 
-  size_t genome_size_unique() const { return _genome_size_unique; }
-  size_t genome_size_repetitive() const { return _genome_size_repetitive; }
-  size_t genome_size() const { return _genome_size; }
-  float  coverage() const { return _coverage; }
+  size_t genome_size_unique() const {
+    return _genome_size_unique;
+  }
+  size_t genome_size_repetitive() const {
+    return _genome_size_repetitive;
+  }
+  size_t genome_size() const {
+    return _genome_size;
+  }
+  float  coverage() const {
+    return _coverage;
+  }
 
-  float bias_stddev() const { return _stddev_bias; }
-  size_t d_SNP() const { return _d_SNP; }
+  float bias_stddev() const {
+    return _stddev_bias;
+  }
+  size_t d_SNP() const {
+    return _d_SNP;
+  }
 
-  float fraction_of_error_kmers() const { return float(_nk_bad_low_kf) / float(_nk_total); }
+  float fraction_of_error_kmers() const {
+    return float(_nk_bad_low_kf) / float(_nk_total);
+  }
 
 
-  String head_K(const String & head) const 
+  String head_K(const String & head) const
   {
     return head + "." + ToString(_K) + "mer";
   }
@@ -143,18 +173,20 @@ public:
 
 
 
-struct KmerBiSpectrum 
+struct KmerBiSpectrum
 {
   KmerSpectrum AB;
   KmerSpectrum A_in;
   KmerSpectrum A_out;
   KmerSpectrum B_in;
   KmerSpectrum B_out;
-  
-  KmerBiSpectrum(const unsigned K)
-  : AB(K), A_in(K), A_out(K), B_in(K), B_out(K) {}
 
-  unsigned K() const { return AB.K(); }
+  KmerBiSpectrum(const unsigned K)
+    : AB(K), A_in(K), A_out(K), B_in(K), B_out(K) {}
+
+  unsigned K() const {
+    return AB.K();
+  }
 
 };
 
@@ -164,35 +196,41 @@ struct KmerBiSpectrum
 
 class KmerSpectraAffixes : public vec<KmerSpectrum>
 {
-  unsigned i_ks(const unsigned n_pre, 
+  unsigned i_ks(const unsigned n_pre,
                 const unsigned n_suf) const
   {
     return (n_pre < n_suf) ?
-      n_pre * (9 - n_pre) / 2 + n_suf :
-      n_suf * (9 - n_suf) / 2 + n_pre;
+           n_pre * (9 - n_pre) / 2 + n_suf :
+           n_suf * (9 - n_suf) / 2 + n_pre;
   }
-  
+
 public:
   KmerSpectraAffixes(const unsigned K) : vec<KmerSpectrum>(15, KmerSpectrum(K)) {}
 
-  KmerSpectrum & operator()(const unsigned n_pre, 
+  KmerSpectrum & operator()(const unsigned n_pre,
                             const unsigned n_suf)
-  { return (*this)[i_ks(n_pre, n_suf)];  }
+  {
+    return (*this)[i_ks(n_pre, n_suf)];
+  }
 
-  const KmerSpectrum & operator()(const unsigned n_pre, 
+  const KmerSpectrum & operator()(const unsigned n_pre,
                                   const unsigned n_suf) const
-  { return (*this)[i_ks(n_pre, n_suf)];  }
-  
-  unsigned K() const { return (*this)[0].K(); }
+  {
+    return (*this)[i_ks(n_pre, n_suf)];
+  }
 
-  KmerSpectrum all() const 
+  unsigned K() const {
+    return (*this)[0].K();
+  }
+
+  KmerSpectrum all() const
   {
     KmerSpectrum ks(K());
     for (vec<KmerSpectrum>::const_iterator it = begin(); it != end(); it++) {
 
       const size_t nkf = it->size();
- 
-      if (ks.size() < nkf) 
+
+      if (ks.size() < nkf)
         ks.resize(nkf, 0);
 
       for (size_t kf = 0; kf != nkf; kf++)
@@ -225,7 +263,9 @@ public:
       _K(K)
   {}
 
-  unsigned K() const { return _K; }
+  unsigned K() const {
+    return _K;
+  }
 
   void to_text_file(const String & head) const;
 };

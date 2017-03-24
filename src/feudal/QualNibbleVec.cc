@@ -16,23 +16,23 @@
 
 QualNibbleVec& QualNibbleVec::squash( unsigned radius )
 {
-    size_t nnn = size();
-    value_type* vals = new value_type[nnn];
-    value_type* end = vals + nnn;
+  size_t nnn = size();
+  value_type* vals = new value_type[nnn];
+  value_type* end = vals + nnn;
 
-    value_type* ppp = vals;
-    for ( size_t idx = 0; idx < nnn; ++idx )
-        *ppp++ = operator[](idx);
+  value_type* ppp = vals;
+  for ( size_t idx = 0; idx < nnn; ++idx )
+    *ppp++ = operator[](idx);
 
-    using std::max;
-    using std::min;
-    using std::min_element;
-    ppp = vals;
-    for ( size_t idx = 0; idx < nnn; ++idx, ++ppp )
-        set(idx,*min_element(max(vals,ppp-radius),min(ppp+radius+1,end)));
+  using std::max;
+  using std::min;
+  using std::min_element;
+  ppp = vals;
+  for ( size_t idx = 0; idx < nnn; ++idx, ++ppp )
+    set(idx,*min_element(max(vals,ppp-radius),min(ppp+radius+1,end)));
 
-    delete [] vals;
-    return *this;
+  delete [] vals;
+  return *this;
 }
 
 void WriteAll(QualNibbleVecVec const& quals, String const& fn)

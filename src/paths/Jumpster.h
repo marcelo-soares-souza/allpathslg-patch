@@ -19,10 +19,10 @@
 #include "IntPairVec.h"
 #include "Qualvector.h"
 
-void Jumpster( const int K, const vecbasevector& unibases, 
-     const vec< vec<int> >& nexts, const vecbasevector& jumps, 
-     const vecqualvector& quals, vec<basevector>& bridges, const Bool verbose, 
-     const vecbasevector& genome2, const int LG, 
-     const VecIntPairVec& Glocs );
+void Jumpster( const int K, const vecbasevector& unibases,
+               const vec< vec<int> >& nexts, const vecbasevector& jumps,
+               const vecqualvector& quals, vec<basevector>& bridges, const Bool verbose,
+               const vecbasevector& genome2, const int LG,
+               const VecIntPairVec& Glocs );
 
 #endif

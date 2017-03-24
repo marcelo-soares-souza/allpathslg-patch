@@ -14,39 +14,48 @@
 
 class procbuf : public std::basic_streambuf<char>
 {
-  public:
-    procbuf( char const* command, std::ios_base::openmode mode,
-        bool expect_ret_zero = false );
-    procbuf( procbuf const & ) = delete;
-    procbuf& operator=( procbuf const& ) = delete;
-    ~procbuf() { close(); delete [] eback(); delete [] pbase(); }
+public:
+  procbuf( char const* command, std::ios_base::openmode mode,
+           bool expect_ret_zero = false );
+  procbuf( procbuf const & ) = delete;
+  procbuf& operator=( procbuf const& ) = delete;
+  ~procbuf() {
+    close();
+    delete [] eback();
+    delete [] pbase();
+  }
 
-    bool is_open() { return mFD != -1; }
-    int close()
-    { if ( is_open() ) mResult = doClose();
-      return mResult; }
+  bool is_open() {
+    return mFD != -1;
+  }
+  int close()
+  { if ( is_open() ) mResult = doClose();
+    return mResult;
+  }
 
-    // read as many characters as are immediately available from the pipe
-    size_t read( void* buf, size_t len ) { return mFW.readOnce(buf,len); }
+  // read as many characters as are immediately available from the pipe
+  size_t read( void* buf, size_t len ) {
+    return mFW.readOnce(buf,len);
+  }
 
-  protected:
-    int_type overflow( int_type c = traits_type::eof() );
-    int_type underflow();
-    int_type pbackfail( int_type c );
-    int_type sync();
+protected:
+  int_type overflow( int_type c = traits_type::eof() );
+  int_type underflow();
+  int_type pbackfail( int_type c );
+  int_type sync();
 
-  private:
-    bool flush();
-    bool fill();
-    int doOpen( char const* command, std::ios_base::openmode mode );
-    int doClose();
+private:
+  bool flush();
+  bool fill();
+  int doOpen( char const* command, std::ios_base::openmode mode );
+  int doClose();
 
-    int mFD;
-    int mResult;
-    pid_t mPID;
-    FileWriter mFW;
-    std::string mCMD;
-    bool mExpectRetZero;
+  int mFD;
+  int mResult;
+  pid_t mPID;
+  FileWriter mFW;
+  std::string mCMD;
+  bool mExpectRetZero;
 };
 
 #endif

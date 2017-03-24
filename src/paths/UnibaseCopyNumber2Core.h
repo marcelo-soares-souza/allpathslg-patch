@@ -21,35 +21,35 @@ const double THRESH_DEFAULT = 0.01;
 const double ERR_RATE_DEFAULT = 0.0;
 const Bool CORRECT_BIAS_DEFAULT = True;
 
-void UnibaseCopyNumber2Core( 
-     // INPUTS:
-     const int K, const vecbasevector& reads, const vecbasevector& unibases, 
-     const int NUM_THREADS, const String& reads_head, const String& unibases_head,
-     const int PLOIDY, 
-     // LOGGING CONTROL:
-     const Bool VERBOSE, ostream& logout,
-     // OUTPUT:
-     VecPdfEntryVec& cn_pdfs,
-     vec<int64_t>& n_kmer_hits_raw,
-     // HEURISTIC PARAMETERS:
-     const double THRESH = THRESH_DEFAULT, const double ERR_RATE = ERR_RATE_DEFAULT,
-     const Bool CORRECT_BIAS = CORRECT_BIAS_DEFAULT
-     );
+void UnibaseCopyNumber2Core(
+  // INPUTS:
+  const int K, const vecbasevector& reads, const vecbasevector& unibases,
+  const int NUM_THREADS, const String& reads_head, const String& unibases_head,
+  const int PLOIDY,
+  // LOGGING CONTROL:
+  const Bool VERBOSE, ostream& logout,
+  // OUTPUT:
+  VecPdfEntryVec& cn_pdfs,
+  vec<int64_t>& n_kmer_hits_raw,
+  // HEURISTIC PARAMETERS:
+  const double THRESH = THRESH_DEFAULT, const double ERR_RATE = ERR_RATE_DEFAULT,
+  const Bool CORRECT_BIAS = CORRECT_BIAS_DEFAULT
+);
 
 void ComputeProbs(
-     // INPUTS:
-     const int K,
-     const int PLOIDY,
-     double occCnPloidy,
-     double THRESH,
-     double ERR_RATE,
-     const vecbasevector& unibases,
-     const vec<int64_t>& n_kmer_hits,
-     // OUTPUTS:
-     VecPdfEntryVec& cn_pdfs,
-     vec<longlong>& cnHisto,
-     // LOGGING:
-     const Bool VERBOSE,
-     ostream& logout );
+  // INPUTS:
+  const int K,
+  const int PLOIDY,
+  double occCnPloidy,
+  double THRESH,
+  double ERR_RATE,
+  const vecbasevector& unibases,
+  const vec<int64_t>& n_kmer_hits,
+  // OUTPUTS:
+  VecPdfEntryVec& cn_pdfs,
+  vec<longlong>& cnHisto,
+  // LOGGING:
+  const Bool VERBOSE,
+  ostream& logout );
 
 #endif

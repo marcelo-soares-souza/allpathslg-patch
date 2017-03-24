@@ -10,18 +10,20 @@
 #include "lookup/QueryLookupTableCore.h"
 
 int main( int argc, char *argv[] )
-{    
-     // Define interrupt handling.
+{
+  // Define interrupt handling.
 
-     Bool TRACEBACK_ON_INTERRUPT = False;
-     for ( int i = 1; i < argc; i++ )
-     {    if ( String(argv[i]) == String("TRACEBACK_ON_INTERRUPT=True") )
-               TRACEBACK_ON_INTERRUPT = True;    }
-     RunTime(1,
-             (TRACEBACK_ON_INTERRUPT
-              ? &arachne_signal_handler_standard 
-              : &arachne_signal_handler_no_ctrlc_traceback));
+  Bool TRACEBACK_ON_INTERRUPT = False;
+  for ( int i = 1; i < argc; i++ )
+  { if ( String(argv[i]) == String("TRACEBACK_ON_INTERRUPT=True") )
+      TRACEBACK_ON_INTERRUPT = True;
+  }
+  RunTime(1,
+          (TRACEBACK_ON_INTERRUPT
+           ? &arachne_signal_handler_standard
+           : &arachne_signal_handler_no_ctrlc_traceback));
 
-     // Run QueryLookupTable.
+  // Run QueryLookupTable.
 
-     QueryLookupTableCore( argc, argv );    }
+  QueryLookupTableCore( argc, argv );
+}

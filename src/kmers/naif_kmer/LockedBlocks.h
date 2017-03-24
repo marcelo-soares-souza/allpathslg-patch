@@ -26,9 +26,9 @@ public:
   size_t lock_some_block(const std::set<size_t> & i_blocks)
   {
     ForceAssertGt(i_blocks.size(), 0ul);
- 
+
     SpinLocker lock(*this);  // destructor of 'lock' unlocks mutex
-    
+
     std::set<size_t>::iterator it = i_blocks.begin();
     while (1) {
 
@@ -36,15 +36,15 @@ public:
         (*this)[*it] = 1;
         return *it;
       }
-      
+
       it++;
-      if (it == i_blocks.end()) it = i_blocks.begin();      
+      if (it == i_blocks.end()) it = i_blocks.begin();
     }
   }
 
-  // we can unlock the block without a Locker if blocks 
+  // we can unlock the block without a Locker if blocks
   // are associated with a vec<uint64_t>
-  // if you have a vec<bool>, alignment could be a problem 
+  // if you have a vec<bool>, alignment could be a problem
   void unlock_block(const size_t iblk)
   {
     ForceAssert((*this)[iblk]);

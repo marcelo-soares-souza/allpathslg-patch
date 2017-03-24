@@ -6,12 +6,12 @@
 //   Institute is not responsible for its use, misuse, or functionality.     //
 ///////////////////////////////////////////////////////////////////////////////
 // author: Filipe Ribeiro      03/2011
-// 
-//  A function defined in the integer interval [x_min, x_max]. 
+//
+//  A function defined in the integer interval [x_min, x_max].
 //
 //   It's your job to make sure you are within bounds.
 //
-//          
+//
 
 
 #ifndef _MATH__INT_FUNCTION_H
@@ -34,10 +34,10 @@ class IntFunction
   deque<T> _v;
 
 public:
-  IntFunction(const int x0 = 0, 
+  IntFunction(const int x0 = 0,
               const int x1 = 0,
               const T v = 0)
-    : _neg_inf(false), 
+    : _neg_inf(false),
       _pos_inf(false),
       _x0(x0),
       _v((x1 >= x0) ? x1 - x0 + 1 : 0, v)
@@ -48,36 +48,62 @@ public:
   ~IntFunction()
   {
     // cout << "~int_func(): " << x_min() << ", " << x_max()
-    //     << " _neg.sz(): " << _negative.size() 
+    //     << " _neg.sz(): " << _negative.size()
     //     << " _pos_sz(): " << _positive.size() << endl;
   }
-  
-  int size() const { return _v.size(); }
 
-  int x_min() const { return _x0; }
-  int x_max() const { return _x0 + size() - 1; }
-  T f_x_min() const { return _v.front(); }
-  T f_x_max() const { return _v.back(); }
+  int size() const {
+    return _v.size();
+  }
+
+  int x_min() const {
+    return _x0;
+  }
+  int x_max() const {
+    return _x0 + size() - 1;
+  }
+  T f_x_min() const {
+    return _v.front();
+  }
+  T f_x_max() const {
+    return _v.back();
+  }
 
   int x_f_min() const;
   int x_f_max() const;
-  T f_min() const { return (*this)[x_f_min()]; }
-  T f_max() const { return (*this)[x_f_max()]; }
+  T f_min() const {
+    return (*this)[x_f_min()];
+  }
+  T f_max() const {
+    return (*this)[x_f_max()];
+  }
 
-  T sum_in(const int x0, const int x1) const 
+  T sum_in(const int x0, const int x1) const
   {
     T sum = 0;
     for (int x = x0; x < x1; x++) sum += (*this)[x];
     return sum;
   }
-  T sum_below(const int x1) const { return sum_in(x_min(), x1); }
-  T sum_above(const int x0) const { return sum_in(x0, x_max()); }
-  T sum() const { return sum_in(x_min(), x_max()); }
-  
+  T sum_below(const int x1) const {
+    return sum_in(x_min(), x1);
+  }
+  T sum_above(const int x0) const {
+    return sum_in(x0, x_max());
+  }
+  T sum() const {
+    return sum_in(x_min(), x_max());
+  }
 
-  void expand_neg_infinity() { _neg_inf = true; }
-  void expand_pos_infinity() { _pos_inf = true; }
-  void expand_infinity() { _neg_inf = _pos_inf = true; }
+
+  void expand_neg_infinity() {
+    _neg_inf = true;
+  }
+  void expand_pos_infinity() {
+    _pos_inf = true;
+  }
+  void expand_infinity() {
+    _neg_inf = _pos_inf = true;
+  }
 
   T operator [] (const int x) const
   {
@@ -92,16 +118,16 @@ public:
       const T f1 = (_pos_inf) ? f_x_max() : 0;
       _v.insert(_v.end(), x - x_max(), f1);
     }
-    if (x < x_min()) { 
+    if (x < x_min()) {
       const T f0 = (_neg_inf) ? f_x_min() : 0;
       const int n = x_min() - x;
       for (int i = 0; i != n; i++) _v.push_front(f0);
-      //_v.insert(_v.rend(), x_min() - x, f0);   
+      //_v.insert(_v.rend(), x_min() - x, f0);
       _x0 = x;
     }
     return _v[x - _x0];
   }
-  
+
   IntFunction & operator += (const IntFunction & f)
   {
     for (int x = f.x_min(); x <= f.x_max(); x++) (*this)[x] += f[x];
@@ -119,7 +145,9 @@ public:
   void readBinary(BinaryReader& reader);
 
   // ---- SELF_SERIALIZABLE method
-  static size_t externalSizeof() { return 0; }
+  static size_t externalSizeof() {
+    return 0;
+  }
 };
 
 
@@ -217,7 +245,7 @@ void IntFunction<T>::writeBinary(BinaryWriter& writer) const
 // ---- SELF_SERIALIZABLE method
 template<class T>
 void IntFunction<T>::readBinary(BinaryReader& reader)
-{ 
+{
   int version;
   reader.read(&version);
   if (version != __INT_FUNCTION_BINARY_VERSION__) {
@@ -228,8 +256,8 @@ void IntFunction<T>::readBinary(BinaryReader& reader)
   reader.read(&_neg_inf);
   reader.read(&_pos_inf);
   reader.read(&_x0);
-  size_t n; 
-  reader.read(&n); 
+  size_t n;
+  reader.read(&n);
   _v.resize(n, 0);
   reader.readItr(_v.begin(), _v.end());
 }
@@ -272,13 +300,13 @@ template<class T>
 T IntFunctionPrimitive<T>::f_sum(const int a, const int b) const
 {
   if (a == b) return _f[a];
-  
+
   const int x0 = _f.x_min();
   const int x1 = _f.x_max();
   const T f0 = _f.f_x_min();
   const T f1 = _f.f_x_max();
 
-    
+
   const int aa = (a < b) ? a - 1 : b;
   const int bb = (a < b) ? b     : a - 1;
 

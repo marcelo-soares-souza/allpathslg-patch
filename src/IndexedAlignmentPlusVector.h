@@ -20,7 +20,7 @@
 
 class VecAlignmentPlusHeaderIO
 {
- public:
+public:
   void  WriteDataHeader( ostream *pDataOut );
   void  WriteIndexHeader( ostream *pIndexOut );
 
@@ -34,21 +34,23 @@ class VecAlignmentPlusHeaderIO
   int   GetDataHeaderSize();
   int   GetIndexHeaderSize();
 
- private:
+private:
   static const String mStrVectorHeader;
   static const String mStrIndexHeader;
 };
 
 
 // This class encapsulates the buffering of input from a file.
-  
+
 class ReadBuffer
 {
- public:
+public:
   ReadBuffer( const int bufferSize );
   ~ReadBuffer();
 
-  void  Attach( istream *pIstream ) { mpIstream = pIstream; }
+  void  Attach( istream *pIstream ) {
+    mpIstream = pIstream;
+  }
 
   template <typename T>
   void  CopyValueFromBuffer( T &value )
@@ -57,18 +59,26 @@ class ReadBuffer
     mpBufferCursor += sizeof(T);
   }
 
-  const unsigned char* Cursor()   { return  mpBufferCursor; }
-  unsigned char  AtCursor() { return *mpBufferCursor; }
+  const unsigned char* Cursor()   {
+    return  mpBufferCursor;
+  }
+  unsigned char  AtCursor() {
+    return *mpBufferCursor;
+  }
 
-  const char* CursorAsString() { return (const char*) mpBufferCursor; }
+  const char* CursorAsString() {
+    return (const char*) mpBufferCursor;
+  }
 
   void  CheckBuffer( const int amountToBuffer );
 
   void  JumpTo( const streampos filePos );
 
-  void  Skip( const unsigned int bytesToSkip ) { mpBufferCursor += bytesToSkip; }
+  void  Skip( const unsigned int bytesToSkip ) {
+    mpBufferCursor += bytesToSkip;
+  }
 
- private:
+private:
   istream       *mpIstream;
   int            mBufferSize;
   unsigned char *mpBufferStart;
@@ -84,7 +94,7 @@ class ReadBuffer
 
 class AlignmentPlusReader
 {
- public:
+public:
   AlignmentPlusReader( ReadBuffer *pReadBuffer );
 
   void  ReadUnpackedAlignment();
@@ -99,13 +109,21 @@ class AlignmentPlusReader
   void  UnpackBlock( int &gap, int &len );
   void  ReadBlocks();
 
-  int   GetId1() const { return id1; }
-  int   GetId2() const { return id2; }
+  int   GetId1() const {
+    return id1;
+  }
+  int   GetId2() const {
+    return id2;
+  }
 
-  int   GetLastId1( ) const { return mLastId1; }
-  void  SetLastId1( const int lastId1 ) { mLastId1 = lastId1; }
-  
- private:
+  int   GetLastId1( ) const {
+    return mLastId1;
+  }
+  void  SetLastId1( const int lastId1 ) {
+    mLastId1 = lastId1;
+  }
+
+private:
   ReadBuffer *mpReadBuffer;
 
   int      mLastId1;
@@ -132,7 +150,7 @@ class AlignmentPlusReader
 
 class VecAlignmentPlusReader
 {
- public:
+public:
 
   // A VecAlignmentPlusReader object is instantiated with the filename
   // to be read and the buffer size (the default buffer size seems to
@@ -149,7 +167,7 @@ class VecAlignmentPlusReader
                           const int bufferSize = 100000 );
 
   ~VecAlignmentPlusReader();
-  
+
   int
   GetSize();
 
@@ -169,7 +187,7 @@ class VecAlignmentPlusReader
   // aligns where id1 is the given sequence id.
   void
   ReadSubset( vec<alignment_plus> &vecAligns,
-              const int sequenceId, 
+              const int sequenceId,
               bool append = false );
 
   // (Replace the contents of/Append to) the given vector with the
@@ -177,16 +195,16 @@ class VecAlignmentPlusReader
   // of sequence ids.
   void
   ReadSubset( vec<alignment_plus> &vecAligns,
-              const vec<int> &vecSequenceIds, 
+              const vec<int> &vecSequenceIds,
               bool append = false );
 
   void
   ReadNext( alignment_plus &nextAlign );
 
- private:
+private:
   void  OpenDataFileForReading();
   void  OpenIndexFileForReading();
-  
+
   void  ReadIndexEntry( const int sequenceId );
 
   String mStrVectorFilename;
@@ -220,7 +238,7 @@ class vec_alignment_plus;
 
 class VecAlignmentPlusWriter
 {
- public:
+public:
 
   // A VecAlignmentPlusWriter object is instantiated with the filename
   // to be written, a bool indicating whether a index should be
@@ -258,13 +276,13 @@ class VecAlignmentPlusWriter
   void
   TestPackBlock();
 
- private:
+private:
   void  OpenDataFileForWriting();
   void  OpenIndexFileForWriting();
-  
+
   void  OpenDataFileForAppending();
   void  OpenIndexFileForAppending();
-  
+
   void  LoadLastId1FromIndex();
   void  LoadNumAlignsFromData();
 

@@ -10,8 +10,12 @@
 
 struct MuxSearchResult {
 
-  MuxSearchResult() : walk_graph_ptr(NULL) { clear(); }
-  ~MuxSearchResult() { delete walk_graph_ptr; }
+  MuxSearchResult() : walk_graph_ptr(NULL) {
+    clear();
+  }
+  ~MuxSearchResult() {
+    delete walk_graph_ptr;
+  }
 
   MuxWalkGraph* walk_graph_ptr;
   int num_closures_found;
@@ -35,19 +39,23 @@ struct MuxSearchResult {
     all_closures.clear();
   }
 
-  MuxWalkGraph& WalkGraph() { return *walk_graph_ptr; }
-  const MuxWalkGraph& WalkGraph() const { return *walk_graph_ptr; }
+  MuxWalkGraph& WalkGraph() {
+    return *walk_graph_ptr;
+  }
+  const MuxWalkGraph& WalkGraph() const {
+    return *walk_graph_ptr;
+  }
 
 
   // Monte Carlo estimation of the number of cloures (in Mux space)
   int EstimateNumClosures() {
     return WalkGraph().EstimateNumClosures();
   }
-  
+
   void CalculateAllClosures( const vecKmerPath* pathsFw,
-			     const vecKmerPath* pathsRc,
-			     unsigned int max_ans=0 ) {
-    hit_closure_limit = 
+                             const vecKmerPath* pathsRc,
+                             unsigned int max_ans=0 ) {
+    hit_closure_limit =
       ! WalkGraph().AllPaths( pathsFw, pathsRc, all_closures, max_ans );
   }
 };

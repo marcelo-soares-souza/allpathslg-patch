@@ -31,14 +31,14 @@
 int main( int argc, char *argv[] )
 {
   RunTime( );
-  
+
   BeginCommandArguments;
   CommandArgument_String( PRE );
   CommandArgument_String( DATA );
   CommandArgument_String( RUN );
   CommandArgument_String( SUBDIR );
-  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0, 
-    "Number of threads to use (use all available processors if set to 0)");
+  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0,
+      "Number of threads to use (use all available processors if set to 0)");
   CommandArgument_String_OrDefault( HYPER, "hyper_plus" );
   CommandArgument_String_OrDefault( SCAFFOLDS, "initial_scaffolds" );
   CommandArgument_String_OrDefault( WRUN, "recover" );
@@ -51,24 +51,24 @@ int main( int argc, char *argv[] )
   CommandArgument_Bool_OrDefault( NEW_ALGORITHM, False );
   EndCommandArguments;
 
-  // Thread control 
+  // Thread control
 
   NUM_THREADS = configNumThreads(NUM_THREADS);
-    
+
   // Dir and file names.
   String run_dir = PRE + "/" + DATA + "/" + RUN;
   String sub_dir = run_dir + "/ASSEMBLIES/" + SUBDIR;
   String wrun_dir = sub_dir + "/" + WRUN;
-  
+
   String hyper_file = sub_dir + "/" + HYPER;
   String base_out = WRITE ? sub_dir + "/" + SCAFFOLDS : "";
   String hyper_inter_file = SAVE_INTERMEDIATE ? hyper_file + "_inter" : "";
   String dump_hfv_head  = DUMP_HFV ? hyper_file + ".fastavector" : "";
-  String log_file = hyper_file + ".FlattenHKP.log"; 
-  
+  String log_file = hyper_file + ".FlattenHKP.log";
+
   HyperFastavector hfv;
 
-  // The log stream. 
+  // The log stream.
   cout << "\nSending log to: " << log_file << "\n" << endl;
   ofstream log( log_file.c_str( ) );
   PrintCommandPretty( log );
@@ -82,23 +82,23 @@ int main( int argc, char *argv[] )
 
   log << Date( ) << ": Turning HyperKmerPath into HyperFastavector" << endl;
   hfv = HyperFastavector( HyperBasevector( hk, kbb ) );
-  
+
   // Flatten hyper.
 
   FlattenHyperFastavector( log,
-			   hfv,
-			   base_out,
-			   hyper_inter_file,
-			   dump_hfv_head,
-			   NEW_ALGORITHM,
-			   INITIAL_SCAFFOLD_PER_CONTIG,
-			   MAX_CELL_SIZE,
-			   MIN_EDGE_TO_SAVE,
-			   NUM_THREADS );
-  
+                           hfv,
+                           base_out,
+                           hyper_inter_file,
+                           dump_hfv_head,
+                           NEW_ALGORITHM,
+                           INITIAL_SCAFFOLD_PER_CONTIG,
+                           MAX_CELL_SIZE,
+                           MIN_EDGE_TO_SAVE,
+                           NUM_THREADS );
+
   // Done.
-  
+
   log << Date( ) << ": done" << endl;
   return 0;
-  
+
 }

@@ -13,37 +13,37 @@
 #include "String.h"
 
 class FastaNameParser {
- public:
+public:
   virtual ~FastaNameParser() {}
   virtual void extractNameFromBuffer( char* buffer, String& name ) const = 0;
 };
 
 class FullNameParser : public FastaNameParser {
- public:
+public:
   virtual ~FullNameParser() {}
   virtual void extractNameFromBuffer( char* buffer, String& name ) const;
 };
 
 class FirstWordParser : public FastaNameParser {
- public:
+public:
   virtual ~FirstWordParser() {}
   virtual void extractNameFromBuffer( char* buffer, String& name ) const;
 };
 
 class LastWordParser : public FastaNameParser {
- public:
+public:
   virtual ~LastWordParser() {}
   virtual void extractNameFromBuffer( char* buffer, String& name ) const;
 };
 
 class Riken_cDNA_Parser : public FastaNameParser {
- public:
+public:
   virtual ~Riken_cDNA_Parser() {}
   void extractNameFromBuffer( char* buffer, String& name ) const;
 };
 
 class TruncatedLastWordParser : public LastWordParser {
- public:
+public:
   virtual ~TruncatedLastWordParser() {}
   void extractNameFromBuffer( char* buffer, String& name ) const;
 };

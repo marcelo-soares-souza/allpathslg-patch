@@ -28,7 +28,7 @@
 SemanticType( String, html_t );
 
 // Semantic Type: html_attrs_t
-// A string of well-formed HTML attributes, of them form A=1 B=2....  
+// A string of well-formed HTML attributes, of them form A=1 B=2....
 SemanticType( String, html_attrs_t );
 
 // Semantic Type: url_t

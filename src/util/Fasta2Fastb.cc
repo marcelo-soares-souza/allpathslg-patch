@@ -10,7 +10,7 @@
 
 
 /// Transform one fasta file into fastb format, save names separately.
-/// 
+///
 /// \file Fasta2Fastb.cc
 ///
 /// names are saved as a vecString in OUT.names
@@ -36,8 +36,8 @@ int main(int argc, char *argv[])
   CommandArgument_Bool_OrDefault( REVERSE_READS, False);
 
   CommandArgument_Bool_OrDefault_Doc(NAMES, True,
-		     "Whether to save the original sequence names as found in "
-				     "fasta file into fastb.names file");
+                                     "Whether to save the original sequence names as found in "
+                                     "fasta file into fastb.names file");
   EndCommandArguments;
 
   BaseVecVec reads;
@@ -46,26 +46,26 @@ int main(int argc, char *argv[])
   if (OUT.empty()) OUT=IN.SafeBefore(".fa") + ".fastb";
 
   FastFetchReads(reads, &readNames, IN);
-  if ((SKIP_RIGHT_BASES != 0) || 
+  if ((SKIP_RIGHT_BASES != 0) ||
       (SKIP_LEFT_BASES != 0) ||
       (END_BASE != 0))
   {
     for (size_t i = 0; i < reads.size(); i++) {
 
-        int start = SKIP_LEFT_BASES;
-        int len   = reads[i].size() - SKIP_RIGHT_BASES - SKIP_LEFT_BASES;
-        if (END_BASE) {
-          len = END_BASE + 1 - start;
-          if (len + start > (signed)reads[i].size())
-            len = reads[i].size() - start;
-        }
-            
-        reads[i].SetToSubOf(reads[i], start, len);
-
-        if (REVERSE_READS) 
-          reads[i].ReverseComplement();
-
+      int start = SKIP_LEFT_BASES;
+      int len   = reads[i].size() - SKIP_RIGHT_BASES - SKIP_LEFT_BASES;
+      if (END_BASE) {
+        len = END_BASE + 1 - start;
+        if (len + start > (signed)reads[i].size())
+          len = reads[i].size() - start;
       }
+
+      reads[i].SetToSubOf(reads[i], start, len);
+
+      if (REVERSE_READS)
+        reads[i].ReverseComplement();
+
+    }
   }
   reads.WriteAll(OUT);
   if (NAMES) readNames.WriteAll(OUT + ".names");

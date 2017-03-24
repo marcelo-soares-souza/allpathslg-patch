@@ -15,17 +15,20 @@
 #include "Superb.h"
 
 int super::Length( const assembly& A ) const
-{    int answer = 0;
-     for ( int i = 0; i < (int) mtig.size( ); i++ )
-     {    answer += A.mtig[ mtig[i] ].size( );
-          if ( i < (int) mtig.size( ) - 1 ) answer += gap[i];    }
-     return answer;    }
+{ int answer = 0;
+  for ( int i = 0; i < (int) mtig.size( ); i++ )
+  { answer += A.mtig[ mtig[i] ].size( );
+    if ( i < (int) mtig.size( ) - 1 ) answer += gap[i];
+  }
+  return answer;
+}
 
 int super::ReducedLength( const assembly& A ) const
-{    int answer = 0;
-     for ( int i = 0; i < (int) mtig.size( ); i++ )
-          answer += A.mtig[ mtig[i] ].size( );
-     return answer;    }
+{ int answer = 0;
+  for ( int i = 0; i < (int) mtig.size( ); i++ )
+    answer += A.mtig[ mtig[i] ].size( );
+  return answer;
+}
 
 
 
@@ -111,292 +114,321 @@ void assembly::DeleteMtigInSuper( int mtig_id, int super_id )
 }
 
 void assembly::KillShortStandaloneMtigs( int min_len, int min_reads,
-     int min_contigs )
+    int min_contigs )
 {
-     set<int> dead_mtigs;
+  set<int> dead_mtigs;
 
-     // Process deletions.
-     if ( !elogp )
-       cerr << "Unable to write to contig event log." << endl;
+  // Process deletions.
+  if ( !elogp )
+    cerr << "Unable to write to contig event log." << endl;
 
-     for ( unsigned int i = 0; i < supers.size( ); i++ )
-     {    super& s = supers[i];
-          if ( (int) s.mtig.size( ) <= min_contigs )
-          {    longlong total_bases = 0;
-               int total_reads = 0;
-               for ( int j = 0; j < (int) s.mtig.size( ); j++ )
-               {    int m = s.mtig[j];
-                    total_bases += mtig[m].size( );
-                    total_reads += reads_orig_index[m].size( );    }
-               Bool too_short = False;
-               if ( total_bases < min_len ) too_short = True;
-               if ( total_reads < min_reads ) too_short = True;
-               if (too_short)
-               {    for ( int j = 0; j < (int) s.mtig.size( ); j++ )
-                    {    int m = s.mtig[j];
-                         mtig[m].Setsize(0);
-                         mtig_qual[m].resize(0);
-                         dead_mtigs.insert(m);
-                         delete_contig_event e(m);
-                         e.BinaryWrite( *elogp );    }
-                    s.mtig.clear( );    }    }    }
+  for ( unsigned int i = 0; i < supers.size( ); i++ )
+  { super& s = supers[i];
+    if ( (int) s.mtig.size( ) <= min_contigs )
+    { longlong total_bases = 0;
+      int total_reads = 0;
+      for ( int j = 0; j < (int) s.mtig.size( ); j++ )
+      { int m = s.mtig[j];
+        total_bases += mtig[m].size( );
+        total_reads += reads_orig_index[m].size( );
+      }
+      Bool too_short = False;
+      if ( total_bases < min_len ) too_short = True;
+      if ( total_reads < min_reads ) too_short = True;
+      if (too_short)
+      { for ( int j = 0; j < (int) s.mtig.size( ); j++ )
+        { int m = s.mtig[j];
+          mtig[m].Setsize(0);
+          mtig_qual[m].resize(0);
+          dead_mtigs.insert(m);
+          delete_contig_event e(m);
+          e.BinaryWrite( *elogp );
+        }
+        s.mtig.clear( );
+      }
+    }
+  }
 
-     // Clean up the other stuff.
+  // Clean up the other stuff.
 
-     int current = 0;
-     for ( unsigned int i = 0; i < reads.size( ); i++ )
-          if ( !Member( dead_mtigs, reads[i].Contig( ) ) )
-               reads[current++] = reads[i];
-     vec<int> dead_reads;
-     reads.resize(current);
-     current = 0;
-     for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
-     {    if ( !Member( dead_mtigs, reads_orig[i].Contig( ) ) )
-               reads_orig[current++] = reads_orig[i];
-          else dead_reads.push_back( reads_orig[i].ReadId( ) );    }
-     reads_orig.resize(current);
-     reads_index.clear( );
-     reads_index.resize( mtig.size( ) );
-     for ( unsigned int i = 0; i < reads.size( ); i++ )
-          reads_index[ reads[i].Contig( ) ].push_back(i);
-     reads_orig_index.clear( );
-     reads_orig_index.resize( mtig.size( ) );
-     for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
-          reads_orig_index[ reads_orig[i].Contig( ) ].push_back(i);
-     for ( int i = 0; i < N; i++ )
-          simple_reads_orig_index[i] = -1;
-     for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
-          simple_reads_orig_index[ reads_orig[i].ReadId( ) ] = i;
-     current = 0;
-     sort( dead_reads.begin( ), dead_reads.end( ) );
-     for ( unsigned int i = 0; i < pairs.size( ); i++ )
-     {    if ( BinPosition( dead_reads, pairs[i].id1 ) < 0
-               && BinPosition( dead_reads, pairs[i].id2 ) < 0 )
-               pairs[current++] = pairs[i];    }
-     pairs.resize(current);
-     for ( int i = 0; i < N; i++ )
-          pairs_index[i] = -1;
-     for ( unsigned int i = 0; i < pairs.size( ); i++ )
-          if ( pairs[i].Alive( ) )
-               pairs_index[ pairs[i].id1 ] = pairs_index[ pairs[i].id2 ] = i;    }
+  int current = 0;
+  for ( unsigned int i = 0; i < reads.size( ); i++ )
+    if ( !Member( dead_mtigs, reads[i].Contig( ) ) )
+      reads[current++] = reads[i];
+  vec<int> dead_reads;
+  reads.resize(current);
+  current = 0;
+  for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
+  { if ( !Member( dead_mtigs, reads_orig[i].Contig( ) ) )
+      reads_orig[current++] = reads_orig[i];
+    else dead_reads.push_back( reads_orig[i].ReadId( ) );
+  }
+  reads_orig.resize(current);
+  reads_index.clear( );
+  reads_index.resize( mtig.size( ) );
+  for ( unsigned int i = 0; i < reads.size( ); i++ )
+    reads_index[ reads[i].Contig( ) ].push_back(i);
+  reads_orig_index.clear( );
+  reads_orig_index.resize( mtig.size( ) );
+  for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
+    reads_orig_index[ reads_orig[i].Contig( ) ].push_back(i);
+  for ( int i = 0; i < N; i++ )
+    simple_reads_orig_index[i] = -1;
+  for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
+    simple_reads_orig_index[ reads_orig[i].ReadId( ) ] = i;
+  current = 0;
+  sort( dead_reads.begin( ), dead_reads.end( ) );
+  for ( unsigned int i = 0; i < pairs.size( ); i++ )
+  { if ( BinPosition( dead_reads, pairs[i].id1 ) < 0
+         && BinPosition( dead_reads, pairs[i].id2 ) < 0 )
+      pairs[current++] = pairs[i];
+  }
+  pairs.resize(current);
+  for ( int i = 0; i < N; i++ )
+    pairs_index[i] = -1;
+  for ( unsigned int i = 0; i < pairs.size( ); i++ )
+    if ( pairs[i].Alive( ) )
+      pairs_index[ pairs[i].id1 ] = pairs_index[ pairs[i].id2 ] = i;
+}
 
 void assembly::KillSupers( vec<int> bads )
-{    sort( bads.begin( ), bads.end( ) );
-     vec<int> dead_mtigs;
-     for ( int i = 0; i < (int) supers.size( ); i++ )
-     {    super& s = supers[i];
-          if ( !BinMember( bads, i ) ) continue;
-          for ( int j = 0; j < (int) s.mtig.size( ); j++ )
-          {    int m = s.mtig[j];
-               mtig[m].Setsize(0);
-               mtig_qual[m].resize(0);
-               dead_mtigs.push_back(m);    }
-          s.mtig.resize(0);    }
-     sort( dead_mtigs.begin( ), dead_mtigs.end( ) );
-     int current = 0;
-     for ( unsigned int i = 0; i < reads.size( ); i++ )
-          if ( !BinMember( dead_mtigs, reads[i].Contig( ) ) )
-               reads[current++] = reads[i];
-     vec<int> dead_reads;
-     reads.resize(current);
-     current = 0;
-     for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
-     {    if ( !BinMember( dead_mtigs, reads_orig[i].Contig( ) ) )
-               reads_orig[current++] = reads_orig[i];
-          else dead_reads.push_back( reads_orig[i].ReadId( ) );    }
-     reads_orig.resize(current);
-     reads_index.clear( );
-     reads_index.resize( mtig.size( ) );
-     for ( unsigned int i = 0; i < reads.size( ); i++ )
-          reads_index[ reads[i].Contig( ) ].push_back(i);
-     reads_orig_index.clear( );
-     reads_orig_index.resize( mtig.size( ) );
-     for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
-          reads_orig_index[ reads_orig[i].Contig( ) ].push_back(i);
-     for ( int i = 0; i < N; i++ )
-          simple_reads_orig_index[i] = -1;
-     for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
-          simple_reads_orig_index[ reads_orig[i].ReadId( ) ] = i;
-     current = 0;
-     sort( dead_reads.begin( ), dead_reads.end( ) );
-     for ( unsigned int i = 0; i < pairs.size( ); i++ )
-     {    if ( BinPosition( dead_reads, pairs[i].id1 ) < 0
-               && BinPosition( dead_reads, pairs[i].id2 ) < 0 )
-               pairs[current++] = pairs[i];    }
-     pairs.resize(current);
-     for ( int i = 0; i < N; i++ )
-          pairs_index[i] = -1;
-     for ( unsigned int i = 0; i < pairs.size( ); i++ )
-          if ( pairs[i].Alive( ) )
-               pairs_index[ pairs[i].id1 ] = pairs_index[ pairs[i].id2 ] = i;    }
+{ sort( bads.begin( ), bads.end( ) );
+  vec<int> dead_mtigs;
+  for ( int i = 0; i < (int) supers.size( ); i++ )
+  { super& s = supers[i];
+    if ( !BinMember( bads, i ) ) continue;
+    for ( int j = 0; j < (int) s.mtig.size( ); j++ )
+    { int m = s.mtig[j];
+      mtig[m].Setsize(0);
+      mtig_qual[m].resize(0);
+      dead_mtigs.push_back(m);
+    }
+    s.mtig.resize(0);
+  }
+  sort( dead_mtigs.begin( ), dead_mtigs.end( ) );
+  int current = 0;
+  for ( unsigned int i = 0; i < reads.size( ); i++ )
+    if ( !BinMember( dead_mtigs, reads[i].Contig( ) ) )
+      reads[current++] = reads[i];
+  vec<int> dead_reads;
+  reads.resize(current);
+  current = 0;
+  for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
+  { if ( !BinMember( dead_mtigs, reads_orig[i].Contig( ) ) )
+      reads_orig[current++] = reads_orig[i];
+    else dead_reads.push_back( reads_orig[i].ReadId( ) );
+  }
+  reads_orig.resize(current);
+  reads_index.clear( );
+  reads_index.resize( mtig.size( ) );
+  for ( unsigned int i = 0; i < reads.size( ); i++ )
+    reads_index[ reads[i].Contig( ) ].push_back(i);
+  reads_orig_index.clear( );
+  reads_orig_index.resize( mtig.size( ) );
+  for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
+    reads_orig_index[ reads_orig[i].Contig( ) ].push_back(i);
+  for ( int i = 0; i < N; i++ )
+    simple_reads_orig_index[i] = -1;
+  for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
+    simple_reads_orig_index[ reads_orig[i].ReadId( ) ] = i;
+  current = 0;
+  sort( dead_reads.begin( ), dead_reads.end( ) );
+  for ( unsigned int i = 0; i < pairs.size( ); i++ )
+  { if ( BinPosition( dead_reads, pairs[i].id1 ) < 0
+         && BinPosition( dead_reads, pairs[i].id2 ) < 0 )
+      pairs[current++] = pairs[i];
+  }
+  pairs.resize(current);
+  for ( int i = 0; i < N; i++ )
+    pairs_index[i] = -1;
+  for ( unsigned int i = 0; i < pairs.size( ); i++ )
+    if ( pairs[i].Alive( ) )
+      pairs_index[ pairs[i].id1 ] = pairs_index[ pairs[i].id2 ] = i;
+}
 
 // clean up by annihilating mtigs and renumbering (also supers)
 
 void assembly::CleanUp( )
-{    map<size_t, size_t> new_mtig;
-     size_t current = 0;
-     if ( !elogp )
-       cerr << "Unable to write to contig event log." << endl;
-     for ( size_t i = 0; i < mtig.size( ); i++ )
-          if ( mtig[i].size( ) != 0 )
-          {
-               // In effect, do:
-               //      mtig[current] = mtig[i];
-               //      mtig_qual[current] = mtig_qual[i];
-               // but do it more efficiently, memory-wise.
+{ map<size_t, size_t> new_mtig;
+  size_t current = 0;
+  if ( !elogp )
+    cerr << "Unable to write to contig event log." << endl;
+  for ( size_t i = 0; i < mtig.size( ); i++ )
+    if ( mtig[i].size( ) != 0 )
+    {
+      // In effect, do:
+      //      mtig[current] = mtig[i];
+      //      mtig_qual[current] = mtig_qual[i];
+      // but do it more efficiently, memory-wise.
 
-               if ( current != i )
-               {    mtig[current].Reinitialize( );
-                    mtig[current].Swap( mtig[i] );
-                    mtig_qual[current].Reinitialize( );
-                    mtig_qual[current].Swap( mtig_qual[i] );    }
+      if ( current != i )
+      { mtig[current].Reinitialize( );
+        mtig[current].Swap( mtig[i] );
+        mtig_qual[current].Reinitialize( );
+        mtig_qual[current].Swap( mtig_qual[i] );
+      }
 
-               rename_contig_event e( i, current );
-               e.BinaryWrite( *elogp );
-               reads_index[current] = reads_index[i];
-               reads_orig_index[current] = reads_orig_index[i];
-               mtig_aligns_lost[current] = mtig_aligns_lost[i];
-               new_mtig[i] = current;
-               current++;    }
-     mtig.resize(current);
-     mtig_qual.resize(current);
-     reads_index.resize(current);
-     reads_orig_index.resize(current);
+      rename_contig_event e( i, current );
+      e.BinaryWrite( *elogp );
+      reads_index[current] = reads_index[i];
+      reads_orig_index[current] = reads_orig_index[i];
+      mtig_aligns_lost[current] = mtig_aligns_lost[i];
+      new_mtig[i] = current;
+      current++;
+    }
+  mtig.resize(current);
+  mtig_qual.resize(current);
+  reads_index.resize(current);
+  reads_orig_index.resize(current);
 
-     for ( size_t i = 0; i < mtig_aligns.size( ); i++ )
-     {    mtig_aligns[i].id1 = new_mtig[ mtig_aligns[i].id1 ];
-          mtig_aligns[i].id2 = new_mtig[ mtig_aligns[i].id2 ];    }
-     for ( size_t i = 0; i < mtig.size( ); i++ )
-          mtig_aligns_index[i] = -1;
-     size_t i = mtig_aligns.size();
-     while ( i-- )
-        mtig_aligns_index[ mtig_aligns[i].id1 ] = i; 
-       
-     mtig_aligns_lost.resize(current);
+  for ( size_t i = 0; i < mtig_aligns.size( ); i++ )
+  { mtig_aligns[i].id1 = new_mtig[ mtig_aligns[i].id1 ];
+    mtig_aligns[i].id2 = new_mtig[ mtig_aligns[i].id2 ];
+  }
+  for ( size_t i = 0; i < mtig.size( ); i++ )
+    mtig_aligns_index[i] = -1;
+  size_t i = mtig_aligns.size();
+  while ( i-- )
+    mtig_aligns_index[ mtig_aligns[i].id1 ] = i;
 
-     for ( size_t i = 0; i < reads.size( ); i++ )
-     {    if ( reads[i].Contig( ) >= 0 )
-               reads[i].SetContig( new_mtig[ reads[i].Contig( ) ] );    }
-     for ( size_t i = 0; i < reads_orig.size( ); i++ )
-     {    if ( reads_orig[i].Contig( ) >= 0 )
-               reads_orig[i].SetContig( new_mtig[ reads_orig[i].Contig( ) ] );    }
+  mtig_aligns_lost.resize(current);
 
-     for ( size_t i = 0; i < supers.size( ); i++ )
-          for ( size_t j = 0; j < supers[i].mtig.size( ); j++ )
-               supers[i].mtig[j] = new_mtig[ supers[i].mtig[j] ];
-     current = 0;
-     for ( size_t i = 0; i < supers.size( ); i++ )
-          if ( supers[i].mtig.size( ) > 0 ) supers[current++] = supers[i];
-     supers.resize(current);
+  for ( size_t i = 0; i < reads.size( ); i++ )
+  { if ( reads[i].Contig( ) >= 0 )
+      reads[i].SetContig( new_mtig[ reads[i].Contig( ) ] );
+  }
+  for ( size_t i = 0; i < reads_orig.size( ); i++ )
+  { if ( reads_orig[i].Contig( ) >= 0 )
+      reads_orig[i].SetContig( new_mtig[ reads_orig[i].Contig( ) ] );
+  }
 
-     mtigs_to_supers.clear( );
-     mtigs_to_super_pos.clear( );
-     for ( size_t i = 0; i < supers.size( ); i++ )
-          for ( size_t j = 0; j < supers[i].mtig.size( ); j++ )
-          {    mtigs_to_supers[ supers[i].mtig[j] ] = i;
-               mtigs_to_super_pos[ supers[i].mtig[j] ] = j;    }    }
+  for ( size_t i = 0; i < supers.size( ); i++ )
+    for ( size_t j = 0; j < supers[i].mtig.size( ); j++ )
+      supers[i].mtig[j] = new_mtig[ supers[i].mtig[j] ];
+  current = 0;
+  for ( size_t i = 0; i < supers.size( ); i++ )
+    if ( supers[i].mtig.size( ) > 0 ) supers[current++] = supers[i];
+  supers.resize(current);
+
+  mtigs_to_supers.clear( );
+  mtigs_to_super_pos.clear( );
+  for ( size_t i = 0; i < supers.size( ); i++ )
+    for ( size_t j = 0; j < supers[i].mtig.size( ); j++ )
+    { mtigs_to_supers[ supers[i].mtig[j] ] = i;
+      mtigs_to_super_pos[ supers[i].mtig[j] ] = j;
+    }
+}
 
 assembly::assembly( String fasta_file,
-		    String qual_file,
-		    const vec<read_location>& reads_arg,
-		    const vec<read_location>& reads_orig_arg,
-		    const vec<super>& supers_arg,
-		    const vec<brief_align>& all_aligns_arg,
-		    int N_arg,
-		    const vec<read_pairing>& pairs_arg,
-		    const vec<int>& orig_read_lengths_arg,
-		    const vec<int>& all_aligns_index_arg,
-		    Bool store_contigs_one_by_one )
-          : reads(reads_arg),
-	    reads_orig(reads_orig_arg),
-	    supers(supers_arg),
-	    all_aligns(all_aligns_arg),
-	    N(N_arg),
-	    pairs(pairs_arg),
-	    orig_read_lengths(orig_read_lengths_arg),
-	    all_aligns_index(all_aligns_index_arg),
-	    elogp(0)
+                    String qual_file,
+                    const vec<read_location>& reads_arg,
+                    const vec<read_location>& reads_orig_arg,
+                    const vec<super>& supers_arg,
+                    const vec<brief_align>& all_aligns_arg,
+                    int N_arg,
+                    const vec<read_pairing>& pairs_arg,
+                    const vec<int>& orig_read_lengths_arg,
+                    const vec<int>& all_aligns_index_arg,
+                    Bool store_contigs_one_by_one )
+  : reads(reads_arg),
+    reads_orig(reads_orig_arg),
+    supers(supers_arg),
+    all_aligns(all_aligns_arg),
+    N(N_arg),
+    pairs(pairs_arg),
+    orig_read_lengths(orig_read_lengths_arg),
+    all_aligns_index(all_aligns_index_arg),
+    elogp(0)
 {
 
-     // Read in contigs.
+  // Read in contigs.
 
-     if ( !store_contigs_one_by_one )
-     {    mtig.ReadAll(fasta_file);
-          if ( qual_file != "" ) mtig_qual.ReadAll(qual_file);
-          else mtig_qual.resize( mtig.size( ) );    }
-     else
-     {    {    vecqualvector mtig_qual_temp;
-               mtig_qual_temp.ReadAll(qual_file);
-               mtig_qual.reserve( mtig_qual_temp.size( ) );
-               for ( vecqvec::size_type i = 0; i < mtig_qual_temp.size( ); i++ )
-                    mtig_qual.push_back_external( mtig_qual_temp[i] );    }
-          {    vecbasevector mtig_temp;
-               mtig_temp.ReadAll(fasta_file);
-               mtig.reserve( mtig_temp.size( ) );
-               for ( size_t i = 0; i < mtig_temp.size( ); i++ )
-                    mtig.push_back_external( mtig_temp[i] );    }    }
+  if ( !store_contigs_one_by_one )
+  { mtig.ReadAll(fasta_file);
+    if ( qual_file != "" ) mtig_qual.ReadAll(qual_file);
+    else mtig_qual.resize( mtig.size( ) );
+  }
+  else
+  {    { vecqualvector mtig_qual_temp;
+      mtig_qual_temp.ReadAll(qual_file);
+      mtig_qual.reserve( mtig_qual_temp.size( ) );
+      for ( vecqvec::size_type i = 0; i < mtig_qual_temp.size( ); i++ )
+        mtig_qual.push_back_external( mtig_qual_temp[i] );
+    }
+    { vecbasevector mtig_temp;
+      mtig_temp.ReadAll(fasta_file);
+      mtig.reserve( mtig_temp.size( ) );
+      for ( size_t i = 0; i < mtig_temp.size( ); i++ )
+        mtig.push_back_external( mtig_temp[i] );
+    }
+  }
 
-     // Do everything else.
+  // Do everything else.
 
-     reads_index.resize( mtig.size( ) );
-     for ( unsigned int i = 0; i < reads.size( ); i++ )
-          reads_index[ reads[i].Contig( ) ].push_back(i);
-     reads_orig_index.resize( mtig.size( ) );
-     for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
-          reads_orig_index[ reads_orig[i].Contig( ) ].push_back(i);
-     pairs_index.resize(N);
-     for ( int i = 0; i < N; i++ )
-          pairs_index[i] = -1;
-     for ( unsigned int i = 0; i < pairs.size( ); i++ )
-          if ( pairs[i].Alive( ) )
-               pairs_index[ pairs[i].id1 ] = pairs_index[ pairs[i].id2 ] = i;
-     for ( unsigned int i = 0; i < supers.size( ); i++ )
-          for ( unsigned int j = 0; j < supers[i].mtig.size( ); j++ )
-          {    mtigs_to_supers[ supers[i].mtig[j] ] = i;
-               mtigs_to_super_pos[ supers[i].mtig[j] ] = j;    }
-     simple_reads_orig_index.resize(N);
-     for ( int i = 0; i < N; i++ )
-          simple_reads_orig_index[i] = -1;
-     for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
-          simple_reads_orig_index[ reads_orig[i].ReadId( ) ] = i;
-     SetMtigAligns(mtig_aligns);    }
+  reads_index.resize( mtig.size( ) );
+  for ( unsigned int i = 0; i < reads.size( ); i++ )
+    reads_index[ reads[i].Contig( ) ].push_back(i);
+  reads_orig_index.resize( mtig.size( ) );
+  for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
+    reads_orig_index[ reads_orig[i].Contig( ) ].push_back(i);
+  pairs_index.resize(N);
+  for ( int i = 0; i < N; i++ )
+    pairs_index[i] = -1;
+  for ( unsigned int i = 0; i < pairs.size( ); i++ )
+    if ( pairs[i].Alive( ) )
+      pairs_index[ pairs[i].id1 ] = pairs_index[ pairs[i].id2 ] = i;
+  for ( unsigned int i = 0; i < supers.size( ); i++ )
+    for ( unsigned int j = 0; j < supers[i].mtig.size( ); j++ )
+    { mtigs_to_supers[ supers[i].mtig[j] ] = i;
+      mtigs_to_super_pos[ supers[i].mtig[j] ] = j;
+    }
+  simple_reads_orig_index.resize(N);
+  for ( int i = 0; i < N; i++ )
+    simple_reads_orig_index[i] = -1;
+  for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
+    simple_reads_orig_index[ reads_orig[i].ReadId( ) ] = i;
+  SetMtigAligns(mtig_aligns);
+}
 
 void assembly::Write( const String& out_dir, vec<read_location> *mapping_locs )
 {
-     // Eliminate dead reads.
+  // Eliminate dead reads.
 
-     EraseIf( reads, &read_location::IsDead );
-     EraseIf( reads_orig, &read_location::IsDead );
+  EraseIf( reads, &read_location::IsDead );
+  EraseIf( reads_orig, &read_location::IsDead );
 
-     // Recompute reads_orig_index and simple_reads_orig_index.
+  // Recompute reads_orig_index and simple_reads_orig_index.
 
-     reads_orig_index.clear( ), reads_orig_index.resize( mtig.size( ) );
-     for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
-          reads_orig_index[ reads_orig[i].Contig( ) ].push_back(i);
+  reads_orig_index.clear( ), reads_orig_index.resize( mtig.size( ) );
+  for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
+    reads_orig_index[ reads_orig[i].Contig( ) ].push_back(i);
 
-     simple_reads_orig_index.clear(), simple_reads_orig_index.resize(N);
-     for ( int i = 0; i < N; i++ )
-          simple_reads_orig_index[i] = -1;
-     for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
-          simple_reads_orig_index[ reads_orig[i].ReadId( ) ] = i;
+  simple_reads_orig_index.clear(), simple_reads_orig_index.resize(N);
+  for ( int i = 0; i < N; i++ )
+    simple_reads_orig_index[i] = -1;
+  for ( unsigned int i = 0; i < reads_orig.size( ); i++ )
+    simple_reads_orig_index[ reads_orig[i].ReadId( ) ] = i;
 
-     vec<superb> bs( supers.size( ) );
-     for ( unsigned int i = 0; i < supers.size(); ++i )
-     {    static vec<int> old_gaps, gaps_dev;
-          old_gaps = supers[i].gap;
-          FindGaps( *this, simple_reads_orig_index, i, gaps_dev, 0,
-               supers[i].mtig.size( ) - 1 );
-          super& s = supers[i];
-          int n = s.mtig.size( );
-          bs[i].SetNtigs(n);
-          for ( int j = 0; j < n; j++ )
-          {    int m = s.mtig[j];
-               bs[i].SetTig( j, m );
-               bs[i].SetLen( j, mtig[m].size( ) );
-               if ( j < n - 1 )
-               {    bs[i].SetGap( j, old_gaps[j] );
-	            bs[i].SetDev( j, gaps_dev[j] );    }    }    }
-     WriteSupercontigFiles( out_dir, bs );
+  vec<superb> bs( supers.size( ) );
+  for ( unsigned int i = 0; i < supers.size(); ++i )
+  { static vec<int> old_gaps, gaps_dev;
+    old_gaps = supers[i].gap;
+    FindGaps( *this, simple_reads_orig_index, i, gaps_dev, 0,
+              supers[i].mtig.size( ) - 1 );
+    super& s = supers[i];
+    int n = s.mtig.size( );
+    bs[i].SetNtigs(n);
+    for ( int j = 0; j < n; j++ )
+    { int m = s.mtig[j];
+      bs[i].SetTig( j, m );
+      bs[i].SetLen( j, mtig[m].size( ) );
+      if ( j < n - 1 )
+      { bs[i].SetGap( j, old_gaps[j] );
+        bs[i].SetDev( j, gaps_dev[j] );
+      }
+    }
+  }
+  WriteSupercontigFiles( out_dir, bs );
 
   this->mtig.WriteAll( out_dir + "/mergedcontigs.fastb" );
 

@@ -18,10 +18,10 @@
  * SquashHyperFastavector
  */
 void SquashHyperFastavector( const String &work_dir,
-			     const int num_threads,
-			     const float max_error_rate,
-			     HyperFastavector &hfv,
-			     ostream *plog )
+                             const int num_threads,
+                             const float max_error_rate,
+                             HyperFastavector &hfv,
+                             ostream *plog )
 {
   // HEURISTIC - this could be made into arguments. Accept an
   // alignment between two scaffolds even if one is not embedded in
@@ -41,35 +41,35 @@ void SquashHyperFastavector( const String &work_dir,
   String fasta_file = head + ".fasta";
   String fastb_file = head + ".fastb";
   String qlt_file = head + ".qlt";
-  
+
   // Generating superbs.
   log << Date( ) << ": generating supers structure" << endl;
   vec<superb> supers;
   const int MIN_EDGE_TO_SAVE = 1000; // should not be hardcoded here!
   hfv.ConvertToSuperbs( supers, num_threads, MIN_EDGE_TO_SAVE );
-  
+
   // Make a lookup table out of the initial linearized assembly.
   log << Date( ) << ": saving linearized structure" << endl;
   hfv.WriteScaffoldsFasta( fasta_file, supers );
-  
+
   log << Date( ) << ": generating lookup table" << endl;
   String theCommand
     = "MakeLookupTable SOURCE=" + fasta_file
-    + " OUT_HEAD=" + head
-    + " QUIET=True";
+      + " OUT_HEAD=" + head
+      + " QUIET=True";
   RunCommandWithLog( theCommand, "/dev/null" );
-  
+
   // Align assembly.
   log << Date( ) << ": running QLT" << endl;
   theCommand
     = "QueryLookupTable L=" + head + ".lookup"
-    + " SEQS=" + fastb_file
-    + " PARSEABLE=True"
-    + " SMITH_WAT=True"
-    + " MM=96"
-    + " K=12";
+      + " SEQS=" + fastb_file
+      + " PARSEABLE=True"
+      + " SMITH_WAT=True"
+      + " MM=96"
+      + " K=12";
   RunCommandWithLog( theCommand, qlt_file );
-  
+
   // Tag supers for removal.
   log << Date( ) << ": tag supers for removal" << endl;
   vec<bool> duplicate( supers.size( ), false );
@@ -91,20 +91,20 @@ void SquashHyperFastavector( const String &work_dir,
       bool QInT = ( hit.pos1( ) <= beg && hit.Pos1( ) >= end );
       bool TInQ = ( hit.pos2( ) <= beg && hit.Pos2( ) >= end );
       if ( ! ( QInT || TInQ ) ) continue;
-      
+
       // Too many error rates.
       if ( hit.ErrorRate( ) > max_error_rate ) continue;
-      
+
       // Ok.
       int dup_id = ( QInT ) ? hit.query_id : hit.target_id;
       int stays_id = ( QInT ) ? hit.target_id : hit.query_id;
       duplicate[dup_id] = true;
-      
+
       // Log info.
       log << " removing s_" << dup_id << " (it matches s_" << stays_id << ")\n";
     }
   }
-  
+
   // Remove tagged supers.
   log << Date( ) << ": removing edges of tagged supers\n" << endl;
   vec<int> to_delete;
@@ -118,6 +118,6 @@ void SquashHyperFastavector( const String &work_dir,
   }
   hfv.DeleteEdges( to_delete );
   hfv.RemoveDeadEdgeObjects( );
-  
+
 }
 

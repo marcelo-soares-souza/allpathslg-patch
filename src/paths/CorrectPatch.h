@@ -17,9 +17,9 @@
 #include "paths/AssemblyEdit.h"
 
 void CorrectPatch( const basevector& LEFT, const basevector& RIGHT,
-     const vecbasevector& fbases, const vecqualvector& fquals, 
-     const PairsManager& fpairs, const vec< kmer<20> >& fheads, 
-     const vec<int64_t>& fids, assembly_edit& e, ostringstream& out,
-     const Bool verbose );
+                   const vecbasevector& fbases, const vecqualvector& fquals,
+                   const PairsManager& fpairs, const vec< kmer<20> >& fheads,
+                   const vec<int64_t>& fids, assembly_edit& e, ostringstream& out,
+                   const Bool verbose );
 
 #endif

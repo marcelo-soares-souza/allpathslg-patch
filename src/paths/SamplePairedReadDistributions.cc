@@ -15,23 +15,23 @@
    The reference can be a set of unibases.
 
    NOTES:
-   
+
      "Invariant size" means the size that is invariant under read trimming.
-     Because some sheared jump reads are, at times, flipped prior to being fed 
-     to this module, the parameter FLIP has been added to account for this. 
+     Because some sheared jump reads are, at times, flipped prior to being fed
+     to this module, the parameter FLIP has been added to account for this.
 
 
      FRAGMENT READS:
- 
+
         FLIP=False     invariant size is POSITIVE = full fragment size
 
 
-     SHEARED JUMPS:   
+     SHEARED JUMPS:
 
         FLIP=True      invariant size is NEGATIVE = -|separation|
 
 
-     NON-SHEARED JUMPS:  
+     NON-SHEARED JUMPS:
 
         FLIP=False     invariant size is POSITIVE = full insert size
 
@@ -68,8 +68,10 @@
 #include "math/IntDistribution.h"
 #include "math/IntFrequencies.h"
 
-static inline 
-String Tag(String S = "SPRD") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "SPRD") {
+  return Date() + " (" + S + "): ";
+}
 
 
 
@@ -113,7 +115,7 @@ void print_cov_line(const IntFunction<double> & cov)
 
 
 
-    
+
 void print_cov_line2(const IntFunction<double> & cov)
 {
   cout << " "  << setw(8) << cov_blank_str(cov.sum_above(    0));
@@ -145,7 +147,7 @@ void print_n_gap_links_line(const IntFunction<double> & cov,
     cout << " "  << setw(5) << (n > 0 ? ToString(n) : "     ");
   }
 }
-    
+
 
 
 
@@ -193,14 +195,14 @@ void distribution_trim_limits(const IntFrequencies & hits,
     size_t n_hits = 0;
     for (int x = x_h_min; x <= x_h_max; x++) {
       const size_t freq = hits.freq(x);
-      if (freq_max < freq) 
+      if (freq_max < freq)
         freq_max = freq;
       n_hits += freq;
     }
-    
+
     const int diameter = n_hits / freq_max;
     const int dens_min = 20;
-    
+
     *p_x_min = x_h_max;
     {
       int dens = 0;
@@ -213,8 +215,8 @@ void distribution_trim_limits(const IntFrequencies & hits,
       }
     }
     if (*p_x_min < x_h_min) *p_x_min = x_h_min;
-    
-    
+
+
     *p_x_max = x_h_min;
     {
       int dens = 0;
@@ -227,7 +229,7 @@ void distribution_trim_limits(const IntFrequencies & hits,
       }
     }
     if (*p_x_max > x_h_max) *p_x_max = x_h_max;
-    
+
     //ForceAssertGt(*p_x_max, *p_x_min);
   }
 }
@@ -243,37 +245,37 @@ IntDistribution distribution_compute(const IntFrequencies & inv_sz_freq,
 {
   IntFunction<double> counts;
   for (int x = x_min; x <= x_max; x++)
-    counts[x] = double(inv_sz_freq[x]) / double(n_inserts[x]); 
+    counts[x] = double(inv_sz_freq[x]) / double(n_inserts[x]);
 
   // the constructor of IntDistribution will convert and NORMALIZE the IntFunction<double>
   return counts;
 }
 
 
-IntFunction<double> physical_coverage_compute(const IntFrequencies & inv_sz_freq, 
-                                              const IntFrequencies & n_inserts,
-                                              const double frac_sampled,
-                                              const int x_min,
-                                              const int x_max)
+IntFunction<double> physical_coverage_compute(const IntFrequencies & inv_sz_freq,
+    const IntFrequencies & n_inserts,
+    const double frac_sampled,
+    const int x_min,
+    const int x_max)
 {
   IntFunction<double> cov;
-  for (int x = x_min; x <= x_max; x++) 
+  for (int x = x_min; x <= x_max; x++)
     cov[x] = double(inv_sz_freq[x]) * double(x) / (double(n_inserts[x]) * frac_sampled);
-  
+
   return cov;
 }
 
 
-IntFunction<double> number_links_compute(const IntFrequencies & inv_sz_freq, 
-                                         const IntFrequencies & n_inserts,
-                                         const double frac_sampled,
-                                         const int x_min,
-                                         const int x_max)
+IntFunction<double> number_links_compute(const IntFrequencies & inv_sz_freq,
+    const IntFrequencies & n_inserts,
+    const double frac_sampled,
+    const int x_min,
+    const int x_max)
 {
   IntFunction<double> n_links;
-  for (int x = x_min; x <= x_max; x++) 
+  for (int x = x_min; x <= x_max; x++)
     n_links[x] = double(inv_sz_freq[x]) / (double(n_inserts[x]) * frac_sampled);
-  
+
   return n_links;  // just the raw counts scaled up from the sampled counts
 }
 
@@ -292,23 +294,23 @@ void function_convolute_boxcar(IntFunction<double> * p_func,
     const double diameter = 2 * radius + 1;
     const int x0 = p_func->x_min() - radius;
     const int x1 = p_func->x_max() + radius;
-    
+
     const IntFunction<double> & func_in = *p_func;
     IntFunction<double> func_out(x0, x1);
-    
+
     for (int x = x0; x <= x1; x++) {
       double mean = 0.0;
       const int y0 = x - radius;
       const int y1 = x + radius;
 
-      for (int y = y0; y <= y1; y++) 
+      for (int y = y0; y <= y1; y++)
         mean += func_in[y];
 
       mean /= diameter;
-      
+
       func_out[x] = mean;
     }
-    
+
     *p_func = func_out;
   }
 }
@@ -320,21 +322,21 @@ IntDistribution distribution_smooth(const IntDistribution & dist_orig,
 {
   const int x_prob_max = dist_orig.x_prob_max();
   const double rad_conv = 100.0 * 100.0 / n_inserts.freq(x_prob_max);
-  //cout << Tag() << fixed << setw(16) << setprecision(1) 
+  //cout << Tag() << fixed << setw(16) << setprecision(1)
   //     << rad_conv << " smoothing radius." << endl;
-        
-        
-  IntFunction<double> func = dist_orig.probs(); 
+
+
+  IntFunction<double> func = dist_orig.probs();
   if (rad_conv >= 4) {
     // ---- convolute a few times with a rectangle function
     //      it's almost like convoluting with a gaussian
-    function_convolute_boxcar(& func, int(0.25 * rad_conv)); 
-    function_convolute_boxcar(& func, int(0.25 * rad_conv)); 
-    function_convolute_boxcar(& func, int(0.25 * rad_conv)); 
-    function_convolute_boxcar(& func, int(0.25 * rad_conv)); 
+    function_convolute_boxcar(& func, int(0.25 * rad_conv));
+    function_convolute_boxcar(& func, int(0.25 * rad_conv));
+    function_convolute_boxcar(& func, int(0.25 * rad_conv));
+    function_convolute_boxcar(& func, int(0.25 * rad_conv));
   }
   else {
-    function_convolute_boxcar(& func, int(0.5 + rad_conv)); 
+    function_convolute_boxcar(& func, int(0.5 + rad_conv));
   }
 
   // ---- make sure that there are no p(x) = 0.0 in range [x_min, x_max]
@@ -345,12 +347,12 @@ IntDistribution distribution_smooth(const IntDistribution & dist_orig,
   vec<int> x_null;
   for (int x = x_min; x <= x_max; x++) {
     const double f = func[x];
-    if (f == 0.0) 
+    if (f == 0.0)
       x_null.push_back(x);
     else if (f < f_small)
-      f_small = f;    
+      f_small = f;
   }
-    
+
   for (size_t i = 0; i != x_null.size(); i++)
     func[x_null[i]] = f_small;
 
@@ -371,25 +373,25 @@ void build_unibase_reference(const String & UNIBASES,
                              const size_t MIN_UNIBASE_LENGTH,
                              const bool NEW_LOOKUP_TABLE)
 {
-  
+
   const String ref_fn = ref_head + ".fastb";
 
   if (! IsRegularFile(ref_fn) || NEW_LOOKUP_TABLE) {
     cout << Tag() << "Loading unibases." << endl;
     BaseVecVec unibases(UNIBASES);
     const size_t n_unibases = unibases.size();
-    cout << Tag() << n_unibases << " loaded." << endl;      
+    cout << Tag() << n_unibases << " loaded." << endl;
     vec<int> toRc;
     cout << Tag() << "Tagging rc copies." << endl;
     UnibaseInvolution(unibases, toRc);
-      
+
     cout << Tag() << "Building unibase reference file." << endl;
 
     const size_t ub_len_min = (MIN_UNIBASE_LENGTH < 2 * UNIBASES_K) ?
-      2 * UNIBASES_K : MIN_UNIBASE_LENGTH;
+                              2 * UNIBASES_K : MIN_UNIBASE_LENGTH;
 
-    size_t ub_len_total = 0; 
-    size_t ub_len_usable = 0; 
+    size_t ub_len_total = 0;
+    size_t ub_len_usable = 0;
     vec<size_t> i_ub_sorted(n_unibases, vec<size_t>::IDENTITY);
     vec<size_t> ub_lens(n_unibases);
     vec<bool> ub_keep(n_unibases, true);
@@ -402,20 +404,20 @@ void build_unibase_reference(const String & UNIBASES,
       if (ub_keep[i_ub])
         ub_keep[toRc[i_ub]] = false; //don't use rc, we will not worry about palindromes
     }
-    
+
     vec<size_t> ub_lens_sorted(ub_lens);
-      
-    ReverseSortSync(ub_lens_sorted, i_ub_sorted); 
-      
+
+    ReverseSortSync(ub_lens_sorted, i_ub_sorted);
+
     const size_t ub_len_total_approx = (ub_len_total - n_unibases * UNIBASES_K) / 2;
     const size_t ub_len_total_target = round(ub_len_total_approx * TARGET_UNIBASE_COVERAGE);
-      
+
     cout << Tag() << setw(14) << ub_lens_sorted.front() << "  length of largest unibase." << endl;
     cout << Tag() << setw(14) << ub_len_total           << "  total unibases length." << endl;
     cout << Tag() << setw(14) << ub_len_usable          << "  total usable unibases length." << endl;
-    cout << Tag() << setw(14) << ub_len_total_target    << "  target total unibases length (" 
+    cout << Tag() << setw(14) << ub_len_total_target    << "  target total unibases length ("
          << ToString(100.0 * TARGET_UNIBASE_COVERAGE) << " %)." << endl;
-    
+
 
     size_t ub_len_sum = 0;
     BaseVecVec ub_selected;
@@ -436,9 +438,9 @@ void build_unibase_reference(const String & UNIBASES,
       cout << Tag() << setw(14) << ub_len_sum << "  total bases covered." << endl;
     }
     else {
-      FatalErr("ERROR: Couldn't find any usable unibases. Aborting."); 
+      FatalErr("ERROR: Couldn't find any usable unibases. Aborting.");
     }
-      
+
     ub_selected.WriteAll(ref_fn);
   }
 }
@@ -446,8 +448,8 @@ void build_unibase_reference(const String & UNIBASES,
 
 
 
-IntFrequencies n_inserts_in_unibases(const BaseVecVec & ref, 
-                                     const int read_sz, 
+IntFrequencies n_inserts_in_unibases(const BaseVecVec & ref,
+                                     const int read_sz,
                                      const int MAX_SIZE)
 {
   IntFrequencies n_inserts;
@@ -456,7 +458,7 @@ IntFrequencies n_inserts_in_unibases(const BaseVecVec & ref,
   for (size_t i_bv = 0; i_bv != n_bvs; i_bv++) {
     const size_t bv_sz = ref[i_bv].size();
     for (int inv_sz = -MAX_SIZE; inv_sz <= MAX_SIZE; inv_sz++) {
-      
+
       const size_t min_insert_sz = read_sz + abs(inv_sz - read_sz);
       if (min_insert_sz <= bv_sz)
         n_inserts[inv_sz] += bv_sz - min_insert_sz + 1;
@@ -470,17 +472,17 @@ IntFrequencies n_inserts_in_unibases(const BaseVecVec & ref,
 
 
 
-bool found_pair_alignment(const PairsManager & pairs, 
-			  const BaseVecVec & reads, 
-			  const QualNibbleVecVec & quals,
-			  const size_t i_pair, 
+bool found_pair_alignment(const PairsManager & pairs,
+                          const BaseVecVec & reads,
+                          const QualNibbleVecVec & quals,
+                          const size_t i_pair,
                           const BaseVecVec & ref,
-			  const FirstLookupFinderECJ & lfinder, 
-			  const size_t K_lookup,
-			  int * p_inv_sz,
-			  bool * p_ilogical,
-			  const bool FLIP, 
-			  const int TRIM)
+                          const FirstLookupFinderECJ & lfinder,
+                          const size_t K_lookup,
+                          int * p_inv_sz,
+                          bool * p_ilogical,
+                          const bool FLIP,
+                          const int TRIM)
 {
   size_t    id1 = pairs.ID1(i_pair);
   size_t    id2 = pairs.ID2(i_pair);
@@ -497,7 +499,7 @@ bool found_pair_alignment(const PairsManager & pairs,
     read1.SetToSubOf(read1, TRIM, -1);
     read2.SetToSubOf(read2, TRIM, -1);
   }
-  
+
   if (quals.size() > 0) {
     QualNibbleVec qual1 = quals[id1];
     QualNibbleVec qual2 = quals[id2];
@@ -521,23 +523,23 @@ bool found_pair_alignment(const PairsManager & pairs,
 
   const first_look_align & hit1 = hits1.front();
   const first_look_align & hit2 = hits2.front();
-  
+
   if (hit1.target_loc.getContig() != hit2.target_loc.getContig())
     return false;  // not the same contig
-  
-  *p_ilogical = false;  
+
+  *p_ilogical = false;
   if (hit1.is_FW() == hit2.is_FW()) { // throw away ilogical orientations
     *p_ilogical = true;
     return false;
   }
-  
+
   const int s1 = hit1.get_start_on_target(read1.isize(), K_lookup);
   const int s2 = hit2.get_start_on_target(read2.isize(), K_lookup);
-  
-  *p_inv_sz = (hit1.is_FW()) ? 
-    (s2 + read2.size()) - s1 :
-    (s1 + read1.size()) - s2;
- 
+
+  *p_inv_sz = (hit1.is_FW()) ?
+              (s2 + read2.size()) - s1 :
+              (s1 + read1.size()) - s2;
+
   // ---- HACK so that inariant sizes are positive for sheared jumps
   if (FLIP) *p_inv_sz = -*p_inv_sz;
 
@@ -547,13 +549,13 @@ bool found_pair_alignment(const PairsManager & pairs,
     BaseVec ref_bv;
     BaseVec read_f;
     BaseVec read_b;
-    if (hit1.is_FW()) {    
+    if (hit1.is_FW()) {
       ref_bv.SetToSubOf(ref[i_tig], s1, *p_inv_sz);
       read_f = read1;
       read_b = read2;
     }
     else {
-      ref_bv.SetToSubOf(ref[i_tig], s2, *p_inv_sz); 
+      ref_bv.SetToSubOf(ref[i_tig], s2, *p_inv_sz);
       read_f = read2;
       read_b = read1;
     }
@@ -575,21 +577,21 @@ bool found_pair_alignment(const PairsManager & pairs,
 
 
 IntFrequencies invariant_sizes_from_aligments(const PairsManager         & pairs,
-                                              const BaseVecVec           & reads,
-                                              const QualNibbleVecVec     & quals,
-                                              const BaseVecVec           & ref,
-                                              const FirstLookupFinderECJ & lfinder,
-                                              const size_t                 K_lookup,
-                                              const size_t               & i_lib,
-                                              const vec<size_t>          & is_pairs,
-                                              const size_t                 MAX_SIZE,
-                                              const size_t                 TARGET_SAMPLE_SIZE,
-					      size_t                     * p_n_pairs_sampled,
-					      size_t                     * p_n_hits,
-					      size_t                     * p_n_ilogical,
-                                              const bool                   FLIP,
-                                              const int                    TRIM,
-                                              const size_t                 NUM_THREADS)
+    const BaseVecVec           & reads,
+    const QualNibbleVecVec     & quals,
+    const BaseVecVec           & ref,
+    const FirstLookupFinderECJ & lfinder,
+    const size_t                 K_lookup,
+    const size_t               & i_lib,
+    const vec<size_t>          & is_pairs,
+    const size_t                 MAX_SIZE,
+    const size_t                 TARGET_SAMPLE_SIZE,
+    size_t                     * p_n_pairs_sampled,
+    size_t                     * p_n_hits,
+    size_t                     * p_n_ilogical,
+    const bool                   FLIP,
+    const int                    TRIM,
+    const size_t                 NUM_THREADS)
 {
   // ---- Estimate number of samples
   const size_t n_pairs = is_pairs.size();
@@ -598,12 +600,12 @@ IntFrequencies invariant_sizes_from_aligments(const PairsManager         & pairs
   size_t n_pairs_align = 0;
   int inv_sz = 0;
   for (size_t ii_pair = 0; ii_pair < n_pairs_test; ii_pair ++) {
-    
+
     const size_t i_pair = is_pairs[ii_pair];
     ForceAssertEq(i_lib, (size_t)pairs.libraryID(i_pair));
-    
+
     bool ilogical = false;
-    if (found_pair_alignment(pairs, reads, quals, i_pair, 
+    if (found_pair_alignment(pairs, reads, quals, i_pair,
                              ref, lfinder, K_lookup,
                              & inv_sz, & ilogical,
                              FLIP, TRIM))
@@ -615,12 +617,12 @@ IntFrequencies invariant_sizes_from_aligments(const PairsManager         & pairs
   //cout << "i_lib= " << i_lib << "   n_pairs= " << n_pairs << endl;
   //cout << "i_lib= " << i_lib << "   n_pairs_align= " << n_pairs_align << endl;
 
-  *p_n_pairs_sampled = (n_pairs_align > 0) ? 
-    TARGET_SAMPLE_SIZE * n_pairs_test / n_pairs_align :
-    n_pairs;
-  
+  *p_n_pairs_sampled = (n_pairs_align > 0) ?
+                       TARGET_SAMPLE_SIZE * n_pairs_test / n_pairs_align :
+                       n_pairs;
+
   //cout << "i_lib= " << i_lib << "   n_pairs_sample= " << n_pairs_sample << endl;
-  if (*p_n_pairs_sampled > n_pairs) 
+  if (*p_n_pairs_sampled > n_pairs)
     *p_n_pairs_sampled = n_pairs;
   //cout << "i_lib= " << i_lib << "   n_pairs_sample= " << n_pairs_sample << endl;
 
@@ -629,27 +631,27 @@ IntFrequencies invariant_sizes_from_aligments(const PairsManager         & pairs
 
   vec< vec<unsigned> > inv_szss(NUM_THREADS);  // one for each thread
 
-  #pragma omp parallel for 
+  #pragma omp parallel for
   for (size_t i_thread = 0; i_thread < NUM_THREADS; i_thread++) {
     vec<unsigned> & inv_szs = inv_szss[i_thread];
 
     const size_t ii0_pair = (*p_n_pairs_sampled *  i_thread     ) / NUM_THREADS;
     const size_t ii1_pair = (*p_n_pairs_sampled * (i_thread + 1)) / NUM_THREADS;
 
-    //cout << "i_thread= " << i_thread 
-    //     << "   ii0_pair= " << ii0_pair 
+    //cout << "i_thread= " << i_thread
+    //     << "   ii0_pair= " << ii0_pair
     //     << "   ii1_pair= " << ii1_pair << endl;
-    
+
     for (size_t ii_pair = ii0_pair; ii_pair != ii1_pair; ii_pair++) {
       const size_t i_pair = is_pairs[ii_pair];
 
       //cout << "GREP " << i_pair;
       int inv_sz = 0;
       bool ilogical = false;
-      if (found_pair_alignment(pairs, reads, quals, i_pair, 
-			       ref, lfinder, K_lookup,
-			       & inv_sz, & ilogical,
-			       FLIP, TRIM)) {
+      if (found_pair_alignment(pairs, reads, quals, i_pair,
+                               ref, lfinder, K_lookup,
+                               & inv_sz, & ilogical,
+                               FLIP, TRIM)) {
         if (unsigned(abs(inv_sz)) <= MAX_SIZE) {
           inv_szs.push_back(inv_sz);
           #pragma omp critical
@@ -675,65 +677,65 @@ IntFrequencies invariant_sizes_from_aligments(const PairsManager         & pairs
 
 
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
   RunTime();
-  
+
   BeginCommandArguments;
   CommandArgument_String_OrDefault_Doc
-    (ROOT, "", "If specified, all paths start from here.");
+  (ROOT, "", "If specified, all paths start from here.");
   CommandArgument_String_OrDefault_Doc
-    (HEAD_REF, "", "Looks for HEAD_REF.fastb.");
+  (HEAD_REF, "", "Looks for HEAD_REF.fastb.");
   CommandArgument_String_OrDefault_Doc
-    (UNIBASES, "", "Looks for UNIBASES as a reference.");
+  (UNIBASES, "", "Looks for UNIBASES as a reference.");
   CommandArgument_UnsignedInt_OrDefault_Doc
-    (UNIBASES_K, 96, "Needed by involution algorithm.");
+  (UNIBASES_K, 96, "Needed by involution algorithm.");
   CommandArgument_String_Doc
-    (HEAD_READS, "Looks for HEAD_READS.{fastb,qualb,pairs/pairto}.");
+  (HEAD_READS, "Looks for HEAD_READS.{fastb,qualb,pairs/pairto}.");
   CommandArgument_Bool_OrDefault_Doc
-    (WRITE, True, "Write distributions into HEAD_READS.<lib_name>.distrib files.");
+  (WRITE, True, "Write distributions into HEAD_READS.<lib_name>.distrib files.");
   CommandArgument_String_OrDefault_Doc
-    (OUT_SUFFIX,"", "If specified, output to HEAD_READS.OUT_SUFFIX.... instead.");
+  (OUT_SUFFIX,"", "If specified, output to HEAD_READS.OUT_SUFFIX.... instead.");
 
   CommandArgument_Bool_OrDefault_Doc
-    (BUILD_LOOKUP_TABLE, False, "Build lookup table.");
+  (BUILD_LOOKUP_TABLE, False, "Build lookup table.");
   CommandArgument_Bool_OrDefault_Doc
-    (KEEP_LOOKUP_TABLE, False, "Keep lookup table if generated internally.");
+  (KEEP_LOOKUP_TABLE, False, "Keep lookup table if generated internally.");
 
   CommandArgument_Bool_Doc
-    (FLIP, "True: high quality at read end; False: high quality at read start.");
+  (FLIP, "True: high quality at read end; False: high quality at read start.");
   CommandArgument_Int_OrDefault_Doc
-    (TRIM, 0, "Trim that many bases from the beginning of a read (just before alignment).");
+  (TRIM, 0, "Trim that many bases from the beginning of a read (just before alignment).");
 
 
 
   CommandArgument_UnsignedInt_OrDefault_Doc
-    (TARGET_SAMPLE_SIZE, 50000, "Sample size per library.");
+  (TARGET_SAMPLE_SIZE, 50000, "Sample size per library.");
   CommandArgument_UnsignedInt_OrDefault_Doc
-    (MIN_SAMPLE_SIZE, 1000, "Minimum sample size per library.");
+  (MIN_SAMPLE_SIZE, 1000, "Minimum sample size per library.");
   CommandArgument_Double_OrDefault_Doc
-    (TARGET_UNIBASE_COVERAGE, .2, "Unibases covering this fraction of total are enough.");
+  (TARGET_UNIBASE_COVERAGE, .2, "Unibases covering this fraction of total are enough.");
   CommandArgument_UnsignedInt_OrDefault_Doc
-    (MAX_SIZE, 100000, "Maximum aligned pair invariant size considered.");
+  (MAX_SIZE, 100000, "Maximum aligned pair invariant size considered.");
   CommandArgument_UnsignedInt_OrDefault_Doc
-    (MIN_UNIBASE_LENGTH, 0, "Only include unibases of this length or longer for alignments.");
+  (MIN_UNIBASE_LENGTH, 0, "Only include unibases of this length or longer for alignments.");
   CommandArgument_Int_OrDefault_Doc
-    (RANDOM_SEED, 133333, "Seed value for the random generator.");
+  (RANDOM_SEED, 133333, "Seed value for the random generator.");
 
-  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0, 
-    "Number of threads to use (use all available processors if set to 0)");
+  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0,
+      "Number of threads to use (use all available processors if set to 0)");
 
   CommandArgument_Bool_OrDefault(VERBOSE, False);
 
   EndCommandArguments;
 
   // Thread control
-   
+
   NUM_THREADS = configNumThreads(NUM_THREADS);
   omp_set_num_threads( NUM_THREADS );
 
   cout << Tag() << "Using " << NUM_THREADS << " threads." << endl;
-  
+
   ForceAssertGe(TARGET_SAMPLE_SIZE, MIN_SAMPLE_SIZE);
   ForceAssertGt(TARGET_SAMPLE_SIZE, 0ul);
 
@@ -742,25 +744,26 @@ int main(int argc, char *argv[])
     ForceAssertNe(UNIBASES_K, 0u);
 
   if ( ROOT != "" )
-  {    if ( HEAD_REF.nonempty( ) ) HEAD_REF = ROOT + "/" + HEAD_REF;
-       if ( UNIBASES.nonempty( ) ) UNIBASES = ROOT + "/" + UNIBASES;
-       HEAD_READS = ROOT + "/" + HEAD_READS;    }
+  { if ( HEAD_REF.nonempty( ) ) HEAD_REF = ROOT + "/" + HEAD_REF;
+    if ( UNIBASES.nonempty( ) ) UNIBASES = ROOT + "/" + UNIBASES;
+    HEAD_READS = ROOT + "/" + HEAD_READS;
+  }
 
   const size_t K_lookup = 12;
-  
+
   if (UNIBASES.empty() && HEAD_REF.empty())
     FatalErr("ERROR: You must specify either UNIBASES or HEAD_REF.");
 
   if (!UNIBASES.empty() && !HEAD_REF.empty())
     FatalErr("ERROR: You can't specify both UNIBASES and HEAD_REF.");
-  
+
   const String fastb_fn = HEAD_READS + ".fastb";
   const String qualb_fn = HEAD_READS + ".qualb";
   const String pairs_fn = HEAD_READS + ".pairs";
   const String pairto_fn = HEAD_READS + ".pairto";
 
   String ref_head;
-  
+
   if (!HEAD_REF.empty()) {      // ---- Use a reference file
     cout << Tag() << "Using reference provided." << endl;
     ref_head = HEAD_REF;
@@ -838,7 +841,7 @@ int main(int argc, char *argv[])
   const size_t n_libs = pairs.nLibraries();
   cout << Tag() << "Found " << n_pairs << " pairs in " << n_libs << " libraries." << endl;
 
-  
+
   // ---- Shuffling pair indices
   cout << Tag() << "Selecting pairs in each library." << endl;
   vec< vec<size_t> > i_pairs_lib(n_libs);
@@ -854,7 +857,7 @@ int main(int argc, char *argv[])
   cout << Tag() << "Reading reads from '" << fastb_fn << "'." << endl;
   BaseVecVec reads(fastb_fn);
   const size_t n_reads = reads.size();
-  
+
   QualNibbleVecVec quals;
   if (IsRegularFile(qualb_fn)) {
     cout << Tag() << "Reading quals from '" << qualb_fn << "'." << endl;
@@ -869,9 +872,9 @@ int main(int argc, char *argv[])
 
 
   // ---- Compute density of possible hits
-  //      
-  //      n_inserts[x] is the total number of possible inserts of size x 
-  //       in all the unibases, a.k.a. "visibility" 
+  //
+  //      n_inserts[x] is the total number of possible inserts of size x
+  //       in all the unibases, a.k.a. "visibility"
   //
   const size_t read_sz = (reads[0].size() + reads[1].size()) / 2;
   const IntFrequencies n_inserts = n_inserts_in_unibases(ref, read_sz, MAX_SIZE);
@@ -901,9 +904,9 @@ int main(int argc, char *argv[])
     const size_t i0_pair = i_pairs_lib[i_lib][0];
     const size_t id1 = pairs.ID1(i0_pair);
     const size_t id2 = pairs.ID2(i0_pair);
-    const int inv_sz_mean = (FLIP) ? 
-      -pairs.getLibrarySep(i_lib) : 
-      pairs.getLibrarySep(i_lib) + reads[id1].size() + reads[id2].size();
+    const int inv_sz_mean = (FLIP) ?
+                            -pairs.getLibrarySep(i_lib) :
+                            pairs.getLibrarySep(i_lib) + reads[id1].size() + reads[id2].size();
     const int inv_sz_sd   = pairs.getLibrarySD(i_lib);
 
     bool short_unibases = false;
@@ -913,8 +916,8 @@ int main(int argc, char *argv[])
     size_t n_ilogical = 0;
     size_t n_pairs_sampled = 0;
     size_t n_hits = 0;
-    
-    float pct_neg = 0; 
+
+    float pct_neg = 0;
 
     if (inv_sz_mean > 0.8 * inv_sz_max) {
       short_unibases = true;
@@ -927,21 +930,21 @@ int main(int argc, char *argv[])
       cov_phys[i_lib] = IntFunction<double>(0, 1, 0);
     }
     else {
-      
+
       // ---- compute alignment hits frequencies
-      
-      const IntFrequencies inv_sz_freq = 
-        invariant_sizes_from_aligments(pairs, reads, quals, 
+
+      const IntFrequencies inv_sz_freq =
+        invariant_sizes_from_aligments(pairs, reads, quals,
                                        ref, lfinder, K_lookup,
-                                       i_lib, i_pairs_lib[i_lib], 
+                                       i_lib, i_pairs_lib[i_lib],
                                        MAX_SIZE, TARGET_SAMPLE_SIZE,
-				       & n_pairs_sampled, & n_hits, & n_ilogical,
+                                       & n_pairs_sampled, & n_hits, & n_ilogical,
                                        FLIP, TRIM, NUM_THREADS);
 
       const float frac_sampled = float(n_pairs_sampled) / float(n_pairs_lib);
 
       // ---- find the lower and upper limits of the distribution
-      
+
       int x_min = 1;
       int x_max = 0;
 
@@ -959,23 +962,23 @@ int main(int argc, char *argv[])
         // ---- compute distribution from hits frequency and unibase weigths
 
         const IntDistribution inv_sz_dist = distribution_compute(inv_sz_freq, n_inserts,
-                                                                 x_min, x_max);
-        
+                                            x_min, x_max);
+
         // ---- smooth out probability distribution
 
         inv_sz_smooth_dist[i_lib] = distribution_smooth(inv_sz_dist, inv_sz_freq);
 
         pct_neg = 0.5 + 100.0 * inv_sz_dist.prob_lt(0);
-        
-        
+
+
         // ---- coverage function
 
         cov_phys[i_lib] = physical_coverage_compute(inv_sz_freq, n_inserts, frac_sampled,
-                                                    x_min, x_max);
+                          x_min, x_max);
 
         n_links[i_lib] = number_links_compute(inv_sz_freq, n_inserts, frac_sampled,
                                               x_min, x_max);
-        
+
         // ---- output invariant size frequencies and 'raw' distributions
 
         inv_sz_freq.to_text_file(head);
@@ -987,7 +990,7 @@ int main(int argc, char *argv[])
 
 
     // ---- print report line
-      
+
     cout << Tag();
     cout << " "     << setw(2)  << i_lib;
     cout << " "     << setw(20) << pairs.getLibraryName(i_lib);
@@ -1002,38 +1005,38 @@ int main(int argc, char *argv[])
       cout << " **** not enough pairs to sample (< " << MIN_SAMPLE_SIZE << ") => assume gaussian.";
     }
     else {
-      
+
       cout << " " << setw(9) << n_pairs_sampled;
       cout << " " << setw(6) << n_hits;
       const int ilogical_pct = 0.5 + float(100 * n_ilogical)/float(n_pairs_sampled + n_ilogical);
       cout << " " << setw(5) << ilogical_pct << "%";
-   
+
       if (! enough_samples) {
         cout << " **** Poorly sampled distribution => assume gaussian.";
       }
       else {
 
         // ---- split negative and positive distributions
-        
+
         IntDistribution dist_neg;
         IntDistribution dist_pos;
         inv_sz_smooth_dist[i_lib].split(&dist_neg, &dist_pos);
-        
-        if (dist_neg) cout << " " << setw(6) << int(dist_neg.mean()) 
-                           << " +/- " << setw(4) << int(sqrt(dist_neg.variance()));
-        else          cout << " " << setw(6) << "-" 
-                           << "     " << setw(4) << "-";
+
+        if (dist_neg) cout << " " << setw(6) << int(dist_neg.mean())
+                             << " +/- " << setw(4) << int(sqrt(dist_neg.variance()));
+        else          cout << " " << setw(6) << "-"
+                             << "     " << setw(4) << "-";
         cout << " " << setw(5) << fixed << setprecision(1) << pct_neg << "%";
 
-        if (dist_pos) cout << " " << setw(6) << int(dist_pos.mean()) 
-                           << " +/- " << setw(4) << int(sqrt(dist_pos.variance()));
-        else          cout << " " << setw(6) << "-" 
-                           << "     " << setw(4) << "-";
+        if (dist_pos) cout << " " << setw(6) << int(dist_pos.mean())
+                             << " +/- " << setw(4) << int(sqrt(dist_pos.variance()));
+        else          cout << " " << setw(6) << "-"
+                             << "     " << setw(4) << "-";
         cout << " " << setw(5) << fixed << setprecision(1) << 100.0 - pct_neg << "%";
       }
     }
     cout << endl;
-        
+
     // ---- output 'smooth' distribution
 
     inv_sz_smooth_dist[i_lib].to_text_file(head + ".smooth");
@@ -1045,10 +1048,10 @@ int main(int argc, char *argv[])
 
   if (true) {
 
-   const String fn = head_out + ".distribs";
+    const String fn = head_out + ".distribs";
     cout << Tag() << "Writing binary distributions to '" << fn << "'." << endl;
     BinaryWriter::writeFile(fn.c_str(), inv_sz_smooth_dist);
-    
+
     // To read:
     //   vec<IntDistribution> dists;
     //   BinaryReader::readFile(fn.c_str(), &dists);
@@ -1085,7 +1088,7 @@ int main(int argc, char *argv[])
   cout << endl;
   cout << "Table 1: library names, number of pairs (N), original (L0) and new sizes (L)" << endl;
   cout << endl;
-  
+
   //      "........10........20........30........40........50........60........70........80"
   cout << "--------------------------------------------------------------------------" << endl;
   cout << " id          library name  num pairs N    orig size L0       new size L" << endl;
@@ -1095,9 +1098,9 @@ int main(int argc, char *argv[])
     const size_t i0_pair = i_pairs_lib[i_lib][0];
     const size_t id1 = pairs.ID1(i0_pair);
     const size_t id2 = pairs.ID2(i0_pair);
-    const int inv_sz_mean = (FLIP) ? 
-      pairs.getLibrarySep(i_lib) : 
-      pairs.getLibrarySep(i_lib) + reads[id1].size() + reads[id2].size();
+    const int inv_sz_mean = (FLIP) ?
+                            pairs.getLibrarySep(i_lib) :
+                            pairs.getLibrarySep(i_lib) + reads[id1].size() + reads[id2].size();
     const int inv_sz_sd   = pairs.getLibrarySD(i_lib);
 
     const IntDistribution & distrib = inv_sz_smooth_dist[i_lib];
@@ -1142,9 +1145,9 @@ int main(int argc, char *argv[])
     const size_t i0_pair = i_pairs_lib[i_lib][0];
     const size_t id1 = pairs.ID1(i0_pair);
     const size_t id2 = pairs.ID2(i0_pair);
-    const int inv_sz_mean = (FLIP) ? 
-      pairs.getLibrarySep(i_lib) : 
-      pairs.getLibrarySep(i_lib) + reads[id1].size() + reads[id2].size();
+    const int inv_sz_mean = (FLIP) ?
+                            pairs.getLibrarySep(i_lib) :
+                            pairs.getLibrarySep(i_lib) + reads[id1].size() + reads[id2].size();
     const int inv_sz_sd   = pairs.getLibrarySD(i_lib);
 
     const IntDistribution & distrib = inv_sz_smooth_dist[i_lib];
@@ -1160,7 +1163,7 @@ int main(int argc, char *argv[])
     cout << " "  << setw(7) << pct_blank_str(distrib.prob_in( 4000,  7999));
     cout << " "  << setw(7) << pct_blank_str(distrib.prob_in( 8000, 15999));
     cout << " "  << setw(7) << pct_blank_str(distrib.prob_ge(16000));
-    
+
     cout << endl;
   }
   cout << "---------------------------------------------------------------------------" << endl;
@@ -1171,9 +1174,9 @@ int main(int argc, char *argv[])
 
 
 
-  if (false) { 
+  if (false) {
     cout << endl << endl;
-    
+
     cout << "Table 3: physical coverage (C) in each length interval" << endl;
     cout << endl;
 
@@ -1186,14 +1189,14 @@ int main(int argc, char *argv[])
       const size_t i0_pair = i_pairs_lib[i_lib][0];
       const size_t id1 = pairs.ID1(i0_pair);
       const size_t id2 = pairs.ID2(i0_pair);
-      const int inv_sz_mean = (FLIP) ? 
-        pairs.getLibrarySep(i_lib) : 
-        pairs.getLibrarySep(i_lib) + reads[id1].size() + reads[id2].size();
+      const int inv_sz_mean = (FLIP) ?
+                              pairs.getLibrarySep(i_lib) :
+                              pairs.getLibrarySep(i_lib) + reads[id1].size() + reads[id2].size();
       const int inv_sz_sd   = pairs.getLibrarySD(i_lib);
 
       const IntFunction<double> & cov = cov_phys[i_lib];
       const IntDistribution & distrib = inv_sz_smooth_dist[i_lib];
-    
+
       const double cov_total = cov.sum();
       const size_t G = (cov_total > 0 ? float(n_pairs_lib * distrib.mean()) / cov_total : 0);
 
@@ -1207,7 +1210,7 @@ int main(int argc, char *argv[])
     if (n_libs > 1) {
       cout << endl;
       cout << "tot      ";
-      print_cov_line(cov_phys_total);    
+      print_cov_line(cov_phys_total);
       cout << endl;
     }
     cout << "-----------------------------------------------------------------------------" << endl;
@@ -1216,12 +1219,12 @@ int main(int argc, char *argv[])
     cout << endl;
 
   }
-  
+
 
 
 
   cout << endl << endl;
-  
+
   cout << "Table 3: number of bridging links over a specific gap size" << endl;
   cout << endl;
 
@@ -1232,28 +1235,34 @@ int main(int argc, char *argv[])
   cout << "--- ----- ---- ----- ----- ----- ----- ----- ----- ----- ----- -----" << endl;
 
   vec<size_t> gaps(9);
-  gaps[0] =     0;  gaps[1] =  1000;  gaps[2] =  2000;
-  gaps[3] =  3000;  gaps[4] =  4000;  gaps[5] =  6000;  
-  gaps[6] =  8000;  gaps[7] = 12000;  gaps[8] = 16000;
+  gaps[0] =     0;
+  gaps[1] =  1000;
+  gaps[2] =  2000;
+  gaps[3] =  3000;
+  gaps[4] =  4000;
+  gaps[5] =  6000;
+  gaps[6] =  8000;
+  gaps[7] = 12000;
+  gaps[8] = 16000;
   for (size_t i_lib = 0; i_lib < n_libs; i_lib++) {
     const size_t n_pairs_lib = i_pairs_lib[i_lib].size();
     const size_t i0_pair = i_pairs_lib[i_lib][0];
     const size_t id1 = pairs.ID1(i0_pair);
     const size_t id2 = pairs.ID2(i0_pair);
-    const int inv_sz_mean = (FLIP) ? 
-      pairs.getLibrarySep(i_lib) : 
-      pairs.getLibrarySep(i_lib) + reads[id1].size() + reads[id2].size();
+    const int inv_sz_mean = (FLIP) ?
+                            pairs.getLibrarySep(i_lib) :
+                            pairs.getLibrarySep(i_lib) + reads[id1].size() + reads[id2].size();
     const int inv_sz_sd   = pairs.getLibrarySD(i_lib);
 
     const IntDistribution & distrib = inv_sz_smooth_dist[i_lib];
     const IntFunction<double> & cov = cov_phys[i_lib];
     const IntFunction<double> & nlinks = n_links[i_lib];
-    
+
     //cout <<         setw(15) << pairs.getLibraryName(i_lib);
     cout << setw(3) << i_lib;
     cout << " "  << setw( 5) << int(distrib.mean());
     cout << " "  << setw( 4) << pct_blank_str(distrib.prob_lt(0), 0);
-  
+
     print_n_gap_links_line(cov, nlinks, gaps);
     cout << endl;
   }
@@ -1268,7 +1277,7 @@ int main(int argc, char *argv[])
 
   // ---- clean up
 
-  
+
   if (built_new_lookup && !KEEP_LOOKUP_TABLE)
     Remove(lookup_fn);
   cout << Tag() << "Done!" << endl;

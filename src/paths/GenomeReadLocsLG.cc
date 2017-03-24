@@ -27,19 +27,19 @@
 int main( int argc, char *argv[] )
 {
   RunTime( );
-  
+
   BeginCommandArguments;
   CommandArgument_String(PRE);
   CommandArgument_String(DATA);
   CommandArgument_String(RUN);
   CommandArgument_Int_OrDefault_Doc(K, 12, "Kmer size of lookup table");
   CommandArgument_String_OrDefault_Doc(READS, "reads",
-    "Reads that we need to find locations on the genome for.");
+                                       "Reads that we need to find locations on the genome for.");
   CommandArgument_String_OrDefault(GENOME, "genome");
   CommandArgument_Bool_OrDefault_Doc(UNIQUE_ONLY, False,
-    "If True, only use uniqely place reads." );
+                                     "If True, only use uniqely place reads." );
   CommandArgument_String_OrDefault_Doc(ALIGNS_IN, "",
-    "Use this set of alignments rather than align  internally.");
+                                       "Use this set of alignments rather than align  internally.");
   EndCommandArguments;
 
   // Set up directories.
@@ -55,7 +55,7 @@ int main( int argc, char *argv[] )
   // Record some statistics
 
   longlong unique = 0, unplaced = 0, multiple = 0;
-     
+
   vec<ReadLocationLG> locs_on_ref;
 
   cout << "Aligning " << nreads << " reads to reference\n";
@@ -71,13 +71,13 @@ int main( int argc, char *argv[] )
   } else {
     chunks = 1;
   }
-    
+
   cout << Date( ) << ": Aligning in " << chunks << " chunk(s)" << endl;
-    
+
   for (int i = 0; i < chunks; ++i) {
     vec<look_align> lookAligns;
     vec<vec<int> > index;
- 
+
     longlong chunkStart, chunkEnd, readsInChunk;
 
     if (ALIGNS_IN == "") {
@@ -87,24 +87,24 @@ int main( int argc, char *argv[] )
 
       index.clear_and_resize(readsInChunk);
       PerfectLookup(K, reads, data_dir + "/" + GENOME + ".lookup", lookAligns,
-		    FW_OR_RC, chunkStart, chunkEnd, True);
+                    FW_OR_RC, chunkStart, chunkEnd, True);
 
-      cout << Date( ) << ": Chunk " << i+1 << " : Found " << lookAligns.size() 
-	   << " potential aligns " << endl;
+      cout << Date( ) << ": Chunk " << i+1 << " : Found " << lookAligns.size()
+           << " potential aligns " << endl;
 
       // Build alignment index
-      
+
       for (int i = 0; i < lookAligns.isize(); i++ ) {
-	longlong readId = lookAligns[i].query_id;
-	index[readId - chunkStart].push_back(i);
+        longlong readId = lookAligns[i].query_id;
+        index[readId - chunkStart].push_back(i);
       }
 
 
     } else {
 
       LoadLookAligns( run_dir + "/" + ALIGNS_IN, lookAligns, index, nreads );
-      cout << Date( ) << ": Imported alignments : Found " << lookAligns.size() 
-	   << " potential aligns " << endl;
+      cout << Date( ) << ": Imported alignments : Found " << lookAligns.size()
+           << " potential aligns " << endl;
 
       chunkStart = 0;
       chunkEnd = nreads - 1;
@@ -116,22 +116,22 @@ int main( int argc, char *argv[] )
 
     for (longlong i = 0; i < readsInChunk; i++ ) {
       if (index[i].size() == 0)
-	unplaced++;
+        unplaced++;
       else {
-	if (!UNIQUE_ONLY || index[i].size() == 1) {
-	  longlong readId = i + chunkStart;
-	  longlong alignId = index[i][0];
-	  look_align& la = lookAligns[alignId];
-	  int contigId = la.target_id;
-	  int startPos = la.StartOnTarget();
-	  Bool rc = la.rc1;
-	  locs_on_ref.push_back( ReadLocationLG( readId, contigId, startPos, rc) );
-	}
-	if (index[i].size() == 1)
-	  unique++;	  
-	else
-	  multiple++;	  
-      } 
+        if (!UNIQUE_ONLY || index[i].size() == 1) {
+          longlong readId = i + chunkStart;
+          longlong alignId = index[i][0];
+          look_align& la = lookAligns[alignId];
+          int contigId = la.target_id;
+          int startPos = la.StartOnTarget();
+          Bool rc = la.rc1;
+          locs_on_ref.push_back( ReadLocationLG( readId, contigId, startPos, rc) );
+        }
+        if (index[i].size() == 1)
+          unique++;
+        else
+          multiple++;
+      }
     }
   }
 

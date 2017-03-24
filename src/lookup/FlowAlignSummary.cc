@@ -19,12 +19,12 @@ FlowAlignSummary::FlowAlignSummary(const look_align & la):
   end(la.a.Pos2()),
   bad(false)
 {
-    pair<int,int> indels = la.a.Gap1Gap2();
-    cover = 0;
-    for (int i = 0; i != la.a.Nblocks(); ++i) {
-      cover += la.a.Lengths(i);
-    }
-    //ForceAssert(cover != 0);
-    ins = indels.second;
-    del = indels.first;
+  pair<int,int> indels = la.a.Gap1Gap2();
+  cover = 0;
+  for (int i = 0; i != la.a.Nblocks(); ++i) {
+    cover += la.a.Lengths(i);
+  }
+  //ForceAssert(cover != 0);
+  ins = indels.second;
+  del = indels.first;
 }

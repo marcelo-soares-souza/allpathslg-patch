@@ -31,23 +31,23 @@ int main( int argc, char *argv[] )
   CommandArgument_Int(K);
   CommandArgument_StringSet_Doc(READS_IN, "Fastb files to path");
   CommandArgument_StringSet_OrDefault_Doc(PATHS_OUT, "",
-    "Output paths filenames");
+                                          "Output paths filenames");
   CommandArgument_String_OrDefault_Doc(DIR_IN, "",
-    "Location of fastb files and output");
-  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0, 
-    "Number of threads to use (use all available processors if set to 0)");
-  CommandArgument_String_OrDefault_Doc(CHECKPOINT_HEAD, "", 
-     "Header for temp files for checkpointing, so that you can start where you left off.");
+                                       "Location of fastb files and output");
+  CommandArgument_UnsignedInt_OrDefault_Doc(NUM_THREADS, 0,
+      "Number of threads to use (use all available processors if set to 0)");
+  CommandArgument_String_OrDefault_Doc(CHECKPOINT_HEAD, "",
+                                       "Header for temp files for checkpointing, so that you can start where you left off.");
   EndCommandArguments;
 
   // Thread control
-   
+
   NUM_THREADS = configNumThreads(NUM_THREADS);
 
   if (PATHS_OUT.nonempty()) {
     if (DIR_IN == "")
       CommonPather(K, READS_IN, PATHS_OUT, NUM_THREADS, CHECKPOINT_HEAD);
-    else 
+    else
       CommonPather(K, DIR_IN, READS_IN, PATHS_OUT, NUM_THREADS, CHECKPOINT_HEAD);
   } else {
     if (DIR_IN == "") {

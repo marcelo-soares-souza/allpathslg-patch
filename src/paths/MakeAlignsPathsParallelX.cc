@@ -20,8 +20,10 @@
 
 #include "paths/MakeAlignsPathsParallelX.h"
 
-static inline 
-String Tag(String S = "MAPPX") { return Date() + " (" + S + "): "; } 
+static inline
+String Tag(String S = "MAPPX") {
+  return Date() + " (" + S + "): ";
+}
 
 
 class VecBitVecLocked : private LockedData
@@ -32,12 +34,12 @@ private:
 public:
   VecBitVecLocked(VecBitVec & data) : _data(data) {}
 
-  // copy constructor and = not defined because of LockedData 
+  // copy constructor and = not defined because of LockedData
   VecBitVecLocked(const VecBitVecLocked & a);
   VecBitVecLocked & operator=(const VecBitVecLocked & a);
 
-  void SetLocked(const KmerLoc & kmer_loc, 
-                 const bool val) 
+  void SetLocked(const KmerLoc & kmer_loc,
+                 const bool val)
   {
     Locker lock(*this);
     _data[kmer_loc.GetReadID()].Set(kmer_loc.GetUnsignedPos(), val);
@@ -59,18 +61,18 @@ private:
 
   // -------- MEMBER VARIABLES
   // The pointers all refer to externally owned data structures.
-  
+
   // Inputs
   const BaseVecVec       & _bases;
   const KmerParcelsStore & _parcels;
   // Outputs
   VecBitVecLocked        * _kmer_chosen;
   BMG<I>                 * _bmg;
-    
-  
+
+
 public:
-  
-  PathingProcessor(const BaseVecVec       & bases, 
+
+  PathingProcessor(const BaseVecVec       & bases,
                    const KmerParcelsStore & parcels,
                    VecBitVecLocked        * kmer_chosen,
                    BMG<I>                 * bmg)
@@ -79,12 +81,12 @@ public:
       _kmer_chosen(kmer_chosen),
       _bmg(bmg)
   {};
-  
-  
+
+
   // operator(): This is the function called in parallel by the Worklist.
   // When called, it will process the kmers in parcel parcel_ID and modify
   // kmer_chosen_ and bmg_.  Modifications are regulated via LOCK_.
-  void operator() (const size_t parcel_ID) 
+  void operator() (const size_t parcel_ID)
   {
     const String tag = "MAPPX_P[" + ToString(parcel_ID) + "]";
 
@@ -98,31 +100,31 @@ public:
 
       if (n_kmers > 0) {
         kmer_locs = batch;
-        
-        // ribeiro:  kmer_locs for palindromes need to be added in RC form too 
+
+        // ribeiro:  kmer_locs for palindromes need to be added in RC form too
         if (batch.IsPalindrome()) {
           for (size_t i = 0; i < n_kmers; i++)
             kmer_locs.push_back(batch[i].GetRC());
         }
-        
-        // ribeiro:  we need to sort the list of kmer locs with 
-        // ribeiro:  { id1 <=> id2 and abs(pos1) <=> abs(pos2) } 
-        // ribeiro:  otherwise the asserts in ReadsToPathsCoreX fail... for some reason 
+
+        // ribeiro:  we need to sort the list of kmer locs with
+        // ribeiro:  { id1 <=> id2 and abs(pos1) <=> abs(pos2) }
+        // ribeiro:  otherwise the asserts in ReadsToPathsCoreX fail... for some reason
         sort(kmer_locs.begin(), kmer_locs.end(), KmerLoc::ReadIDUnsignedPosLT);
-        
+
         // ribeiro:  pack all nodes to merge in a vec
         const int64_t read_id1 = kmer_locs[0].GetReadID();
         int               pos1 = kmer_locs[0].GetSignedPos();
-        
+
         if (pos1 >= 0) pos1++; // increment because MergeKmer expects pos != 0
-        
-        
+
+
         for (size_t i = 1; i < kmer_locs.size(); i++) {
           const int64_t read_id2 = kmer_locs[i].GetReadID();
-          int               pos2 = kmer_locs[i].GetSignedPos(); 
-          
+          int               pos2 = kmer_locs[i].GetSignedPos();
+
           if (pos2 >= 0) pos2++; // increment because MergeKmer expects pos != 0
-          
+
           _bmg->MergeKmer(pos1, pos2, _parcels.GetK(),
                           read_id1, read_id2,
                           _bases[read_id1], _bases[read_id2],
@@ -145,9 +147,9 @@ public:
 // VecBitVec indicating which kmers are canonical.
 template<size_t I>
 void MakeAlignsPathsParallelX(const size_t       K,
-                              const BaseVecVec & bases, 
+                              const BaseVecVec & bases,
                               VecBitVec        * kmer_chosen,
-                              BMG<I>           * bmg, 
+                              BMG<I>           * bmg,
                               const String     & PARCEL_HEAD,
                               const size_t       NUM_THREADS,
                               const String       CHECKPOINT_HEAD)
@@ -161,7 +163,7 @@ void MakeAlignsPathsParallelX(const size_t       K,
   String bmg_fn = CHECKPOINT_HEAD + ".bmg";
   String kmer_chosen_fn = CHECKPOINT_HEAD + ".chosen";
 
-  if (CHECKPOINT_HEAD != "" && 
+  if (CHECKPOINT_HEAD != "" &&
       IsRegularFile(bmg_fn) &&
       IsRegularFile(kmer_chosen_fn)) {
 
@@ -176,31 +178,31 @@ void MakeAlignsPathsParallelX(const size_t       K,
   }
   else {
     size_t n_parcels = 0;
-    
-    // ribeiro 2010-05-10: This below is really ugly.  
-    // The parcels should be passed as parameters to this function instead 
-    // of declared here as pointers.  
+
+    // ribeiro 2010-05-10: This below is really ugly.
+    // The parcels should be passed as parameters to this function instead
+    // of declared here as pointers.
     // But today I'm too lazy to do anything about it.
-    
+
     // Create the KmerParcelsStore.  If a PARCEL_HEAD is given, we'll be storing
     // (or reusing) the parcels on disk; otherwise they'll remain in memory.
     KmerParcelsStore * parcels;
     bool parcels_on_disk = ( PARCEL_HEAD != "" );
-    
+
     if ( parcels_on_disk ) {
       parcels = new KmerParcelsDiskStore( K, PARCEL_HEAD );
-      
-      if (CHECKPOINT_HEAD != "" && 
-	  ( ( KmerParcelsDiskStore * ) parcels )->ExistOnDisk() ) {
-	// Reuse KmerParcels from disk.
-	cout << Tag() << "CHECKPOINT: Reusing previously computed kmer parcels." << endl;
+
+      if (CHECKPOINT_HEAD != "" &&
+          ( ( KmerParcelsDiskStore * ) parcels )->ExistOnDisk() ) {
+        // Reuse KmerParcels from disk.
+        cout << Tag() << "CHECKPOINT: Reusing previously computed kmer parcels." << endl;
       }
       else {
-	// Create KmerParcels on disk.
-	if (CHECKPOINT_HEAD == "")
-	  ( ( KmerParcelsDiskStore * ) parcels )->SetKeepOnDisk(false);
-	KmerParcelsBuilder builder(bases, *parcels, NUM_THREADS);
-	builder.Build();
+        // Create KmerParcels on disk.
+        if (CHECKPOINT_HEAD == "")
+          ( ( KmerParcelsDiskStore * ) parcels )->SetKeepOnDisk(false);
+        KmerParcelsBuilder builder(bases, *parcels, NUM_THREADS);
+        builder.Build();
       }
     }
     else {
@@ -209,14 +211,14 @@ void MakeAlignsPathsParallelX(const size_t       K,
       KmerParcelsBuilder builder( bases, *parcels, NUM_THREADS );
       builder.Build();
     }
-    
+
     n_parcels = parcels->GetNumParcels();
-    
-    
+
+
     // "Balanced" Mutmer Graph: This object takes up a LOT of memory,
     // especially as kmers are loaded into it!
     bmg->resize(bases.size());
-    
+
     // PARALLEL PROCESSING
     // Place each pass into the worklist.
     // As soon as it gets the first item, the worklist will immediately begin
@@ -225,33 +227,33 @@ void MakeAlignsPathsParallelX(const size_t       K,
     // runs its functions in multi-threaded parallel.
     // Each parallelized pass affects the variables kmer_chosen and bmg (through
     // their pointers in the PathingProcessor classes.
-    
+
     //cout << Tag() << "begin " << n_parcels << " parcels ("
     //     << NUM_THREADS << "-way parallelized)" << endl;
-    
+
     //cout << Date() << ": MemUsage before parallel runs: " << MemUsage( )/1000.0 << "Mb" << endl;
     {
       VecBitVecLocked kmer_chosen_locked(*kmer_chosen);
-      
+
       PathingProcessor<I> processor(bases, *parcels, &kmer_chosen_locked, bmg);
       parallelFor(0ul,n_parcels,processor,NUM_THREADS);
-    } 
-    
+    }
+
     //cout << Tag() << "end " << n_parcels << " parcels ("
     //     << NUM_THREADS << "-way parallelized)" << endl;
-    
+
 
     // ribeiro: REALLY important to destroy the parcel store.
     // memory builds up pretty fast if you don't.
     // But really, the parcel store should be declared outside this function
-    // and this deletion would be unecessary.  
+    // and this deletion would be unecessary.
     // (see my comment before the declaration of parcels)
     delete parcels;
-    
 
 
 
-  
+
+
     if (CHECKPOINT_HEAD != "") {
       cout << Tag() << "CHECKPOINT: keeping kmer parcels." << endl;
       cout << Tag() << "CHECKPOINT: saving Balanced Mutmer Graph 'bmg'."<< endl;
@@ -262,7 +264,7 @@ void MakeAlignsPathsParallelX(const size_t       K,
       kmer_chosen->WriteAll(kmer_chosen_fn);
       cout << Tag() << "CHECKPOINT: saved " << kmer_chosen->size() << " kmer_chosen entries." << endl;
     }
-    
+
     //cout << Date( ) << ": MemUsage after parallel runs: " << MemUsage( )/1000.0 << "Mb" << endl;
   }
 
@@ -274,21 +276,21 @@ void MakeAlignsPathsParallelX(const size_t       K,
 
 
 
-template void MakeAlignsPathsParallelX<1>(const size_t, 
-                                          const BaseVecVec &,
-                                          VecBitVec *,
-                                          BMG<1> *,
-                                          const String &,
-                                          const size_t,
-                                          const String CHECKPOINT_HEAD);
+template void MakeAlignsPathsParallelX<1>(const size_t,
+    const BaseVecVec &,
+    VecBitVec *,
+    BMG<1> *,
+    const String &,
+    const size_t,
+    const String CHECKPOINT_HEAD);
 
-template void MakeAlignsPathsParallelX<2>(const size_t, 
-                                          const BaseVecVec &,
-                                          VecBitVec *,
-                                          BMG<2> *,
-                                          const String &,
-                                          const size_t,
-                                          const String CHECKPOINT_HEAD);
+template void MakeAlignsPathsParallelX<2>(const size_t,
+    const BaseVecVec &,
+    VecBitVec *,
+    BMG<2> *,
+    const String &,
+    const size_t,
+    const String CHECKPOINT_HEAD);
 
 
 

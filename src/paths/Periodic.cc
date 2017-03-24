@@ -11,13 +11,18 @@
 #include "paths/Periodic.h"
 
 Bool IsPeriodic( const basevector& x, const int top_period )
-{    for ( int p = 1; p <= top_period; p++ )
-     {    Bool fail = False;
-          for ( int j = 0; j < p; j++ )
-          {    if (fail) break;
-               for ( int k = j + p; k < x.isize( ); k += p )
-               {    if ( x[k] != x[j] )
-                    {    fail = True;
-                         break;    }    }    }
-          if ( !fail ) return True;    }
-     return False;    }
+{ for ( int p = 1; p <= top_period; p++ )
+  { Bool fail = False;
+    for ( int j = 0; j < p; j++ )
+    { if (fail) break;
+      for ( int k = j + p; k < x.isize( ); k += p )
+      { if ( x[k] != x[j] )
+        { fail = True;
+          break;
+        }
+      }
+    }
+    if ( !fail ) return True;
+  }
+  return False;
+}

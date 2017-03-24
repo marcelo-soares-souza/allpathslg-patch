@@ -11,7 +11,7 @@
 #include "VecUtilities.h"
 #include "util/ReadTracker.h"
 
-unsigned int 
+unsigned int
 ReadTracker::AddSource(String s)
 {
   unsigned int n = source_files.size();
@@ -19,7 +19,7 @@ ReadTracker::AddSource(String s)
   return n;
 }
 
-void 
+void
 ReadTracker::AddRead(unsigned int source, uint64_t read_id)
 {
   ForceAssertLt(source, 1u<<READTRACKER_SOURCE_BITS);
@@ -32,7 +32,7 @@ ReadTracker::AddRead(unsigned int source, uint64_t read_id)
 // The flags indicate which reads to discard (or which to keep.)
 void
 ReadTracker::AddReadSet( const String & source, const vec<Bool> & flags,
-			 const Bool keep_if_true )
+                         const Bool keep_if_true )
 {
   uint n = AddSource( source );
   for ( size_t i = 0; i < flags.size(); i++ )
@@ -62,7 +62,7 @@ unsigned int
 ReadTracker::GetReadSourceIndex(unsigned int read) const
 {
   return (read_index[read] >> READTRACKER_READID_BITS)
-    & RT_BITMASK(READTRACKER_SOURCE_BITS);
+         & RT_BITMASK(READTRACKER_SOURCE_BITS);
 }
 
 String
@@ -72,7 +72,7 @@ ReadTracker::GetReadSource(unsigned int read) const
 }
 
 
-uint64_t 
+uint64_t
 ReadTracker::GetReadIndex(unsigned int read) const
 {
   return read_index[read] & RT_BITMASK(READTRACKER_READID_BITS);
@@ -100,9 +100,9 @@ ReadTracker::Load(String filename)
   if (!f.good()) return;
   // read the header
   bool header = true;
-  while(header){
+  while(header) {
     char c = f.peek();
-    if ( c == 'S' ){
+    if ( c == 'S' ) {
       string line;
       getline(f,line);
       istringstream iss(line);
@@ -111,7 +111,7 @@ ReadTracker::Load(String filename)
       //cout << name << endl;
       AddSource(name);
     }
-    else{
+    else {
       header = false;
     }
   }
@@ -120,14 +120,14 @@ ReadTracker::Load(String filename)
   uint64_t read=0;
   long int i=0;
   const int bufSize = 10*1024*1024; // 10M reading buffer
-  const int safeSize = 100; // additional 100 char safe zone 
-  char* buf = new char[bufSize]; 
+  const int safeSize = 100; // additional 100 char safe zone
+  char* buf = new char[bufSize];
   // determine the start and end position of the records in the file
   long pos_start = f.tellg();
   f.seekg(0,ios::end);
   long pos_end = f.tellg();
   f.seekg(pos_start);
-  while(1){
+  while(1) {
     long fstart = f.tellg();
     f.read(buf, bufSize);
     long pos = f.tellg();
@@ -139,24 +139,24 @@ ReadTracker::Load(String filename)
     while( p < pLimit) {
       source = strtoul(p,&p,10);
       read  = strtoul(p,&p,10);
-      AddRead(source,read);	
+      AddRead(source,read);
       i++;
-    } 
+    }
     // reload the string in the buffer not read
     long actual_read_length = p - buf;
     if ( f.eof()) {
       f.clear();
       f.seekg(fstart + actual_read_length);
       break;
-    }else{
+    } else {
       f.seekg(fstart + actual_read_length);
     }
   }
-  // the rest 
+  // the rest
   while(f>>source)
   {
     f >> read;
-    AddRead(source,read);	
+    AddRead(source,read);
     i++;
   }
   delete [] buf;

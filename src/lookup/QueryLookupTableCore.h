@@ -15,13 +15,14 @@
 void QueryLookupTableCore( int argc, char *argv[] );
 
 inline void QueryLookupTableCore( const String& args )
-{    vec<String> tokens;
-     Tokenize( "QueryLookupTable " + args, tokens );
-     int argc = tokens.size( );
-     vec<char*> argv(argc);
-     for ( int i = 0; i < argc; i++ )
-       argv[i] = const_cast<char*>(tokens[i].c_str());
+{ vec<String> tokens;
+  Tokenize( "QueryLookupTable " + args, tokens );
+  int argc = tokens.size( );
+  vec<char*> argv(argc);
+  for ( int i = 0; i < argc; i++ )
+    argv[i] = const_cast<char*>(tokens[i].c_str());
 
-     QueryLookupTableCore( argc, &argv[0] );    }
+  QueryLookupTableCore( argc, &argv[0] );
+}
 
 #endif

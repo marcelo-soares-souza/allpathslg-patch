@@ -31,9 +31,12 @@ template <class Itr> // Itr is a random access iterator
 void Shuffle( Itr const& beg, Itr const& end, unsigned seed = RNGen::random() )
 { RNGen rng(seed);
   if ( beg !=  end )
-  { long idx = 1; using std::iter_swap;
+  { long idx = 1;
+    using std::iter_swap;
     Itr itr(beg);
     while ( ++itr != end )
-      iter_swap(itr, beg+rng.next()%++idx); } }
+      iter_swap(itr, beg+rng.next()%++idx);
+  }
+}
 
 #endif

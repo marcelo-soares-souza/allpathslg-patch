@@ -26,12 +26,12 @@
 template <class Itr>
 uint64_t FNV1a( Itr itr, Itr const& end, uint64_t val = 14695981039346656037ul )
 {
-    while ( itr != end )
-    {
-        val = 1099511628211ul * (val ^ *itr);
-        ++itr;
-    }
-    return val;
+  while ( itr != end )
+  {
+    val = 1099511628211ul * (val ^ *itr);
+    ++itr;
+  }
+  return val;
 }
 
 

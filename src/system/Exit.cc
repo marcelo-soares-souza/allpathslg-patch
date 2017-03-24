@@ -23,18 +23,18 @@ HOOKFUNC gExitHook;
 
 void exit( int status )
 {
-    if ( gExitHook ) (*gExitHook)(status);
+  if ( gExitHook ) (*gExitHook)(status);
 
-    if ( !status )
-        ::exit(0);
-    abort();
+  if ( !status )
+    ::exit(0);
+  abort();
 }
 
 HOOKFUNC installExitHook( HOOKFUNC fHook )
 {
-    HOOKFUNC oldHook = gExitHook;
-    gExitHook = fHook;
-    return oldHook;
+  HOOKFUNC oldHook = gExitHook;
+  gExitHook = fHook;
+  return oldHook;
 }
 
 }

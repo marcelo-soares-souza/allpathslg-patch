@@ -12,7 +12,7 @@
 template <class KmerPathVector>
 void ConvertOne( const UnipathSeq& unipathSeq,
                  const KmerPathVector& unipaths,
-                 KmerPath& kmerPath ) 
+                 KmerPath& kmerPath )
 {
   kmerPath.Clear();
   for ( UnipathSeq::size_type i = 0; i < unipathSeq.size(); ++i ) {
@@ -31,7 +31,7 @@ void ConvertMany( const vecUnipathSeq& unipathSeqs,
     for ( UnipathSeq::size_type j = 0; j < unipathSeqs[i].size(); ++j )
       kmerPathsRawsize += unipaths[ unipathSeqs[i][j] ].NSegments();
   kmerPaths.Reserve( kmerPathsRawsize, unipathSeqs.size() );
-  
+
   KmerPath kmerPath;
   for ( vecUnipathSeq::size_type i = 0; i < unipathSeqs.size(); ++i ) {
     ConvertOne( unipathSeqs[i], unipaths, kmerPath );

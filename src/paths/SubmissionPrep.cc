@@ -29,28 +29,28 @@ const char *DOC =
  */
 
 
-size_t scaffoldsTotLen( const vec<superb>& scaffolds ){
+size_t scaffoldsTotLen( const vec<superb>& scaffolds ) {
   size_t len = 0;
   for ( size_t is = 0; is < scaffolds.size(); is++ )
     len += scaffolds[is].FullLength();
   return len;
 }
 
-size_t scaffoldsRedLen( const vec<superb>& scaffolds ){
+size_t scaffoldsRedLen( const vec<superb>& scaffolds ) {
   size_t len = 0;
   for ( size_t is = 0; is < scaffolds.size(); is++ )
     len += scaffolds[is].ReducedLength();
   return len;
 }
 
-size_t scaffoldsNTigs( const vec<superb>& scaffolds ){
+size_t scaffoldsNTigs( const vec<superb>& scaffolds ) {
   size_t ntigs = 0;
   for ( size_t is = 0; is < scaffolds.size(); is++ )
     ntigs += scaffolds[is].Ntigs();
   return ntigs;
 }
 
-void scaffoldsPrintStats( const vec<superb>& scaffolds, ostream& out ){
+void scaffoldsPrintStats( const vec<superb>& scaffolds, ostream& out ) {
   out << Date() << ": Nscaffolds     = " << scaffolds.size() << endl;
   out << Date() << ": Ncontigs       = " << scaffoldsNTigs( scaffolds ) << endl;
   out << Date() << ": Reduced length = " << scaffoldsRedLen( scaffolds ) << endl;
@@ -82,7 +82,7 @@ String scaffold_id_str(const int scaf_id)
 // using the first option in the curly brackets.
 void RestrictEfasta( efasta& source, int & start, int & stop ) {
   if ( stop > source.Length1() || stop < 0 ||
-       start < 0 || start >= source.Length1() ){
+       start < 0 || start >= source.Length1() ) {
     PRINT3( start, stop, source.Length1() );
     FatalErr("Inconsistent start and stop positions");
   }
@@ -104,16 +104,16 @@ struct contam_spec {
 
 bool operator<(const contam_spec &a, const contam_spec &b) {
   return (a.contig_id < b.contig_id) ||
-    ((a.contig_id == b.contig_id) && (a.contig_begin < b.contig_begin));
+         ((a.contig_id == b.contig_id) && (a.contig_begin < b.contig_begin));
 }
 
 
 typedef struct contam_spec contam_spec;
 typedef vec<contam_spec> contam_vec;
 
-int load_contamination_list( String in_contam_file, contam_vec& v_contam, const VecEFasta& efastas, Bool& is_zero_based){
+int load_contamination_list( String in_contam_file, contam_vec& v_contam, const VecEFasta& efastas, Bool& is_zero_based) {
   if ( ! IsRegularFile( in_contam_file ) )
-      FatalErr("contamination file " + in_contam_file + " not found");
+    FatalErr("contamination file " + in_contam_file + " not found");
   ifstream in( in_contam_file.c_str() );
 
   // flags to record the contig ID base in the contamination file
@@ -126,7 +126,7 @@ int load_contamination_list( String in_contam_file, contam_vec& v_contam, const 
   String line;
   // reading data in the format:
   cout << Date() << ": reading in contamination file" << endl;
-  while ( getline(in,line) ){
+  while ( getline(in,line) ) {
     vec<String> tokens;
     contam_spec c;
     Tokenize( line, tokens );
@@ -141,7 +141,7 @@ int load_contamination_list( String in_contam_file, contam_vec& v_contam, const 
     if (tokens.size() > 4 && tokens[4] == "1") {
       c.cut = tokens[4].Int();
     }
-    
+
     // Determine if the contig ids are 0 or 1 based, and
     // Determine if contig ids and lengths are valid
     bool zero_range = (c.contig_id >= 0) && (c.contig_id < static_cast<int> (efastas.size()));
@@ -154,49 +154,49 @@ int load_contamination_list( String in_contam_file, contam_vec& v_contam, const 
       cout << Date() << ": An error occurred whilst parsing the contamination file at line: " << line_counter << endl;
       cout << line << endl;
       if (zero_range) {
-	cout << Date() << ": Contamination file and assembly contig lengths do not match:" << endl;
-	cout << Date() << ":   Contamination contig ID= " << c.contig_id << ", length= " << c.contig_length << endl; 
-	cout << Date() << ":   Assembly      contig ID= " << c.contig_id << ", length= " << efastas[c.contig_id].Length1() << endl; 
-      } else if ( one_based) 
-	cout << Date() << ": The contig ID may be out of range [0," << efastas.size() - 1 << "] "
-	     << "if the contamination file is zero based." << endl;
-      else 
-	cout << Date() << ": The contig ID is out of range [0," << efastas.size() - 1 << "]" << endl;
+        cout << Date() << ": Contamination file and assembly contig lengths do not match:" << endl;
+        cout << Date() << ":   Contamination contig ID= " << c.contig_id << ", length= " << c.contig_length << endl;
+        cout << Date() << ":   Assembly      contig ID= " << c.contig_id << ", length= " << efastas[c.contig_id].Length1() << endl;
+      } else if ( one_based)
+        cout << Date() << ": The contig ID may be out of range [0," << efastas.size() - 1 << "] "
+             << "if the contamination file is zero based." << endl;
+      else
+        cout << Date() << ": The contig ID is out of range [0," << efastas.size() - 1 << "]" << endl;
     }
-    
+
     // Contamination file appears to be one based (or undecided)
     if (one_based && !one_length && (!zero_based || !zero_length) ) {
       if (!zero_based)  {
-	cout << Date() << ": An error occurred whilst parsing the contamination file at line: " << line_counter << endl;
-	cout << line << endl;
+        cout << Date() << ": An error occurred whilst parsing the contamination file at line: " << line_counter << endl;
+        cout << line << endl;
       }
       if (one_range) {
-	cout << Date() << ": Contamination file and assembly contig lengths do not match:" << endl;
-	cout << Date() << ":   Contamination contig ID= " << c.contig_id     << ", length= " << c.contig_length << endl; 
-	cout << Date() << ":   Assembly      contig ID= " << c.contig_id - 1 << ", length= " << efastas[c.contig_id -1].Length1() << endl; 
+        cout << Date() << ": Contamination file and assembly contig lengths do not match:" << endl;
+        cout << Date() << ":   Contamination contig ID= " << c.contig_id     << ", length= " << c.contig_length << endl;
+        cout << Date() << ":   Assembly      contig ID= " << c.contig_id - 1 << ", length= " << efastas[c.contig_id -1].Length1() << endl;
       } else if (zero_based)
-	cout << Date() << ": The contig ID may be out of range [1," << efastas.size() << "] "
-	     << "if the contamination file is one based." << endl;
+        cout << Date() << ": The contig ID may be out of range [1," << efastas.size() << "] "
+             << "if the contamination file is one based." << endl;
       else
-	cout << Date() << ": The contig ID is out of range [1," << efastas.size() << "]" << endl;
+        cout << Date() << ": The contig ID is out of range [1," << efastas.size() << "]" << endl;
 
       cout << Date() << ": Note: ALLPATHS-LG starts numbering contigs IDs at zero, but NCBI starts at one." << endl;
       if (!zero_based)
-	cout << Date() << ":       SubmissionPrep has determined this contamination file is one based." << endl;
-      else if (zero_based) { 
-	cout << Date() << ":       SubmissionPrep was unable to determine if the contamination file is zero or one based, " << endl;
-	cout << Date() << ":       so error messages for both cases are given above." << endl;
+        cout << Date() << ":       SubmissionPrep has determined this contamination file is one based." << endl;
+      else if (zero_based) {
+        cout << Date() << ":       SubmissionPrep was unable to determine if the contamination file is zero or one based, " << endl;
+        cout << Date() << ":       so error messages for both cases are given above." << endl;
       }
     }
 
     // Update contamination file base flag
     zero_based &= zero_length;
     one_based &= one_length;
-    
+
     if (!zero_based && !one_based)
       FatalErr("Unable to parse contamination file - stopping");
-    
-  
+
+
     // Determine if the section to trim is sensible
     int contig_size = efastas[c.contig_id - (zero_based ? 0 : 1)].Length1();
     bool begin_ok = (c.contig_begin >= 0) && (c.contig_begin < contig_size);
@@ -206,14 +206,14 @@ int load_contamination_list( String in_contam_file, contam_vec& v_contam, const 
       cout << Date() << ": An error occurred whilst parsing the contamination file at line: " << line_counter << endl;
       cout << line << endl;
       if (!begin_ok)
-	cout << Date() << ": The contamination begin position " << c.contig_begin 
-	     << " is out of range [0, " << contig_size - 1 << "]" << endl;
+        cout << Date() << ": The contamination begin position " << c.contig_begin
+             << " is out of range [0, " << contig_size - 1 << "]" << endl;
       if (!end_ok)
-	cout << Date() << ": The contamination end position " << c.contig_end 
-	     << " is out of range [0, " << contig_size << "]" << endl;
+        cout << Date() << ": The contamination end position " << c.contig_end
+             << " is out of range [0, " << contig_size << "]" << endl;
       if (!range_ok)
-	cout << Date() << ": The contamination end position "  << c.contig_end 
-	     << " is less than the begin position " << c.contig_begin << endl;
+        cout << Date() << ": The contamination end position "  << c.contig_end
+             << " is less than the begin position " << c.contig_begin << endl;
       FatalErr("Unable to parse contamination file - stopping");
     }
 
@@ -226,14 +226,14 @@ int load_contamination_list( String in_contam_file, contam_vec& v_contam, const 
   in.close();
 
   // Adjust contig ID base if neccessary
-  if (zero_based){
+  if (zero_based) {
     is_zero_based = True;
     cout << "\nINFO: Contamination list contig ID values are zero based\n" << endl;
   }
   else if (one_based) {
     is_zero_based = False;
-    cout << "\nINFO: Contamination list contig ID values are one based\n" << endl;    
-    for (size_t index = 0; index < v_contam.size(); index++) 
+    cout << "\nINFO: Contamination list contig ID values are one based\n" << endl;
+    for (size_t index = 0; index < v_contam.size(); index++)
       --v_contam[index].contig_id;
   }
 
@@ -245,11 +245,11 @@ int load_contamination_list( String in_contam_file, contam_vec& v_contam, const 
 }
 
 int remove_contamination_list( const contam_vec& v_contam,
-			       VecEFasta& efastas, vec<superb>& scaffolds,
-			       vec<String>& tigMap, const String save_contam_file ){
+                               VecEFasta& efastas, vec<superb>& scaffolds,
+                               vec<String>& tigMap, const String save_contam_file ) {
 
 
-  vec<superb> new_tscaffolds( efastas.size() ); 
+  vec<superb> new_tscaffolds( efastas.size() );
   vec<size_t> cuts_ids;
   vec<Bool> modif_contigs( efastas.size(), False );
   vec< pair<int,int> > beg_gaps( efastas.size() );
@@ -258,24 +258,24 @@ int remove_contamination_list( const contam_vec& v_contam,
   vec<String> contamination_ids;
 
   vec<contam_vec> tig_contam(efastas.size());
-  for ( size_t i = 0; i < v_contam.size(); i++ ) 
+  for ( size_t i = 0; i < v_contam.size(); i++ )
     tig_contam[v_contam[i].contig_id].push_back(v_contam[i]);
-    
+
 
   int contamCheckLen = 0;
-  for ( size_t tid = 0; tid < tig_contam.size(); tid++ ){ 
-    if ( tig_contam.at(tid).size() == 0 ) 
+  for ( size_t tid = 0; tid < tig_contam.size(); tid++ ) {
+    if ( tig_contam.at(tid).size() == 0 )
       continue;
     else
       modif_contigs[tid] = True;
-       
+
     basevector tbases;
     efastas[tid].FlattenTo( tbases );
 
     int specContamLen = 0, resContamLen = 0;
     // map of cut points
     vec<int> cut_points;
-    for ( int i = tig_contam[tid].isize() -1; i >= 0; i-- ){
+    for ( int i = tig_contam[tid].isize() -1; i >= 0; i-- ) {
       int clen = tig_contam[tid][i].contig_length;
       int cbeg = tig_contam[tid][i].contig_begin;
       int cend = tig_contam[tid][i].contig_end;
@@ -283,14 +283,16 @@ int remove_contamination_list( const contam_vec& v_contam,
       ForceAssertEq( (int)efastas[tid].Length1(), clen );
       specContamLen +=  cend - cbeg;
       if (tig_contam[tid][i].cut)
-	cut_points.push_back( cend );
+        cut_points.push_back( cend );
 
       basevector  contam_bv(tbases, cbeg, specContamLen);
       fastavector contam_fv(contam_bv);
       contamination.push_back(contam_fv);
       contamination_ids.push_back("contam_contig" + zero_padded_int(tid, 6) + "_" + ToString(cbeg) + "_" + ToString(cend));
     }
-    cout << Date() << ": cuts_points: "; cut_points.Print(cout); cout << endl;
+    cout << Date() << ": cuts_points: ";
+    cut_points.Print(cout);
+    cout << endl;
 
     // make sure there are no overlaps
     vec<ho_interval> intervs;
@@ -301,151 +303,153 @@ int remove_contamination_list( const contam_vec& v_contam,
 
     cout << Date() << ": introducing cut_points in contig " << tid << endl;
     vec<ho_interval> remains;
-    Uncovered( efastas[tid].Length1(), intervs, remains ); 
- 
-    for ( size_t cpi = 0; cpi < cut_points.size(); cpi++ ){
+    Uncovered( efastas[tid].Length1(), intervs, remains );
+
+    for ( size_t cpi = 0; cpi < cut_points.size(); cpi++ ) {
       int cp = cut_points[cpi];
       size_t remains_orig_size = remains.size();
-      for ( size_t rpi = 0; rpi < remains_orig_size; rpi++ ){	
-	int start = remains[rpi].Start();
-	int stop  = remains[rpi].Stop();
-	if ( start <= cp && stop > cp ){
-	  ho_interval lho( start, cp );
-	  remains[rpi] = lho;
-	  ho_interval rho( cp, stop );
-	  remains.push_back( rho );
-	}
+      for ( size_t rpi = 0; rpi < remains_orig_size; rpi++ ) {
+        int start = remains[rpi].Start();
+        int stop  = remains[rpi].Stop();
+        if ( start <= cp && stop > cp ) {
+          ho_interval lho( start, cp );
+          remains[rpi] = lho;
+          ho_interval rho( cp, stop );
+          remains.push_back( rho );
+        }
       }
     }
-     
+
     Sort( remains );
     //PRINT( remains.size() );
     //for ( int l = 0; l < remains.isize(); l++ )
     //PRINT2( remains[l].Start(), remains[l].Stop() );
 
     cout << Date() << ": updating sequences" << endl;
-    
+
     efasta efasta_orig    = efastas[tid];
 
     new_tscaffolds[tid].SetNtigs( remains.size() );
-    if ( remains.size() == 0 ){
+    if ( remains.size() == 0 ) {
       efastas[tid].resize(0);
       new_tscaffolds[tid].SetNtigs( 1 );
       new_tscaffolds[tid].SetTig(0, tid);
       new_tscaffolds[tid].SetLen(0, 0);
     } else {
 
-      for ( int ri = 0; ri < remains.isize(); ri++ ){
-	ho_interval rem = remains[ri];
-	efasta locEfasta;
-	
-	efasta_orig.Extract1( rem.Start(), rem.Stop(), locEfasta );
+      for ( int ri = 0; ri < remains.isize(); ri++ ) {
+        ho_interval rem = remains[ri];
+        efasta locEfasta;
 
-	new_tscaffolds[tid].SetLen(ri, locEfasta.Length1() );
-	
-	bool cut = BinPosition( cut_points, rem.Start() ) == -1 ? false : true;
+        efasta_orig.Extract1( rem.Start(), rem.Stop(), locEfasta );
 
-	
-	// If cut is set, then we want to cut the scaffold *before* this contig.
-	// We'll push the contig we want to cut before in a list of cuts.
-	if (cut) cout << Date() << ": CUT AT " << rem.Start() << endl;
-	
-	//cout << Date() << ": updating efasta and base vecs" << endl;
-	if ( ri == 0 ){
-	  new_tscaffolds[tid].SetTig(ri, tid);
-	  efastas[tid] = locEfasta;
-	  if (cut) cuts_ids.push_back(tid);
-	} else {
-	  int new_tid = efastas.size();
-	  new_tscaffolds[tid].SetTig(ri, new_tid );
-	  efastas.push_back( locEfasta );
-	  tigMap.push_back( ToString(tid) );
-	  if (cut) cuts_ids.push_back(new_tid);
-	}
-	if ( ri != remains.isize() -1 ){
-	  new_tscaffolds[tid].SetGap(ri, remains[ri+1].Start() - remains[ri].Stop() );
-	  new_tscaffolds[tid].SetDev(ri, 1);
-	}
-	if (cut) cout << Date() << ": CUT BEFORE TIG " << cuts_ids.back() << endl;
+        new_tscaffolds[tid].SetLen(ri, locEfasta.Length1() );
+
+        bool cut = BinPosition( cut_points, rem.Start() ) == -1 ? false : true;
+
+
+        // If cut is set, then we want to cut the scaffold *before* this contig.
+        // We'll push the contig we want to cut before in a list of cuts.
+        if (cut) cout << Date() << ": CUT AT " << rem.Start() << endl;
+
+        //cout << Date() << ": updating efasta and base vecs" << endl;
+        if ( ri == 0 ) {
+          new_tscaffolds[tid].SetTig(ri, tid);
+          efastas[tid] = locEfasta;
+          if (cut) cuts_ids.push_back(tid);
+        } else {
+          int new_tid = efastas.size();
+          new_tscaffolds[tid].SetTig(ri, new_tid );
+          efastas.push_back( locEfasta );
+          tigMap.push_back( ToString(tid) );
+          if (cut) cuts_ids.push_back(new_tid);
+        }
+        if ( ri != remains.isize() -1 ) {
+          new_tscaffolds[tid].SetGap(ri, remains[ri+1].Start() - remains[ri].Stop() );
+          new_tscaffolds[tid].SetDev(ri, 1);
+        }
+        if (cut) cout << Date() << ": CUT BEFORE TIG " << cuts_ids.back() << endl;
       }
     }
   }
-  cout << Date() << ": cuts_ids: "; cuts_ids.Print(cout); cout << endl;
+  cout << Date() << ": cuts_ids: ";
+  cuts_ids.Print(cout);
+  cout << endl;
 
   // update scaffolds
   size_t endGapSum = 0;
-  for ( size_t si = 0; si < scaffolds.size(); si++ ){
+  for ( size_t si = 0; si < scaffolds.size(); si++ ) {
     superb & s = scaffolds[si];
     for ( int tpos = 0; tpos < s.Ntigs(); tpos++ ) {
       size_t tid = s.Tig(tpos);
 
-      if ( tid < modif_contigs.size() && modif_contigs[tid] ){
+      if ( tid < modif_contigs.size() && modif_contigs[tid] ) {
 
-	size_t lenBefore = s.FullLength();
-	size_t lenAfter = 0;
-	if ( tpos == 0 ){
-	  lenAfter += beg_gaps[tid].first;
-	  if ( s.Ntigs() > 1 && new_tscaffolds[tid].FullLength() == 0
-	       && new_tscaffolds[tid].Ntigs() == 0 ){
-	    lenAfter += end_gaps[tid].first;
-	    lenAfter += s.Gap(tpos);
-	  }
-	}
-	if ( tpos == s.Ntigs() -1 ) {
-	  lenAfter += end_gaps[tid].first;
-	  if ( s.Ntigs() > 1 && new_tscaffolds[tid].FullLength() == 0
-	       && new_tscaffolds[tid].Ntigs() == 0 ){
-	    lenAfter += beg_gaps[tid].first;
-	    lenAfter += s.Gap(tpos -1 );
-	  }
-	}
-	endGapSum += lenAfter;
+        size_t lenBefore = s.FullLength();
+        size_t lenAfter = 0;
+        if ( tpos == 0 ) {
+          lenAfter += beg_gaps[tid].first;
+          if ( s.Ntigs() > 1 && new_tscaffolds[tid].FullLength() == 0
+               && new_tscaffolds[tid].Ntigs() == 0 ) {
+            lenAfter += end_gaps[tid].first;
+            lenAfter += s.Gap(tpos);
+          }
+        }
+        if ( tpos == s.Ntigs() -1 ) {
+          lenAfter += end_gaps[tid].first;
+          if ( s.Ntigs() > 1 && new_tscaffolds[tid].FullLength() == 0
+               && new_tscaffolds[tid].Ntigs() == 0 ) {
+            lenAfter += beg_gaps[tid].first;
+            lenAfter += s.Gap(tpos -1 );
+          }
+        }
+        endGapSum += lenAfter;
 
-	s.ReplaceTigBySuper( tpos, new_tscaffolds[tid], 
-			     beg_gaps[tid].first, beg_gaps[tid].second,
-			     end_gaps[tid].first, end_gaps[tid].second);
+        s.ReplaceTigBySuper( tpos, new_tscaffolds[tid],
+                             beg_gaps[tid].first, beg_gaps[tid].second,
+                             end_gaps[tid].first, end_gaps[tid].second);
 
-	modif_contigs[tid] = False;
+        modif_contigs[tid] = False;
 
-	lenAfter += s.FullLength();
+        lenAfter += s.FullLength();
 
-	tpos += new_tscaffolds[tid].Ntigs() -1;
+        tpos += new_tscaffolds[tid].Ntigs() -1;
       }
     }
-  }  
+  }
 
   if (cuts_ids.size() > 0) {
     cout << Date() << ": cutting scaffolds" << endl;
     for (size_t c = 0; c < cuts_ids.size(); ++c) {
       for ( size_t si = 0; si < scaffolds.size(); si++ ) {
-	superb & s = scaffolds[si];
-	for ( int tpos = 0; tpos < s.Ntigs(); tpos++ ) {
-	  size_t tid = s.Tig(tpos);
-	  bool cut = false;
-	  if (cuts_ids[c] == tid) cut = true;
-	  if (cut) {
-	    // Break scaffold after this contig
-	    cout << Date() << ": FOUND CUT TIG " << tid << " IN SCAF " << si << " tpos=" << tpos << " ntigs=" << s.Ntigs() << endl;
-	    superb new_s;
-	    new_s.SetNtigs(s.Ntigs() - tpos);
-	    for (int t = tpos; t < s.Ntigs(); ++t) {
-	      int i = t - tpos;
-	      new_s.SetTig(i, s.Tig(t));
-	      new_s.SetLen(i, s.Len(t));
-	      if (t < s.Ntigs() - 1) {
-		new_s.SetGap(i, s.Gap(t));
-		new_s.SetDev(i, s.Dev(t));
-	      }
-	    }
-	    s.SetNtigs(tpos);
-	    scaffolds.push_back(new_s);
-	    cuts_ids[c] = -1;
-	  }
-	}
+        superb & s = scaffolds[si];
+        for ( int tpos = 0; tpos < s.Ntigs(); tpos++ ) {
+          size_t tid = s.Tig(tpos);
+          bool cut = false;
+          if (cuts_ids[c] == tid) cut = true;
+          if (cut) {
+            // Break scaffold after this contig
+            cout << Date() << ": FOUND CUT TIG " << tid << " IN SCAF " << si << " tpos=" << tpos << " ntigs=" << s.Ntigs() << endl;
+            superb new_s;
+            new_s.SetNtigs(s.Ntigs() - tpos);
+            for (int t = tpos; t < s.Ntigs(); ++t) {
+              int i = t - tpos;
+              new_s.SetTig(i, s.Tig(t));
+              new_s.SetLen(i, s.Len(t));
+              if (t < s.Ntigs() - 1) {
+                new_s.SetGap(i, s.Gap(t));
+                new_s.SetDev(i, s.Dev(t));
+              }
+            }
+            s.SetNtigs(tpos);
+            scaffolds.push_back(new_s);
+            cuts_ids[c] = -1;
+          }
+        }
       }
     }
   }
-      
+
   if (save_contam_file != "") {
     cout << Date() << ": saving contamination segments to " << save_contam_file << endl;
     Ofstream(contam_stream, save_contam_file);
@@ -463,7 +467,7 @@ translate_rings_file(const String input_filename, const String output_filename, 
   Ofstream (out, output_filename);
   String line;
   out << "#scaffold\tgap_size\tgap_dev\tn_links" << endl;
-  while (getline(in,line)){
+  while (getline(in,line)) {
     vec<String> tokens;
     Tokenize( line, tokens );
     if (tokens.size() == 4 && tokens[0][0] >= '0' && tokens[0][0] <= '9') {
@@ -473,14 +477,14 @@ translate_rings_file(const String input_filename, const String output_filename, 
       int n_links     = tokens[3].Int();
 
       for (size_t s = 0; s < scaffMap.size(); ++s) {
-	if (scaffMap[s].Int() == scaffold) {
-	  scaffold = s;
-	  break;
-	}
+        if (scaffMap[s].Int() == scaffold) {
+          scaffold = s;
+          break;
+        }
       }
 
       out << scaffold_id_str(scaffold);
-      out << "\t" << gap_size << "\t" << gap_dev << "\t" << n_links << endl;      
+      out << "\t" << gap_size << "\t" << gap_dev << "\t" << n_links << endl;
     }
   }
   in.close();
@@ -490,12 +494,12 @@ translate_rings_file(const String input_filename, const String output_filename, 
 
 void
 remove_contamination(String in_contam_file,
-		     Assembly& assembly,
-		     int min_contig_solo,
-		     int min_contig_in,
-		     String out_save_contam_file)
+                     Assembly& assembly,
+                     int min_contig_solo,
+                     int min_contig_in,
+                     String out_save_contam_file)
 {
-  
+
   vec<String> scaffMap  = assembly.scaffMap();
   vec<String> tigMap    = assembly.tigMap();
   vec<superb> scaffolds = assembly.scaffolds();
@@ -505,19 +509,19 @@ remove_contamination(String in_contam_file,
   cout << Date() << ": loading contaminant information" << endl;
   contam_vec v_contam;
   Bool list_zero_based = True;
-  int contamTotLen = 
+  int contamTotLen =
     load_contamination_list(in_contam_file, v_contam, efastas, list_zero_based);
 
   if ( ! list_zero_based )
     cout << "\nNOTE:  contamination list is 'one' based (first contig number is 1) however the following logging output is zero based (first contig number is 0).\n" << endl;
 
-  int contamCheckLen = 
+  int contamCheckLen =
     remove_contamination_list( v_contam, efastas, scaffolds, tigMap, out_save_contam_file);
-  if ( contamTotLen != contamCheckLen ){
+  if ( contamTotLen != contamCheckLen ) {
     cout << Date() << ":  There seems to be a problem with contamination specification, are there contaminant overlaps?" << endl;
     ForceAssertEq( contamTotLen, contamCheckLen );
   }
-  
+
   Assembly assembly_new( scaffolds, efastas, &scaffMap, &tigMap );
 
   assembly_new.remove_small_contigs(min_contig_solo, min_contig_in);
@@ -532,37 +536,37 @@ remove_contamination(String in_contam_file,
 int main( int argc, char *argv[] )
 {
   RunTime( );
-  
+
   BeginCommandArguments;
   CommandDoc(DOC);
   CommandArgument_String_Doc( HEAD_IN,
-    "Input assembly files <HEAD_IN>.*");
+                              "Input assembly files <HEAD_IN>.*");
   CommandArgument_String_Doc( HEAD_OUT,
-    "Output assembly files <HEAD_OUT>.*" );
-  CommandArgument_Int_OrDefault_Doc( MIN_CONTIG_SIZE_SOLO, 1000, 
-    "Remove solo contigs that are smaller than MIN_CONTIG_SIZE_SOLO");
-  CommandArgument_Int_OrDefault_Doc( MIN_CONTIG_SIZE_IN, 200, 
-    "Remove contigs within scaffolds that are smaller than MIN_CONTIG_SIZE_IN");
+                              "Output assembly files <HEAD_OUT>.*" );
+  CommandArgument_Int_OrDefault_Doc( MIN_CONTIG_SIZE_SOLO, 1000,
+                                     "Remove solo contigs that are smaller than MIN_CONTIG_SIZE_SOLO");
+  CommandArgument_Int_OrDefault_Doc( MIN_CONTIG_SIZE_IN, 200,
+                                     "Remove contigs within scaffolds that are smaller than MIN_CONTIG_SIZE_IN");
   CommandArgument_Bool_OrDefault_Doc( REORDER, False,
-    "Reorder scaffolds, largest to smallest.");
+                                      "Reorder scaffolds, largest to smallest.");
   CommandArgument_Bool_OrDefault_Doc( DEDUP, True,
-    "Remove duplicate scaffolds.");
-  CommandArgument_Int_OrDefault_Doc( MIN_GAP, 10, 
-    "Gaps smaller than this will be increased to this value (per NCBI)");
-  CommandArgument_String_OrDefault_Doc( CONTAM, "", 
-    "Full path name of contamination file with: contig_id contig_lenght begin end");
+                                      "Remove duplicate scaffolds.");
+  CommandArgument_Int_OrDefault_Doc( MIN_GAP, 10,
+                                     "Gaps smaller than this will be increased to this value (per NCBI)");
+  CommandArgument_String_OrDefault_Doc( CONTAM, "",
+                                        "Full path name of contamination file with: contig_id contig_lenght begin end");
   CommandArgument_Bool_OrDefault_Doc( REMOVE_CONTAM_LAST, False,
-    "Remove contamination information at the end of the process. This option assumes that contamination coordinates corresopond to the modified assembly created by the first part of the code.");
+                                      "Remove contamination information at the end of the process. This option assumes that contamination coordinates corresopond to the modified assembly created by the first part of the code.");
   CommandArgument_Bool_OrDefault_Doc( SAVE_CONTAM, True,
-    "Save fasta of removed contamination segments.");
+                                      "Save fasta of removed contamination segments.");
   CommandArgument_UnsignedInt_OrDefault_Doc( FASTA_BATCH_SIZE, 10000,
-    "Output contig fastas won't contain more than this many elements.");
+      "Output contig fastas won't contain more than this many elements.");
   CommandArgument_String_OrDefault_Doc( ISOLATE_CONTIGS, "",
-    "Detach specified contigs from their scaffolds, but don't remove them.");
+                                        "Detach specified contigs from their scaffolds, but don't remove them.");
   CommandArgument_String_OrDefault_Doc( EXTRA_CONTIGS, "",
-    "Fasta file with extra contigs to be merged into the assembly as singleton contigs.");
+                                        "Fasta file with extra contigs to be merged into the assembly as singleton contigs.");
   CommandArgument_Bool_OrDefault_Doc( AGP2, True,
-    "Generate AGP file using version 2.0 spec (otherwise 1.1)");
+                                      "Generate AGP file using version 2.0 spec (otherwise 1.1)");
   EndCommandArguments;
 
   // File names.
@@ -588,7 +592,7 @@ int main( int argc, char *argv[] )
   vec<superb> scaffolds;
   ReadSuperbs( in_superb_file, scaffolds );
   cout << Date() <<  ": Input scaffolds:" << endl;
-  scaffoldsPrintStats( scaffolds, cout ); 
+  scaffoldsPrintStats( scaffolds, cout );
 
   // reading contig information
   cout << Date( ) << ": loading contigs efasta file" << endl;
@@ -603,7 +607,7 @@ int main( int argc, char *argv[] )
     cout <<  Date( ) << ": loading extra contigs" << endl;
     vec<fastavector> extra_contigs;
     LoadFromFastaFile( EXTRA_CONTIGS, extra_contigs );
-    
+
     // Add the extra contigs in as supers
     for (size_t i = 0; i < extra_contigs.size(); ++i) {
       size_t tig = efastas.size();
@@ -618,7 +622,7 @@ int main( int argc, char *argv[] )
   }
 
   // make sure that there are no N's at the ends
-  for ( size_t id = 0; id < efastas.size(); id++ ){
+  for ( size_t id = 0; id < efastas.size(); id++ ) {
     basevector bases;
     efastas[id].FlattenTo( bases );
     String sbases = bases.ToString();
@@ -635,18 +639,18 @@ int main( int argc, char *argv[] )
       int isolate = isolate_contigs[i];
       cout << Date( ) << " isolating contig " << isolate << " into it's own scaffold" << endl;
       for (int s = 0; s < nscaffolds_orig_size; ++s) {
-	for (int t = 0; t < scaffolds[s].Ntigs(); ++t) {
-	  int tig = scaffolds[s].Tig(t);
-	  if (tig == isolate) {
-	    int len = scaffolds[s].Len(t);
-	    PRINT4(tig, s, t, len);
-	    superb iso_super;
-	    iso_super.PlaceFirstTig(tig, len);
-	    scaffolds[s].RemoveTigByPos(t);
-	    scaffolds.push_back(iso_super);
-	    break;
-	  }
-	}
+        for (int t = 0; t < scaffolds[s].Ntigs(); ++t) {
+          int tig = scaffolds[s].Tig(t);
+          if (tig == isolate) {
+            int len = scaffolds[s].Len(t);
+            PRINT4(tig, s, t, len);
+            superb iso_super;
+            iso_super.PlaceFirstTig(tig, len);
+            scaffolds[s].RemoveTigByPos(t);
+            scaffolds.push_back(iso_super);
+            break;
+          }
+        }
       }
     }
   }
@@ -664,7 +668,7 @@ int main( int argc, char *argv[] )
   vec<fastavector> contamination;
   if ( in_contam_file.nonempty() && !REMOVE_CONTAM_LAST) {
     remove_contamination(in_contam_file, assembly, MIN_CONTIG_SIZE_SOLO, MIN_CONTIG_SIZE_IN,
-			 out_save_contam_file);
+                         out_save_contam_file);
   }
 
   assembly.remove_small_contigs( MIN_CONTIG_SIZE_SOLO, MIN_CONTIG_SIZE_IN );
@@ -682,19 +686,19 @@ int main( int argc, char *argv[] )
   // remove contamination
   if ( in_contam_file.nonempty() && REMOVE_CONTAM_LAST) {
     remove_contamination(in_contam_file, assembly, MIN_CONTIG_SIZE_SOLO, MIN_CONTIG_SIZE_IN,
-			 out_save_contam_file);
+                         out_save_contam_file);
   }
 
   // reset small or negative gaps
   assembly.set_min_gaps(MIN_GAP);
-  
+
 
   // writing output
   cout << Date() << ": writing superb" << endl;
   WriteSuperbs( out_superb_file, assembly.scaffolds() );
 
   cout << Date() <<  ": Output scaffolds:" << endl;
-  scaffoldsPrintStats( assembly.scaffolds(), cout ); 
+  scaffoldsPrintStats( assembly.scaffolds(), cout );
 
   cout << Date() << ": number of contigs written = " << assembly.efastas().size() << endl;
 
@@ -747,7 +751,7 @@ int main( int argc, char *argv[] )
 
       // add annotation of alternate paths to tbl file
       for (size_t i = 0; i < va.size(); i++)
-	feature << va[i].to_annotation();
+        feature << va[i].to_annotation();
       tbl << feature.str();
       tblout << feature.str();
     }
@@ -777,7 +781,7 @@ int main( int argc, char *argv[] )
   Ofstream(agpfile, HEAD_OUT + ".agp");
   for (u_int ii=0; ii<assembly.scaffolds().size( ); ii++) {
     agp_chromosome agp( zero_padded_int(ii+1, 5 )) ;
-    
+
     // Loop over the contigs.
     for (int jj=0; jj<assembly.scaffolds()[ii].Ntigs( ); jj++) {
 
@@ -795,15 +799,15 @@ int main( int argc, char *argv[] )
 
       // Add gap.
       if ( jj < assembly.scaffolds()[ii].Ntigs( ) - 1 ) {
-	String gap_type = AGP2 ? "scaffold" : "fragment";
-	bool is_bridged = true;
-	int gap_len = assembly.scaffolds()[ii].Gap( jj );
-	String linkage = AGP2 ? "paired-ends" : "";
-	agp_gap new_gap( gap_type, gap_len, is_bridged, linkage );
-	agp.AddGap( new_gap );
+        String gap_type = AGP2 ? "scaffold" : "fragment";
+        bool is_bridged = true;
+        int gap_len = assembly.scaffolds()[ii].Gap( jj );
+        String linkage = AGP2 ? "paired-ends" : "";
+        agp_gap new_gap( gap_type, gap_len, is_bridged, linkage );
+        agp.AddGap( new_gap );
       }
     }
-    
+
     // Print info for super.
     String base_name = "scaffold";
     agp.Print( agpfile, &base_name );
@@ -812,7 +816,7 @@ int main( int argc, char *argv[] )
   //vecbasevector obases( assembly.efastas().size() );
   //for ( size_t id = 0; id < assembly.efastas().size(); id++ )
   //  assembly.efastas()[id].FlattenTo( obases[id] );
-  
+
   //obases.WriteAll( out_fastb_file );
 
 
@@ -835,7 +839,7 @@ int main( int argc, char *argv[] )
     size_t newScaffoldsTotLen = 0, newScaffoldsRedLen = 0, newContigTotLen = 0;
     vec<int> scaffolds_full(assembly.scaffolds().size());
     vec<int> scaffolds_reduced(assembly.scaffolds().size());
-    for ( size_t is = 0; is < assembly.scaffolds().size(); is++ ){
+    for ( size_t is = 0; is < assembly.scaffolds().size(); is++ ) {
       int tlen = assembly.scaffolds()[is].FullLength();
       int rlen = assembly.scaffolds()[is].ReducedLength();
       scaffolds_full[is] = tlen;
@@ -844,7 +848,7 @@ int main( int argc, char *argv[] )
       newScaffoldsRedLen += rlen;
     }
     vec<int> contig_sizes(fastas.size());
-    for ( size_t ic = 0; ic < fastas.size(); ic++ ){
+    for ( size_t ic = 0; ic < fastas.size(); ic++ ) {
       int len = fastas[ic].size();
       newContigTotLen += len;
       contig_sizes[ic] = len;
@@ -861,21 +865,21 @@ int main( int argc, char *argv[] )
     cout << Date() << ": Assembly statistics:" << endl;
     cout << Date() << ": Number of scaffolds: " << ToStringAddCommas(assembly.scaffolds().size()) << endl;
     cout << Date() << ": Total scaffold length including gaps: " << ToStringAddCommas(newScaffoldsTotLen)
-	 << " (N50 = " << ToStringAddCommas(N50(scaffolds_full)) << ")" << endl;
+         << " (N50 = " << ToStringAddCommas(N50(scaffolds_full)) << ")" << endl;
     cout << Date() << ": Total scaffold length excluding gaps: " << ToStringAddCommas(newScaffoldsRedLen)
-	 << " (N50 = " << ToStringAddCommas(N50(scaffolds_reduced)) << ")" << endl;
+         << " (N50 = " << ToStringAddCommas(N50(scaffolds_reduced)) << ")" << endl;
     cout << Date() << ": Number of contigs: " << ToStringAddCommas(fastas.size())
-	 << " (N50 = " << ToStringAddCommas(N50(contig_sizes)) << ")" << endl;
+         << " (N50 = " << ToStringAddCommas(N50(contig_sizes)) << ")" << endl;
 
     if (ambiguous_bases > 0)
       cout << Date() << ": Ambiguous bases: " << ToStringAddCommas(ambiguous_bases)
-	   << " (rate = 1/" << ToStringAddCommas(newScaffoldsRedLen / ambiguous_bases) << ")" << endl;
+           << " (rate = 1/" << ToStringAddCommas(newScaffoldsRedLen / ambiguous_bases) << ")" << endl;
     if (snp_count > 0)
       cout << Date() << ": SNP count: " << ToStringAddCommas(snp_count)
-	   << " (rate = 1/" << ToStringAddCommas(newScaffoldsRedLen / snp_count) << ")" << endl;
+           << " (rate = 1/" << ToStringAddCommas(newScaffoldsRedLen / snp_count) << ")" << endl;
     if (indel_count > 0)
       cout << Date() << ": Indel count: " << ToStringAddCommas(indel_count)
-	   << " (rate = 1/" << ToStringAddCommas(newScaffoldsRedLen / indel_count) << ")" << endl;
+           << " (rate = 1/" << ToStringAddCommas(newScaffoldsRedLen / indel_count) << ")" << endl;
   }
 
   cout << Date() << ": Done!" << endl;

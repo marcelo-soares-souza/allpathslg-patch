@@ -26,33 +26,43 @@ typedef std::mutex LockedData;
 class Condition : public std::condition_variable
 {
 public:
-    Condition( LockedData& lockedData ) : mMutex(lockedData) {}
+  Condition( LockedData& lockedData ) : mMutex(lockedData) {}
 
-    void signal() { notify_one(); }
-    void broadcast() { notify_all(); }
+  void signal() {
+    notify_one();
+  }
+  void broadcast() {
+    notify_all();
+  }
 
-    LockedData const* mutex() const { return &mMutex; }
+  LockedData const* mutex() const {
+    return &mMutex;
+  }
 
 private:
-    LockedData& mMutex;
+  LockedData& mMutex;
 };
 
 class Locker
 {
 public:
-    Locker( LockedData& lockedData ) : mLock(lockedData) {}
-    Locker( Locker const& )=delete;
+  Locker( LockedData& lockedData ) : mLock(lockedData) {}
+  Locker( Locker const& )=delete;
 
-    void wait( Condition& cv )
-    { AssertEq(mLock.mutex(),cv.mutex()); cv.wait(mLock); }
+  void wait( Condition& cv )
+  {
+    AssertEq(mLock.mutex(),cv.mutex());
+    cv.wait(mLock);
+  }
 
-    bool timedWait( Condition& cv, long nSecs )
-    { AssertEq(mLock.mutex(),cv.mutex());
-      std::chrono::seconds duration(nSecs);
-      return cv.wait_for(mLock,duration) == std::cv_status::timeout; }
+  bool timedWait( Condition& cv, long nSecs )
+  { AssertEq(mLock.mutex(),cv.mutex());
+    std::chrono::seconds duration(nSecs);
+    return cv.wait_for(mLock,duration) == std::cv_status::timeout;
+  }
 
 private:
-    std::unique_lock<LockedData> mLock;
+  std::unique_lock<LockedData> mLock;
 };
 
 #endif /* SYSTEM_LOCKEDDATA_H_ */

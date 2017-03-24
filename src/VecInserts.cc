@@ -64,7 +64,7 @@ void vec_inserts::AddSupercontigs( const vec<int> &super_ids )
   int n_contigs = 0;
   for (int ii=0; ii<(int)super_ids.size( ); ii++)
     n_contigs += (int)the_assembly_->supers[ super_ids[ii] ].mtig.size( );
-  
+
   vec<int> contig_ids;
   contig_ids.reserve( n_contigs );
 
@@ -96,11 +96,11 @@ void vec_inserts::AddContigs( const vec<int> &contig_ids )
   vec< const vec<int>* > all_contigs;
   all_contigs.push_back( &old_contigs );
   all_contigs.push_back( &new_contigs );
-  
+
   int pairs_count = 0;
   for (int ii=0; ii<2; ii++) {
     const vec<int> &cgs = *all_contigs[ii];
-    for (int jj=0; jj<(int)cgs.size( ); jj++) 
+    for (int jj=0; jj<(int)cgs.size( ); jj++)
       pairs_count += reads_index[ cgs[jj] ].size( );
   }
 
@@ -112,9 +112,9 @@ void vec_inserts::AddContigs( const vec<int> &contig_ids )
     for (int jj=0; jj<(int)cgs.size( ); jj++) {
       const vec<int> &loc_ids = reads_index[ cgs[jj] ];
       for (int kk=0; kk<(int)loc_ids.size( ); kk++) {
-	int loc_id = loc_ids[kk];
-	int read_id = locs[ loc_ids[kk] ].ReadId( );
-	id_locs.push_back( pair<int, int>( read_id, loc_id ) );
+        int loc_id = loc_ids[kk];
+        int read_id = locs[ loc_ids[kk] ].ReadId( );
+        id_locs.push_back( pair<int, int>( read_id, loc_id ) );
       }
     }
   }
@@ -128,22 +128,22 @@ void vec_inserts::AddContigs( const vec<int> &contig_ids )
     int estimated_links_count = (int)( 1.5 * float( id_locs.size( ) ) );
     inserts_.reserve( estimated_links_count );
   }
-    
+
   // Add new inserts. To avoid duplications, keep inserts iff they are in
   //  the same read_id order as in the read_pairing they belong to.
   vec< pair<int,int> >::iterator iter;
-  
+
   for (int ii=0; ii<(int)new_contigs.size( ); ii++) {
     const vec<int> &loc_ids = reads_index[ new_contigs[ii] ];
     for (int jj=0; jj<(int)loc_ids.size( ); jj++) {
       int loc_id = loc_ids[jj];
       int read_id = locs[ loc_ids[jj] ].ReadId( );
       int pair_id = pairs_index[read_id];
-      
+
       // Unpaired read.
       if ( pair_id < 0 )
-	continue;
-      
+        continue;
+
       // Partner read and its locations.
       vec<int> p_loc_ids;
 
@@ -152,40 +152,40 @@ void vec_inserts::AddContigs( const vec<int> &contig_ids )
       pair<int, int> test_pair( p_read_id, -1 );
       iter = lower_bound( id_locs.begin( ), id_locs.end( ), test_pair );
       while( iter != id_locs.end( ) && iter->first == p_read_id ) {
-	p_loc_ids.push_back( iter->second );
-	iter++;
+        p_loc_ids.push_back( iter->second );
+        iter++;
       }
 
       // No read_id's partners found in contig_ids_.
       if ( p_loc_ids.size( ) < 1 )
-	continue;
+        continue;
 
       // Analyze each pair of locations.
       for (int kk=0; kk<(int)p_loc_ids.size( ); kk++) {
-	pair<vec<int>::const_iterator, vec<int>::const_iterator> result;
-	int p_loc_id = p_loc_ids[kk];
-	int p_cg = locs[p_loc_id].Contig( );
-	result = equal_range( old_contigs.begin( ), old_contigs.end( ), p_cg );
+        pair<vec<int>::const_iterator, vec<int>::const_iterator> result;
+        int p_loc_id = p_loc_ids[kk];
+        int p_cg = locs[p_loc_id].Contig( );
+        result = equal_range( old_contigs.begin( ), old_contigs.end( ), p_cg );
 
-	int id1 = the_pair.id1;
-	int id2 = the_pair.id2;
-	insert_ends new_ins;
-	
-	// Partner location belongs to the old contigs.
-	if ( result.first < old_contigs.end( ) ) {
-	  if ( locs[loc_id].ReadId( ) == id1 )
-	    new_ins.Set( loc_id, p_loc_id, pair_id );
-	  else
-	    new_ins.Set( p_loc_id, loc_id, pair_id );
-	  inserts_.push_back( new_ins );
-	  continue;
-	}
-	
-	// Partner location belongs to the new contigs;
-	if ( locs[loc_id].ReadId( ) == id1 ) {
-	  new_ins.Set( loc_id, p_loc_id, pair_id );
-	  inserts_.push_back( new_ins );
-	}
+        int id1 = the_pair.id1;
+        int id2 = the_pair.id2;
+        insert_ends new_ins;
+
+        // Partner location belongs to the old contigs.
+        if ( result.first < old_contigs.end( ) ) {
+          if ( locs[loc_id].ReadId( ) == id1 )
+            new_ins.Set( loc_id, p_loc_id, pair_id );
+          else
+            new_ins.Set( p_loc_id, loc_id, pair_id );
+          inserts_.push_back( new_ins );
+          continue;
+        }
+
+        // Partner location belongs to the new contigs;
+        if ( locs[loc_id].ReadId( ) == id1 ) {
+          new_ins.Set( loc_id, p_loc_id, pair_id );
+          inserts_.push_back( new_ins );
+        }
       }
     }
   }
@@ -193,7 +193,7 @@ void vec_inserts::AddContigs( const vec<int> &contig_ids )
   // Copy contig_ids at the end of contig_ids_ and sort.
   copy( new_contigs.begin(), new_contigs.end(), back_inserter( contig_ids_ ) );
   sort( contig_ids_.begin(), contig_ids_.end() );
-  
+
   // Sort inserts_.
   order_InsertEnds_Contigs sorter( locs );
   sort( inserts_.begin( ), inserts_.end( ), sorter );
@@ -210,11 +210,11 @@ void vec_inserts::AddContigs( const vec<int> &contig_ids )
  * insert_ids (ids in *this of the inserts spanning gap).
  */
 void vec_inserts::FindGapLinks( int super_id,
-				int pos,
-				vec<int> &insert_ids ) const
+                                int pos,
+                                vec<int> &insert_ids ) const
 {
   insert_ids.clear( );
-  
+
   for (int ins_id=0; ins_id<(int)inserts_.size( ); ins_id++) {
     const insert_ends &the_insert = inserts_[ins_id];
     const vec<read_location> &locs = the_assembly_->reads_orig;
@@ -265,11 +265,11 @@ void vec_inserts::FindGapLinks( int super_id,
  * placed at pos but it stops after pivot.
  */
 void vec_inserts::FindSpotLinks( int contig_id,
-				 int pivot,
-				 vec<int> &insert_ids ) const
+                                 int pivot,
+                                 vec<int> &insert_ids ) const
 {
   insert_ids.clear( );
-  
+
   map<int,int>::const_iterator iter;
   iter = the_assembly_->mtigs_to_supers.find( contig_id );
   ForceAssert( iter != the_assembly_->mtigs_to_supers.end( ) );

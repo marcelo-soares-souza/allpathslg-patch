@@ -25,36 +25,36 @@
  * (generated with kmer size UNIPATH_K), and hence to overlap by
  * UNIPATH_K - 1 bases.
  */
-class FirstLookupPerfect 
+class FirstLookupPerfect
 {
 private:
-  
+
   const LookupTab & _lookup_tab;
   const BaseVecVec & _contigs;
-  
+
   static size_t const MIN_SIZE = 96;         // to extend ec reads
   static size_t const MAX_HITS = 2;          // max aligns per query
   static size_t const MAX_FREQ = 10000;      // max attempts per query
   static size_t const CHUNK_SIZE = 1000;     // reads in each worklist
 
 public:
-  
+
   FirstLookupPerfect(const LookupTab & lookup_tab,
                      const BaseVecVec & contigs)
     : _lookup_tab(lookup_tab),
       _contigs(contigs)
   {}
-  
+
   // Find all alignments for a specified query.
   void getAlignments(const BaseVec & query,
                      const size_t query_ID,
                      vec<first_look_align> * result) const;
-  
+
   // Find all alignments for all queries (runs getAlignments on all queries).
   void getAllAlignments(const BaseVecVec & queries,
                         vec<first_look_align> * alignments,
                         const size_t n_threads) const;
-  
+
 };
 
 #endif

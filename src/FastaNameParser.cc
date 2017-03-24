@@ -51,7 +51,7 @@ FirstWordParser::extractNameFromBuffer( char* buffer, String& name ) const
   while ( *space_finder != 0 && !isspace(*space_finder) )
     ++space_finder;
   *space_finder = 0;
-  
+
   name = name_start_ptr;
 }
 
@@ -72,7 +72,7 @@ LastWordParser::extractNameFromBuffer( char* buffer, String& name ) const
   while ( *buffer != 0 )
   {
     // zero-out space characters
-    while ( *buffer != 0 && isspace(*buffer) ) 
+    while ( *buffer != 0 && isspace(*buffer) )
       *buffer++ = 0;
     // if we're not at the end of the buffer, we're at the start of a word
     if ( *buffer != 0 )
@@ -89,7 +89,7 @@ void
 TruncatedLastWordParser::extractNameFromBuffer( char* buffer, String& name ) const
 {
   LastWordParser::extractNameFromBuffer( buffer, name );
-  
+
   int len = name.size();
   if ( name.size() > 4 &&
        ( strcmp( name.c_str() + len - 4, ".scf" ) == 0 ||

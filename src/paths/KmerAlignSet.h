@@ -17,52 +17,74 @@
 // of sequences.
 // - Each entry in the outer vec represents an 'alignment'.
 // - First entry in the outer pair is the unibase id to which a read is aligned.
-// - The inner pairs are (rpos,upos), presenting position on read, position on 
+// - The inner pairs are (rpos,upos), presenting position on read, position on
 //   unibase.
 
 class KmerAlignSet {
 
-     public:
+public:
 
-     KmerAlignSet( ) { }
-     KmerAlignSet( const vec< pair< int, vec< pair<int,int> > > >& x ) : x_(x) { }
-     KmerAlignSet( const basevector& x, const int K, 
-          const vec< vec< pair<int,int> > >& Ulocs );
+  KmerAlignSet( ) { }
+  KmerAlignSet( const vec< pair< int, vec< pair<int,int> > > >& x ) : x_(x) { }
+  KmerAlignSet( const basevector& x, const int K,
+                const vec< vec< pair<int,int> > >& Ulocs );
 
-     int NAligns( ) const { return x_.size( ); }
+  int NAligns( ) const {
+    return x_.size( );
+  }
 
-     int U( const int i ) const { return x_[i].first; }
+  int U( const int i ) const {
+    return x_[i].first;
+  }
 
-     int Count( const int i ) const { return x_[i].second.size( ); }
+  int Count( const int i ) const {
+    return x_[i].second.size( );
+  }
 
-     int Rpos( const int i, const int j ) const { return x_[i].second[j].first; }
-     int Upos( const int i, const int j ) const { return x_[i].second[j].second; }
-     pair<int,int> RposUpos( const int i, const int j )
-     {    return make_pair( Rpos(i,j), Upos(i,j) );    }
-     int Offset( const int i, const int j ) const { return Upos(i,j) - Rpos(i,j); }
+  int Rpos( const int i, const int j ) const {
+    return x_[i].second[j].first;
+  }
+  int Upos( const int i, const int j ) const {
+    return x_[i].second[j].second;
+  }
+  pair<int,int> RposUpos( const int i, const int j )
+  {
+    return make_pair( Rpos(i,j), Upos(i,j) );
+  }
+  int Offset( const int i, const int j ) const {
+    return Upos(i,j) - Rpos(i,j);
+  }
 
-     void AddAlign( const int u, const vec< pair<int,int> >& rpos_upos )
-     {    x_.push( u, rpos_upos );    }
+  void AddAlign( const int u, const vec< pair<int,int> >& rpos_upos )
+  {
+    x_.push( u, rpos_upos );
+  }
 
-     const vec< pair< int, vec< pair<int,int> > > >& X( ) const { return x_; }
-     const pair< int, vec< pair<int,int> > >& X( const int n ) const 
-     {    return x_[n];    }
-     vec< pair< int, vec< pair<int,int> > > >& XMutable( ) { return x_; }
+  const vec< pair< int, vec< pair<int,int> > > >& X( ) const {
+    return x_;
+  }
+  const pair< int, vec< pair<int,int> > >& X( const int n ) const
+  {
+    return x_[n];
+  }
+  vec< pair< int, vec< pair<int,int> > > >& XMutable( ) {
+    return x_;
+  }
 
-     private:
+private:
 
-     vec< pair< int, vec< pair<int,int> > > > x_;
+  vec< pair< int, vec< pair<int,int> > > > x_;
 
 };
 
 void ClusterAlignsNew( const KmerAlignSet& in, KmerAlignSet& out, const Bool clean,
-     const int min_spread );
+                       const int min_spread );
 
 void ClusterAlignsOld( const KmerAlignSet& in, KmerAlignSet& out );
 
 void KillInferiorClusters( KmerAlignSet& x );
 
 void KillInferiorClustersNew( KmerAlignSet& x, const vecbasevector& unibases,
-     const double min_ratio_to_kill = 5.0 );
+                              const double min_ratio_to_kill = 5.0 );
 
 #endif

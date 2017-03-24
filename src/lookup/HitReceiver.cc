@@ -10,9 +10,9 @@
 #include "lookup/HitReceiver.h"
 
 void UniqueGlobalUngappedHitReceiver::operator()(unsigned int q,
-						    unsigned int queryPos, bool isRc,
-						    unsigned int offset, unsigned int contig,
-						    unsigned int )
+    unsigned int queryPos, bool isRc,
+    unsigned int offset, unsigned int contig,
+    unsigned int )
 {
   // PRINT5(q, queryPos, isRc, offset, contig);
   if ( ProvedAmbiguous(q) ) return;  // Only want unambiguous query alignments
@@ -22,7 +22,7 @@ void UniqueGlobalUngappedHitReceiver::operator()(unsigned int q,
 
   unsigned int targetPos = offset - look.ContigStart(contig);
   if (targetPos < queryPos) return; // Only want global aligns of query within contig
-  int alignStartPos = int(targetPos) - int(queryPos); 
+  int alignStartPos = int(targetPos) - int(queryPos);
   // PRINT2(targetPos, alignStartPos);
 
   const basevector &R = look.Bases(); // The bases available in current chunk
@@ -36,8 +36,8 @@ void UniqueGlobalUngappedHitReceiver::operator()(unsigned int q,
   for ( unsigned int y = 0; y < length; y++ ) {
     if ( S[s0 + y] != R[ r0 + y ] ) {
       ++mismatches;
-      if ( mismatches > max_mismatches ) 
-	break; // No need to keep counting...
+      if ( mismatches > max_mismatches )
+        break; // No need to keep counting...
     }
   }
   // PRINT3(mismatches, best_errors[q], second_best_errors[q]);
@@ -54,7 +54,7 @@ void UniqueGlobalUngappedHitReceiver::operator()(unsigned int q,
   // an improvement, it need not be generated.
   if ( mismatches >= best_errors[q] ) {
     second_best_errors[q] = Min( second_best_errors[q], mismatches );
-    return; 
+    return;
   }
 
   // This alignment is an improvement, but if it's not good enough,

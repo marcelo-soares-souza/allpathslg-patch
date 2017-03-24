@@ -23,27 +23,29 @@
 class SymLink : public File
 {
 public:
-    /// Default constructor refers to empty nonsense path.
-    SymLink() {}
-    SymLink( char const* path ) : File(path) {}
+  /// Default constructor refers to empty nonsense path.
+  SymLink() {}
+  SymLink( char const* path ) : File(path) {}
 
-    /// Construct from something with a c_str() member (like string or String)
-    template <class C>
-    explicit SymLink( C const& path,
-                            char const* (C::*)() const = &C::c_str )
+  /// Construct from something with a c_str() member (like string or String)
+  template <class C>
+  explicit SymLink( C const& path,
+                    char const* (C::*)() const = &C::c_str )
     : File(path.c_str()) {}
 
-    // compiler-supplied copying and destructor are OK
+  // compiler-supplied copying and destructor are OK
 
-    bool isValid() const { return isLink() && stat()!=0; }
+  bool isValid() const {
+    return isLink() && stat()!=0;
+  }
 
-    /// Read the target of the symlink.
-    File target() const;
+  /// Read the target of the symlink.
+  File target() const;
 
-    /// Make this symlink point to the specified target.
-    /// It's a fatal error if it can't be done for some reason.
-    /// If force==true, it first removes any existing symlink.
-    void setTarget( File const& target, bool force=false ) const;
+  /// Make this symlink point to the specified target.
+  /// It's a fatal error if it can't be done for some reason.
+  /// If force==true, it first removes any existing symlink.
+  void setTarget( File const& target, bool force=false ) const;
 };
 
 #endif /* SYSTEM_FILE_SYMLINK_H_ */

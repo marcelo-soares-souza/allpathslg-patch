@@ -24,22 +24,22 @@
 
 int main( int argc, char** argv )
 {
-    RunTime();
-    BeginCommandArguments;
-    CommandArgument_String(FASTB);
-    CommandArgument_Int_OrDefault(SCORE,0);
-    EndCommandArguments;
+  RunTime();
+  BeginCommandArguments;
+  CommandArgument_String(FASTB);
+  CommandArgument_Int_OrDefault(SCORE,0);
+  EndCommandArguments;
 
-    File fastbFile(FASTB);
-    VirtualMasterVec<bvec> fastb(fastbFile);
-    IncrementalWriter<qvec> qualb(fastbFile.changeExtension(".qualb"));
+  File fastbFile(FASTB);
+  VirtualMasterVec<bvec> fastb(fastbFile);
+  IncrementalWriter<qvec> qualb(fastbFile.changeExtension(".qualb"));
 
-    qvec qv;
-    typedef VirtualMasterVec<bvec>::const_iterator Itr;
-    for ( Itr itr(fastb.begin()), end(fastb.end()); itr != end; ++itr )
-    {
-        qv.resize(itr->size(),SCORE);
-        qualb.add(qv);
-    }
-    qualb.close();
+  qvec qv;
+  typedef VirtualMasterVec<bvec>::const_iterator Itr;
+  for ( Itr itr(fastb.begin()), end(fastb.end()); itr != end; ++itr )
+  {
+    qv.resize(itr->size(),SCORE);
+    qualb.add(qv);
+  }
+  qualb.close();
 }

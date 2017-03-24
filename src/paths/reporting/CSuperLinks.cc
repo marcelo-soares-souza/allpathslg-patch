@@ -20,9 +20,9 @@
  * Constructor
  */
 CSuperLinks::CSuperLinks( const PairsManager *pairs,
-			  const vec<superb> *supers,
-			  const vec<alignlet> *aligns,
-			  const vec<int> *index ) :
+                          const vec<superb> *supers,
+                          const vec<alignlet> *aligns,
+                          const vec<int> *index ) :
   pairs_ ( pairs ),
   supers_ ( supers ),
   aligns_ ( aligns ),
@@ -36,15 +36,15 @@ CSuperLinks::CSuperLinks( const PairsManager *pairs,
  * SetPointers
  */
 void CSuperLinks::SetPointers( const PairsManager *pairs,
-			       const vec<superb> *supers,
-			       const vec<alignlet> *aligns,
-			       const vec<int> *index )
+                               const vec<superb> *supers,
+                               const vec<alignlet> *aligns,
+                               const vec<int> *index )
 {
   pairs_ = pairs;
   supers_ = supers;
   aligns_ = aligns;
   index_ = index;
-  
+
   this->GenerateMaps( );
 }
 
@@ -76,9 +76,9 @@ COffset CSuperLinks::AllLinks( int super1, int super2, bool rc2 ) const
  * stretch: if not NULL, pass this arg to ClusterLinks( )
  */
 void CSuperLinks::AllLinks( int super_id,
-			    vec<COffset>& out,
-			    float slop,
-			    float *stretch ) const
+                            vec<COffset>& out,
+                            float slop,
+                            float *stretch ) const
 {
   COffset tmp(super_id,0,false,true_end_[super_id]-true_begin_[super_id],0);
   set<COffset> offSet;
@@ -91,53 +91,53 @@ void CSuperLinks::AllLinks( int super_id,
       int p_read_id = pairs_->getPartnerID(read_id);
       int idx = (*index_)[p_read_id];
       if ( idx < 0 )
-	continue;
-      
+        continue;
+
       alignlet const& alignlet2 = (*aligns_)[idx];
       int p_super_id = super_id_[alignlet2.TargetId()];
       if ( p_super_id < 0 || super_id == p_super_id )
-	continue;
-      
+        continue;
+
       alignlet const& alignlet1 = (*aligns_)[(*index_)[read_id]];
       tmp.SetSupers(tmp.Super1(),
-		    p_super_id,
-		    alignlet1.Fw1()==alignlet2.Fw1(),
-		    tmp.Slen1(),
-		    true_end_[p_super_id]-true_begin_[p_super_id]);
-      
+                    p_super_id,
+                    alignlet1.Fw1()==alignlet2.Fw1(),
+                    tmp.Slen1(),
+                    true_end_[p_super_id]-true_begin_[p_super_id]);
+
       // const_cast is legitimate because adding links doesn't alter order
       COffset& cOffset = const_cast<COffset&>(*offSet.insert(tmp).first);
-      
+
       int offset = super_begin_[alignlet1.TargetId()];
       ho_interval w1(offset+alignlet1.pos2(), offset+alignlet1.Pos2());
       offset = super_begin_[alignlet2.TargetId()];
       ho_interval w2(offset+alignlet2.pos2(), offset+alignlet2.Pos2());
-      
+
       longlong pair_id = pairs_->getPairID(read_id);
       int sep = pairs_->sep( pair_id );
       int sd = pairs_->sd( pair_id );
       if (slop >= 0) {
-	int rc1 = alignlet1.Fw1() ? 0 : 1;
-	int rc2 = alignlet2.Fw1() ? 0 : 1;
-	int dist_to_end1 = rc1 ? w1.Start() : (tmp.Slen1() - w1.Stop());
-	int dist_to_end2 = rc2 ? w2.Start() : (tmp.Slen2() - w2.Stop());
-	int max_dist = sep + sd*slop;
-	if (dist_to_end1 > max_dist) continue;
-	if (dist_to_end2 > max_dist) continue;
+        int rc1 = alignlet1.Fw1() ? 0 : 1;
+        int rc2 = alignlet2.Fw1() ? 0 : 1;
+        int dist_to_end1 = rc1 ? w1.Start() : (tmp.Slen1() - w1.Stop());
+        int dist_to_end2 = rc2 ? w2.Start() : (tmp.Slen2() - w2.Stop());
+        int max_dist = sep + sd*slop;
+        if (dist_to_end1 > max_dist) continue;
+        if (dist_to_end2 > max_dist) continue;
       }
       int raw_offset
-	= alignlet1.Fw1()
-	? w1.Stop()+sep-(tmp.Rc2()?(tmp.Slen2()-w2.Stop()):w2.Start())
-	: w1.Start()-sep-(tmp.Rc2()?(tmp.Slen2()-w2.Start()):w2.Stop());
+        = alignlet1.Fw1()
+          ? w1.Stop()+sep-(tmp.Rc2()?(tmp.Slen2()-w2.Stop()):w2.Start())
+          : w1.Start()-sep-(tmp.Rc2()?(tmp.Slen2()-w2.Start()):w2.Stop());
       NormalDistribution nd( raw_offset, sd );
       cOffset.AddLink( SLink( nd, w1, w2, pair_id ) );
     }
   }
-  
+
   typedef set<COffset>::iterator SItr;
   for ( SItr itr(offSet.begin()), end(offSet.end()); itr != end; ++itr )
     stretch ? itr->ClusterLinks( *stretch ) : itr->ClusterLinks( );
-  
+
   out.assign(offSet.begin(),offSet.end());
 }
 
@@ -161,7 +161,7 @@ void CSuperLinks::PrintAllLinks( ostream &out, int super_id, bool full ) const
 vec<int> CSuperLinks::AllPairs( int super_id ) const
 {
   vec<int> pids;
-  
+
   const superb &sup = (*supers_)[super_id];
   for (int cgpos=0; cgpos<sup.Ntigs( ); cgpos++) {
     int edge_id = sup.Tig( cgpos );
@@ -173,10 +173,10 @@ vec<int> CSuperLinks::AllPairs( int super_id ) const
       int p_super_id = super_id_[p_edge_id];
       if ( p_super_id < 0 ) continue;
       if ( super_id != p_super_id )
-	pids.push_back( pairs_->getPairID( read_id ) );
+        pids.push_back( pairs_->getPairID( read_id ) );
     }
   }
-  
+
   return pids;
 }
 
@@ -217,17 +217,17 @@ void CSuperLinks::AddLink( int pair_id, COffset &offset ) const
   int stdev = pairs_->sd( pair_id );
   int raw_offset
     = this->FwOnSuper( id1 )
-    ? end1 + sep - ( rc2 ? ( truelen2 - end2 ) : beg2 )
-    : beg1 - sep - ( rc2 ? ( truelen2 - beg2 ) : end2 );
+      ? end1 + sep - ( rc2 ? ( truelen2 - end2 ) : beg2 )
+      : beg1 - sep - ( rc2 ? ( truelen2 - beg2 ) : end2 );
   NormalDistribution nd( raw_offset, stdev );
-  
+
   // Windows.
   ho_interval w1( beg1, end1 );
   ho_interval w2( beg2, end2 );
-  
+
   // Add link and return.
   offset.AddLink( SLink( nd, w1, w2, pair_id ) );
-  
+
 }
 
 /**
@@ -255,7 +255,7 @@ void CSuperLinks::GenerateMaps( )
     n_edges = Max( n_edges, (*aligns_)[ (*index_)[read_id] ].TargetId( ) );
   }
   n_edges++;
-  
+
   super_id_.resize( n_edges, -1 );
   super_pos_.resize( n_edges, -1 );
   for (int ii=0; ii<supers_->isize( ); ii++) {
@@ -265,7 +265,7 @@ void CSuperLinks::GenerateMaps( )
       super_pos_[edge_id] = jj;
     }
   }
-  
+
   super_begin_.resize( n_edges, 0 );
   super_end_.resize( n_edges, 0 );
   for (int ii=0; ii<(int)supers_->size( ); ii++) {
@@ -275,17 +275,17 @@ void CSuperLinks::GenerateMaps( )
       pos += (*supers_)[ii].Len( jj );
       super_end_[ (*supers_)[ii].Tig( jj ) ] = pos;
       if ( jj < (int)(*supers_)[ii].Ntigs( ) - 1 )
-	pos += (*supers_)[ii].Gap( jj );
+        pos += (*supers_)[ii].Gap( jj );
     }
   }
-  
+
   read_ids_.resize( n_edges );
   for (int read_id=0; read_id<(int)index_->size( ); read_id++) {
     if ( (*index_)[read_id] < 0 ) continue;
     const alignlet &al = (*aligns_)[ (*index_)[read_id] ];
     read_ids_[ al.TargetId( ) ].push_back( read_id );
   }
-  
+
   true_begin_.resize( supers_->size( ), 0 );
   true_end_.resize( supers_->size( ), 0 );
   for (int ii=0; ii<(int)supers_->size( ); ii++) {

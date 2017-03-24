@@ -12,7 +12,7 @@
 /// For each alignment, the aligner return an ImproperMerger struct,
 /// containing a KmerPath and four KmerPathLoc's:
 ///
-/// .merged is the merged agreeing section of the two reads.  
+/// .merged is the merged agreeing section of the two reads.
 ///   This extends to the last matching kmer in both directions.
 ///   NOTE that this may not be the end of the original paths, even
 ///   if the alignment is genuinely proper(!), since the end of one
@@ -33,7 +33,7 @@
 struct ImproperMerger {
 
   KmerPath merged;
-  
+
   KmerPathLoc left_end1;
   KmerPathLoc left_end2;
   KmerPathLoc right_end1;
@@ -60,8 +60,8 @@ struct ImproperMerger {
 /// As usual, it is possible to get more than one alignment, in the
 /// presence of stretchy gaps.
 ///
-/// The aligned stretch in each direction reaches either to the end of 
-/// one of the reads ("is proper") or else extends to the last matched 
+/// The aligned stretch in each direction reaches either to the end of
+/// one of the reads ("is proper") or else extends to the last matched
 /// kmer on the two given reads.  There is some subtlety in this def'n,
 /// since we could just as well consider the aligned portion to include
 /// gaps just past the last matched kmer, and only end at the first
@@ -70,10 +70,10 @@ struct ImproperMerger {
 
 // p1.Segment(ind1) and p2.Segment(ind2) are overlapping sequence.
 
-void ImproperMergePaths( const KmerPath& p1, const KmerPath& p2, 
-			 int ind1, int ind2, vec<ImproperMerger>& ans,
-			 int min_perfect_match=1,
-			 const NegativeGapValidator* ngv = NULL );
+void ImproperMergePaths( const KmerPath& p1, const KmerPath& p2,
+                         int ind1, int ind2, vec<ImproperMerger>& ans,
+                         int min_perfect_match=1,
+                         const NegativeGapValidator* ngv = NULL );
 
 
 #endif

@@ -22,15 +22,15 @@
 
 void GetMinLength( const vecbvec& unibases, int& min_length, int& nlongest );
 void ComputeBias(
-     // INPUTS:
-     const int K,
-     double occCnPloidy,
-     const vec<longlong>& biasOccs,
-     const vec<longlong>& biasInst,
-     // OUTPUT:
-     vec<double>& biasCurveLoc,
-     // LOGGING:
-     const Bool VERBOSE,
-     std::ostream& logout );
+  // INPUTS:
+  const int K,
+  double occCnPloidy,
+  const vec<longlong>& biasOccs,
+  const vec<longlong>& biasInst,
+  // OUTPUT:
+  vec<double>& biasCurveLoc,
+  // LOGGING:
+  const Bool VERBOSE,
+  std::ostream& logout );
 
 #endif /* PATHS_UNIBASECOPYNUMBERCOMMON_H_ */

@@ -29,7 +29,7 @@ void DotUtils::InitDotColors() {
     "moccasin", "navajowhite", "oldlace",
     "papayawhip", "peachpuff", "seashell",
     "snow", "thistle", "wheat", "white", "whitesmoke"
-    };
+  };
   const char *greys[] = {
     "darkslategray", "dimgray", "gray", "lightgray",
     "lightslategray", "slategray"
@@ -101,14 +101,14 @@ void DotUtils::AddDotColors( const char *colors[], int ncolors ) {
 }
 
 dot_color_t DotUtils::RandomColor() {
-#if 0  
+#if 0
   int colorGroup = randomx() % dotColors_.size();
   int colorId = randomx() % ( dotColors_[colorGroup].size() ) ;
   return dotColors_[ colorGroup  ][ colorId ];
 #endif
   char clr[1024];
   sprintf(clr, "#%02x%02x%02x", unsigned(randomx() % 0xff), unsigned(randomx() % 0xff),
-	  unsigned(randomx() % 0xff) );
+          unsigned(randomx() % 0xff) );
   return dot_color_t( clr );
 }
 

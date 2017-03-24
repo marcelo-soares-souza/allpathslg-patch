@@ -19,20 +19,20 @@
  * AlignConsecutiveContigs
  */
 bool AlignConsecutiveContigs( const int super_id,
-			      const int cgpos,
-			      vecbvec &contigs,
-			      vec<superb> &supers,
-			      ostream *log,
-			      float MAX_ERROR_RATE )
+                              const int cgpos,
+                              vecbvec &contigs,
+                              vec<superb> &supers,
+                              ostream *log,
+                              float MAX_ERROR_RATE )
 {
   // Consts (could be turned into extra args).
-  int max_stretch = 6;   // used to chop relevant portion of contigs for align 
+  int max_stretch = 6;   // used to chop relevant portion of contigs for align
   int min_cglen = 2000;  // min size of chopped portion
-  
+
   // Log stream.
   ofstream devnull( "/dev/null" );
   ostream &out = ( log ) ? *log : devnull;
-  
+
   // Core data.
   const superb &sup = supers[super_id];
   const bvec &contig1 = contigs[sup.Tig( cgpos )];
@@ -41,7 +41,7 @@ bool AlignConsecutiveContigs( const int super_id,
   const int gap_stdev = sup.Dev( cgpos );
   const int len1 = contig1.size( );
   const int len2 = contig2.size( );
-  
+
   // Find window of overlap on contig1.
   int wbeg1 = 0;
   int wend1 = 0;
@@ -89,10 +89,10 @@ bool AlignConsecutiveContigs( const int super_id,
   basevector mtig2;
   qualvector qual1( 0 );
   qualvector qual2( 0 );
-  
+
   mtig1.SetToSubOf( contig1, wbeg1, wsize1 );
   mtig2.SetToSubOf( contig2, wbeg2, wsize2 );
-  
+
   // Perform alignment.
   out << " aligning [" << sup.Tig( cgpos )
       << ", " << sup.Tig( cgpos + 1 )
@@ -101,7 +101,7 @@ bool AlignConsecutiveContigs( const int super_id,
       << ") aligned_lens=(" << mtig1.size( )
       << ", " << mtig2.size( )
       << "): " << flush;
-  
+
   allpathslg::align  al;
   int Rc = 0;
   int base_bandwidth = 100;
@@ -110,11 +110,11 @@ bool AlignConsecutiveContigs( const int super_id,
   int bandwidth = std::min( {base_bandwidth, t1_bandwidth, t2_bandwidth} );
   int mlen1 = mtig1.size( );
   int mlen2 = mtig2.size( );
-  
+
   int overlap = AlignTwoBasevectors( mtig1, mtig2, al, 0, 10000000, 1.0,
-				     0, Rc, 8, 24, 2, 1, qual1, qual2,
-				     10000000.0, 10000, devnull, False, 1000,
-				     10000, 1000, 50, True, bandwidth );
+                                     0, Rc, 8, 24, 2, 1, qual1, qual2,
+                                     10000000.0, 10000, devnull, False, 1000,
+                                     10000, 1000, 50, True, bandwidth );
 
   // An overlap value of less than 10 is not trusted.  In that case,
   //  or if no overlap was found at all, try again with different
@@ -123,13 +123,13 @@ bool AlignConsecutiveContigs( const int super_id,
   if ( overlap < 10 ) {
     out << " align  not found. Trying again:";
     overlap = AlignTwoBasevectors( mtig1, mtig2, al, 0, 10000000, 1.0,
-				   0, Rc, 8, 24, 2, 1, qual1, qual2,
-				   10000000.0, 10000, devnull, False, 1000,
-				   10000, 1000, 50 );
+                                   0, Rc, 8, 24, 2, 1, qual1, qual2,
+                                   10000000.0, 10000, devnull, False, 1000,
+                                   10000, 1000, 50 );
   }
-  
+
   // Adjust alignment.
-  al.Setpos1( al.pos1( ) + wbeg1 ); 
+  al.Setpos1( al.pos1( ) + wbeg1 );
 
   // Remove improper aligns.
   if ( overlap > 0 ) {
@@ -139,13 +139,13 @@ bool AlignConsecutiveContigs( const int super_id,
     float al_len = al.Pos1( ) - al.pos1( );
     if ( ( err / al_len ) > MAX_ERROR_RATE ) overlap = -1;
   }
-  
+
   // No alignment found.
   if ( overlap < 0 ) {
     out << " no align  found.\n";
     return false;
   }
-  
+
   // Print alignment and return.
   out << " found align ! len=" << al.Pos1( ) - al.pos1( )
       << ", n_errors=" << ToString( al.Errors( contig1, contig2 ) )
@@ -153,7 +153,7 @@ bool AlignConsecutiveContigs( const int super_id,
       << " on1: " << al.pos1( ) << "-" << al.Pos1( ) << "_" << len1 << "\n"
       << " on2: " << al.pos2( ) << "-" << al.Pos2( ) << "_" << len2 << "\n"
       << endl;
-  
+
   basevector merged;
   qualvector qmerged;
   qualvector q1( contig1.size( ), 50 );
@@ -175,7 +175,7 @@ bool AlignConsecutiveContigs( const int super_id,
     int orig_next_dev = sup.Dev( cgpos + 1 );
     supers[super_id].RemoveTigByPos( cgpos + 1 );
     supers[super_id].SetLen( cgpos, (int)contig1.size( ) );
-    
+
     // Check if contigs (cgpos+1) is embedded in cgpos.
     if ( sup.Gap( cgpos ) + sup.Len( cgpos + 1 ) > 0 ) {
       supers[super_id].SetGap( cgpos, orig_next_gap );
@@ -184,12 +184,12 @@ bool AlignConsecutiveContigs( const int super_id,
   }
 
   return true;
-  
+
 }
 
 /**
  * order_supers_length
- * 
+ *
  * order super by TrueLength (longer supers come first).
  */
 struct order_supers_length
@@ -205,16 +205,16 @@ public:
  * CompactifyContigs
  */
 void CompactifyContigs( vecbvec &contigs,
-			vec<superb> &supers )
+                        vec<superb> &supers )
 {
   // Sort supers by length.
   order_supers_length sorter;
   sort( supers.begin( ), supers.end( ), sorter );
-  
+
   // Adjust contigs and supers.
   vecbvec new_contigs;
   new_contigs.reserve( contigs.size( ) );
-  
+
   vec<int> to_old;
   to_old.reserve( contigs.size( ) );
   for (int ii=0; ii<supers.isize( ); ii++) {
@@ -240,5 +240,5 @@ void CompactifyContigs( vecbvec &contigs,
       ForceAssertEq( slen, clen );
     }
   }
-  
+
 }

@@ -17,14 +17,14 @@
 
 void StripNewlines( const CharVec &in, CharVec &out )
 {
-    out.reserve(in.size()).clear();
-    CharVec::const_iterator end(in.end());
-    for ( CharVec::const_iterator itr(in.begin()); itr != end; ++itr )
-    {
-        char val = *itr;
-        if ( val != '\n' )
-            out.push_back(val);
-    }
+  out.reserve(in.size()).clear();
+  CharVec::const_iterator end(in.end());
+  for ( CharVec::const_iterator itr(in.begin()); itr != end; ++itr )
+  {
+    char val = *itr;
+    if ( val != '\n' )
+      out.push_back(val);
+  }
 }
 
 #include "feudal/SmallVecDefs.h"

@@ -33,24 +33,24 @@ int main( int argc, char *argv[] )
 
   ofstream out( out_file.c_str( ) );
   PrintCommandPretty( out );
-  
+
   cout << "Sending output to " << out_file << "\n" << endl;
 
   // Load.
   out << Date( ) << ": loading supers" << endl;
   vec<superb> supers;
   ReadSuperbs( supers_file, supers );
-  
+
   out << Date( ) << ": loading graph\n" << endl;
   digraphE<CLinkBundle> graph;
   BinaryReader::readFile( graph_file, &graph );
-  
+
   // Build indices.
   vec<int> to_left;
   vec<int> to_right;
   graph.ToLeft( to_left );
   graph.ToRight( to_right );
-  
+
   // Legend.
   out << "# "
       << "id1 "
@@ -65,7 +65,7 @@ int main( int argc, char *argv[] )
       << "end1 "
       << "begin2 "
       << "end2\n";
-  
+
   // Loop over all edges.
   int n_edges = graph.EdgeObjectCount( );
   for (int edge_id=0; edge_id<n_edges; edge_id++) {
@@ -79,22 +79,22 @@ int main( int argc, char *argv[] )
     int len2 = ( rc2 ? -1 : +1 ) * supers[id2].TrueLength( );
     pair<double,double> win1 = edge.Win1( );
     pair<double,double> win2 = edge.Win2( );
-    
+
     out << id1 << " "
-	<< len1 << " "
-	<< id2 << " "
-	<< len2 << " "
-	<< edge.Sep( ) << " "
-	<< edge.Dev( ) << " "
-	<< edge.Weight( ) << " "
-	<< edge.Score( ) << " "
-	<< win1.first << " "
-	<< win1.second << " "
-	<< win2.first << " "
-	<< win2.second << "\n";
+        << len1 << " "
+        << id2 << " "
+        << len2 << " "
+        << edge.Sep( ) << " "
+        << edge.Dev( ) << " "
+        << edge.Weight( ) << " "
+        << edge.Score( ) << " "
+        << win1.first << " "
+        << win1.second << " "
+        << win2.first << " "
+        << win2.second << "\n";
   }
   out << endl;
-  
+
   // Done.
   cout << Date( ) << ": done" << endl;
   out << Date( ) << ": done" << endl;

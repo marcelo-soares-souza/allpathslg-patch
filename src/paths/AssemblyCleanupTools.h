@@ -22,20 +22,20 @@
  * This is a class for manimpulating a superb and associate contigs file).
  */
 
-class Assembly{
-  
- private:
-  
+class Assembly {
+
+private:
+
   vec<superb> scaffolds_;
   VecEFasta efastas_;
   vec<recfastg> fastgs_;
   digraphE<sepdev> SG_;
-  
+
 
   vec<String> scaffMap_;
   vec<String> tigMap_;
-  
- public:
+
+public:
   // -------------- Constructors
 
   Assembly( const vec<superb>& scaffolds, const VecEFasta& efastas, const vec<String>* scaffMap = 0, const vec<String>* tigMap = 0, const digraphE<sepdev>* SG = 0 );
@@ -58,15 +58,25 @@ class Assembly{
   void dedup2();
   void dedup_exact();
   void reorder();
-  // renumber all the contigs sequentially according to the scaffold 
+  // renumber all the contigs sequentially according to the scaffold
   void renumber();
   void set_min_gaps( const int min_gap );
 
-  const vec<superb>& scaffolds() const { return scaffolds_; }
-  const VecEFasta& efastas() const { return efastas_; }
-  const digraphE<sepdev>& SG() const { return SG_; }
-  const vec<String>& scaffMap() const { return scaffMap_; }
-  const vec<String>& tigMap()  const { return tigMap_; }
+  const vec<superb>& scaffolds() const {
+    return scaffolds_;
+  }
+  const VecEFasta& efastas() const {
+    return efastas_;
+  }
+  const digraphE<sepdev>& SG() const {
+    return SG_;
+  }
+  const vec<String>& scaffMap() const {
+    return scaffMap_;
+  }
+  const vec<String>& tigMap()  const {
+    return tigMap_;
+  }
 
   void Write( const String head_out ) const;
   void WriteExtra( const String head_out ) const;

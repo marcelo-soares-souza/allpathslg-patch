@@ -9,10 +9,10 @@
 /// TaskTimer gathers information on the wall clock time, cpu time, and
 /// memory used by a process during some task.  Simply create a
 /// TaskTimer object and surround the code in question with a call to
-/// that TaskTimer object's Start() and Stop() methods. 
+/// that TaskTimer object's Start() and Stop() methods.
 ///
 
-/// \class TaskTimer 
+/// \class TaskTimer
 ///
 
 ///   TaskTimer t;
@@ -42,9 +42,9 @@
 ///
 
 ///   cout << "task 1:" << endl;
-///   t.Start();   
-///   task1();   
-///   t.Stop();   
+///   t.Start();
+///   task1();
+///   t.Stop();
 ///   cout << t << endl;
 ///
 
@@ -77,7 +77,7 @@
 ///   cout << t1 << endl;
 ///   cout << "Total time for task2(): " << endl;
 ///   cout << t2 << endl;
-///  
+///
 ///   By default, a TaskTimer will not track the increase in memory
 ///   usage during a test.  Use SetTrackMemory( true ) to turn on this
 ///   feature.
@@ -118,23 +118,31 @@ private:
 
 public:
   TaskTimer()
-    : is_running_(false), 
+    : is_running_(false),
       track_memory_(false),
       diff_mem_usage_(0),
       tasks_timed_(0),
-      running_time_(0), 
-      u_time_(0), 
+      running_time_(0),
+      u_time_(0),
       s_time_(0),
       timeout_(0)
   { }
 
-  bool IsTrackingMemory() const { return track_memory_; }
-  void SetTrackMemory( const bool track_memory ) { track_memory_ = track_memory; }
+  bool IsTrackingMemory() const {
+    return track_memory_;
+  }
+  void SetTrackMemory( const bool track_memory ) {
+    track_memory_ = track_memory;
+  }
 
-  bool IsRunning() const { return is_running_; }
+  bool IsRunning() const {
+    return is_running_;
+  }
 
-  int GetTasksTimed() const { return tasks_timed_; }
-  
+  int GetTasksTimed() const {
+    return tasks_timed_;
+  }
+
   // I avoid use of local variables in Start() and Stop() to
   // increase the probability that they will be inlined.
 
@@ -176,7 +184,7 @@ public:
   }
 
   void Reset()
-  { 
+  {
     if ( is_running_ ) {
       cerr << "This timer is running and cannot be reset." << endl;
       return;
@@ -193,7 +201,7 @@ public:
   void SetTimeOut(const float timeout_sec)
   {
     const float ticks_per_second = clockTicksPerSecond();
-    
+
     timeout_ = clock_t(timeout_sec * ticks_per_second);
   }
 
@@ -215,12 +223,12 @@ public:
         Stop();
         return true;
       }
-      else 
+      else
         return false;
     }
-    else 
+    else
       return (running_time_ > timeout_);
-        
+
   }
 
 
@@ -232,7 +240,7 @@ public:
       out << "This timer is still running.";
       return;
     }
-      
+
     if ( tasks_timed_ == 0 ) {
       out << "This timer has not been used.";
       return;
@@ -294,7 +302,7 @@ public:
 
     int old_precision = out.precision( 2 );
     ios::fmtflags old_fmtflags = out.setf( ios::fixed | ios::left );
-      
+
     float elapsed_time = the_timer.running_time_;
     out << "Elapsed: "
         << elapsed_time / ticks_per_second;
@@ -326,12 +334,12 @@ public:
     float oldelapsed = 0.0;
 
     ifstream infile(filename.c_str());
-    if (infile) 
-      infile >> oldelapsed; 
+    if (infile)
+      infile >> oldelapsed;
     infile.close();
 
     ofstream outfile(filename.c_str());
-    if (outfile)  
+    if (outfile)
       outfile << (oldelapsed + newelapsed) << endl;
     outfile.close();
   }

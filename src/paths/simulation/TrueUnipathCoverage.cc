@@ -7,7 +7,7 @@
 //   can be responsible for its use, misuse, or functionality.             //
 /////////////////////////////////////////////////////////////////////////////
 
-// TrueUnipathCoverage.  
+// TrueUnipathCoverage.
 // Count the number of times each unipath appears in the genome,
 // then make a MasterVec< SerfVec< pair<copy_num_t,prob_t> > > in the same
 // format as UnipathCoverage (the pair <n,p> means that the probability that the
@@ -36,11 +36,11 @@ int main( int argc, char *argv[] )
   BeginCommandArguments;
   CommandArgument_String(PRE);
   CommandArgument_String(DATA);
-  CommandArgument_String(RUN); 
+  CommandArgument_String(RUN);
   CommandArgument_Int(K);
   CommandArgument_String_OrDefault(READS, "genome");
   EndCommandArguments;
-  
+
   // Set up directories.
 
   String datadir = PRE + "/" + DATA;
@@ -66,8 +66,8 @@ int main( int argc, char *argv[] )
     pdf[i].push_back( pair<copy_num_t,prob_t>( hits.size(), 1.0 ) );
   }
 
-  pdf.WriteAll( run_dir + "/"+READS+".unipaths.true_count.k" 
-		+ ToString(K) );    
+  pdf.WriteAll( run_dir + "/"+READS+".unipaths.true_count.k"
+                + ToString(K) );
 }
 
 #include "feudal/SmallVecDefs.h"

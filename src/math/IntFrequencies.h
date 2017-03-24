@@ -6,7 +6,7 @@
 //   Institute is not responsible for its use, misuse, or functionality.     //
 ///////////////////////////////////////////////////////////////////////////////
 // author: Filipe Ribeiro      03/2011
-// 
+//
 //
 //
 
@@ -21,7 +21,9 @@
 class IntFrequencies : public IntFunction<size_t>
 {
 public:
-  size_t freq(const int x) const { return (*this)[x]; }
+  size_t freq(const int x) const {
+    return (*this)[x];
+  }
 
   void to_text_file(const String & head) const
   {
@@ -46,7 +48,7 @@ public:
       cum += fx;
       os << setw(10) << x << " "
          << setw(16) << fx << " "
-         << setw(16) << cum << " " 
+         << setw(16) << cum << " "
          << setw(16) << setprecision(12) << double(fx) / cum_double << " "
          << setw(16) << setprecision(12) << double(cum) / cum_double << endl;
     }

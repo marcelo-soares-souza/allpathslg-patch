@@ -26,58 +26,58 @@ unsigned int lineLen;
 
 void progressReport( unsigned int contigNo, bvec const& bvec )
 {
-    unsigned long end = (gBaseCount + bvec.size())/1000000UL;
-    for ( unsigned long iii = gBaseCount/1000000UL; iii < end; ++iii )
+  unsigned long end = (gBaseCount + bvec.size())/1000000UL;
+  for ( unsigned long iii = gBaseCount/1000000UL; iii < end; ++iii )
+  {
+    std::cout << '.';
+    if ( ++lineLen == 60 )
     {
-        std::cout << '.';
-        if ( ++lineLen == 60 )
-        {
-            std::cout << '\n';
-            lineLen = 0;
-        }
+      std::cout << '\n';
+      lineLen = 0;
     }
-    std::cout.flush();
-    gBaseCount += bvec.size();
+  }
+  std::cout.flush();
+  gBaseCount += bvec.size();
 }
 
 void processFile( char const* fileName, LookupTabBuilder& locList, bool is_fastb = false )
 {
-    std::cout << "Processing file " << fileName << std::endl;
-    std::cout << "One dot per megabase processed:" << std::endl;
+  std::cout << "Processing file " << fileName << std::endl;
+  std::cout << "One dot per megabase processed:" << std::endl;
 
-    size_t len = strlen(fileName);
-    if ( is_fastb || len > 6 && !strcmp(fileName+len-6,".fastb") )
-        locList.addFastb(fileName,progressReport);
-    else
-        locList.addFasta(fileName,progressReport);
+  size_t len = strlen(fileName);
+  if ( is_fastb || len > 6 && !strcmp(fileName+len-6,".fastb") )
+    locList.addFastb(fileName,progressReport);
+  else
+    locList.addFasta(fileName,progressReport);
 
-    std::cout << std::endl;
+  std::cout << std::endl;
 }
 
 int main( int argc, char** argv )
 {
-    RunTime();
-    BeginCommandArguments;
-    CommandArgument_UnsignedInt_OrDefault(K, 12);
-    CommandArgument_String(SOURCE);
-    CommandArgument_String(OUTPUT);
+  RunTime();
+  BeginCommandArguments;
+  CommandArgument_UnsignedInt_OrDefault(K, 12);
+  CommandArgument_String(SOURCE);
+  CommandArgument_String(OUTPUT);
 
-    // SOURCE is a fastb file, even if it does not end with ".fastb".
-    CommandArgument_Bool_OrDefault( IS_FASTB, False );
+  // SOURCE is a fastb file, even if it does not end with ".fastb".
+  CommandArgument_Bool_OrDefault( IS_FASTB, False );
 
-    EndCommandArguments;
+  EndCommandArguments;
 
-    LookupTabBuilder locList(K);
-    if ( !SOURCE.EndsWith(".fof") )
-        processFile( SOURCE.c_str(), locList, IS_FASTB );
-    else // source file is a file of filenames, one per line
-    {
-        ifstream fof(SOURCE.c_str());
-        char fileName[4096];
-        while ( fof.getline(fileName,sizeof(fileName)) )
-	  processFile( fileName, locList, IS_FASTB );
-        fof.close();
-    }
+  LookupTabBuilder locList(K);
+  if ( !SOURCE.EndsWith(".fof") )
+    processFile( SOURCE.c_str(), locList, IS_FASTB );
+  else // source file is a file of filenames, one per line
+  {
+    ifstream fof(SOURCE.c_str());
+    char fileName[4096];
+    while ( fof.getline(fileName,sizeof(fileName)) )
+      processFile( fileName, locList, IS_FASTB );
+    fof.close();
+  }
 
-    locList.write(OUTPUT.c_str());
+  locList.write(OUTPUT.c_str());
 }

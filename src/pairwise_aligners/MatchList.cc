@@ -9,13 +9,13 @@
 
 #include "pairwise_aligners/MatchList.h"
 
-bool MatchList::FindMatchInSorted( const int id1, const Match& newMatch ) const 
+bool MatchList::FindMatchInSorted( const int id1, const Match& newMatch ) const
 {
   const vec<Match>& sortedMatches = m_sortedMatches[id1];
 
   pair<vec<Match>::const_iterator,vec<Match>::const_iterator> range;
   range = equal_range( sortedMatches.begin(), sortedMatches.end(), newMatch );
-  
+
   // We can use QuickContains here because the equal_range ensures that all the
   // elements in the range have the same id2, rc, and offset.
   for ( ; range.first != range.second; ++range.first )
@@ -25,7 +25,7 @@ bool MatchList::FindMatchInSorted( const int id1, const Match& newMatch ) const
   return false;
 }
 
-bool MatchList::FindMatchInUnsorted( const int id1, const Match& newMatch ) const 
+bool MatchList::FindMatchInUnsorted( const int id1, const Match& newMatch ) const
 {
   const vec<Match>& unsortedMatches = m_unsortedMatches[id1];
 
@@ -37,7 +37,7 @@ bool MatchList::FindMatchInUnsorted( const int id1, const Match& newMatch ) cons
   return false;
 }
 
-void MatchList::UnsortedToSorted( const int id1 ) 
+void MatchList::UnsortedToSorted( const int id1 )
 {
   vec<Match>& sortedMatches = m_sortedMatches[id1];
   vec<Match>& unsortedMatches = m_unsortedMatches[id1];
@@ -53,7 +53,7 @@ void MatchList::UnsortedToSorted( const int id1 )
   if ( sortedMatches.empty() )
     // This has the side effect of clearing the unsorted vector.
     sortedMatches.swap( unsortedMatches );
-  
+
   else {
     // We do a merge sort of the two sorted vectors.
 
@@ -66,17 +66,17 @@ void MatchList::UnsortedToSorted( const int id1 )
     int newSize = oldSize + unsortedMatches.size();
 
     sortedMatches.resize( newSize );
-    
+
     int newIndex = newSize - 1;
     int oldSortedIndex = oldSize - 1;
     int oldUnsortedIndex = unsortedMatches.size() - 1;
-    
+
     while ( newIndex >= 0 ) {
-      if ( oldSortedIndex >= 0 ) 
-        if ( oldUnsortedIndex >= 0 ) 
+      if ( oldSortedIndex >= 0 )
+        if ( oldUnsortedIndex >= 0 )
           // In this case, we need to compare the two matches and copy the greater one
           // first (since we're going backwards through the vectors).
-          if ( sortedMatches[oldSortedIndex] > unsortedMatches[oldUnsortedIndex] ) 
+          if ( sortedMatches[oldSortedIndex] > unsortedMatches[oldUnsortedIndex] )
             sortedMatches[newIndex--] = sortedMatches[oldSortedIndex--];
           else
             sortedMatches[newIndex--] = unsortedMatches[oldUnsortedIndex--];
@@ -89,7 +89,7 @@ void MatchList::UnsortedToSorted( const int id1 )
             break;
           sortedMatches[newIndex--] = sortedMatches[oldSortedIndex--];
         }
-      else // oldSortedIndex < 0 
+      else // oldSortedIndex < 0
         // Lastly, if we've finished copying all the pre-existing matches and there are
         // still some new "unsorted" matches left, copy them.
         sortedMatches[newIndex--] = unsortedMatches[oldUnsortedIndex--];
@@ -98,9 +98,9 @@ void MatchList::UnsortedToSorted( const int id1 )
     // All the Matches in the unsorted vector are now in the sorted vector.
     unsortedMatches.clear();
   }
-}  
+}
 
-void MatchList::AddMatch( const int id1, const Match& newMatch ) 
+void MatchList::AddMatch( const int id1, const Match& newMatch )
 {
   vec<Match>& unsortedMatches = m_unsortedMatches[id1];
 
@@ -136,14 +136,14 @@ void MatchList::ProcessMatchingKmers( int pos1, int pos2, int len,
    * if ( ! swapSeqs && pSeq1->size() == pSeq2->size() )
    */
   bool swapSeqs = false;
-  
-    // We have to be careful here, since modulo on negative numbers is weird.
-    if ( id2 > id1 )
-      swapSeqs = ( (id2-id1)%2 == 1 );
-    else if ( id1 > id2 )
-      swapSeqs = ( (id1-id2)%2 == 0 );
-    else // id1 == id2
-      swapSeqs = ( pos1 > pos2 );
+
+  // We have to be careful here, since modulo on negative numbers is weird.
+  if ( id2 > id1 )
+    swapSeqs = ( (id2-id1)%2 == 1 );
+  else if ( id1 > id2 )
+    swapSeqs = ( (id1-id2)%2 == 0 );
+  else // id1 == id2
+    swapSeqs = ( pos1 > pos2 );
 
   if ( swapSeqs ) {
     swap( pos1, pos2 );
@@ -166,7 +166,7 @@ void MatchList::ProcessMatchingKmers( int pos1, int pos2, int len,
   // If it's not in either, then compute its maximal extension and store that
   // match.
   int errors;
-  if (!rc) 
+  if (!rc)
     MaxMutmerFromMer( pos1, pos2, len, errors, *pSeq1, *pSeq2, True );
   else
     MaxMutmerFromMerRev( pos1, pos2, len, errors, *pSeq1, *pSeq2, True );
@@ -174,7 +174,7 @@ void MatchList::ProcessMatchingKmers( int pos1, int pos2, int len,
   this->AddMatch( id1, Match( id2, rc, pos1, pos2, len ) );
 }
 
-void MatchList::GetMatches( const int id1, vec<Match>& matches ) const 
+void MatchList::GetMatches( const int id1, vec<Match>& matches ) const
 {
   const vec<Match>& sortedMatches = m_sortedMatches[id1];
   const vec<Match>& unsortedMatches = m_unsortedMatches[id1];
@@ -187,11 +187,11 @@ void MatchList::GetMatches( const int id1, vec<Match>& matches ) const
         back_inserter( matches ) );
 }
 
-void MatchList::GetMatchCounts( vec<int>& matchCounts ) const 
+void MatchList::GetMatchCounts( vec<int>& matchCounts ) const
 {
   matchCounts.clear();
   matchCounts.resize( m_sortedMatches.size() );
-  
+
   for ( unsigned int i = 0; i < m_sortedMatches.size(); ++i )
     matchCounts[i] = m_sortedMatches[i].size() + m_unsortedMatches[i].size();
 }

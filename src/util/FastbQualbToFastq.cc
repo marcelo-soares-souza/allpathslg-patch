@@ -6,7 +6,7 @@
 //   Institute is not responsible for its use, misuse, or functionality.     //
 ///////////////////////////////////////////////////////////////////////////////
 
-// FastbQualbToFastq.  Given fastb and qualb, generate fastq file(s). 
+// FastbQualbToFastq.  Given fastb and qualb, generate fastq file(s).
 
 #include "MainTools.h"
 #include "Basevector.h"
@@ -17,7 +17,7 @@ String qual_vec_to_fastq_string(const QualVec & qv, const unsigned ascii_offset)
 {
   ForceAssert(ascii_offset == 33 || ascii_offset == 64);
   String s = "";
-  for (size_t i = 0; i < qv.size(); i++) 
+  for (size_t i = 0; i < qv.size(); i++)
     s += qv[i] + ascii_offset;
   return s;
 }
@@ -38,8 +38,8 @@ void read_to_fastq_stream(ofstream & fastq,
   fastq << (rc ? BaseVec(bv).ReverseComplement() : bv).ToString() << endl;
   fastq << "+" << endl;
   fastq << qual_vec_to_fastq_string((rc ? QualVec(qv).ReverseMe() : qv),
-                                      phred_offset) << endl;
-}                          
+                                    phred_offset) << endl;
+}
 
 
 
@@ -61,11 +61,11 @@ int main(int argc, char *argv[])
   CommandArgument_String_OrDefault_Doc(NAMING_PREFIX, HEAD_IN, "Read name prefix to read ID");
   CommandArgument_String_OrDefault_Doc(NAMING_SUFFIX, "", "Read name suffix to read ID");
   CommandArgument_Bool_OrDefault_Doc(PICARD_NAMING_SCHEME, False, "If true, "
-				     "add '/1' to the end of first read "
-				     "names, '/2' to the end of second.");
+                                     "add '/1' to the end of first read "
+                                     "names, '/2' to the end of second.");
   CommandArgument_Bool_OrDefault_Doc(FLIP, False, "reverse complement reads and quals");
-  CommandArgument_Bool_OrDefault_Doc(SIMULATE_QUALS, False, 
-				     "simulate required qualb file with constant value of 50");
+  CommandArgument_Bool_OrDefault_Doc(SIMULATE_QUALS, False,
+                                     "simulate required qualb file with constant value of 50");
   EndCommandArguments;
 
   // Load the data.
@@ -74,107 +74,107 @@ int main(int argc, char *argv[])
   VBaseVecVec::const_iterator it_bv = vbvv.begin();
   const size_t nbv = vbvv.size();
   size_t ibv = 0;
-  
-  if ( ! SIMULATE_QUALS ){
-    VQualVecVec vqvv((HEAD_IN + ".qualb").c_str());  
+
+  if ( ! SIMULATE_QUALS ) {
+    VQualVecVec vqvv((HEAD_IN + ".qualb").c_str());
     VQualVecVec::const_iterator it_qv = vqvv.begin();
-      
+
     if (PAIRED) {
-      
+
       cout << "Creating '" << HEAD_OUT << ".{A,B}.fastq':" << endl;
       ofstream fastq_A((HEAD_OUT + ".A.fastq").c_str());
       ofstream fastq_B((HEAD_OUT + ".B.fastq").c_str());
-      
+
       const String suffix_A = (PICARD_NAMING_SCHEME ? "/1" : "" ) + NAMING_SUFFIX;
       const String suffix_B = (PICARD_NAMING_SCHEME ? "/2" : "" ) + NAMING_SUFFIX;
-      
+
       while (it_bv != vbvv.end() && it_qv != vqvv.end()) {
-	
-	ForceAssertEq(it_bv->size(), it_qv->size());
-	
-	read_to_fastq_stream(fastq_A, *it_bv, *it_qv, ibv, 
-			     PHRED_OFFSET, NAMING_PREFIX, suffix_A, FLIP);
-	it_bv++;
-	it_qv++;
-	
-	read_to_fastq_stream(fastq_B, *it_bv, *it_qv, ibv, 
-			     PHRED_OFFSET, NAMING_PREFIX, suffix_B, FLIP);
-	it_bv++;
-	it_qv++;
-	
-	dots_pct(ibv++, nbv/2);
+
+        ForceAssertEq(it_bv->size(), it_qv->size());
+
+        read_to_fastq_stream(fastq_A, *it_bv, *it_qv, ibv,
+                             PHRED_OFFSET, NAMING_PREFIX, suffix_A, FLIP);
+        it_bv++;
+        it_qv++;
+
+        read_to_fastq_stream(fastq_B, *it_bv, *it_qv, ibv,
+                             PHRED_OFFSET, NAMING_PREFIX, suffix_B, FLIP);
+        it_bv++;
+        it_qv++;
+
+        dots_pct(ibv++, nbv/2);
       }
-      
+
       fastq_A.close();
       fastq_B.close();
-      
+
     }
     else {
       cout << "Creating '" << HEAD_OUT << ".fastq':" << endl;
       ofstream fastq((HEAD_OUT + ".fastq").c_str());
-      
+
       while (it_bv != vbvv.end() && it_qv != vqvv.end()) {
-	
-	ForceAssertEq(it_bv->size(), it_qv->size());
-	
-	read_to_fastq_stream(fastq, *it_bv, *it_qv, ibv, 
-			     PHRED_OFFSET, NAMING_PREFIX, NAMING_SUFFIX, FLIP);
-	it_bv++;
-	it_qv++;
-	
-	dots_pct(ibv++, nbv);
+
+        ForceAssertEq(it_bv->size(), it_qv->size());
+
+        read_to_fastq_stream(fastq, *it_bv, *it_qv, ibv,
+                             PHRED_OFFSET, NAMING_PREFIX, NAMING_SUFFIX, FLIP);
+        it_bv++;
+        it_qv++;
+
+        dots_pct(ibv++, nbv);
       }
       fastq.close();
     }
-    
-  }else{
-    
+
+  } else {
+
     if (PAIRED) {
-      
+
       cout << "Creating '" << HEAD_OUT << ".{A,B}.fastq':" << endl;
       ofstream fastq_A((HEAD_OUT + ".A.fastq").c_str());
       ofstream fastq_B((HEAD_OUT + ".B.fastq").c_str());
-      
+
       const String suffix_A = (PICARD_NAMING_SCHEME ? "/1" : "" ) + NAMING_SUFFIX;
       const String suffix_B = (PICARD_NAMING_SCHEME ? "/2" : "" ) + NAMING_SUFFIX;
-      
+
       while (it_bv != vbvv.end() ) {
-	
-	QualVec qv1( it_bv->size(), 50 );
-	
-	read_to_fastq_stream(fastq_A, *it_bv, qv1, ibv, 
-			     PHRED_OFFSET, NAMING_PREFIX, suffix_A, FLIP);
-	it_bv++;
- 
-	QualVec qv2( it_bv->size(), 50 );
-	read_to_fastq_stream(fastq_B, *it_bv, qv2, ibv, 
-			     PHRED_OFFSET, NAMING_PREFIX, suffix_B, FLIP);
-	it_bv++;
-	dots_pct(ibv++, nbv/2);
+
+        QualVec qv1( it_bv->size(), 50 );
+
+        read_to_fastq_stream(fastq_A, *it_bv, qv1, ibv,
+                             PHRED_OFFSET, NAMING_PREFIX, suffix_A, FLIP);
+        it_bv++;
+
+        QualVec qv2( it_bv->size(), 50 );
+        read_to_fastq_stream(fastq_B, *it_bv, qv2, ibv,
+                             PHRED_OFFSET, NAMING_PREFIX, suffix_B, FLIP);
+        it_bv++;
+        dots_pct(ibv++, nbv/2);
       }
-      
+
       fastq_A.close();
       fastq_B.close();
-      
+
     }
     else {
       cout << "Creating '" << HEAD_OUT << ".fastq':" << endl;
       ofstream fastq((HEAD_OUT + ".fastq").c_str());
-      
+
       while (it_bv != vbvv.end() ) {
-	
-	QualVec qv( it_bv->size(), 50 );
-	
-	read_to_fastq_stream(fastq, *it_bv, qv, ibv, 
-			     PHRED_OFFSET, NAMING_PREFIX, NAMING_SUFFIX, FLIP);
-	it_bv++;
-	
-	dots_pct(ibv++, nbv);
+
+        QualVec qv( it_bv->size(), 50 );
+
+        read_to_fastq_stream(fastq, *it_bv, qv, ibv,
+                             PHRED_OFFSET, NAMING_PREFIX, NAMING_SUFFIX, FLIP);
+        it_bv++;
+
+        dots_pct(ibv++, nbv);
       }
       fastq.close();
     }
-  
+
   }
-  
+
 
 }

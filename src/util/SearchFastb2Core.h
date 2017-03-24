@@ -6,8 +6,8 @@
 //   Institute is not responsible for its use, misuse, or functionality.     //
 ///////////////////////////////////////////////////////////////////////////////
 
-// SearchFastb2Core: Given fastb files F1 and F2, find all sequences in F1 that 
-// align  perfectly from end to end to a sequence in F2.  Ignores sequences of 
+// SearchFastb2Core: Given fastb files F1 and F2, find all sequences in F1 that
+// align  perfectly from end to end to a sequence in F2.  Ignores sequences of
 // length < K.  Parallelized.
 //
 // The allowed values of K are hardwired, but other values could easily be added.
@@ -16,7 +16,7 @@
 // - If all sequences in F1 have the same size, set K to that value.
 // - Use the MAX_PLACEMENTS argument.
 //
-// Output: triples (id1, id2, pos) where either pos is the zero-based start of 
+// Output: triples (id1, id2, pos) where either pos is the zero-based start of
 // F1[id1] on F2[id2] or -pos-1 is the zero-based start of rc(F1[id1]) on F2[id2].
 //
 // Note that this codes uses openmp and gcc parallel libraries, which may not
@@ -44,14 +44,14 @@
 /// let pALIGNS be null, supply pTooMany, and set MAX_PLACEMENTS to 0:  pTooMany
 /// will be true at a given index if there was an alignment, false otherwise.
 void SearchFastb2( const String& F1, const String& F2, const int K,
-     vec< triple<int64_t,int64_t,int> >* pALIGNS, BitVec* pTooMany = 0,
-     const int MAX_PLACEMENTS = -1, const double MEM_FRAC_TO_USE = 0.90,
-     const Bool verbose = True );
+                   vec< triple<int64_t,int64_t,int> >* pALIGNS, BitVec* pTooMany = 0,
+                   const int MAX_PLACEMENTS = -1, const double MEM_FRAC_TO_USE = 0.90,
+                   const Bool verbose = True );
 
 /// Turn the output from SearchFastb2 into a vec of alignlets.
 void SF2AlignsToAlignlets( const vecbvec &queries,
-			   const vecbvec &targets,
-			   const vec< triple<int64_t,int64_t,int> > &in_als,
-			   vec<alignlet> &out_als );
-  
+                           const vecbvec &targets,
+                           const vec< triple<int64_t,int64_t,int> > &in_als,
+                           vec<alignlet> &out_als );
+
 #endif

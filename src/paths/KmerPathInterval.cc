@@ -17,20 +17,22 @@ const int KmerPathInterval::maxDiff;
 
 // Methods and friends of KmerPathInterval:
 
-template<class TAG> void KmerPathInterval::AppendToDatabase( 
-     vec<TAG>& segs, int i, int j ) const
-{    if ( !isGap( ) )
-     {    ForceAssertLe( (unsigned int) Length( ), TAG::LENGTH_MAX );// class-appropriate limit
-          ForceAssertLe( uint(j), TAG::POSITION_MAX );// class-appropriate limit
-          TAG t( Start( ), Length( ), i, j );
-          segs.push_back(t);    }    }
+template<class TAG> void KmerPathInterval::AppendToDatabase(
+  vec<TAG>& segs, int i, int j ) const
+{ if ( !isGap( ) )
+  { ForceAssertLe( (unsigned int) Length( ), TAG::LENGTH_MAX );// class-appropriate limit
+    ForceAssertLe( uint(j), TAG::POSITION_MAX );// class-appropriate limit
+    TAG t( Start( ), Length( ), i, j );
+    segs.push_back(t);
+  }
+}
 
-template void KmerPathInterval::AppendToDatabase( vec<tagged_rpint>& segs, 
-						  int i, int j ) const;
-template void KmerPathInterval::AppendToDatabase( vec<big_tagged_rpint>& segs, 
-						  int i, int j ) const;
-template void KmerPathInterval::AppendToDatabase( vec<new_tagged_rpint>& segs, 
-						  int i, int j ) const;
+template void KmerPathInterval::AppendToDatabase( vec<tagged_rpint>& segs,
+    int i, int j ) const;
+template void KmerPathInterval::AppendToDatabase( vec<big_tagged_rpint>& segs,
+    int i, int j ) const;
+template void KmerPathInterval::AppendToDatabase( vec<new_tagged_rpint>& segs,
+    int i, int j ) const;
 
 // Friend functions of tagged_rpint:
 
@@ -73,9 +75,9 @@ template void Prepare( vec<new_tagged_rpint>& segs );
    has been <Prepare()>'ed, return the list of indices in that vector
    of the tagged read path intervals containing the kmer.
 */
-template<class TAG> void Contains( const vec<TAG>& segs, kmer_id_t index, 
-               vec<longlong>& answer, bool append, int cap )
-{    
+template<class TAG> void Contains( const vec<TAG>& segs, kmer_id_t index,
+                                   vec<longlong>& answer, bool append, int cap )
+{
   if ( ! append )
     answer.clear( );
 
@@ -96,7 +98,7 @@ template<class TAG> void Contains( const vec<TAG>& segs, kmer_id_t index,
   // need to go).
   uint lookback = segs[to].Lookback();
   longlong from = to - lookback;
-  
+
   // NOTE: The TAG data structure sets a cap on lookback size: LOOKBACK_MAX.
   // If lookback == LOOKBACK_MAX, then we need to recurse to make sure we are
   // going sufficiently far back.
@@ -104,41 +106,41 @@ template<class TAG> void Contains( const vec<TAG>& segs, kmer_id_t index,
     lookback = segs[from].Lookback();
     from -= lookback;
   }
-  
+
 
   // Copy all the indices between "from" and "to" that contain the given kmer.
   if ( cap < 0 )
-  {    for ( longlong i = from; i <= to; i++ )
-       {
-         if ( index < segs[i].Start( ) ) continue;
-         if ( segs[i].Stop( ) < index ) continue;
-         answer.push_back(i);
-       }
+  { for ( longlong i = from; i <= to; i++ )
+    {
+      if ( index < segs[i].Start( ) ) continue;
+      if ( segs[i].Stop( ) < index ) continue;
+      answer.push_back(i);
+    }
   }
   else
-  {    int count = 0;
-       for ( longlong i = from; i <= to; i++ )
-       {
-         if ( index < segs[i].Start( ) ) continue;
-         if ( segs[i].Stop( ) < index ) continue;
-         answer.push_back(i);
-         if ( ++count == cap ) break;
-       }
+  { int count = 0;
+    for ( longlong i = from; i <= to; i++ )
+    {
+      if ( index < segs[i].Start( ) ) continue;
+      if ( segs[i].Stop( ) < index ) continue;
+      answer.push_back(i);
+      if ( ++count == cap ) break;
+    }
   }
 }
 
-template void Contains( const vec<tagged_rpint>& segs, kmer_id_t index, 
-               vec<longlong>& answer, bool append, int cap );
-template void Contains( const vec<big_tagged_rpint>& segs, kmer_id_t index, 
-               vec<longlong>& answer, bool append, int cap );
-template void Contains( const vec<new_tagged_rpint>& segs, kmer_id_t index, 
-               vec<longlong>& answer, bool append, int cap );
+template void Contains( const vec<tagged_rpint>& segs, kmer_id_t index,
+                        vec<longlong>& answer, bool append, int cap );
+template void Contains( const vec<big_tagged_rpint>& segs, kmer_id_t index,
+                        vec<longlong>& answer, bool append, int cap );
+template void Contains( const vec<new_tagged_rpint>& segs, kmer_id_t index,
+                        vec<longlong>& answer, bool append, int cap );
 
 // Overload Contains() with a second version that looks for all intervals overlapping
 // a given KmerPathInterval, instead of a single kmer.
 
-template<class TAG> void Contains( const vec<TAG>& segs, KmerPathInterval rpi, 
-     vec<longlong>& answer, bool append, int cap ) 
+template<class TAG> void Contains( const vec<TAG>& segs, KmerPathInterval rpi,
+                                   vec<longlong>& answer, bool append, int cap )
 {
   if ( ! append )
     answer.clear( );
@@ -169,10 +171,10 @@ template<class TAG> void Contains( const vec<TAG>& segs, KmerPathInterval rpi,
   // first interval that contains containing that kmer.
   if ( from > 0 ) {
     --from;
-    
+
     uint lookback = segs[from].Lookback();
     from -= lookback;
-    
+
     // NOTE: The TAG data structure sets a cap on lookback size: LOOKBACK_MAX.
     // If lookback == LOOKBACK_MAX, then we need to recurse to make sure we are
     // going sufficiently far back.
@@ -181,35 +183,35 @@ template<class TAG> void Contains( const vec<TAG>& segs, KmerPathInterval rpi,
       from -= lookback;
     }
   }
-  
+
   ForceAssertGe( from, 0 );
 
   // Copy all the indices between "from" and "to" that overlap the given KPI.
   if( cap < 0 ) {
     for( longlong i = from; i <= to; i++ ) {
       if( segs[i].Overlaps(rpi) )
-	answer.push_back(i);
+        answer.push_back(i);
     }
   }
   else {
     int count=0;
     for( longlong i = from; i <= to; i++ ) {
       if( segs[i].Overlaps(rpi) ) {
-	answer.push_back(i);
-	if( ++count == cap ) break;
+        answer.push_back(i);
+        if( ++count == cap ) break;
       }
     }
   }
 }
 
-template void Contains( const vec<tagged_rpint>& segs, KmerPathInterval rpi, 
-     vec<longlong>& answer, bool append, int cap );
-template void Contains( const vec<big_tagged_rpint>& segs, KmerPathInterval rpi, 
-     vec<longlong>& answer, bool append, int cap );
-template void Contains( const vec<new_tagged_rpint>& segs, KmerPathInterval rpi, 
-     vec<longlong>& answer, bool append, int cap );
+template void Contains( const vec<tagged_rpint>& segs, KmerPathInterval rpi,
+                        vec<longlong>& answer, bool append, int cap );
+template void Contains( const vec<big_tagged_rpint>& segs, KmerPathInterval rpi,
+                        vec<longlong>& answer, bool append, int cap );
+template void Contains( const vec<new_tagged_rpint>& segs, KmerPathInterval rpi,
+                        vec<longlong>& answer, bool append, int cap );
 
-// This will efficiently find a single instance of the requested kmer.  
+// This will efficiently find a single instance of the requested kmer.
 // Intended for base lookup, where you don't need to find all of them.
 
 template<class TAG> longlong Instance( const vec<TAG>& segs, kmer_id_t k ) {
@@ -218,12 +220,12 @@ template<class TAG> longlong Instance( const vec<TAG>& segs, kmer_id_t k ) {
   target.data1_ = k << 24;
 
   // Find the first interval that starts with a kmer greater than k
-  typename vec<TAG>::const_iterator i = 
+  typename vec<TAG>::const_iterator i =
     upper_bound( segs.begin(), segs.end(), target );
 
   // If it's the first interval, there are no intervals containing k
   if ( i == segs.begin() ) return -1;
-  
+
   // Otherwise, decrement to point to the last interval that starts
   // with a kmer <=k
   i--;
@@ -232,7 +234,7 @@ template<class TAG> longlong Instance( const vec<TAG>& segs, kmer_id_t k ) {
   // the current i's last kmer.
   uint lookback = i->Lookback();
   i -= lookback;
-  
+
   // NOTE: The TAG data structure sets a cap on lookback size: LOOKBACK_MAX.
   // If lookback == LOOKBACK_MAX, then we need to recurse to make sure we are
   // going sufficiently far back.
@@ -240,7 +242,7 @@ template<class TAG> longlong Instance( const vec<TAG>& segs, kmer_id_t k ) {
     lookback = i->Lookback();
     i -= lookback;
   }
-  
+
 
   // Now search forwards to find an interval containing k.
   // Usually i itself will work, but not always.

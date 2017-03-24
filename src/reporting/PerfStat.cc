@@ -22,11 +22,11 @@ using std::ios_base;
 
 std::istream& operator>>( std::istream& is, PerfStat& perfStat )
 {
-    is >> perfStat.mName;
-    is >> perfStat.mVal;
-    is >> std::ws;
-    getline(is,perfStat.mGloss);
-    return is;
+  is >> perfStat.mName;
+  is >> perfStat.mVal;
+  is >> std::ws;
+  getline(is,perfStat.mGloss);
+  return is;
 }
 
 std::ostream& operator<<( std::ostream& os, PerfStat const& perfStat )

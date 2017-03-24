@@ -19,26 +19,38 @@ public:
 
   void LoadFromFile( const String &pairs_file );
 
-  int GetPartnerId( int read_id ) const { return pairs_to_[read_id]; }
+  int GetPartnerId( int read_id ) const {
+    return pairs_to_[read_id];
+  }
 
-  int GetPairId( int read_id ) const { return pair_id_[read_id]; }
+  int GetPairId( int read_id ) const {
+    return pair_id_[read_id];
+  }
 
   // This returns null if read_id is not paired.
   const read_pairing *GetPair( int read_id ) const;
-  
+
   // Actual pairs (mostly for backward compatibility).
-  const vec<read_pairing> &Pairs( ) const { return pairs_; }
+  const vec<read_pairing> &Pairs( ) const {
+    return pairs_;
+  }
 
   // Map sending read_id to id of partner.
-  const vec<int> &PairsTo( ) const { return pairs_to_; }
+  const vec<int> &PairsTo( ) const {
+    return pairs_to_;
+  }
 
   // Similary, the map sending read_id to the id of pair containing it.
-  const vec<int> &PairId( ) const { return pair_id_; }
+  const vec<int> &PairId( ) const {
+    return pair_id_;
+  }
 
   // Returns pair at ii.
-  const read_pairing &operator[]( int ii ) const { return pairs_[ii]; }
-  
-  
+  const read_pairing &operator[]( int ii ) const {
+    return pairs_[ii];
+  }
+
+
 private:
 
   int n_reads_;              // needed to resize pairs_to_ and pair_id

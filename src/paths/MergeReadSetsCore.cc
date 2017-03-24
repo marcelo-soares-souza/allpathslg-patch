@@ -13,8 +13,8 @@ bool CheckFileSetExists(const vec<String>& heads, const String& suffix, bool ver
   bool found_all = true;
   for (size_t i = 0; i < heads.size(); ++i)
     if (IsRegularFile(heads[i] + suffix) == false) {
-      if (verbose) 
-	cout << "Could not find file: " << heads[i] + suffix << endl;
+      if (verbose)
+        cout << "Could not find file: " << heads[i] + suffix << endl;
       found_all = false;
     }
   return found_all;
@@ -38,19 +38,19 @@ void MergeFeudal(const String& head_out, const vec<String>& heads_in, const Stri
 // do not know how many reads they contain.
 
 void MergeQltout(const String& head_out, const vec<String>& heads_in, const vec<uint64_t> & sizes) {
-  
+
   size_t offset = 0;
   Ofstream(out, head_out + ".qltout");
-  
+
   // Loop over all of the input files.
   for (size_t i = 0 ; i < heads_in.size(); i++) {
     if (IsRegularFile(heads_in[i] + ".mapq"))
-         Cp(heads_in[i] + ".mapq", head_out + ".mapq", True);
-    
+      Cp(heads_in[i] + ".mapq", head_out + ".mapq", True);
+
     // Load LookAligns from this input file.
     vec<look_align> aligns;
     LoadLookAligns( heads_in[i] + ".qltout", aligns, /* ignore bads */ True );
-    
+
     // Apply an offset to each of these LookAligns' read IDs, to account for the
     // merging.  Then write to the output file.
     for (size_t j = 0; j < aligns.size(); j++) {
@@ -59,7 +59,7 @@ void MergeQltout(const String& head_out, const vec<String>& heads_in, const vec<
       aligns[j].PrintParseable(out);
       aligns[j].PrintReadableBrief(out);
     }
-    
+
     offset += sizes[i];
 
   }

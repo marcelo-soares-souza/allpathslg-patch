@@ -20,13 +20,13 @@
 
 /**
  * Arguments
- * 
+ *
  *   1. Reject links if the implied overlap is too large, ie if
  *      ( gap + MAX_DEV * lib_dev ) < - MAX_OVERLAP.
  *
  *   2. Two links are consistent if the windows with center gap and
  *      radius ( STRETCH * dev ) overlap.
- * 
+ *
  *   3. There must be MIN_LINKS or more consistent links to call a
  *      scaffold circular. NB: MIN_LINKS is now an argument in both
  *      IdentifyCircularScaffolds functions.
@@ -52,18 +52,18 @@ const float MAX_OVERLAP_RATIO = 0.1;
  * IdentifyCircularScaffolds
  */
 void IdentifyCircularScaffolds( const PairsManager &pairs,
-				const vec<fastavector> &contigs,
-				const vec<superb> &supers,
-				const vec<alignlet> &aligns,
-				vec<int> &index,
-				vec<Bool> &is_circular,
-				ostream *log,
-				int VERBOSE,
-				int MIN_LINKS )
+                                const vec<fastavector> &contigs,
+                                const vec<superb> &supers,
+                                const vec<alignlet> &aligns,
+                                vec<int> &index,
+                                vec<Bool> &is_circular,
+                                ostream *log,
+                                int VERBOSE,
+                                int MIN_LINKS )
 {
   // This is the only reason we need contigs.
   const int n_contigs = contigs.size( );
-  
+
   // Log stream.
   ofstream devnull ( "/dev/null" );
   ostream &out = VERBOSE ? ( log ? *log : devnull ) : devnull;
@@ -99,7 +99,7 @@ void IdentifyCircularScaffolds( const PairsManager &pairs,
     size_t id1 = pairs.ID1( pair_id );
     size_t id2 = pairs.ID2( pair_id );
     if ( index[id1] < 0 || index[id2] < 0 ) continue;
-    
+
     const alignlet &al1 = aligns[ index[id1] ];
     const alignlet &al2 = aligns[ index[id2] ];
     if ( al1.Fw1( ) == al2.Fw1( ) ) continue;
@@ -126,17 +126,17 @@ void IdentifyCircularScaffolds( const PairsManager &pairs,
     if ( gap + int( MAX_DEV * double( lib_dev ) ) < - MAX_OVERLAP ) continue;
     if ( gap < - int( MAX_OVERLAP_RATIO * float( slen ) ) ) continue;
     if ( slen - dist1 - dist2 < FRAGMENT_SIZE ) continue;
-    
+
     events.push_back( make_pair( super1, pair_id ) );
     tagged[super1] = True;
   }
-  
+
   // Sort events.
   sort( events.begin( ), events.end( ) );
   vec<int> first_event( supers.size( ), -1 );
   for (int ii=events.size( )-1; ii>=0; ii--)
     first_event[ events[ii].first ] = ii;
-  
+
   // Loop over tagged supers.
   int n_circular = 0;
   for (int super_id=0; super_id<supers.isize( ); super_id++) {
@@ -159,12 +159,12 @@ void IdentifyCircularScaffolds( const PairsManager &pairs,
       int dist1 = alR.pos2( ) + start_on_super[tigR];
       int dist2 = super_len[super_id] - start_on_super[tigF] - alF.Pos2( );
       int gap = lib_sep - dist1 - dist2;
-      
+
       NormalDistribution nd( gap, pairs.sd( pair_id ) );
       nds.push_back( make_pair( nd, pair_id ) );
     }
     ForceAssert( nds.size( ) > 0 );
-    
+
     // Cluster gaps in bundles.
     sort( nds.begin( ), nds.end( ) );
     vec< vec< pair<NormalDistribution,longlong> > > bundles( 1 );
@@ -177,8 +177,8 @@ void IdentifyCircularScaffolds( const PairsManager &pairs,
       int cdev = STRETCH * float( nds[ii].first.sigma_ );
       ho_interval curr( csep - cdev, csep + cdev );
       if ( Overlap( prev, curr ) < 1 )
-	bundles.resize( bundles.size( ) + 1 );
-	
+        bundles.resize( bundles.size( ) + 1 );
+
       bundles[bundles.size( )-1].push_back( nds[ii] );
     }
 
@@ -186,11 +186,11 @@ void IdentifyCircularScaffolds( const PairsManager &pairs,
     int bid = -1;
     for (int ii=0; ii<bundles.isize( ); ii++) {
       if ( bundles[ii].isize( ) >= MIN_LINKS ) {
-	bid = ii;
-	break;
+        bid = ii;
+        break;
       }
     }
-    
+
     // No bundle found, leave.
     if ( bid < 0 ) continue;
 
@@ -202,18 +202,18 @@ void IdentifyCircularScaffolds( const PairsManager &pairs,
     NormalDistribution nd_gap = CombineNormalDistributions( nd_only );
     is_circular[super_id] = true;
     n_circular++;
-    
+
     // Log event.
     out << " s" << super_id
-	<< " (" << super_len[super_id] << " bases)"
-	<< " is circular (" << bundles[bid].size( )
-	<< " links found, implying a gap of " 
-	<< ToString( nd_gap.mu_, 0 ) << " +/- "
-	<< ToString( nd_gap.sigma_, 0 ) << ")" << endl;
+        << " (" << super_len[super_id] << " bases)"
+        << " is circular (" << bundles[bid].size( )
+        << " links found, implying a gap of "
+        << ToString( nd_gap.mu_, 0 ) << " +/- "
+        << ToString( nd_gap.sigma_, 0 ) << ")" << endl;
 
     // Nothing else to do.
     if ( VERBOSE < 2 ) continue;
-    
+
     // Verbose extra stuff.
     const vec< pair<NormalDistribution,longlong> > &winner = bundles[bid];
     for (int ii=0; ii<winner.isize( ); ii++) {
@@ -233,9 +233,9 @@ void IdentifyCircularScaffolds( const PairsManager &pairs,
       int dist2 = super_len[super_id] - start_on_super[tigF] - alF.Pos2( );
       int gap = lib_sep - dist1 - dist2;
       out << "   link: s" << super_id << "_" << ii << "." << winner.size( ) - 1
-	  << "\tgap: " << gap << " +/- " << lib_dev
-	  << "\tlib: " << pairs.libraryName( pair_id )
-	  << "\tdist: " << dist1 << " . " << dist2 << endl;
+          << "\tgap: " << gap << " +/- " << lib_dev
+          << "\tlib: " << pairs.libraryName( pair_id )
+          << "\tdist: " << dist1 << " . " << dist2 << endl;
     }
   }
 
@@ -247,7 +247,7 @@ void IdentifyCircularScaffolds( const PairsManager &pairs,
       size_t id1 = pairs.ID1( pair_id );
       size_t id2 = pairs.ID2( pair_id );
       if ( index[id1] < 0 || index[id2] < 0 ) continue;
-      
+
       const alignlet &al1 = aligns[ index[id1] ];
       const alignlet &al2 = aligns[ index[id2] ];
       int tig1 = al1.TargetId( );
@@ -257,35 +257,35 @@ void IdentifyCircularScaffolds( const PairsManager &pairs,
       if ( super1 == super2 ) continue;
 
       if ( ! ( is_circular[super1] || is_circular[super2] ) ) continue;
-      
+
       n_removed++;
       index[id1] = CIRCULAR_INDEX_CODE;
       index[id2] = CIRCULAR_INDEX_CODE;
     }
     out << ToStringAddCommas( n_removed ) << " links removed" << endl;
   }
-  
+
   // Done.
   out << Date( ) << ": IdentifyCircularScaffolds done" << endl;
-  
+
 }
 
 /**
  * IdentifyCircularScaffolds
  */
 void IdentifyCircularScaffolds( const vec<PairsManager> &pairs,
-				const vec<fastavector> &contigs,
-				const vec<superb> &supers,
-				read_locs_on_disk &locs_file,
-				vec<CRing> &rings,
-				ostream *log,
-				int MIN_LINKS )
+                                const vec<fastavector> &contigs,
+                                const vec<superb> &supers,
+                                read_locs_on_disk &locs_file,
+                                vec<CRing> &rings,
+                                ostream *log,
+                                int MIN_LINKS )
 {
   rings.clear( );
 
   // This is the only reason we need contigs.
   const int n_contigs = contigs.size( );
-  
+
   // Log start.
   ofstream devnull ( "/dev/null" );
   ostream &out = ( log ? *log : devnull );
@@ -318,38 +318,38 @@ void IdentifyCircularScaffolds( const vec<PairsManager> &pairs,
     // Loop over contigs in super.
     for (int cgpos=0; cgpos<sup.Ntigs( ); cgpos++) {
       int contig_id = sup.Tig( cgpos );
-      
+
       // Loop over all locs in contig.
       vec<read_loc> locs;
       #pragma omp critical
       locs_file.LoadContig( contig_id, locs );
       for (int loc_id=0; loc_id<locs.isize( ); loc_id++) {
-	const read_loc &rloc = locs[loc_id];
+        const read_loc &rloc = locs[loc_id];
 
-	// Only keep (rc-fw) pairs in same super.
-	int tig2 = rloc.PartnerContigId( );
-	if ( rloc.Fw( ) ) continue;
-	if ( rloc.PartnerRc( ) ) continue;
-	if ( to_super[tig2] != super_id ) continue;
+        // Only keep (rc-fw) pairs in same super.
+        int tig2 = rloc.PartnerContigId( );
+        if ( rloc.Fw( ) ) continue;
+        if ( rloc.PartnerRc( ) ) continue;
+        if ( to_super[tig2] != super_id ) continue;
 
-	int dist1 = rloc.Start( ) + start_on_super[rloc.ContigId( )];
-	int dist2 = slen - start_on_super[tig2] - rloc.PartnerStop( );
-	if ( slen - dist1 - dist2 < FRAGMENT_SIZE ) continue;
-	
-	int gap = rloc.Sep( ) - dist1 - dist2;
-	int dev = rloc.Dev( );
-	if ( gap + int( MAX_DEV * double( dev ) ) < - MAX_OVERLAP ) continue;
-	if ( gap < - int( MAX_OVERLAP_RATIO * float( slen ) ) ) continue;
+        int dist1 = rloc.Start( ) + start_on_super[rloc.ContigId( )];
+        int dist2 = slen - start_on_super[tig2] - rloc.PartnerStop( );
+        if ( slen - dist1 - dist2 < FRAGMENT_SIZE ) continue;
 
-	// Add gap and dev to list.
-	#pragma omp critical
-	nds.push_back( NormalDistribution( gap, dev ) );
+        int gap = rloc.Sep( ) - dist1 - dist2;
+        int dev = rloc.Dev( );
+        if ( gap + int( MAX_DEV * double( dev ) ) < - MAX_OVERLAP ) continue;
+        if ( gap < - int( MAX_OVERLAP_RATIO * float( slen ) ) ) continue;
+
+        // Add gap and dev to list.
+        #pragma omp critical
+        nds.push_back( NormalDistribution( gap, dev ) );
       }
     }
-    
+
     // No links found, leave.
     if ( nds.size( ) < 1 ) continue;
-    
+
     // Cluster gaps in bundles.
     sort( nds.begin( ), nds.end( ) );
     vec< vec<NormalDistribution> > bundles( 1 );
@@ -362,8 +362,8 @@ void IdentifyCircularScaffolds( const vec<PairsManager> &pairs,
       int cdev = STRETCH * float( nds[ii].sigma_ );
       ho_interval curr( csep - cdev, csep + cdev );
       if ( Overlap( prev, curr ) < 1 )
-	bundles.resize( bundles.size( ) + 1 );
-	
+        bundles.resize( bundles.size( ) + 1 );
+
       bundles[bundles.size( )-1].push_back( nds[ii] );
     }
 
@@ -371,11 +371,11 @@ void IdentifyCircularScaffolds( const vec<PairsManager> &pairs,
     int bid = -1;
     for (int ii=0; ii<bundles.isize( ); ii++) {
       if ( bundles[ii].isize( ) >= MIN_LINKS ) {
-	bid = ii;
-	break;
+        bid = ii;
+        break;
       }
     }
-    
+
     // No bundle found, leave.
     if ( bid < 0 ) continue;
 
@@ -388,21 +388,21 @@ void IdentifyCircularScaffolds( const vec<PairsManager> &pairs,
     NormalDistribution nd_gap = CombineNormalDistributions( nd_only );
     int circ_gap = (int)nd_gap.mu_;
     int circ_dev = (int)nd_gap.sigma_;
-    
+
     #pragma omp critical
     rings.push_back( CRing( super_id, circ_gap, circ_dev, n_links ) );
-    
+
     // Log event.
     #pragma omp critical
     out << " s" << super_id
-	<< " (" << super_len[super_id] << " bases)"
-	<< " is circular (" << n_links
-	<< " links found, implying a gap of " 
-	<< circ_gap << " +/- " << circ_dev << ")" << endl;
+        << " (" << super_len[super_id] << " bases)"
+        << " is circular (" << n_links
+        << " links found, implying a gap of "
+        << circ_gap << " +/- " << circ_dev << ")" << endl;
   }
-  
+
   // Sort answer and leave.
   sort( rings.begin( ), rings.end( ) );
   out << Date( ) << ": IdentifyCircularScaffolds done" << endl;
-  
+
 }

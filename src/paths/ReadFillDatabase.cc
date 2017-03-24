@@ -7,35 +7,35 @@
 
 void ReadFillDatabase::FillsFromFile( const String& filename ) {
   delete mp_RFD;
-  
+
   // Instantiate the appropriate pointed-to RFD implementation
   if( IsRegularFile(filename) )
     mp_RFD = new vectorRFD(filename);
   else
     mp_RFD = new identityRFD();
-  
+
   // Load the left and right trims -- either per-fill trims,
   // or the per-read trims from eg reads.paths.left_trim.k48
-  
+
   String left_trim_file(filename), right_trim_file(filename);
   if( filename.Contains( "_fillrecords." ) ) {
     left_trim_file.ReplaceBy( "_fillrecords.", "_fillrecords.left_trim." );
     right_trim_file.ReplaceBy( "_fillrecords.", "_fillrecords.right_trim." );
   }
-  
+
   if( IsRegularFile(left_trim_file) && IsRegularFile(right_trim_file) ) {
     trim_indexed_by_fill = true;
   }
   else {
     trim_indexed_by_fill = false;
-    
+
     String dirname = Dirname(filename);
     String k48 = FilenameExtension(filename);
-    
+
     left_trim_file = dirname + "/reads.paths.left_trim." + k48;
     right_trim_file = dirname + "/reads.paths.right_trim." + k48;
   }
-  
+
   BinaryReader::readFile( left_trim_file, &left_trim );
   BinaryReader::readFile( right_trim_file, &right_trim );
 }
@@ -54,6 +54,6 @@ int ReadFillDatabase::vectorRFD::FillToRead( int fill ) const {
 
   ReadFillRecord dummy( fill, 0,0,0 );
   cached_read = (upper_bound(mp_fills->begin(), mp_fills->end(), dummy, ReadFillLess())
-		 - mp_fills->begin()) - 1;
+                 - mp_fills->begin()) - 1;
   return cached_read;
 }

@@ -33,12 +33,15 @@ String ToStringAbbrev(const long x)
   if (fabs(xDouble) > 1000.)
   { xDouble /= 1000.;
     suffix = "M";
-    ++precision; }
+    ++precision;
+  }
   if (fabs(xDouble) > 1000.)
   { xDouble /= 1000.;
     suffix = "G";
-    ++precision; }
-  return ToString(xDouble, precision) + suffix; }
+    ++precision;
+  }
+  return ToString(xDouble, precision) + suffix;
+}
 
 // ToStringAddCommas
 
@@ -50,14 +53,18 @@ String ToStringAddCommas(const int64_t x)
   unsigned int phase = 0;
   for ( String::const_reverse_iterator itr(tmps.crbegin()); itr != end; ++itr )
   {
-      if ( phase == 3 ) { result.push_back(','); phase = 0; }
-      phase += 1;
-      result.push_back(*itr);
+    if ( phase == 3 ) {
+      result.push_back(',');
+      phase = 0;
+    }
+    phase += 1;
+    result.push_back(*itr);
   }
   if ( x < 0 ) result.push_back( '-' );
   using std::reverse;
   reverse(result.begin(),result.end());
-  return result; }
+  return result;
+}
 
 String ToStringAddCommas(const uint64_t x)
 { String tmps = ToString(x);
@@ -67,13 +74,17 @@ String ToStringAddCommas(const uint64_t x)
   unsigned int phase = 0;
   for ( String::const_reverse_iterator itr(tmps.crbegin()); itr != end; ++itr )
   {
-      if ( phase == 3 ) { result.push_back(','); phase = 0; }
-      phase += 1;
-      result.push_back(*itr);
+    if ( phase == 3 ) {
+      result.push_back(',');
+      phase = 0;
+    }
+    phase += 1;
+    result.push_back(*itr);
   }
   using std::reverse;
   reverse(result.begin(),result.end());
-  return result; }
+  return result;
+}
 
 String ToStringAddCommas(const int32_t x)
 { String tmps = x < 0 ? ToString(-x) : ToString(x);
@@ -83,14 +94,18 @@ String ToStringAddCommas(const int32_t x)
   unsigned int phase = 0;
   for ( String::const_reverse_iterator itr(tmps.crbegin()); itr != end; ++itr )
   {
-      if ( phase == 3 ) { result.push_back(','); phase = 0; }
-      phase += 1;
-      result.push_back(*itr);
+    if ( phase == 3 ) {
+      result.push_back(',');
+      phase = 0;
+    }
+    phase += 1;
+    result.push_back(*itr);
   }
   if ( x < 0 ) result.push_back( '-' );
   using std::reverse;
   reverse(result.begin(),result.end());
-  return result; }
+  return result;
+}
 
 String ToStringAddCommas(const uint32_t x)
 { String tmps = ToString(x);
@@ -100,59 +115,73 @@ String ToStringAddCommas(const uint32_t x)
   unsigned int phase = 0;
   for ( String::const_reverse_iterator itr(tmps.crbegin()); itr != end; ++itr )
   {
-      if ( phase == 3 ) { result.push_back(','); phase = 0; }
-      phase += 1;
-      result.push_back(*itr);
+    if ( phase == 3 ) {
+      result.push_back(',');
+      phase = 0;
+    }
+    phase += 1;
+    result.push_back(*itr);
   }
   using std::reverse;
   reverse(result.begin(),result.end());
-  return result; }
+  return result;
+}
 
 // RemoveCommas - useful as the sort-of inverse of above (returns a String).
 String RemoveCommas(const String& s)
 {
-    String result;
-    char const comma = ',';
-    auto not_comma = [](char c)->bool { return c != comma; };
-    std::back_insert_iterator<String> back_itr(result);
-    std::copy_if( s.begin(), s.end(), back_itr, not_comma );
-    return result;
+  String result;
+  char const comma = ',';
+  auto not_comma = [](char c)->bool { return c != comma; };
+  std::back_insert_iterator<String> back_itr(result);
+  std::copy_if( s.begin(), s.end(), back_itr, not_comma );
+  return result;
 }
 
 // QuoteString
 String QuoteString(const String& s)
 {
-    String quoted;
-    quoted.push_back('"');
-    for ( auto ch: s ) {
-	if ( ch == '"' ) quoted.push_back('\\');
-	quoted.push_back(ch);
-    }
-    quoted.push_back('"');
-    return quoted;
+  String quoted;
+  quoted.push_back('"');
+  for ( auto ch: s ) {
+    if ( ch == '"' ) quoted.push_back('\\');
+    quoted.push_back(ch);
+  }
+  quoted.push_back('"');
+  return quoted;
 }
 
 // ToLower
 String ToLower(const String &s)
-{ String slower(s); slower.ToLower(); return slower; }
+{
+  String slower(s);
+  slower.ToLower();
+  return slower;
+}
 
 // ToUpper
 String ToUpper(const String & s)
-{ String supper(s); supper.ToUpper(); return supper; }
+{
+  String supper(s);
+  supper.ToUpper();
+  return supper;
+}
 
 // DeleteLeadingWhiteSpace
 void DeleteLeadingWhiteSpace(String& s)
 { size_type lastpos = 0;
   while((lastpos < s.size()) && isspace(s[lastpos]))
     ++lastpos;
-  s.erase(0, lastpos); }
+  s.erase(0, lastpos);
+}
 
 // DeleteTrailingWhiteSpace
 void DeleteTrailingWhiteSpace(String& s)
 { size_type firstpos = s.size();
   while((firstpos > 0) && isspace(s[firstpos - 1]))
     --firstpos;
-  s.erase(firstpos); }
+  s.erase(firstpos);
+}
 
 // WhiteSpaceFree
 String WhiteSpaceFree(const String& s)
@@ -160,8 +189,9 @@ String WhiteSpaceFree(const String& s)
   answer.reserve(s.size());
   String::const_iterator end(s.end());
   for ( String::const_iterator itr(s.begin()); itr != end; ++itr )
-      if ( !isspace(*itr) ) answer.push_back(*itr);
-  return answer; }
+    if ( !isspace(*itr) ) answer.push_back(*itr);
+  return answer;
+}
 
 // cmp_numeric
 bool cmp_numeric(const String& s1, const String& s2)
@@ -170,7 +200,8 @@ bool cmp_numeric(const String& s1, const String& s2)
     if (!isdigit(s1[i]) || !isdigit(s2[i]))
     { if (s1[i] < s2[i]) return true;
       if (s1[i] > s2[i]) return false;
-      continue; }
+      continue;
+    }
     String::size_type j1, j2;
     for (j1 = i + 1; j1 < s1.size(); j1++)
       if (!isdigit(s1[j1])) break;
@@ -185,41 +216,52 @@ bool cmp_numeric(const String& s1, const String& s2)
     if (n1 > n2) return false;
     if (j1 < j2) return false;
     if (j1 > j2) return true;
-    i = j1 - 1; }
-    return s1.size() < s2.size(); }
+    i = j1 - 1;
+  }
+  return s1.size() < s2.size();
+}
 
 String BaseAlpha(unsigned int n)
 { String result;
   result.reserve(7);
   do
   {
-      result.push_back('A' + n%26);
+    result.push_back('A' + n%26);
   }
   while ( n /= 26 );
   using std::reverse;
   reverse(result.begin(),result.end());
-  return result; }
+  return result;
+}
 
 unsigned int UnBaseAlpha(const String& s)
 { unsigned int answer = 0;
   String::const_iterator end(s.end());
   for ( String::const_iterator itr(s.begin()); itr != end; ++itr )
-      answer = 26*answer + (*itr - 'A');
-  return answer; }
+    answer = 26*answer + (*itr - 'A');
+  return answer;
+}
 
 String BaseAlNum(unsigned int n)
-{    String result;
-     result.reserve(7);
-     do
-     {    int k = n % 36;
-          if ( k < 26 ) result.push_back( 'A' + k );
-          else result.push_back( '0' + (k-26) );    }
-     while ( n /= 36 );
-     reverse( result.begin( ),result.end( ) );
-     return result;    }
+{ String result;
+  result.reserve(7);
+  do
+  { int k = n % 36;
+    if ( k < 26 ) result.push_back( 'A' + k );
+    else result.push_back( '0' + (k-26) );
+  }
+  while ( n /= 36 );
+  reverse( result.begin( ),result.end( ) );
+  return result;
+}
 
 std::istream& operator>> (std::istream& in, String& s)
-{ std::string buf; in >> buf; s = buf.c_str(); return in; }
+{
+  std::string buf;
+  in >> buf;
+  s = buf.c_str();
+  return in;
+}
 
 #include "feudal/FeudalStringDefs.h"
 template class FeudalString< char >;
