@@ -47,8 +47,8 @@ int main( int argc, char *argv[] )
     
     int libID = pairs.libraryID( libName );
     ForceAssertLt( libID, nLibraries); ForceAssertGe( libID, 0 );
-    cout << "old: " << PRINT4( libName, libID, pairs.getLibrarySep(libID), pairs.getLibrarySD(libID) );
-    cout << "new: " << PRINT4( libName, libID, sep, dev );
+    // Debugando cout << "old: " << PRINT4( libName, libID, pairs.getLibrarySep(libID), pairs.getLibrarySD(libID) );
+    // Gambiarra cout << "new: " << PRINT4( libName, libID, sep, dev );
     pairs.changeLibrarySepSd( libID, sep, dev );
   }
   in.close();

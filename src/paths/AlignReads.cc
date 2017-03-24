@@ -367,7 +367,7 @@ void FindAcceptableAlignment( const int rpass, const double max_OK,
      if ( rpass == 2 )
      {    Bool long_jump_OK = False;
           const align_plus& ap = aligns[0];
-          align  a = ap.a;
+          allpathslg::align  a = ap.a;
           const basevector& TIG = tigs[ap.tig];
           basevector b = bases[id];
           if ( !ap.fw ) b.ReverseComplement( );
