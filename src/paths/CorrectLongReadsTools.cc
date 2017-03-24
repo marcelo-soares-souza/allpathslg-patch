@@ -317,7 +317,7 @@ void AlignReadToPath(
 
      double& ERRS, int& LMATCHES,
      triple<int,int,String>& EREPORTS, int& LASTPOS, int& LAST, Bool& SKIPPED,
-     map< pair<ho_interval,basevector>, pair<align ,double> >& A )
+     map< pair<ho_interval,basevector>, pair<allpathslg::align ,double> >& A )
 {    
      ostringstream out;
      out << "read " << ( !fw ? "-" : "" ) << id << " vs path " << path_id << " = ";
@@ -388,7 +388,7 @@ void AlignReadToPath(
                // Align, or fetch cached copy.
                               
                ho_interval h( rpos1 + L, rpos2 );
-               map< pair<ho_interval,basevector>, pair<align ,double> > 
+               map< pair<ho_interval,basevector>, pair<allpathslg::align ,double> > 
                     ::iterator Ax = A.find( make_pair( h, tx ) );
                if ( Ax == A.end( ) )
                {    double err = SmithWatFreeSym( rx, tx, a, True, True, 1, 1 );    
@@ -1386,7 +1386,7 @@ void Phase2( const int u, const vecbasevector& unibases,
           // the read and the basevector it is to be aligned to.  As output
           // it returns the alignment and the error count.
 
-          map< pair<ho_interval,basevector>, pair<align ,double> > A;
+          map< pair<ho_interval,basevector>, pair<allpathslg::align ,double> > A;
 
           // Proceed.
 

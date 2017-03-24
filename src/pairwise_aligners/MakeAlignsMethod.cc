@@ -501,7 +501,7 @@ Bool makealigns_perfect_method::MutmersToAlign( const vec<mutmer>& mm, int k,
       continue;
 
     errors[aligns_length] = 0;
-    align  &theAlign = aligns[aligns_length++];
+    allpathslg::align  &theAlign = aligns[aligns_length++];
     
     theAlign.Setpos1( theMutmer.Pos1() );
     theAlign.Setpos2( theMutmer.Pos2() );

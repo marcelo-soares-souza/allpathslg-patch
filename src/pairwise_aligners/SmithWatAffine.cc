@@ -37,7 +37,7 @@ const int Infinity = 100000000;
 // Unmatched ends in source read are not penalized
 // Unmatched ends in target read are optionally penalized
 unsigned int SmithWatAffineBandedCore( const basevector& S, const basevector& T,
-			     align * a, int offset, int bandwidth,
+			     allpathslg::align * a, int offset, int bandwidth,
                              bool penalize_left_gap, bool penalize_right_gap,
                              const int mismatch_penalty,
                              const int gap_open_penalty,
@@ -226,12 +226,12 @@ unsigned int SmithWatAffineBandedCore( const basevector& S, const basevector& T,
      {   pos1 += gaps(0);
          gaps(0) = 0;    }
 
-     *a = align ( pos1, pos2, gaps, lengths );
+     *a = allpathslg::align ( pos1, pos2, gaps, lengths );
      return best_score;
 }
 
 unsigned int SmithWatAffineBandedCoreFast( const basevector& S, const basevector& T,
-			     align * a, int offset, int bandwidth,
+			     allpathslg::align * a, int offset, int bandwidth,
                              bool penalize_left_gap, bool penalize_right_gap,
                              const int mismatch_penalty,
                              const int gap_open_penalty,
@@ -427,7 +427,7 @@ unsigned int SmithWatAffineBandedCoreFast( const basevector& S, const basevector
      {   pos1 += gaps(0);
          gaps(0) = 0;    }
 
-     *a = align ( pos1, pos2, gaps, lengths );
+     *a = allpathslg::align ( pos1, pos2, gaps, lengths );
      return best_score;
 }
 
@@ -966,7 +966,7 @@ unsigned int SmithWatAffineBanded( const basevector& S, const basevector& T,
     a.Setpos2(a.pos2()  + t_start);
     if ( a.pos1() < 0 || a.pos2() < 0 || a.Pos1() > (int)S.size()
             || a.Pos2() > (int)T.size() ) {
-        a = align ();
+        a = allpathslg::align ();
         score = Infinity;
     }
     return score;

@@ -183,7 +183,7 @@ namespace {  // anonymous namespace for local functions
                 ++it;
             }
         }
-        AlignRange result0 = { align (), 0, 0, 0, 0, 100, 100.0 };
+        AlignRange result0 = { allpathslg::align (), 0, 0, 0, 0, 100, 100.0 };
         if ( offsets.empty() ) return result0;
         vec< pair<int,int> > offsets2;
         LargestOffsetCluster( offsets, offsets2, 200, 0.2 );

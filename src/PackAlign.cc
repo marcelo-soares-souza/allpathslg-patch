@@ -137,11 +137,13 @@ packalign::packalign( int pos1, int pos2,
 
 }
 
+/* Debugando Gambiarra
 packalign::packalign( const allpathslg::align & a )
 {
   ConstructorCore( a.pos1( ), a.pos2( ), a.Gaps( ), a.Lengths( ), 
                    a.Nblocks( ) );    
 }
+*/
 
 packalign::packalign( const packalign& p )
 {
@@ -637,7 +639,7 @@ void packalign::SetToFlipOf( const packalign& p )
   Set( pos2, pos1, gaps, lengths );    
 }
 
-void packalign::SetToFlipOf( align  a )
+void packalign::SetToFlipOf( allpathslg::align  a )
 {
   for ( int i = 0; i < a.Nblocks( ); i++ )
     a.SetGap( i, -a.Gaps(i) );
@@ -685,7 +687,8 @@ void packalign::SetToReverseFlipOf( const packalign& p, int b1_len, int b2_len )
   Set( b1_len - Pos1, b2_len - Pos2, gaps_new, lengths_new );    
 }
 
-void packalign::SetToReverseFlipOf( align  a, int b1_len, int b2_len )
+/* Debugando Gambiarra */
+void packalign::SetToReverseFlipOf( allpathslg::align  a, int b1_len, int b2_len )
 {
   int pos1 = a.pos2( ), pos2 = a.pos1( );
   for ( int i = 0; i < a.Nblocks( ); i++ )
@@ -741,7 +744,7 @@ Bool operator==( const packalign& x, const packalign& y )
   return True;    
 }
 
-void align ::Compactify( int len1, int len2 )
+void allpathslg::align ::Compactify( int len1, int len2 )
 {
     
   int ni;
@@ -926,7 +929,7 @@ check_first_gap:
 }
 
 
-void align ::UnpackFrom( const packalign& p )
+void allpathslg::align ::UnpackFrom( const packalign& p )
 {
   p.Unpack( pos1_, pos2_, gaps_, lengths_, nblocks_ );    
 }
@@ -1142,7 +1145,7 @@ int Bandwidth( allpathslg::align & a )
   return Max( Abs(low), Abs(high) ) + add_to_bandwidth;    
 }
 
-void align ::Read( istream& in, int& errors, int& id1, int& id2, Bool& rc )
+void allpathslg::align ::Read( istream& in, int& errors, int& id1, int& id2, Bool& rc )
 {
   int pos1, pos2, gap, len, nblocks;
   BinRead( in, pos1 );
@@ -1188,7 +1191,7 @@ int CorrelatePositions( const allpathslg::align & a, int x1 )
   return OffTheEnd;    
 }
 
-void align ::ReverseThis( int b1_len, int b2_len )
+void allpathslg::align ::ReverseThis( int b1_len, int b2_len )
 {
   vec<int> gaps_new, lengths_new;
   gaps_new.resize(0);
@@ -1231,7 +1234,7 @@ void align ::ReverseThis( int b1_len, int b2_len )
 }
 
 
-void align ::Flip( )
+void allpathslg::align ::Flip( )
 {
   swap( pos1_, pos2_ );
   for ( int i = 0; i < nblocks_; i++ )
@@ -1239,7 +1242,7 @@ void align ::Flip( )
 }
 
 
-align  align ::TrimmedTo1(const int start, const int len) const {
+allpathslg::align allpathslg::align ::TrimmedTo1(const int start, const int len) const {
   //make sure start and end are sensible!
   int endOn1 = start + len;
   int startOn1 = start;
@@ -1356,18 +1359,18 @@ align  align ::TrimmedTo1(const int start, const int len) const {
 
 void Trim1Together(const basevector & b1, const basevector & b2, 
 		   const allpathslg::align  & a, int startOn1, int len, 
-		   basevector & trimmedb1, align  & trimmeda) {
+		   basevector & trimmedb1, allpathslg::align  & trimmeda) {
   trimmeda = a.TrimmedTo1(startOn1, len);
   trimmedb1.SetToSubOf(b1, startOn1, len);
 }
 
 
-int align ::Errors( const basevector& rd1, const basevector& rd2 ) const {
+int allpathslg::align ::Errors( const basevector& rd1, const basevector& rd2 ) const {
   vec<int> errs = MutationsGap1Gap2( rd1, rd2 );
   return accumulate(errs.begin(), errs.end(), 0);
 }
 
-Bool align ::Perfect( const basevector& rd1, const basevector& rd2 ) const 
+Bool allpathslg::align ::Perfect( const basevector& rd1, const basevector& rd2 ) const 
 {    if ( Nblocks( ) != 1 ) return False;
      if ( Gaps(0) != 0 ) return False; // would be weird
      int p1 = pos1( ), p2 = pos2( );
@@ -1376,7 +1379,7 @@ Bool align ::Perfect( const basevector& rd1, const basevector& rd2 ) const
           ++p1; ++p2;    }
      return True;    }
 
-vector<int> align ::MutationsGap1Gap2( const basevector& rd1, 
+vector<int> allpathslg::align ::MutationsGap1Gap2( const basevector& rd1, 
                                       const basevector& rd2 ) const {
   vector<int> answer(3, 0);
   int p1 = pos1( ), p2 = pos2( );
@@ -1398,7 +1401,7 @@ vector<int> align ::MutationsGap1Gap2( const basevector& rd1,
   return answer;    
 }
 
-int align ::PosOn1(int on2) const {
+int allpathslg::align ::PosOn1(int on2) const {
   if (on2 < pos2() || on2 > Pos2()) return -1;
   int p1 = pos1(), p2 = pos2();
   for ( int j = 0; j < Nblocks( ); j++ ) {
@@ -1418,7 +1421,7 @@ int align ::PosOn1(int on2) const {
   return -1;
 }
 
-int align ::PosOn2(int on1) const {
+int allpathslg::align ::PosOn2(int on1) const {
   if (on1 < pos1() || on1 > Pos1()) return -1;
   int p1 = pos1(), p2 = pos2();
   for ( int j = 0; j < Nblocks( ); j++ ) {
@@ -1438,7 +1441,7 @@ int align ::PosOn2(int on1) const {
   return -1;
 }
 
-pair<int, int> align ::Gap1Gap2( ) const {
+pair<int, int> allpathslg::align ::Gap1Gap2( ) const {
   pair<int, int> ret(0,0);
   for ( int j = 0; j < Nblocks( ); j++ ) {
     if ( Gaps(j) > 0 )  {
@@ -1451,10 +1454,7 @@ pair<int, int> align ::Gap1Gap2( ) const {
   return ret;    
 }
 
-
-
-void
-align ::Sync_to_TACG( const basevector & seq1,
+void allpathslg::align ::Sync_to_TACG( const basevector & seq1,
                      const basevector & seq2,
                      Bool  isRC )
 {
@@ -1678,9 +1678,7 @@ align ::Sync_to_TACG( const basevector & seq1,
   // done!
 }
 
-
-
-int align ::Mutations( const basevector& rd1, const basevector& rd2,
+int allpathslg::align ::Mutations( const basevector& rd1, const basevector& rd2,
                       const qualvector& q1, int min_score ) const
 {
   int answer = 0, j, p1 = pos1( ), p2 = pos2( );
@@ -1698,7 +1696,7 @@ int align ::Mutations( const basevector& rd1, const basevector& rd2,
   return answer;    
 }
 
-void align ::PrintMutations( const basevector& rd1, const basevector& rd2, ostream& log, const bool zero_based) const
+void allpathslg::align ::PrintMutations( const basevector& rd1, const basevector& rd2, ostream& log, const bool zero_based) const
 {
   int answer = 0, j, p1 = pos1( ), p2 = pos2( );
   int loc1 = zero_based ? p1 : p1+1;
@@ -1736,7 +1734,7 @@ void align ::PrintMutations( const basevector& rd1, const basevector& rd2, ostre
   }
 }
 
-int align ::MatchingBases( const basevector& rd1, const basevector& rd2 )
+int allpathslg::align ::MatchingBases( const basevector& rd1, const basevector& rd2 )
 {
   int answer = 0, j, p1 = pos1( ), p2 = pos2( );
   for ( j = 0; j < Nblocks( ); j++ )
@@ -1753,7 +1751,7 @@ int align ::MatchingBases( const basevector& rd1, const basevector& rd2 )
   return answer;    
 }
 
-void align ::PerfectIntervals1( const basevector& rd1, const basevector& rd2,
+void allpathslg::align ::PerfectIntervals1( const basevector& rd1, const basevector& rd2,
      vec<ho_interval>& perfs ) const
 {    perfs.clear( );
      int p1 = pos1( ), p2 = pos2( );
@@ -1771,7 +1769,7 @@ void align ::PerfectIntervals1( const basevector& rd1, const basevector& rd2,
           if ( p1 - (last+1) > 0 ) 
                perfs.push_back( ho_interval( last+1, p1 ) );    }    }
 
-void align ::PerfectIntervals2( const basevector& rd1, const basevector& rd2,
+void allpathslg::align ::PerfectIntervals2( const basevector& rd1, const basevector& rd2,
      vec<ho_interval>& perfs ) const
 {    perfs.clear( );
      int p1 = pos1( ), p2 = pos2( );
@@ -1788,7 +1786,7 @@ void align ::PerfectIntervals2( const basevector& rd1, const basevector& rd2,
           if ( p2 - (last+1) > 0 ) 
                perfs.push_back( ho_interval( last+1, p2 ) );    }    }
 
-void align ::PerfectIntervals2( const fastavector& rd1, const fastavector& rd2,
+void allpathslg::align ::PerfectIntervals2( const fastavector& rd1, const fastavector& rd2,
      vec<ho_interval>& perfs ) const
 {    perfs.clear( );
      int p1 = pos1( ), p2 = pos2( );
@@ -1806,7 +1804,7 @@ void align ::PerfectIntervals2( const fastavector& rd1, const fastavector& rd2,
           if ( p2 - (last+1) > 0 ) 
                perfs.push_back( ho_interval( last+1, p2 ) );    }    }
 
-int align ::Indels( const basevector& rd1, const basevector& rd2,
+int allpathslg::align ::Indels( const basevector& rd1, const basevector& rd2,
                    const qualvector& q1, int min_score ) const
 {
   int answer = 0, p1 = pos1( ), p2 = pos2( );
@@ -1835,7 +1833,7 @@ int align ::Indels( const basevector& rd1, const basevector& rd2,
   return answer;    
 }
 
-vector<int> align ::MutationsGap1Gap2( const basevector& rd1, 
+vector<int> allpathslg::align ::MutationsGap1Gap2( const basevector& rd1, 
                                       int from1, int to1, 
                                       const basevector& rd2, 
                                       int from2, int to2 ) const
@@ -1868,7 +1866,7 @@ vector<int> align ::MutationsGap1Gap2( const basevector& rd1,
   return answer;    
 }
 
-void align ::Write( ostream& out, int id1, int id2, Bool rc, int errors )
+void allpathslg::align ::Write( ostream& out, int id1, int id2, Bool rc, int errors )
 {
   BinWrite( out, pos1_ );
   BinWrite( out, pos2_ );
@@ -1888,7 +1886,7 @@ void align ::Write( ostream& out, int id1, int id2, Bool rc, int errors )
   BinWrite( out, rc );    
 }
 
-void align ::writeBinary( BinaryWriter& writer ) const
+void allpathslg::align ::writeBinary( BinaryWriter& writer ) const
 {
     writer.write(pos1_);
     writer.write(pos2_);
@@ -1897,7 +1895,7 @@ void align ::writeBinary( BinaryWriter& writer ) const
     writer.write(lengths_.x,lengths_.x+nblocks_);
 }
 
-void align ::readBinary( BinaryReader& reader )
+void allpathslg::align ::readBinary( BinaryReader& reader )
 {
     reader.read(&pos1_);
     reader.read(&pos2_);

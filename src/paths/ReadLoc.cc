@@ -438,7 +438,7 @@ void PrintSAMAligns( ostream& sam, const vec<read_loc>& rl,
       sam_flag |= FIRST_READ;
       mate_sam_flag |= IS_PAIRED;
       mate_sam_flag |= SECOND_READ;
-      align  r_align;
+      allpathslg::align  r_align;
       for ( int pass = 1; pass <= 2; pass++ ) {
 	uint64_t id = ( pass == 1 ? rl[i].ReadId( ) : rl[i].PartnerReadId( ) );
 	basevector b;

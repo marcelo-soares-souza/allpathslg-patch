@@ -694,7 +694,7 @@ void Assembly::dedup( const Bool Exact ) {
 	    sj_seq = Cat( flank, sj_seq, flank );
 	  }
 
-	  align  aF;
+	  allpathslg::align  aF;
 	  int min_overlap = Min( si_seq.size(), sj_seq.size() );
 	  DPRINT( min_overlap );
 	  int errorsF = 0;
@@ -727,7 +727,7 @@ void Assembly::dedup( const Bool Exact ) {
 	    if ( FlankSequences )
 	      sj_seq_rc = Cat( flank, si_seq, flank );
 
-	    align  aR;
+	    allpathslg::align  aR;
 	    int errorsR = 0;
 	    cout << Date() << ": aligning reverse" << endl;
 	    int scoreR = 

@@ -564,7 +564,7 @@ void Phase1(
 	      {    int u2 = ALIGNS[y].first;
 		basevector z1( longreads[id], rpos1, rpos2 - rpos1 );
 		basevector z2( unibases[u2], upos1, upos2 - upos1 );
-		align  a;
+		allpathslg::align  a;
 		if ( z1.size( ) == 0 || z2.size( ) == 0 )
 		  over = 0;
 		else

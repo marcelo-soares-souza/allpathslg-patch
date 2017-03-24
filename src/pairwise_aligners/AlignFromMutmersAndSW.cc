@@ -41,7 +41,7 @@ bool AppendAlignment( avector<int> &gaps, int &gaps_end,
 		      int &p1, int &p2,
 		      alignment &a )
 {
-  align  gap_align( a );
+  allpathslg::align  gap_align( a );
   
   //  PRINT( gap_align.Nblocks() );
 
@@ -114,7 +114,7 @@ bool PrependAlignment( avector<int> &gaps, int &gaps_start,
 		       int gap_len1, int gap_len2,
 		       alignment &a )
 {
-  align  gap_align( a );
+  allpathslg::align  gap_align( a );
 
   ForceAssertEq( gap_align.Gaps(0), 0 );
        
@@ -180,7 +180,7 @@ bool PrependAlignment( avector<int> &gaps, int &gaps_start,
 
 
 
-void align ::CreateFromMutmersAndSW( int k, shortvector<mutmer>& m, 
+void allpathslg::align ::CreateFromMutmersAndSW( int k, shortvector<mutmer>& m, 
 				    const basevector& rd1, const basevector& rd2, 
 				    int max_errors, int end_stretch, int& errors_found,
 				    bool affine_penalties )

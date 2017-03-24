@@ -333,7 +333,7 @@ bool CRefMerger::MergeContigs( const int idx1, const int idx2 )
   int offset = this->PosOn1( al2.a.pos2( ), al1.a );
   int band = Max( 1, overlap / swband_ratio_ );
   
-  align  al;
+  allpathslg::align  al;
   int dummy;
   const bvec &b1 = contigs_[al1.query_id];
   const bvec &b2 = contigs_[al2.query_id];
@@ -367,7 +367,7 @@ bool CRefMerger::MergeContigs( const int idx1, const int idx2 )
   orig_ids_[al2.query_id].clear( );
 
   // Merge al1 and al2 onto al1, reset al2 by setting its query length to 0.
-  align  nAl1;
+  allpathslg::align  nAl1;
   int nOff = - ( al1.a.pos2( ) - al1.a.pos1( ) );
   int nBand = 0;
   for (int ii=0; ii<2; ii++) {

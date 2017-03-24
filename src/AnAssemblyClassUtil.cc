@@ -141,7 +141,7 @@ void CheckSuperOverlaps( ostream &log, assembly &Ass, int scg )
   }
 
   // Main loop over all contigs.
-  align  al;
+  allpathslg::align  al;
 
   for (int cg=0; cg<n_contigs-1; cg++) {
     for (int ii=cg+1; ii<n_contigs; ii++) {

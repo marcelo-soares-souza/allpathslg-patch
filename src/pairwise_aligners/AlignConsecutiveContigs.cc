@@ -102,7 +102,7 @@ bool AlignConsecutiveContigs( const int super_id,
       << ", " << mtig2.size( )
       << "): " << flush;
   
-  align  al;
+  allpathslg::align  al;
   int Rc = 0;
   int base_bandwidth = 100;
   int t1_bandwidth = mtig1.size( ) / 2;

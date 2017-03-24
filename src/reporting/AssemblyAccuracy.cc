@@ -242,7 +242,7 @@ void GetMaxPerf( const fastavector& c0, const vec<fastavector>& ref,
 
 int MatchingBases( const alignment& a, const fastavector& c, const fastavector& r )
 {    int matching = 0;
-     align  A(a);
+     allpathslg::align  A(a);
      int p1 = A.pos1( ), p2 = A.pos2( );
      for ( int z = 0; z < A.Nblocks( ); z++ )
      {    if ( A.Gaps(z) > 0 ) p2 += A.Gaps(z);
@@ -303,7 +303,7 @@ void ImproveGapSizes( alignment& a, const fastavector& c, fastavector& r,
           vec<Bool> faraway( gaps.size( ), False );
           const int far = 100;
           for ( int x = 0; x < gaps.isize( ); x++ ) 
-          {    align  A(a);
+          {    allpathslg::align  A(a);
                int p2 = A.pos2( );
                for ( int z = 0; z < A.Nblocks( ); z++ ) 
                {    if ( A.Gaps(z) > 0 ) p2 += A.Gaps(z);
@@ -327,7 +327,7 @@ void ImproveGapSizes( alignment& a, const fastavector& c, fastavector& r,
 void CorrectErrorCountUsingTrusted( const alignment& a_best, 
      const bitvector& T_best, const fastavector& c_best,
      const fastavector& r_best, int& min_errs )
-{    align  A(a_best);
+{    allpathslg::align  A(a_best);
      min_errs = 0;
      unsigned int p1 = A.pos1( ), p2 = A.pos2( );
      for ( int j = 0; j < A.Nblocks( ); j++ )
@@ -836,7 +836,7 @@ int main(int argc, char **argv)
                               if ( p.size( ) > 0 && p.isize( ) <= stop - start )
                               {    T2.SetToSubOf( all[t2], start, stop - start );
                                    SmithWatFree( p, T2, best_loc, al, !fw2, fw2 );
-                                   align  a(al);
+                                   allpathslg::align  a(al);
                                    mismatches = a.Errors( p, T2 );
                                    matches = a.MatchingBases( p, T2 );    }
                               else mismatches = matches = 0;
@@ -878,7 +878,7 @@ int main(int argc, char **argv)
                               T1.SetToSubOf( all[t1], start, stop - start );
                               if ( p.size( ) > 0 && p.isize( ) <= stop - start )
                               {    SmithWatFree( p, T1, best_loc, al, fw1, !fw1 );
-                                   align  a(al);
+                                   allpathslg::align  a(al);
                                    mismatches = a.Errors( p, T1 );
                                    matches = a.MatchingBases( p, T1 );    }
                               else mismatches = matches = 0;
@@ -1203,7 +1203,7 @@ int main(int argc, char **argv)
                     avector<int> gaps(1), lengths(1);
                     gaps(0) = 0;
                     lengths(0) = c_best.size( );
-                    align  al( 0, 0, gaps, lengths );
+                    allpathslg::align  al( 0, 0, gaps, lengths );
                     a_best.Set( al, 0 );
                     break;    }
      

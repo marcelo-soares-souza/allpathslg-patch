@@ -2406,7 +2406,7 @@ void QueryLookupTableCore( int argc, char *argv[] )
                     {    basevector s = seq[q.query_id];
                          if ( q.Rc1( ) ) s.ReverseComplement( );
                          vec<ho_interval> perfs;
-                         align  a = q.a;
+                         allpathslg::align  a = q.a;
                          a.AddToPos2(-start);
                          a.PerfectIntervals1( s, t, perfs );
                          int min_perf = 0;
@@ -2481,7 +2481,7 @@ void QueryLookupTableCore( int argc, char *argv[] )
                     {    basevector s = seq[q.query_id];
                          if ( q.Rc1( ) ) s.ReverseComplement( );
                          vec<ho_interval> perfs;
-                         align  a = q.a;
+                         allpathslg::align  a = q.a;
                          a.AddToPos2(-start);
                          a.PerfectIntervals2( s, t, perfs );
                          for ( int i = 0; i < perfs.isize( ); i++ )

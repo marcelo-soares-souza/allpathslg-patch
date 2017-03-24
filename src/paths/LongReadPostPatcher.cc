@@ -595,7 +595,7 @@ int main(int argc, char *argv[]){
 	    const double max_err = 0.05;
 	    basevector rrc(r);
 	    rrc.ReverseComplement( );
-	    align  a1rc(a1);
+	    allpathslg::align  a1rc(a1);
 	    a1rc.ReverseThis( T[t1].size( ), r.size( ) );
 	    int best_len1 = BestGoodFirst( a1rc, Trc[t1], rrc, max_err );
 	    int best_len2 = BestGoodFirst( a2, T[t2], r, max_err );

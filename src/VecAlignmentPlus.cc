@@ -312,7 +312,7 @@ void vec_alignment_plus::SetPlainAlignment( int align_id,
  * SetPlainAlign
  */
 void vec_alignment_plus::SetPlainAlign( int align_id,
-					align  &plain_al )
+					allpathslg::align  &plain_al )
 {
   // Position in the alignments_ vector.
   int al_pos = all_aligns_ids_[ align_id ];

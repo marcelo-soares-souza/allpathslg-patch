@@ -1088,7 +1088,8 @@ void Scram( const int status )
 
 bool isReadable( String const& filename )
 {    ifstream ifs(filename.c_str());
-     return ifs;    }
+     // Debugando Gambiarra
+     return ifs.is_open();    }
 
 int Glob( const String& x, vector<String>& xs )
 {    glob_t globbuf;

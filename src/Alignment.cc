@@ -60,7 +60,7 @@ void alignment::Read( istream& in, int& id1, int& id2, Bool& rc )
 
 void alignment::Print( ostream& out ) const
 {
-     align  a = *this;
+     allpathslg::align  a = *this;
      cout << "pos1=" << a.pos1() << ", Pos1=" << a.Pos1() <<
         ", pos2=" << a.pos2() << ", Pos2=" << a.Pos2() << ", errors=" <<
         this->Errors() << endl;
@@ -305,7 +305,7 @@ void alignment_plus::SetToSwapOf( const alignment_plus& x, int rd1length,
      else a.SetToFlipOf( x.a );
      a.SetErrors( x.a.Errors( ) );    }
 
-void alignment_plus::SetToSwapOf( const align & x, int id1, int id2, Bool rc2,
+void alignment_plus::SetToSwapOf( const allpathslg::align & x, int id1, int id2, Bool rc2,
      float s, int rd1length, int rd2length )
 {    SetId2( id1 );
      SetId1( id2 );

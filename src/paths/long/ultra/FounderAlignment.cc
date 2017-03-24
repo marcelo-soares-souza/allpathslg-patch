@@ -92,7 +92,7 @@ void AlignFriendsToFounder( vecbvec const& friends, size_t founderIdx,
             std::copy(fndr->begin(),fndr->end(),std::back_inserter(*rItr));
         else
         {
-            align  const& aln = *aItr;
+            allpathslg::align  const& aln = *aItr;
             ForceAssertGe(aln.StartOnQuery(),0);
             ForceAssertGe(aln.StartOnTarget(),0);
             if ( aln.StartOnQuery() )

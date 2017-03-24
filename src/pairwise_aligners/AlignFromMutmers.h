@@ -29,7 +29,7 @@
 //
 // ================================================================================
 
-void align ::CreateFromMutmers(int k, shortvector<mutmer>& m, const basevector& rd1, 
+void allpathslg::align ::CreateFromMutmers(int k, shortvector<mutmer>& m, const basevector& rd1, 
      const basevector& rd2, int max_errors, float max_badness,
      int local_max_errors, int end_stretch, int local_max_errors_done, 
      int& errors_found )
@@ -548,7 +548,7 @@ void align ::CreateFromMutmers(int k, shortvector<mutmer>& m, const basevector& 
           SetLength( i, lengths2(i) );    }
      errors_found = errors;    }
 
-void align ::CreateFromMutmersMT(int k, shortvector<mutmer>& m, const basevector& rd1, 
+void allpathslg::align ::CreateFromMutmersMT(int k, shortvector<mutmer>& m, const basevector& rd1, 
      const basevector& rd2, int max_errors, float max_badness,
      int local_max_errors, int end_stretch, int local_max_errors_done, 
      int& errors_found )

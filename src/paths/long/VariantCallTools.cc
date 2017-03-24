@@ -135,7 +135,7 @@ void RestrictedAlign( const basevector& b1, const basevector& b2,
          int K = 501; //max( 60, min( smallest/100, 501 ) );
          alignment al;
          SmithWatAffineSuper( b1, b2, al, K, false, false );
-         a=align (al);
+         a=allpathslg::align (al);
          return;
      }
 #endif
@@ -211,7 +211,7 @@ void RestrictedAlign( const basevector& b1, const basevector& b2,
 
      // Align.
 
-     align  a2;
+     allpathslg::align  a2;
      if (verbose) cout << Date( ) << ": alignment starting" << endl;
      int nerrors;
      int err = SmithWatAffineBanded( b1, b2, -offset2, bandwidth2, a2, nerrors );
@@ -566,7 +566,7 @@ void EdgesOnRef::UnrollAll(const int verbosity, const int iLoBound, const int iH
         vec<pair<double,int>> alt_edges;
         for (int i = 0; i < hb_.FromSize(to_right[tail_edge0]); i++) {
             int eid = hb_.EdgeObjectIndexByIndexFrom(to_right[tail_edge0], i);
-            align  ai;
+            allpathslg::align  ai;
             int Bandwidth = max(1, (int)hb_.EdgeObject(eid).size()/2);
             RestrictedAlign(hb_.EdgeObject(eid), gplus_, tail_edge_end,
                     Bandwidth, ai );
@@ -634,7 +634,7 @@ void EdgesOnRef::UnrollAll(const int verbosity, const int iLoBound, const int iH
         vec<pair<double,int>> alt_edges;
         for (int i = 0; i < hb_.ToSize(to_left[head_edge0]); i++) {
             int eid = hb_.EdgeObjectIndexByIndexTo(to_left[head_edge0], i);
-            align  ai;
+            allpathslg::align  ai;
             int Bandwidth = max(1, (int)hb_.EdgeObject(eid).size()/2);
             int start_prev = start0 - hb_.EdgeLengthKmers(eid);
             RestrictedAlign(hb_.EdgeObject(eid), gplus_, start_prev, Bandwidth, ai);
@@ -1555,7 +1555,7 @@ void EdgesOnRef::CallVariantsGroupedWithProb(int gid, vec<VariantCallGroup> *p_g
             if ( !left_ok || !right_ok )
             {    alignment al;
                  SmithWatAffine(branch_base, cell_ref, al, true, true);
-                 a = align (al);    }
+                 a = allpathslg::align (al);    }
 
             if (verbosity >= 2) {
                 cout << "align  branch"  << j << " [" <<  a.pos1() << "," << a.Pos1() 

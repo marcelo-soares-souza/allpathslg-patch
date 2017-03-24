@@ -600,7 +600,7 @@ Bool CorrectPatch3( const basevector& LEFT, const basevector& RIGHT,
      // scores.
 
      vec< pair<int64_t,int64_t> > id1_id2;
-     vec< pair<align ,align > > aligns;
+     vec< pair<allpathslg::align ,allpathslg::align > > aligns;
      vec<int> errs;
      for ( int i1 = 0; i1 < fw_hits.isize( ); i1++ )
      for ( int i2 = 0; i2 < rc_hits.isize( ); i2++ )
@@ -609,7 +609,7 @@ Bool CorrectPatch3( const basevector& LEFT, const basevector& RIGHT,
           int start = fw_hits[i1].second, stop = rc_hits[i2].second + F;
           if ( stop < start ) continue;
           id1_id2.push( id1, id2 );
-          align  a1, a2;
+          allpathslg::align  a1, a2;
           int errors1, errors2;
           SmithWatBandedA( 
                fbases[id1], epatch, -start, bandwidth, a1, errors1, 0, 1, 1 );
@@ -628,7 +628,7 @@ Bool CorrectPatch3( const basevector& LEFT, const basevector& RIGHT,
      vec<allpathslg::align > seq_aligns( seq.size( ) );
      avector<int> gaps(1), lengths(1);
      gaps(0) = 0, lengths(0) = epatch.size( );
-     seq_aligns[0] = align ( 0, 0, gaps, lengths );
+     seq_aligns[0] = allpathslg::align ( 0, 0, gaps, lengths );
      for ( int i = 0; i < id1_id2.isize( ); i++ )
      {    int j = id1_id2.NextDiff(i);
           vec<int> this_errs, ids( j - i, vec<int>::IDENTITY );

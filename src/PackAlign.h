@@ -150,12 +150,11 @@ class int_pointer_or_words {
   };
 };
 
-// class align ;
+namespace allpathslg { class align; }
 
 class packalign {
 
  public:
-
   // ========================================================================
   // Here are the packalign members which are MOST important for external use:
   // the constructor, a Set operator, and the reverse operation (Unpack).Note 
@@ -214,7 +213,9 @@ class packalign {
   void ReverseThis( int b1_len, int b2_len );
 
   void SetToFlipOf( const packalign& p );
+  void SetToFlipOf( allpathslg::align  a );
   void SetToReverseFlipOf( const packalign& p, int b1_len, int b2_len );
+  void SetToReverseFlipOf( allpathslg::align  a, int b1_len, int b2_len );
 
   // =========================================================================
   // The remaining public members are boring utilities:
@@ -289,11 +290,14 @@ class packalign {
     Alignment of query to target, possibly with gaps.
     Models type concept Align.
  */
+
 namespace allpathslg {
 
 class align  {
 
  public:
+
+  // Gambiarra Debugando void SetToFlipOf( allpathslg::align  a );
 
   align ( ): pos1_(0), pos2_(0), nblocks_(0)
   {
@@ -593,8 +597,8 @@ class align  {
 
 SELF_SERIALIZABLE(allpathslg::align );
 
-void SetToFlipOf( allpathslg::align  a ) {};
-void SetToReverseFlipOf( allpathslg::align  a, int b1_len, int b2_len ) {};
+// Debug Gambiarra void SetToReverseFlipOf( allpathslg::align  a, int b1_len, int b2_len ) {};
+// void packalign::SetToReverseFlipOf( allpathslg::align  a, int b1_len, int b2_len );
 
 ostream & operator<<(ostream & os, const allpathslg::align  & a);
 

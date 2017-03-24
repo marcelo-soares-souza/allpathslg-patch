@@ -198,7 +198,7 @@ template<int K> void GetFriendsAndAlignsInitial(
 
                     // Align.
 
-                    align  x;
+                    allpathslg::align  x;
                     int errors;
                     SmithWatBandedA( gang[0], gang[id], offset, bandwidth, x,
                          errors, 0, 1, 1 );    
