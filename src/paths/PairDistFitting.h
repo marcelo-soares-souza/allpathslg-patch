@@ -38,7 +38,7 @@
 //
 template <class T>
 void MostProbableGap( const T& distr, const int len1, const int len2, const vec< pair< int, int > >& links,
-                      int& gap, int& std, bool verbose=false )
+                      int& gap, int& std, bool verbose )
 {
   ForceAssertGt( links.isize(), 0 );
   // find the averge of x1 + x2 ( <x1+x2> = <L> - g in the ideal case )
