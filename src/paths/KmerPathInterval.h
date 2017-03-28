@@ -748,26 +748,25 @@ public: /* PUBLIC VECTOR METHODS */
   // Note for Contains: if cap is set to a positive value, then no more than
   // that many values will be put in answer.
 
-  /*
   template<class TAG>
   friend void Contains( const vec<TAG>& segs, kmer_id_t index,
-                        vec<longlong>& answer, bool append = false, int cap = -1 );
+                        vec<longlong>& answer, bool append, int cap );
 
   template<class TAG>
   friend void Contains( const vec<TAG>& segs, KmerPathInterval rpi,
-                        vec<longlong>& answer, bool append = false, int cap = -1 );
-  */
+                        vec<longlong>& answer, bool append, int cap );
 
   template<class TAG>
   friend kmer_id_t Instance( const vec<TAG>& segs, kmer_id_t k );
-
-private: /* THE DATA */
 
   union {
     ulonglong data1_;
     int data1i_[2];
     unsigned short data1s_[4];
   };
+
+
+private: /* THE DATA */
 
   union {
     ulonglong data2_;
