@@ -590,11 +590,11 @@ public: /* PUBLIC VECTOR METHODS */
 
   template<class TAG>
   friend void Contains( const vec<TAG>& segs, kmer_id_t index,
-                        vec<longlong>& answer, bool append = false, int cap = -1 );
+                        vec<longlong>& answer, bool append, int cap );
 
   template<class TAG>
   friend void Contains( const vec<TAG>& segs, KmerPathInterval rpi,
-                        vec<longlong>& answer, bool append = false, int cap = -1 );
+                        vec<longlong>& answer, bool append, int cap );
 
   template<class TAG>
   friend longlong Instance( const vec<TAG>& segs, kmer_id_t k );
@@ -747,6 +747,7 @@ public: /* PUBLIC VECTOR METHODS */
   // Note for Contains: if cap is set to a positive value, then no more than
   // that many values will be put in answer.
 
+  /*
   template<class TAG>
   friend void Contains( const vec<TAG>& segs, kmer_id_t index,
                         vec<longlong>& answer, bool append = false, int cap = -1 );
@@ -754,6 +755,7 @@ public: /* PUBLIC VECTOR METHODS */
   template<class TAG>
   friend void Contains( const vec<TAG>& segs, KmerPathInterval rpi,
                         vec<longlong>& answer, bool append = false, int cap = -1 );
+  */
 
   template<class TAG>
   friend kmer_id_t Instance( const vec<TAG>& segs, kmer_id_t k );

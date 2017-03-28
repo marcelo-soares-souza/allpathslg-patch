@@ -12,7 +12,7 @@ AX_PTHREAD
 AC_OPENMP
 AC_OPENMP_CHECK
 
-CXXFLAGS="$CXXFLAGS -std=c++11 -fpermissive -Wextra -Wall -Wsign-promo -Woverloaded-virtual -Wendif-labels -Wno-unused -Wno-deprecated -Wno-long-long -Wno-parentheses -Wno-unused-parameter -fno-nonansi-builtins -mieee-fp -fno-strict-aliasing -iquote . -ggdb -DNDEBUG"
+CXXFLAGS="$CXXFLAGS -std=c++11 -Wextra -Wall -Wsign-promo -Woverloaded-virtual -Wendif-labels -Wno-unused -Wno-deprecated -Wno-long-long -Wno-parentheses -Wno-unused-parameter -fno-nonansi-builtins -mieee-fp -fno-strict-aliasing -iquote . -ggdb -DNDEBUG"
 
 OS_RELEASE="`uname -r`"
 AC_SUBST(CXXFLAGS)

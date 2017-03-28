@@ -76,7 +76,7 @@ template void Prepare( vec<new_tagged_rpint>& segs );
    of the tagged read path intervals containing the kmer.
 */
 template<class TAG> void Contains( const vec<TAG>& segs, kmer_id_t index,
-                                   vec<longlong>& answer, bool append, int cap )
+                                   vec<longlong>& answer, bool append = false, int cap = -1 )
 {
   if ( ! append )
     answer.clear( );
@@ -140,7 +140,7 @@ template void Contains( const vec<new_tagged_rpint>& segs, kmer_id_t index,
 // a given KmerPathInterval, instead of a single kmer.
 
 template<class TAG> void Contains( const vec<TAG>& segs, KmerPathInterval rpi,
-                                   vec<longlong>& answer, bool append, int cap )
+                                   vec<longlong>& answer, bool append = fase, int cap = -1 )
 {
   if ( ! append )
     answer.clear( );

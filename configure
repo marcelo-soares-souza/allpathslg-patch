@@ -16407,7 +16407,7 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
     CFLAGS=$OLD_CFLAGS
 
 
-CXXFLAGS="$CXXFLAGS -std=c++11 -fpermissive -Wextra -Wall -Wsign-promo -Woverloaded-virtual -Wendif-labels -Wno-unused -Wno-deprecated -Wno-long-long -Wno-parentheses -Wno-unused-parameter -fno-nonansi-builtins -mieee-fp -fno-strict-aliasing -iquote . -ggdb -DNDEBUG"
+CXXFLAGS="$CXXFLAGS -std=c++11 -Wextra -Wall -Wsign-promo -Woverloaded-virtual -Wendif-labels -Wno-unused -Wno-deprecated -Wno-long-long -Wno-parentheses -Wno-unused-parameter -fno-nonansi-builtins -mieee-fp -fno-strict-aliasing -iquote . -ggdb -DNDEBUG"
 
 OS_RELEASE="`uname -r`"
 
