@@ -418,7 +418,8 @@ private: /* PRIVATE METHODS */
 
   void SetLookback( int lookback )
   {
-    data1i_[0] = ( data1i_[0] & ((512 - 1) << 24) ) ^ lookback;
+    // Debugando Gambiarra data1i_[0] = ( data1i_[0] & ((512 - 1) << 24) ) ^ lookback;
+    data1i_[0] = ( data1i_[0] & ((512u - 1) << 24) ) ^ lookback;
   }
 
   friend Bool operator<( const tagged_rpint& s1, const tagged_rpint& s2 )
