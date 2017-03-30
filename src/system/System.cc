@@ -486,7 +486,7 @@ String Date(bool iso8601 )
   const struct tm *nowstruct;
   static bool locale_has_been_set = false;
   if( ! locale_has_been_set ) {
-    (void)setlocale(LC_ALL, "");
+    (void)setlocale(LC_ALL, "C");
     locale_has_been_set = true;
   }
   if (time(&nowbin) == (time_t) - 1) return "(date unavailable - time failed)";
