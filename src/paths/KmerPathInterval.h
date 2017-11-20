@@ -418,7 +418,6 @@ private: /* PRIVATE METHODS */
 
   void SetLookback( int lookback )
   {
-    // Debugando Gambiarra data1i_[0] = ( data1i_[0] & ((512 - 1) << 24) ) ^ lookback;
     data1i_[0] = ( data1i_[0] & ((512u - 1) << 24) ) ^ lookback;
   }
 

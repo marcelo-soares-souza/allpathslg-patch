@@ -321,8 +321,6 @@ class align  {
 
 public:
 
-  // Gambiarra Debugando void SetToFlipOf( allpathslg::align  a );
-
   align ( ): pos1_(0), pos2_(0), nblocks_(0)
   {
     gaps_.Setsize(0);
@@ -679,9 +677,6 @@ private:
 }
 
 SELF_SERIALIZABLE(allpathslg::align );
-
-// Debug Gambiarra void SetToReverseFlipOf( allpathslg::align  a, int b1_len, int b2_len ) {};
-// void packalign::SetToReverseFlipOf( allpathslg::align  a, int b1_len, int b2_len );
 
 ostream & operator<<(ostream & os, const allpathslg::align  & a);
 

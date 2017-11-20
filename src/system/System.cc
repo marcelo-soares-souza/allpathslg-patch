@@ -1197,7 +1197,6 @@ void Scram( const int status )
 
 bool isReadable( String const& filename )
 { ifstream ifs(filename.c_str());
-  // Debugando Gambiarra
   return ifs.is_open();
 }
 

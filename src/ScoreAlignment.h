@@ -50,7 +50,6 @@ void Regap( alignment& a,
 {
   allpathslg::align al = allpathslg::align (a);
   Regap( al, rd1, scores1, rd2, scores2 );
-  // Debugando - Gambiarra a.Set( packalign(al), a.Errors( ) );
 }
 
 #endif

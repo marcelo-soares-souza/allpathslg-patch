@@ -137,14 +137,6 @@ packalign::packalign( int pos1, int pos2,
 
 }
 
-/* Debugando Gambiarra
-packalign::packalign( const allpathslg::align & a )
-{
-  ConstructorCore( a.pos1( ), a.pos2( ), a.Gaps( ), a.Lengths( ),
-                   a.Nblocks( ) );
-}
-*/
-
 packalign::packalign( const packalign& p )
 {
 
@@ -687,7 +679,6 @@ void packalign::SetToReverseFlipOf( const packalign& p, int b1_len, int b2_len )
   Set( b1_len - Pos1, b2_len - Pos2, gaps_new, lengths_new );
 }
 
-/* Debugando Gambiarra */
 void packalign::SetToReverseFlipOf( allpathslg::align  a, int b1_len, int b2_len )
 {
   int pos1 = a.pos2( ), pos2 = a.pos1( );
