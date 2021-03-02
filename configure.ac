@@ -1,4 +1,4 @@
-AC_INIT([AllPathsLG], [52489], [crdhelp@broadinstitute.org])
+AC_INIT([AllPathsLG], [52490], [crdhelp@broadinstitute.org])
 AM_INIT_AUTOMAKE
 AM_PROG_LIBTOOL([disable-shared])
 AC_PROG_CXX
